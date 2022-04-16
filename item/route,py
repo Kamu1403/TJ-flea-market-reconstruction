@@ -1,0 +1,18 @@
+#!/usr/bin/env python3
+# -*- coding: UTF-8 -*-
+from item import item_blue
+from app import database
+from models import Goods, Want, HistoryGoods, HistoryWant, FavorGoods, FavorWant
+from datetime import datetime
+
+
+@item_blue.before_request
+def before_request():
+    if database.is_closed():
+        database.connect()
+
+
+@item_blue.teardown_request
+def teardown_request():
+    if not database.is_closed():
+        database.close()

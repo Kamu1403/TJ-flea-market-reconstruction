@@ -1,6 +1,6 @@
 # TJ-flea-market
 
-同济跳蚤市场项目
+同济跳蚤市场课程项目
 
 ## Getting started
 
