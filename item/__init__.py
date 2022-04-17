@@ -6,7 +6,7 @@ from flask import Blueprint
 
 item_blue = Blueprint('item', __name__, static_url_path='/item')
 from . import models
-
+from . import routes
 models.Goods.create_table()
 models.Want.create_table()
 models.HistoryGoods.create_table()

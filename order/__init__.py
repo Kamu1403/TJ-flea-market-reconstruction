@@ -5,7 +5,7 @@
 
 from flask import Blueprint
 
-user_blue = Blueprint('user', __name__)
+user_blue = Blueprint('order', __name__)
 from . import models
 from . import routes
-models.User.create_table()
+#models.Order.create_table()
