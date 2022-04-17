@@ -1,6 +1,8 @@
 # TJ-flea-market
 
-同济跳蚤市场项目
+同济跳蚤市场项目，Main分支，用于最后的合并及提交
+
+稳定可运行版本见master分支，负责不同部分的成员可自行创建分支，调试可用后再merge到master分支
 
 ## Getting started
 
