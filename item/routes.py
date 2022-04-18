@@ -22,8 +22,7 @@ def teardown_request(exc):#exc必须写上
 
 @item_blue.route("/")
 def root_index():
-    return 'Hello World!'
-    #return redirect(url_for('.index'))  # 重定向到/index
+    return redirect(url_for('item.index'))  # 重定向到/index
 
 
 @item_blue.route('/index')

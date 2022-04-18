@@ -4,7 +4,7 @@
 from flask import Flask
 import peewee as pw
 
-app = Flask(__name__)
+app = Flask(__name__,template_folder="templates")
 app.config["SECRET_KEY"] = 'b8a0e5e48f7e4577a020b8502dcb7fc8'
 #随机生成的秘钥，防止报错 Must provide secret_key to use csrf
 
@@ -37,7 +37,7 @@ app.register_blueprint(user_blue, url_prefix='/user')
 
 @app.route('/')
 def hello_world():
-    return 'Hello World!'
+    return render_template("index.html")
 
 
 if __name__ == '__main__':

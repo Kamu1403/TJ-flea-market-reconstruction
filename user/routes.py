@@ -5,8 +5,8 @@ from flask import render_template, flash, redirect, url_for, request
 from user.models import User
 from flask_login import current_user, login_user, logout_user, login_required
 
-from flask_login import LoginManager
 from app import database
+from flask_login import LoginManager
 
 login = LoginManager(user_blue)
 
@@ -25,8 +25,7 @@ def teardown_request(exc):#exc必须写上
 
 @user_blue.route("/")
 def root_index():
-    return 'Hello World!'
-    #return redirect(url_for('.index'))  # 重定向到/index
+    return redirect(url_for('user.index'))  # 重定向到/index
 
 
 @user_blue.route('/index')
