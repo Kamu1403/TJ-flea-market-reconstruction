@@ -30,9 +30,7 @@ class Goods(BaseModel):
     #     index=True,
     #     null=False,
     #     constraints=[pw.Check("status>=0 AND status<=2")],
-    #     default=0)  #0为上架(未交易)，1为锁定(正在交易)
-    #   普通用户仅能看见上架数量
-    #   管理员可看见上架和锁定数量
+    #     default=0)  #0为上架(未交易)，1为锁定(正在交易)，2为下架(交易完成或被商家、管理员下架)
     Pshelf = pw.IntegerField(
         verbose_name="上架数量",
         null=False,
@@ -43,7 +41,11 @@ class Goods(BaseModel):
         null=False,
         default=0
     )
-
+    Oshelf = pw.IntegerField(
+        version_name="下架数量",
+        null=False,
+        default=0
+    )
     description = pw.CharField(verbose_name="详细描述", max_length=1024)
     pic_num = pw.IntegerField(verbose_name="图片数量", null=False, default=0)
     #pic_path 商品缩略图可默认定为./resource/pic/goods/id/0.jpg 1.jpg
@@ -67,7 +69,7 @@ class Want(BaseModel):
     #     index=True,
     #     null=False,
     #     constraints=[pw.Check("status>=0 AND status<=2")],
-    #     default=0)  #0为上架(未交易)，1为锁定(正在交易)
+    #     default=0)  #0为上架(未交易)，1为锁定(正在交易)，2为下架(交易完成或被商家、管理员下架)
     Pshelf = pw.IntegerField(
         verbose_name="上架数量",
         null=False,
@@ -75,6 +77,11 @@ class Want(BaseModel):
     )
     locked = pw.IntegerField(
         verbose_name="锁定数量",
+        null=False,
+        default=0
+    )
+    Oshelf = pw.IntegerField(
+        version_name="下架数量",
         null=False,
         default=0
     )
