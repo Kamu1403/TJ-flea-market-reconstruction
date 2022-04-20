@@ -4,7 +4,7 @@
 ###商品/悬赏管理
 from flask import Blueprint
 
-item_blue = Blueprint('item', __name__, static_folder='/item')
+item_blue = Blueprint('item', __name__,template_folder="templates", static_folder='/item')
 from . import models
 from . import routes
 models.Goods.create_table()

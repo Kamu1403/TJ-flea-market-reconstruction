@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
 
-from email.policy import default
-from tabnanny import verbose
 from app import BaseModel
 import peewee as pw
 from datetime import datetime
@@ -25,27 +23,19 @@ class Goods(BaseModel):
                                 default=datetime.utcnow())
     price = pw.FloatField(verbose_name="价格", index=True, null=False)
 
-    # status = pw.IntegerField(
-    #     verbose_name="商品状态",
-    #     index=True,
-    #     null=False,
-    #     constraints=[pw.Check("status>=0 AND status<=2")],
-    #     default=0)  #0为上架(未交易)，1为锁定(正在交易)，2为下架(交易完成或被商家、管理员下架)
-    Pshelf = pw.IntegerField(
+    #   普通用户仅能看见上架数量
+    #   管理员可看见上架和锁定数量
+    shelved_num = pw.IntegerField(
         verbose_name="上架数量",
         null=False,
         default=1
     )
-    locked = pw.IntegerField(
+    locked_num = pw.IntegerField(
         verbose_name="锁定数量",
         null=False,
         default=0
     )
-    Oshelf = pw.IntegerField(
-        version_name="下架数量",
-        null=False,
-        default=0
-    )
+
     description = pw.CharField(verbose_name="详细描述", max_length=1024)
     pic_num = pw.IntegerField(verbose_name="图片数量", null=False, default=0)
     #pic_path 商品缩略图可默认定为./resource/pic/goods/id/0.jpg 1.jpg
@@ -64,24 +54,16 @@ class Want(BaseModel):
     publisher_id = pw.ForeignKeyField(User, verbose_name="发布者的学号")
     publish_time = pw.DateField(verbose_name="发布时间", default=datetime.utcnow())
     price = pw.FloatField(verbose_name="价格", index=True, null=False)
-    # status = pw.IntegerField(
-    #     verbose_name="悬赏状态",
-    #     index=True,
-    #     null=False,
-    #     constraints=[pw.Check("status>=0 AND status<=2")],
-    #     default=0)  #0为上架(未交易)，1为锁定(正在交易)，2为下架(交易完成或被商家、管理员下架)
-    Pshelf = pw.IntegerField(
+
+    #   普通用户仅能看见上架数量
+    #   管理员可看见上架和锁定数量
+    shelved_num = pw.IntegerField(
         verbose_name="上架数量",
         null=False,
         default=1
     )
-    locked = pw.IntegerField(
+    locked_num = pw.IntegerField(
         verbose_name="锁定数量",
-        null=False,
-        default=0
-    )
-    Oshelf = pw.IntegerField(
-        version_name="下架数量",
         null=False,
         default=0
     )

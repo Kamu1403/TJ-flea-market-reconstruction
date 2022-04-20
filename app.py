@@ -27,6 +27,14 @@ class BaseModel(pw.Model):
 # 连接数据库
 database.connect()
 
+from item import item_blue
+from user import user_blue
+
+app.register_blueprint(item_blue, url_prefix='/item')
+app.register_blueprint(user_blue, url_prefix='/user')
+#app.register_blueprint(admin_blue)
+
+from flask import render_template, flash, redirect, url_for, request
 from flask_login import LoginManager
 from user.models import User
 login_manager = LoginManager(app)
@@ -37,15 +45,6 @@ def load_user(student_number):
     except:
         user = None
     return user
-from item import item_blue
-from user import user_blue
-
-app.register_blueprint(item_blue, url_prefix='/item')
-app.register_blueprint(user_blue, url_prefix='/user')
-#app.register_blueprint(admin_blue)
-
-from flask import render_template, flash, redirect, url_for, request
-
 @app.route('/')
 def hello_world():
     return render_template("index.html")
