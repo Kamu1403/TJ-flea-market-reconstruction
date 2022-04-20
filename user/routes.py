@@ -6,10 +6,6 @@ from user.models import User
 from flask_login import current_user, login_user, logout_user, login_required
 
 from app import database
-from flask_login import LoginManager
-
-login = LoginManager(user_blue)
-
 
 @user_blue.before_request
 def before_request():
@@ -30,7 +26,7 @@ def root_index():
 
 @user_blue.route('/index')
 def index():
-    return 'Hello World!'
+    return render_template("user_index.html")#html的名字不能相同
     #if request.method == 'POST':
     #    return render_template("index.html")
     #return render_template('index.html')
