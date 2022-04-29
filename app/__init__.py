@@ -6,7 +6,7 @@ import peewee as pw
 
 app = Flask(__name__,template_folder="templates")
 app.config["SECRET_KEY"] = 'b8a0e5e48f7e4577a020b8502dcb7fc8'
-#随机生成的秘钥，防止报错 Must provide secret_key to use csrf
+#随机生成的秘钥，防止报错"Must provide secret_key to use csrf"
 
 # py_peewee连接的数据库名
 
@@ -29,26 +29,13 @@ database.connect()
 
 from item import item_blue
 from user import user_blue
-
+from admin import admin_blue
+from api import api_blue
+from order import order_blue
 app.register_blueprint(item_blue, url_prefix='/item')
 app.register_blueprint(user_blue, url_prefix='/user')
-#app.register_blueprint(admin_blue)
+app.register_blueprint(admin_blue,url_prefix='/admin')
+app.register_blueprint(api_blue,url_prefix='/api')
+app.register_blueprint(order_blue,url_prefix='/order')
 
-from flask import render_template, flash, redirect, url_for, request
-from flask_login import LoginManager
-from user.models import User
-login_manager = LoginManager(app)
-@login_manager.user_loader
-def load_user(student_number):
-    try:
-        user = User.get(User.student_number == student_number)  # 查
-    except:
-        user = None
-    return user
-@app.route('/')
-def hello_world():
-    return render_template("index.html")
-
-
-if __name__ == '__main__':
-    app.run(port=1234, debug=True)
+from . import routes
