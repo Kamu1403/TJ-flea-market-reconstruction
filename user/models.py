@@ -13,7 +13,7 @@ class User(UserMixin, BaseModel):
     继承自UserMixin，可以方便地使用各种flask_login的API
     同时继承自BaseModel，直接关联db，并且也继承了Model Model有提供增删查改的函数
     """
-    student_number = pw.IntegerField(verbose_name="学号,作为主键使用",
+    id = pw.IntegerField(verbose_name="学工号,作为主键使用",
                                      primary_key=True)
     username = pw.CharField(verbose_name='用户名,这里保证唯一',
                             max_length=64,
@@ -26,6 +26,10 @@ class User(UserMixin, BaseModel):
                          null=False,
                          unique=True)
     score = pw.IntegerField(verbose_name="信誉分", default=100)
+    #0为正常，-1为封号，1、2、3等数值可做用户分级，信誉分小于零可封号
+    state = pw.IntegerField(verbose_name="状态", null=False, default=0,
+                                constraints=[pw.Check("state >=-1")])
+    
 
     #应甲方要求，为方便留学生使用
     #中国用户用+86 1xx xxxx xxxx存 其他国家用其他的前缀

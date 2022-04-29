@@ -5,7 +5,7 @@ from app import BaseModel
 import peewee as pw
 from datetime import datetime
 from user.models import User
-
+  
 
 class Goods(BaseModel):
     """
@@ -21,7 +21,7 @@ class Goods(BaseModel):
     publish_time = pw.DateField(verbose_name="发布时间",
                                 null=False,
                                 default=datetime.utcnow())
-    price = pw.FloatField(verbose_name="价格", index=True, null=False)
+    price = pw.DecimalField(verbose_name="单价",max_digits=20, decimal_places=2, index=True, null=False)
 
     #   普通用户仅能看见上架数量
     #   管理员可看见上架和锁定数量
@@ -53,7 +53,7 @@ class Want(BaseModel):
                         null=False)
     publisher_id = pw.ForeignKeyField(User, verbose_name="发布者的学号")
     publish_time = pw.DateField(verbose_name="发布时间", default=datetime.utcnow())
-    price = pw.FloatField(verbose_name="价格", index=True, null=False)
+    price = pw.DecimalField(verbose_name="单价",max_digits=20, decimal_places=2, index=True, null=False)
 
     #   普通用户仅能看见上架数量
     #   管理员可看见上架和锁定数量
