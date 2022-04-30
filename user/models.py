@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
+from email.policy import default
 from app import BaseModel
 import peewee as pw
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import check_password_hash
 from hashlib import md5
 from flask_login import UserMixin
 
@@ -25,8 +26,8 @@ class User(UserMixin, BaseModel):
                          index=True,
                          null=False,
                          unique=True)
-    score = pw.IntegerField(verbose_name="信誉分", default=100)
-    #0为正常，-1为封号，1、2、3等数值可做用户分级，信誉分小于零可封号
+    score = pw.IntegerField(verbose_name="信誉分", default=100)#信誉分小于零可封号
+    #0为普通用户，-1为封号，1为管理员
     state = pw.IntegerField(verbose_name="状态", null=False, default=0,
                                 constraints=[pw.Check("state >=-1")])
     
@@ -40,6 +41,7 @@ class User(UserMixin, BaseModel):
     campus_branch = pw.CharField(
         verbose_name="所在校区",
         max_length=32,
+        null=False,
         default="四平路校区",
         constraints=[
             pw.Check("campus_branch in ('四平路校区','嘉定校区','沪西校区','沪北校区')")
@@ -47,18 +49,15 @@ class User(UserMixin, BaseModel):
     dormitory = pw.CharField(verbose_name="所在宿舍楼", max_length=32)
     #理论宿舍楼宇名字这里也应该写个check，保证他们不乱填，但是不熟，摸了
 
-    gender_is_published = pw.BooleanField(verbose_name="是否公开性别", default=True)
+    #gender_is_published = pw.BooleanField(verbose_name="是否公开性别", default=False)
     gender = pw.CharField(verbose_name="性别",
-                          max_length=4,
-                          constraints=[pw.Check("gender in ('男', '女')")])
-    name_is_published = pw.BooleanField(verbose_name="是否公开姓名", default=True)
+                          max_length=4,default='保密',
+                          constraints=[pw.Check("gender in ('男', '女','保密')")])
+    name_is_published = pw.BooleanField(verbose_name="是否公开姓名", default=False)
     name = pw.CharField(verbose_name="真实姓名", max_length=16)
-    major_is_published = pw.BooleanField(verbose_name="是否公开专业", default=True)
+    major_is_published = pw.BooleanField(verbose_name="是否公开专业", default=False)
     major = pw.CharField(verbose_name="专业", max_length=32)
     password_hash = pw.CharField(max_length=128)  #保证安全，只存密码的哈希，不存密码
-
-    def set_password(self, password):
-        self.password_hash = str(generate_password_hash(password))
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)

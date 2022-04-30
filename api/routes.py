@@ -19,15 +19,18 @@ def teardown_request(exc):#exc必须写上
         database.close()
 
 
-@api_blue.route("/delete")
+@api_blue.route("/delete", methods=['DELETE'])
 def delete_api():
     return 'delete'
-@api_blue.route('/put')
+
+@api_blue.route('/put', methods=['PUT'])
 def put_api():
     return 'put!'
-@api_blue.route('/post')
+
+@api_blue.route('/post', methods=['POST'])
 def post_api():
-    return 'put!'
-@api_blue.route('/get')
+    return 'post!'
+
+@api_blue.route('/get', methods=['GET'])
 def get_api():
-    return 'put!'
+    return 'get!'
