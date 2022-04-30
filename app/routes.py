@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
 ###主要是注册登录管理
+from ast import keyword
 import email
 from app import app,database
 from flask import render_template,flash, redirect, url_for, request
@@ -42,9 +43,17 @@ def rootindex():
     return redirect(url_for('index'))  # 重定向
 
 @app.route('/index', methods=['GET', 'POST'])
-# 这样，必须登录后才能访问首页了,会自动跳转至登录页
 def index():
+    if request.method=='POST':
+        search_keyword=request.form.get('search')
+        print(search_keyword)
+        return redirect(url_for('search',keyword=search_keyword))      
     return render_template('index.html')
+
+@app.route('/search/<keyword>', methods=['GET', 'POST'])
+def search(keyword:str):#keyword为你搜索的东西
+    print(keyword)
+    return render_template('search.html',keyword=keyword)
 
 @app.route('/login',methods=['GET','POST'])
 def login():

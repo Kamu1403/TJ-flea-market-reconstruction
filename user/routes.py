@@ -18,12 +18,27 @@ def teardown_request(exc):#exc必须写上
         database.close()
 
 
-@user_blue.route("/")
+@user_blue.route("/", methods=['GET', 'POST'])
 def root_index():
     return redirect(url_for('user.index'))  # 重定向到/user/index
 
-
-@user_blue.route('/index')
+@user_blue.route('/index', methods=['GET', 'POST'])
 def index():
     return render_template("user_index.html",current_user=current_user)#html的名字不能相同
 
+
+#个人中心
+@user_blue.route('/<opt_userid>/space', methods=['GET', 'POST'])
+def space(opt_userid:int):#opt_userid为目标用户ID
+    print(opt_userid)
+    return render_template('user_space.html')
+#历史
+@user_blue.route('/<opt_userid>/history', methods=['GET', 'POST'])
+def history(opt_userid:int):#opt_userid为目标用户ID
+    print(opt_userid)
+    return render_template('user_history.html')
+#收藏
+@user_blue.route('/<opt_userid>/favor', methods=['GET', 'POST'])
+def favor(opt_userid:int):#opt_userid为目标用户ID
+    print(opt_userid)
+    return render_template('user_favor.html')
