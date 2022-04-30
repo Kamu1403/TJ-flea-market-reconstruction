@@ -39,3 +39,4 @@ app.register_blueprint(api_blue,url_prefix='/api')
 app.register_blueprint(order_blue,url_prefix='/order')
 
 from . import routes
+#此处应添加创建管理员账号
