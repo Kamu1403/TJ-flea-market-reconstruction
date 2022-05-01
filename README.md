@@ -20,11 +20,6 @@ conda activate your_env
 pip install -r requirements.txt
 或
 conda env create -f environment.yml
-
-addition from jrj:
-pip install gevent-21.12.0-cp310-cp310-win_amd64.whl
-pip install gevent-websocket
-pip install redis
 ```
 
 ## 使用说明
