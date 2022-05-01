@@ -30,5 +30,7 @@ pip install redis
 ## 使用说明
 
 ```
+启动redis服务 命令行输入redis-server redis.windows.conf
+
 python app.py
 ```
