@@ -41,26 +41,25 @@ class Order(BaseModel):
     op_user_id = pw.ForeignKeyField(User, verbose_name="对方用户的学号")
     contact_id=pw.ForeignKeyField(Contact,verbose_name="收件人信息id")
     payment = pw.DecimalField(verbose_name="总价",max_digits=20, decimal_places=2)
-    #订单状态-1-已关闭 0-已生成 1-未确认 2-已完成
-    state=pw.IntegerField(verbose_name="状态", null=False, default=0,
+    #订单状态-1-已关闭 0-未确认 1-已确认(双方) 2-已完成
+    state=pw.IntegerField(verbose_name="订单状态", null=False, default=0,
                                 constraints=[pw.Check("state >=-1 AND state<=2")])
 
     create_time = pw.DateField(verbose_name="发布时间",
                                 null=False,
                                 default=datetime.utcnow())
-    confirm_time=pw.DateField(verbose_name="确认时间")
-    end_time=pw.DateField(verbose_name="结束时间")
-    cancel_time=pw.DateField(verbose_name="取消时间")
-    close_time =pw.DateField(verbose_name="关闭时间")
+    confirm_time=pw.DateField(verbose_name="双方确认时间")#双方都确认，才填入此项
+    end_time=pw.DateField(verbose_name="完成时间")#正常完成
+    close_time =pw.DateField(verbose_name="关闭时间")#被一方取消
     note = pw.CharField(verbose_name="备注", max_length=1024)
 
 class Order_State_Item(BaseModel):
     """
     订单状态明细类
-    订单状态为已生成0时：有两个变量：买方已确认 卖方已确认。当双方都确认时，订单状态转为3。
-    订单状态处于已生成0时：可以发起取消。取消立即生效。库存恢复。扣除发起方信誉分。订单状态转为已关闭（-1）。
-    订单状态处于已完成2时：有两个变量：买方评价的评价id（foreign key review_id on default null）,卖方评价id。
-    订单状态处于已关闭-1时：有两个变量：取消方（user_id or 管理员(80000000)），详细取消原因（取消方填，可无）
+    订单状态为未确认 0时：有两个变量：买方已确认 卖方已确认。当双方都确认时，订单状态转为3。
+    订单状态处于未确认 0时：可以发起取消。取消立即生效。库存恢复。扣除发起方信誉分。订单状态转为已关闭（-1）。
+    订单状态处于已完成 2时：有两个变量：买方评价的评价id（foreign key review_id on default null）,卖方评价id。
+    订单状态处于已关闭 -1时：有两个变量：取消方（user_id or 管理员(80000000)），详细取消原因（取消方填，可无）
     """
     #id = pw.IntegerField(primary_key=True)  # 主键，不显式定义的话peewee默认定义一个自增的id
     user_id = pw.ForeignKeyField(Order, verbose_name="订单编号")

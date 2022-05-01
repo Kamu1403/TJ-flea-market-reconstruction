@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
+
 from api import api_blue
-from flask import request
 from flask import make_response, request, jsonify
 
 #{ success: boolean, statusCode: int, message: string, data: object }
@@ -43,6 +43,7 @@ def post_api():
         'status':200,
         'message':"good"
     }
+    print(jsonify(resp))
     return make_response(jsonify(resp))
 
 #删
@@ -144,3 +145,18 @@ def get_api():
     }
     """
     return 'get!'
+@api_blue.route('/get/username', methods=['GET'])
+def getusername():
+    resp= {
+        "name":"gzy"
+    }
+    return make_response(jsonify(resp))
+@api_blue.route('/test',methods=['GET'])
+def test():
+    resp={
+        "id": 79,
+        "visitor_id": 7,
+        "goods_id": 4,
+        "visit_time": "1983-10-08"
+    }
+    return make_response(jsonify(resp))

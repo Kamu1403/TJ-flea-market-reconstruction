@@ -38,7 +38,7 @@ class Goods(BaseModel):
 
     description = pw.CharField(verbose_name="详细描述", max_length=1024)
     pic_num = pw.IntegerField(verbose_name="图片数量", null=False, default=0)
-    #pic_path 商品缩略图可默认定为./resource/pic/goods/id/0.jpg 1.jpg
+    #pic_path 商品缩略图可默认存储在 ./item/static/resource/pic/goods/id/0.jpg 1.jpg
 
 
 class Want(BaseModel):
@@ -69,7 +69,7 @@ class Want(BaseModel):
     )
     description = pw.CharField(verbose_name="详细描述", max_length=1024)
     pic_num = pw.IntegerField(verbose_name="图片数量", null=False, default=0)
-    #pic_path 悬赏缩略图可默认定为./resource/pic/want/id/0.jpg 1.jpg
+    #pic_path 悬赏缩略图可默认定为./item/static/resource/pic/want/id/0.jpg 1.jpg
 
 
 class HistoryGoods(BaseModel):
@@ -80,7 +80,7 @@ class HistoryGoods(BaseModel):
     #id = pw.IntegerField(primary_key=True)  # 主键，不显式定义的话peewee默认定义一个自增的id
     visitor_id = pw.ForeignKeyField(User, verbose_name="访问者的学号")
     goods_id = pw.ForeignKeyField(Goods, verbose_name="商品ID")
-    visitor_time = pw.DateField(verbose_name="访问时间", default=datetime.utcnow())
+    visit_time = pw.DateField(verbose_name="访问时间", default=datetime.utcnow())
 
 
 class HistoryWant(BaseModel):
@@ -91,7 +91,7 @@ class HistoryWant(BaseModel):
     #id = pw.IntegerField(primary_key=True)  # 主键，不显式定义的话peewee默认定义一个自增的id
     visitor_id = pw.ForeignKeyField(User, verbose_name="访问者的学号")
     want_id = pw.ForeignKeyField(Want, verbose_name="悬赏ID")
-    visitor_time = pw.DateField(verbose_name="访问时间", default=datetime.utcnow())
+    visit_time = pw.DateField(verbose_name="访问时间", default=datetime.utcnow())
 
 
 class FavorGoods(BaseModel):
@@ -102,7 +102,7 @@ class FavorGoods(BaseModel):
     #id = pw.IntegerField(primary_key=True)  # 主键，不显式定义的话peewee默认定义一个自增的id
     collector_id = pw.ForeignKeyField(User, verbose_name="收藏者的学号")
     goods_id = pw.ForeignKeyField(Goods, verbose_name="商品ID")
-    collector_time = pw.DateField(verbose_name="收藏时间",
+    collect_time = pw.DateField(verbose_name="收藏时间",
                                   default=datetime.utcnow())
 
 
@@ -114,5 +114,5 @@ class FavorWant(BaseModel):
     #id = pw.IntegerField(primary_key=True)  # 主键，不显式定义的话peewee默认定义一个自增的id
     collector_id = pw.ForeignKeyField(User, verbose_name="收藏者的学号")
     want_id = pw.ForeignKeyField(Want, verbose_name="悬赏ID")
-    collector_time = pw.DateField(verbose_name="收藏时间",
+    collect_time = pw.DateField(verbose_name="收藏时间",
                                   default=datetime.utcnow())
