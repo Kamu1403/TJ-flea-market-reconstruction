@@ -8,6 +8,7 @@ from flask import render_template,flash, redirect, url_for, request
 from flask_login import current_user, login_user, logout_user, login_required
 from user.models import User
 from werkzeug.security import generate_password_hash
+from flask_socketio import SocketIO,emit
 
 from flask_login import LoginManager
 login_manager = LoginManager(app)
