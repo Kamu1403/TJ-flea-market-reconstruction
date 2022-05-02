@@ -80,10 +80,7 @@ class Order_Item(BaseModel):
     继承自BaseModel，直接关联db，并且也继承了Model Model有提供增删查改的函数
     """
     #id = pw.IntegerField(primary_key=True)  # 主键，不显式定义的话peewee默认定义一个自增的id
-    user_id = pw.ForeignKeyField(User, verbose_name="订单发起者的学号")
-    op_user_id = pw.ForeignKeyField(User, verbose_name="对方用户的学号")
     order_id=pw.ForeignKeyField(Order,verbose_name="订单id")
-
     quantity=pw.ForeignKeyField(Order,verbose_name="购买数量")#乘以单价再与订单中其他物品相加等于订单中的总价
     
     #与哪张表相关联取决于kind
