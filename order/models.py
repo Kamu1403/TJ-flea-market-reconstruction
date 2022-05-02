@@ -68,10 +68,9 @@ class Order_State_Item(BaseModel):
     op_user_confirm=pw.BooleanField(verbose_name="对方是否确认", null=False,default=False)
     #订单状态处于已完成2时：有两个变量：买方评价的评价id（foreign key review_id on default null）,卖方评价id。
     user_review_id=pw.ForeignKeyField(Review,verbose_name="发起方评价ID")
-    user_review_id=pw.ForeignKeyField(Review,verbose_name="发起方评价ID")
     op_user_review_id=pw.ForeignKeyField(Review,verbose_name="对方评价ID")
 
-    #订单状态处于已关闭-1时：有两个变量：取消方（user_id or 管理员(80000000)），详细取消原因（取消方填，可无）
+    #订单状态处于已关闭-1时：有两个变量：取消方（user_id or 管理员(对应管理员的ID)），详细取消原因（取消方填，可无）
     cancel_user=pw.IntegerField(verbose_name="取消方的ID或管理员id")
     cancel_reason = pw.CharField(verbose_name="取消原因", max_length=1024)
 
