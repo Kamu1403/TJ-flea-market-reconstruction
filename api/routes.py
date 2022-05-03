@@ -59,9 +59,8 @@ def getalluser():
     res={'success': True, 'statusCode': 200, 'message': '','data':{}}
     data_list=[]
     
-    #在APIFOX测试运行时current_user未经认证，故注释下面一行，正式运行时取消注释
-    #if current_user.state==User_state.Admin.value:#如果当前用户是管理员
-    if True:
+    #在APIFOX测试运行时current_user未经认证，需要先在apifox上登录后才current_user才有效
+    if current_user.state==User_state.Admin.value:#如果当前用户是管理员
         users=User.select().where(User.state!=User_state.Admin.value)
         for i in users:
             user_dic=GetUserDict(i)
@@ -81,6 +80,36 @@ def getalluser():
         res['success']=False
 
     return make_response(jsonify(res))
+
+
+#管理员封号
+@api_blue.route('/banuser', methods=['PUT'])
+def put_api():
+    if request.method == 'PUT':
+        res={'success': True, 'statusCode': 200, 'message': '','data':{}}
+        
+        #在APIFOX测试运行时current_user未经认证，需要先在apifox上登录后才current_user才有效
+        if current_user.state==User_state.Admin.value:#如果当前用户是管理员
+            user_id = request.form.get("user_id")
+            try:
+                tep=User.get(User.id==user_id)
+            except:
+                res['message']="未找到对应用户信息"
+                res['statusCode']=404
+                res['success']=False
+            else:
+                res['message']="已将对应用户封号"
+                tep.state=-1
+                tep.save()
+                #query=User.update(state=-1).where(User.id==user_id)
+                #query.execute()
+
+        else:#非管理员
+            res['message']="非管理员无此权限"
+            res['statusCode']=401
+            res['success']=False
+
+        return make_response(jsonify(res))
 
 
 
@@ -152,40 +181,3 @@ def delete_api():
         'message':"good"
     }
     return make_response(jsonify(resp))
-
-#改
-@api_blue.route('/put', methods=['PUT'])
-def put_api():
-    """
-    输入
-    {
-        table_name:name,
-        newdata:[
-            {
-                id:id,
-                name:id,
-                ...
-            },
-            {
-                id:id,
-                name:id,
-                ...
-            },
-            ...
-        ]
-    }
-
-    输出
-    {
-        success:True,
-        status:200,
-        message:"good"
-    }
-    """
-    resp= {
-        'success':True,
-        'status':200,
-        'message':"good"
-    }
-    return make_response(jsonify(resp))
-
