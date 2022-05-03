@@ -6,8 +6,9 @@ import email
 from app import app,database
 from flask import render_template,flash, redirect, url_for, request
 from flask_login import current_user, login_user, logout_user, login_required
-from user.models import User
+from user.models import User#模型
 from werkzeug.security import generate_password_hash
+from user.models import User_state#枚举
 
 from flask_login import LoginManager
 login_manager = LoginManager(app)
@@ -85,6 +86,7 @@ def login():
 
         # 记住登录状态，同时维护current_user
         login_user(user, remember=remember_me)
+        print(current_user.username)
         return redirect(url_for('user.index'))
 
     return render_template('login.html')
@@ -98,14 +100,20 @@ def register():
     if request.method == 'POST':
         user_id=request.form.get('user_id')
         password=request.form.get('password')
-        print(user_id,password)
+        is_admin=False
+        if request.form.get('is_admin')=='on':
+            is_admin=True
+        print(user_id,password,is_admin)
+        state=User_state.Normal.value
+        if is_admin:
+            state=User_state.Admin.value
 
         try:
             user = User.get(User.id == user_id)  # 查，此处还可以添加判断用户是否为管理员
             print('该学号已被注册')
         except:
             print("create user")
-            User.create(id=user_id,username=user_id,password_hash=generate_password_hash(password),email=str(user_id)+"@tongji.edu.cn")
+            User.create(id=user_id,username=user_id,state=state,password_hash=generate_password_hash(password),email=str(user_id)+"@tongji.edu.cn")
 
             return redirect(url_for('login'))
 

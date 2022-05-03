@@ -30,6 +30,16 @@ class Review(BaseModel):
                                 null=False,
                                 default=datetime.utcnow())
     feedback_content = pw.CharField(verbose_name="详细反馈", max_length=1024)
+
+from enum import Enum,unique
+#添加 unique 装饰器
+@unique
+class Order_state(Enum):
+    #订单状态-1-已关闭 0-未确认 1-已确认(双方) 2-已完成
+    Normal = 0
+    Confirm = 1
+    End=2
+    Close=-1
     
 class Order(BaseModel):
     """
@@ -41,9 +51,10 @@ class Order(BaseModel):
     op_user_id = pw.ForeignKeyField(User, verbose_name="对方用户的学号")
     contact_id=pw.ForeignKeyField(Contact,verbose_name="收件人信息id")
     payment = pw.DecimalField(verbose_name="总价",max_digits=20, decimal_places=2)
+
     #订单状态-1-已关闭 0-未确认 1-已确认(双方) 2-已完成
-    state=pw.IntegerField(verbose_name="订单状态", null=False, default=0,
-                                constraints=[pw.Check("state >=-1 AND state<=2")])
+    state=pw.IntegerField(verbose_name="订单状态", null=False, default=Order_state.Normal.value,
+                                constraints=[pw.Check("state >=-1")])
 
     create_time = pw.DateField(verbose_name="发布时间",
                                 null=False,
