@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 
 #导入设置
-from .. import config
+import config
 database_name=config.database_name
 password=config.password
 user=config.user
