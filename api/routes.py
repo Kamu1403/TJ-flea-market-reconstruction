@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
+from operator import methodcaller
 from flask_login import current_user
 from api import api_blue
 from flask import make_response, request, jsonify
@@ -12,10 +13,16 @@ from user.models import User
 from admin.models import Feedback,User_Management
 from order.models import Contact,Review,Order,Order_State_Item,Order_Item
 from item.models import Goods,Want,HistoryGoods,HistoryWant,FavorGoods,FavorWant
-
+import copy
 
 #返回值规范
-#{ success: boolean, statusCode: int, message: string, data: object }
+default_res={ 
+    'success': True,
+    'statusCode': 200,
+    'message': '',
+    'data':{}
+}
+
 '''
 statusCode:
 •	200：操作成功返回。
@@ -55,12 +62,15 @@ def GetUserDict(i)->dict:
 
 #管理员获取所有用户信息
 @api_blue.route('/getalluser',methods=['GET'])
-def getalluser():
-    res={'success': True, 'statusCode': 200, 'message': '','data':{}}
+def get_all_user():
+    res=copy.deepcopy(default_res)
     data_list=[]
-    
-    #在APIFOX测试运行时current_user未经认证，需要先在apifox上登录后才current_user才有效
-    if current_user.state==User_state.Admin.value:#如果当前用户是管理员
+    # 判断当前用户是否验证
+    if not current_user.is_authenticated:
+        res['message']="该用户未通过验证"
+        res['statusCode']=401
+        res['success']=False
+    elif current_user.state==User_state.Admin.value:#如果当前用户是管理员
         users=User.select().where(User.state!=User_state.Admin.value)
         for i in users:
             user_dic=GetUserDict(i)
@@ -73,7 +83,7 @@ def getalluser():
             res['message']="未找到对应用户信息"
             res['statusCode']=404
             res['success']=False
-
+            
     else:#非管理员
         res['message']="非管理员无此权限"
         res['statusCode']=401
@@ -81,15 +91,18 @@ def getalluser():
 
     return make_response(jsonify(res))
 
-
 #管理员封号
 @api_blue.route('/banuser', methods=['PUT'])
-def put_api():
+def ban_user():
     if request.method == 'PUT':
-        res={'success': True, 'statusCode': 200, 'message': '','data':{}}
-        
+        res=copy.deepcopy(default_res)
+        # 判断当前用户是否验证
+        if not current_user.is_authenticated:
+            res['message']="该用户未通过验证"
+            res['statusCode']=401
+            res['success']=False
         #在APIFOX测试运行时current_user未经认证，需要先在apifox上登录后才current_user才有效
-        if current_user.state==User_state.Admin.value:#如果当前用户是管理员
+        elif current_user.state==User_state.Admin.value:#如果当前用户是管理员
             user_id = request.form.get("user_id")
             try:
                 tep=User.get(User.id==user_id)
@@ -103,10 +116,34 @@ def put_api():
                 tep.save()
                 #query=User.update(state=-1).where(User.id==user_id)
                 #query.execute()
-
         else:#非管理员
             res['message']="非管理员无此权限"
             res['statusCode']=401
             res['success']=False
 
         return make_response(jsonify(res))
+
+@api_blue.route('/getuserinfo',methods=['POST'])
+def get_user_info():
+    if request.method == 'POST':
+        res=copy.deepcopy(default_res)
+        
+        # 判断当前用户是否验证
+        if not current_user.is_authenticated:
+            res['message']="该用户未通过验证"
+            res['statusCode']=401
+            res['success']=False
+        else:
+            user_id = request.form.get("user_id")
+            try:
+                tep=User.get(User.id==user_id)
+            except:
+                res['message']="未找到对应用户信息"
+                res['statusCode']=404
+                res['success']=False
+            else:
+                res['data']=GetUserDict(tep)
+                res['message']="获取用户数据成功"
+
+        return make_response(jsonify(res))
+

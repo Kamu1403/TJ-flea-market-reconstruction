@@ -73,16 +73,16 @@ class Order_State_Item(BaseModel):
     订单状态处于已关闭 -1时：有两个变量：取消方（user_id or 管理员(80000000)），详细取消原因（取消方填，可无）
     """
     #id = pw.IntegerField(primary_key=True)  # 主键，不显式定义的话peewee默认定义一个自增的id
-    user_id = pw.ForeignKeyField(Order, verbose_name="订单编号")
+    order_id = pw.ForeignKeyField(Order, verbose_name="订单编号")
     #订单状态为已生成0时：有两个变量：买方已确认 卖方已确认。当双方都确认时，订单状态转为3。
     user_confirm=pw.BooleanField(verbose_name="发起方是否确认", null=False,default=True)
     op_user_confirm=pw.BooleanField(verbose_name="对方是否确认", null=False,default=False)
     #订单状态处于已完成2时：有两个变量：买方评价的评价id（foreign key review_id on default null）,卖方评价id。
-    user_review_id=pw.ForeignKeyField(Review,verbose_name="发起方评价ID")
-    op_user_review_id=pw.ForeignKeyField(Review,verbose_name="对方评价ID")
+    user_review_id=pw.ForeignKeyField(Review,verbose_name="发起方评价ID",null=True)
+    op_user_review_id=pw.ForeignKeyField(Review,verbose_name="对方评价ID",null=True)
 
     #订单状态处于已关闭-1时：有两个变量：取消方（user_id or 管理员(对应管理员的ID)），详细取消原因（取消方填，可无）
-    cancel_user=pw.IntegerField(verbose_name="取消方的ID或管理员id")
+    cancel_user=pw.ForeignKeyField(User,verbose_name="取消方的ID或管理员id",null=True)
     cancel_reason = pw.CharField(verbose_name="取消原因", max_length=1024)
 
 class Order_Item(BaseModel):
@@ -92,9 +92,9 @@ class Order_Item(BaseModel):
     """
     #id = pw.IntegerField(primary_key=True)  # 主键，不显式定义的话peewee默认定义一个自增的id
     order_id=pw.ForeignKeyField(Order,verbose_name="订单id")
-    quantity=pw.ForeignKeyField(Order,verbose_name="购买数量")#乘以单价再与订单中其他物品相加等于订单中的总价
+    quantity=pw.IntegerField(verbose_name="购买数量")#乘以单价再与订单中其他物品相加等于订单中的总价
     
     #与哪张表相关联取决于kind
     kind=pw.IntegerField(verbose_name="类型：悬赏还是商品",null=False,default=0)#0为商品，1为悬赏
-    goods_id=pw.ForeignKeyField(Goods,verbose_name="商品id")
-    want_id=pw.ForeignKeyField(Want,verbose_name="悬赏id")
+    goods_id=pw.ForeignKeyField(Goods,verbose_name="商品id",null=True)
+    want_id=pw.ForeignKeyField(Want,verbose_name="悬赏id",null=True)
