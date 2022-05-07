@@ -38,16 +38,16 @@ def drop_tables():
     if Feedback.table_exists:
         Feedback.drop_table()
 
+    if Recent_Chat_List.table_exists:
+        Recent_Chat_List.drop_table()
+    if Message.table_exists:
+        Message.drop_table()
+    if Room.table_exists:
+        Room.drop_table()
+    
     if User.table_exists:
         User.drop_table()
         
-    if Room.table_exists:
-        Room.drop_table()
-    if Recent_Chat_List.table_exists:
-        Room.drop_table()
-    if Message.table_exists:
-        Message.drop_table()
-
 def create_tables():
     User.create_table()
 

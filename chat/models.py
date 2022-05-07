@@ -45,7 +45,7 @@ class Message(BaseModel):
 
     #消息类型 0-文本类型 1-图片类型 2-系统通知类型
     msg_type = pw.IntegerField(verbose_name="消息类型", null=False, default=Msg_type.Text.value,
-                                constraints=[pw.Check("state >=0")])
+                                constraints=[pw.Check("msg_type >=0")])
     
     #消息内容，无论何种类型，内容都只以string形式储存
     msg = pw.CharField(verbose_name="消息内容", max_length=1024)
