@@ -10,4 +10,3 @@ user_blue = Blueprint('user', __name__,template_folder="templates",static_folder
 from . import models
 from . import routes
 
-models.User.create_table()

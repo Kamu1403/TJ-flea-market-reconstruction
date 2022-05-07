@@ -22,7 +22,7 @@ class Goods(BaseModel):
                                 null=False,
                                 default=datetime.utcnow())
     price = pw.DecimalField(verbose_name="单价",max_digits=20, decimal_places=2, index=True, null=False)
-
+    tag=pw.CharField(verbose_name="Tag,用于分类",max_length=128,index=True)
     #   普通用户仅能看见上架数量
     #   管理员可看见上架和锁定数量
     shelved_num = pw.IntegerField(
@@ -54,6 +54,7 @@ class Want(BaseModel):
     publisher_id = pw.ForeignKeyField(User, verbose_name="发布者的学号")
     publish_time = pw.DateField(verbose_name="发布时间", default=datetime.utcnow())
     price = pw.DecimalField(verbose_name="单价",max_digits=20, decimal_places=2, index=True, null=False)
+    tag=pw.CharField(verbose_name="Tag,用于分类",max_length=128,index=True)
 
     #   普通用户仅能看见上架数量
     #   管理员可看见上架和锁定数量
