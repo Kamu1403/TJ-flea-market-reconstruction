@@ -1,5 +1,43 @@
 <html>
-  <body>
-    <p>HTML:Hello world!</p>
-  </body>
+
+<body>
+  <p>HTML:Hello world!</p>
+  <form role="form" class="text-center" method="POST">
+    <div>
+      <table>
+        <tr>
+          <td>
+            名称
+          </td>
+          <td><input type="text" name="name"></td>
+        </tr>
+        <tr>
+          <td>
+            价格
+          </td>
+          <td>
+            <input type="text" name="price">
+          </td>
+        </tr>
+        <tr>
+          <td>数量</td>
+          <td>
+            <input type="text" name="shelved_num">
+          </td>
+        </tr>
+        <tr>
+          <td>详细描述</td>
+          <td>
+            <input type="text" name="description">
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <button type="submit">确认发布</button>
+      <button type="reset">取消发布</button>
+    </div>
+  </form>
+</body>
+
 </html>
