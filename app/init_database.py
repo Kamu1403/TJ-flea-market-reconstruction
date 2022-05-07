@@ -60,11 +60,12 @@ def create_tables():
     Order_State_Item.create_table()
     Order_Item.create_table()
 
-def fake_data():
+def fake_data():#填一些假数据进去
     pass
 
 
-def init_database():
-    drop_tables()
-    create_tables()
-    fake_data()
+def init_database(drop_database:bool):
+    if drop_database==True:
+        drop_tables()
+        create_tables()
+        fake_data()

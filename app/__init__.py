@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 
 #导入设置
-from . import config
+from .. import config
 database_name=config.database_name
 password=config.password
 user=config.user
@@ -57,7 +57,7 @@ app.register_blueprint(order_blue,url_prefix='/order')
 
 #初始化数据库
 from . import init_database
-init_database.init_database()
+init_database.init_database(config.drop_database)
 
 #app目录的路由
 from . import routes
