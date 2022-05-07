@@ -5,11 +5,12 @@
         <script type="text/javascript" src="//cdn.socket.io/4.4.1/socket.io.min.js"></script>
         <script type="text/javascript" charset="utf-8">
             var socket;
+            var room=eval('{{ room|safe }}');
             $(document).ready(function(){
                 socket = io.connect('http://' + document.domain + ':' + location.port + '/chat');
                 socket.on('connect', function() {
                     let cur_time =new Date(new Date().getTime()).toLocaleString();
-                    socket.emit('joined', {time:cur_time});
+                    socket.emit('joined', {time:cur_time,room:room});
                 });
                 socket.on('status', function(data) {
                     $('#chat').val($('#chat').val() + '<' +data.time+">\n"+ data.msg +'\n');
@@ -25,7 +26,7 @@
                     if (code == 13) {
                         text = $('#text').val();
                         $('#text').val('');
-                        socket.emit('text', {msg: text,time:cur_time,type:"text"});
+                        socket.emit('text', {msg: text,time:cur_time,room:room,type:"text"});
                     }
                 });
                 $('#image').change(function(e)
@@ -43,9 +44,8 @@
             function leave_room() {
                 socket.emit('left', {}, function() {
                     socket.disconnect();
-
-                    // go back to the login page
-                    window.location.href = "{{ url_for('main.index') }}";
+                    // go back to the index page
+                    window.location.href = "{{ url_for('user.index') }}";
                 });
             }
         </script>

@@ -51,11 +51,13 @@ from user import user_blue
 from admin import admin_blue
 from api import api_blue
 from order import order_blue
+from chat import chat_blue
 app.register_blueprint(item_blue, url_prefix='/item')
 app.register_blueprint(user_blue, url_prefix='/user')
 app.register_blueprint(admin_blue,url_prefix='/admin')
 app.register_blueprint(api_blue,url_prefix='/api')
 app.register_blueprint(order_blue,url_prefix='/order')
+app.register_blueprint(chat_blue,url_prefix='/chat')
 
 
 #初始化数据库

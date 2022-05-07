@@ -6,7 +6,7 @@ from user.models import User
 from admin.models import Feedback,User_Management
 from order.models import Contact,Review,Order,Order_State_Item,Order_Item
 from item.models import Goods,Want,HistoryGoods,HistoryWant,FavorGoods,FavorWant
-
+from chat.models import Room,Message,Recent_Chat_List
 
 def drop_tables():
     if Order_Item.table_exists:
@@ -40,6 +40,13 @@ def drop_tables():
 
     if User.table_exists:
         User.drop_table()
+        
+    if Room.table_exists:
+        Room.drop_table()
+    if Recent_Chat_List.table_exists:
+        Room.drop_table()
+    if Message.table_exists:
+        Message.drop_table()
 
 def create_tables():
     User.create_table()
@@ -60,6 +67,10 @@ def create_tables():
     Order_State_Item.create_table()
     Order_Item.create_table()
 
+    Room.create_table()
+    Room.create_table()
+    Message.create_table()
+    
 def fake_data():#填一些假数据进去
     pass
 

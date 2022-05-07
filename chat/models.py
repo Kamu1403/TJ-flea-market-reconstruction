@@ -6,10 +6,10 @@ import peewee as pw
 from datetime import datetime
 from user.models import User
 from enum import Enum,unique
-#Ìí¼Ó unique ×°ÊÎÆ÷
+#æ·»åŠ  unique è£…é¥°å™¨
 @unique
 class Msg_type(Enum):
-    #ÏûÏ¢ÀàĞÍ 0-ÎÄ±¾ÀàĞÍ 1-Í¼Æ¬ÀàĞÍ 2-ÏµÍ³Í¨ÖªÀàĞÍ
+    #æ¶ˆæ¯ç±»å‹ 0-æ–‡æœ¬ç±»å‹ 1-å›¾ç‰‡ç±»å‹ 2-ç³»ç»Ÿé€šçŸ¥ç±»å‹
     Text = 0
     Image = 1
     Notice=2
@@ -18,50 +18,50 @@ class Msg_type(Enum):
 
 class Room(BaseModel):
     """
-    ÁÄÌìÊÒÀà
-    ¼Ì³Ğ×ÔBaseModel£¬Ö±½Ó¹ØÁªdb£¬²¢ÇÒÒ²¼Ì³ĞÁËModel ModelÓĞÌá¹©ÔöÉ¾²é¸ÄµÄº¯Êı
+    èŠå¤©å®¤ç±»
+    ç»§æ‰¿è‡ªBaseModelï¼Œç›´æ¥å…³è”dbï¼Œå¹¶ä¸”ä¹Ÿç»§æ‰¿äº†Model Modelæœ‰æä¾›å¢åˆ æŸ¥æ”¹çš„å‡½æ•°
     """
-    room_id = pw.IntegerField(primary_key=True)  # Ö÷¼ü£¬²»ÏÔÊ½¶¨ÒåµÄ»°peeweeÄ¬ÈÏ¶¨ÒåÒ»¸ö×ÔÔöµÄid
-    receiver_id = pw.ForeignKeyField(User, verbose_name="½ÓÊÕÕßµÄÑ§ºÅ")
-    sender_id = pw.ForeignKeyField(User, verbose_name="·¢ËÍ·½µÄÑ§ºÅ")
-    #¸Ã·¿¼ä¹éÊôÓÚ·¢ËÍÕß£¬ÊÇ¸Ã·¢ËÍÕßÖÚ¶à·¿¼äÖĞµÄÒ»¸ö(room_id¿ÉÓĞ¿ÉÎŞ)
+    room_id = pw.IntegerField(primary_key=True)  # ä¸»é”®ï¼Œä¸æ˜¾å¼å®šä¹‰çš„è¯peeweeé»˜è®¤å®šä¹‰ä¸€ä¸ªè‡ªå¢çš„id
+    receiver_id = pw.ForeignKeyField(User, verbose_name="æ¥æ”¶è€…çš„å­¦å·")
+    sender_id = pw.ForeignKeyField(User, verbose_name="å‘é€æ–¹çš„å­¦å·")
+    #è¯¥æˆ¿é—´å½’å±äºå‘é€è€…ï¼Œæ˜¯è¯¥å‘é€è€…ä¼—å¤šæˆ¿é—´ä¸­çš„ä¸€ä¸ª(room_idå¯æœ‰å¯æ— )
     
 
 
 
 class Message(BaseModel):
     """
-    ÁÄÌì¼ÇÂ¼Àà
-    ¼ÇÂ¼Ä³¸ö·¿¼äÄÚ·¢ÉúµÄËùÓĞÁÄÌì(·¢ËÍºÍ½ÓÊÕ)£¬Óë·¿¼äÒ»Ñù£¬¹éÊôÓÚ·¢ËÍÕß
-    ¼Ì³Ğ×ÔBaseModel£¬Ö±½Ó¹ØÁªdb£¬²¢ÇÒÒ²¼Ì³ĞÁËModel ModelÓĞÌá¹©ÔöÉ¾²é¸ÄµÄº¯Êı
+    èŠå¤©è®°å½•ç±»
+    è®°å½•æŸä¸ªæˆ¿é—´å†…å‘ç”Ÿçš„æ‰€æœ‰èŠå¤©(å‘é€å’Œæ¥æ”¶)ï¼Œä¸æˆ¿é—´ä¸€æ ·ï¼Œå½’å±äºå‘é€è€…
+    ç»§æ‰¿è‡ªBaseModelï¼Œç›´æ¥å…³è”dbï¼Œå¹¶ä¸”ä¹Ÿç»§æ‰¿äº†Model Modelæœ‰æä¾›å¢åˆ æŸ¥æ”¹çš„å‡½æ•°
     """
-    msg_id = pw.IntegerField(primary_key=True,verbose_name="ÏûÏ¢±àºÅ")
-    msg_time = pw.DateField(verbose_name="·¢ËÍÊ±¼ä",
+    msg_id = pw.IntegerField(primary_key=True,verbose_name="æ¶ˆæ¯ç¼–å·")
+    msg_time = pw.DateField(verbose_name="å‘é€æ—¶é—´",
                                 null=False,
                                 default=datetime.utcnow())
     
-    room_id = pw.ForeignKeyField(Room,verbose_name="·¿¼äºÅ")  
-    sender_id = pw.ForeignKeyField(User, verbose_name="·¢ËÍ·½µÄÑ§ºÅ")
+    room_id = pw.ForeignKeyField(Room,verbose_name="æˆ¿é—´å·")  
+    sender_id = pw.ForeignKeyField(User, verbose_name="å‘é€æ–¹çš„å­¦å·")
 
-    #ÏûÏ¢ÀàĞÍ 0-ÎÄ±¾ÀàĞÍ 1-Í¼Æ¬ÀàĞÍ 2-ÏµÍ³Í¨ÖªÀàĞÍ
-    msg_type = pw.IntegerField(verbose="ÏûÏ¢ÀàĞÍ", null=False, default=Msg_type.Text.value,
+    #æ¶ˆæ¯ç±»å‹ 0-æ–‡æœ¬ç±»å‹ 1-å›¾ç‰‡ç±»å‹ 2-ç³»ç»Ÿé€šçŸ¥ç±»å‹
+    msg_type = pw.IntegerField(verbose_name="æ¶ˆæ¯ç±»å‹", null=False, default=Msg_type.Text.value,
                                 constraints=[pw.Check("state >=0")])
     
-    #ÏûÏ¢ÄÚÈİ£¬ÎŞÂÛºÎÖÖÀàĞÍ£¬ÄÚÈİ¶¼Ö»ÒÔstringĞÎÊ½´¢´æ
-    msg = pw.CharField(verbose_name="ÏûÏ¢ÄÚÈİ", max_length=1024)
+    #æ¶ˆæ¯å†…å®¹ï¼Œæ— è®ºä½•ç§ç±»å‹ï¼Œå†…å®¹éƒ½åªä»¥stringå½¢å¼å‚¨å­˜
+    msg = pw.CharField(verbose_name="æ¶ˆæ¯å†…å®¹", max_length=1024)
     
-    #±ê¼ÇÊÇ·ñ¿É¼û£¬1¿É¼û0²»¿É¼û£¬Ä¬ÈÏ1 
-    visible = pw.IntegerField(verbose_name="ÊÇ·ñÏÔÊ¾", null=False, default=1)
+    #æ ‡è®°æ˜¯å¦å¯è§ï¼Œ1å¯è§0ä¸å¯è§ï¼Œé»˜è®¤1 
+    visible = pw.IntegerField(verbose_name="æ˜¯å¦æ˜¾ç¤º", null=False, default=1)
 
 
 class Recent_Chat_List(BaseModel):
     """
-    ½üÆÚÏûÏ¢Àà
-    ¼Ì³Ğ×ÔBaseModel£¬Ö±½Ó¹ØÁªdb£¬²¢ÇÒÒ²¼Ì³ĞÁËModel ModelÓĞÌá¹©ÔöÉ¾²é¸ÄµÄº¯Êı
+    è¿‘æœŸæ¶ˆæ¯ç±»
+    ç»§æ‰¿è‡ªBaseModelï¼Œç›´æ¥å…³è”dbï¼Œå¹¶ä¸”ä¹Ÿç»§æ‰¿äº†Model Modelæœ‰æä¾›å¢åˆ æŸ¥æ”¹çš„å‡½æ•°
     """
-    receiver_id = pw.ForeignKeyField(User,primary_key=True, verbose_name="½ÓÊÕÕßµÄÑ§ºÅ")
-    #½«½ÓÊÕÕßÊÓ×÷Ö÷¼ü
+    receiver_id = pw.ForeignKeyField(User,primary_key=True, verbose_name="æ¥æ”¶è€…çš„å­¦å·")
+    #å°†æ¥æ”¶è€…è§†ä½œä¸»é”®
     
-    last_time = pw.DateField(verbose_name="×îºó·ÃÎÊÊ±¼ä")
+    last_time = pw.DateField(verbose_name="æœ€åè®¿é—®æ—¶é—´")
     
-    unread = pw.IntegerField(verbose_name="Î´¶ÁÌõÊı", null=False, default=0)
+    unread = pw.IntegerField(verbose_name="æœªè¯»æ¡æ•°", null=False, default=0)
