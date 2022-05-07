@@ -1,146 +1,149 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
+from operator import methodcaller
+from flask_login import current_user
 from api import api_blue
-from flask import request
 from flask import make_response, request, jsonify
+#enum
+from user.models import User_state
+from admin.models import Feedback_kind,Feedback_state
+from order.models import Order_state
+#model
+from user.models import User
+from admin.models import Feedback,User_Management
+from order.models import Contact,Review,Order,Order_State_Item,Order_Item
+from item.models import Goods,Want,HistoryGoods,HistoryWant,FavorGoods,FavorWant
+import copy
 
-#{ success: boolean, statusCode: int, message: string, data: object }
+#返回值规范
+default_res={ 
+    'success': True,
+    'statusCode': 200,
+    'message': '',
+    'data':{}
+}
 
-#增
-@api_blue.route('/post', methods=['POST'])
-def post_api():
-    """
-    输入
-    {
-        table_name:name,
-        [
-            {
-                id:id,
-                name:id,
-                ...
-            },
-            {
-                id:id,
-                name:id,
-                ...
-            },
-            ...
-        ]
-    }
+'''
+statusCode:
+•	200：操作成功返回。
+•	201：表示创建成功，POST 添加数据成功后必须返回此状态码。
+•	400：请求格式不对。
+•	401：未授权。（User/Admin）
+•	404：请求的资源未找到。
+•	500：内部程序错误。
 
-    输出
-    {
-        success:True,
-        status:200,
-        message:"good"
-    }
-    """
-    #if request.method == 'POST':
-    #    table_name = request.form.get("table_name")
+其他详见接口文档
+'''
 
-    resp= {
-        'success':True,
-        'status':200,
-        'message':"good"
-    }
-    return make_response(jsonify(resp))
+def GetUserDict(i)->dict:
+    user={}
+    user['id']=i.id
+    user['username']=i.username
+    user['email']=i.email
+    user['state']=i.state
+    user['score']=i.score
+    user['telephone']=i.telephone
+    user['wechat']=i.wechat
+    user['qq_number']=i.qq_number
+    user['campus_branch']=i.campus_branch
+    user['dormitory']=i.dormitory
+    user['gender']=i.gender
+    user['name_is_published']=i.name_is_published
+    if i.name_is_published==True:
+        user['name']=i.name
+    else:
+        user['name']='保密'
+    user['major_is_published']=i.major_is_published
+    if i.major_is_published==True:
+        user['major']=i.major
+    else:
+        user['major']='保密'
+    return user
 
-#删
-@api_blue.route("/delete", methods=['DELETE'])
-def delete_api():
-    """
-    输入
-    {
-        table_name:name,
-        requirment:{
-                id:id,
-                name:name,
-                ...
-            },
+#管理员获取所有用户信息
+@api_blue.route('/getalluser',methods=['GET'])
+def get_all_user():
+    res=copy.deepcopy(default_res)
+    data_list=[]
+    # 判断当前用户是否验证
+    if not current_user.is_authenticated:
+        res['message']="该用户未通过验证"
+        res['statusCode']=401
+        res['success']=False
+    elif current_user.state==User_state.Admin.value:#如果当前用户是管理员
+        users=User.select().where(User.state!=User_state.Admin.value)
+        for i in users:
+            user_dic=GetUserDict(i)
+            data_list.append(user_dic)
+        res['data']=data_list
 
-    }
+        if len(data_list)>0:
+            res['message']="所有用户信息获取成功"
+        else:
+            res['message']="未找到对应用户信息"
+            res['statusCode']=404
+            res['success']=False
+            
+    else:#非管理员
+        res['message']="非管理员无此权限"
+        res['statusCode']=401
+        res['success']=False
 
-    输出
-    {
-        success:True,
-        status:200,
-        message:"good"
-    }
-    """
-    resp= {
-        'success':True,
-        'status':200,
-        'message':"good"
-    }
-    return make_response(jsonify(resp))
+    return make_response(jsonify(res))
 
-#改
-@api_blue.route('/put', methods=['PUT'])
-def put_api():
-    """
-    输入
-    {
-        table_name:name,
-        newdata:[
-            {
-                id:id,
-                name:id,
-                ...
-            },
-            {
-                id:id,
-                name:id,
-                ...
-            },
-            ...
-        ]
-    }
+#管理员封号
+@api_blue.route('/banuser', methods=['PUT'])
+def ban_user():
+    if request.method == 'PUT':
+        res=copy.deepcopy(default_res)
+        # 判断当前用户是否验证
+        if not current_user.is_authenticated:
+            res['message']="该用户未通过验证"
+            res['statusCode']=401
+            res['success']=False
+        #在APIFOX测试运行时current_user未经认证，需要先在apifox上登录后才current_user才有效
+        elif current_user.state==User_state.Admin.value:#如果当前用户是管理员
+            user_id = request.form.get("user_id")
+            try:
+                tep=User.get(User.id==user_id)
+            except:
+                res['message']="未找到对应用户信息"
+                res['statusCode']=404
+                res['success']=False
+            else:
+                res['message']="已将对应用户封号"
+                tep.state=-1
+                tep.save()
+                #query=User.update(state=-1).where(User.id==user_id)
+                #query.execute()
+        else:#非管理员
+            res['message']="非管理员无此权限"
+            res['statusCode']=401
+            res['success']=False
 
-    输出
-    {
-        success:True,
-        status:200,
-        message:"good"
-    }
-    """
-    resp= {
-        'success':True,
-        'status':200,
-        'message':"good"
-    }
-    return make_response(jsonify(resp))
+        return make_response(jsonify(res))
 
-#查
-@api_blue.route('/get', methods=['GET'])
-def get_api():
-    """
-    输入
-    {
-        table_name:name,
-        requirment:{
-                id:id,
-                name:id,
-                ...
-            },
-        target:email
-    }
+@api_blue.route('/getuserinfo',methods=['POST'])
+def get_user_info():
+    if request.method == 'POST':
+        res=copy.deepcopy(default_res)
+        
+        # 判断当前用户是否验证
+        if not current_user.is_authenticated:
+            res['message']="该用户未通过验证"
+            res['statusCode']=401
+            res['success']=False
+        else:
+            user_id = request.form.get("user_id")
+            try:
+                tep=User.get(User.id==user_id)
+            except:
+                res['message']="未找到对应用户信息"
+                res['statusCode']=404
+                res['success']=False
+            else:
+                res['data']=GetUserDict(tep)
+                res['message']="获取用户数据成功"
 
-    输出
-    {
-        success:True,
-        status:200,
-        message:"good",
-        data:[
-            {
-                email:email,
-                ...
-            },
-            {
-                email:email,
-                ...
-            },
-            ...
-        ]
-    }
-    """
-    return 'get!'
+        return make_response(jsonify(res))
+

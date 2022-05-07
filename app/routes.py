@@ -6,9 +6,13 @@ import email
 from app import app,database
 from flask import render_template,flash, redirect, url_for, request
 from flask_login import current_user, login_user, logout_user, login_required
-from user.models import User
+from user.models import User#模型
 from werkzeug.security import generate_password_hash
+
 from flask_socketio import SocketIO,emit
+
+from user.models import User_state#枚举
+
 
 from flask_login import LoginManager
 login_manager = LoginManager(app)
@@ -47,13 +51,11 @@ def rootindex():
 def index():
     if request.method=='POST':
         search_keyword=request.form.get('search')
-        print(search_keyword)
         return redirect(url_for('search',keyword=search_keyword))      
     return render_template('index.html')
 
 @app.route('/search/<keyword>', methods=['GET', 'POST'])
 def search(keyword:str):#keyword为你搜索的东西
-    print(keyword)
     return render_template('search.html',keyword=keyword)
 
 @app.route('/login',methods=['GET','POST'])
@@ -68,25 +70,29 @@ def login():
         remember_me=False
         if request.form.get('remember_me')=='on':
             remember_me=True
-        print(user_id,password,remember_me)
 
         try:
             user = User.get(User.id == user_id)  # 查，此处还可以添加判断用户是否时管理员        
         except:
-            print('无效的学号,请检查输入或注册')
+            flash('无效的学号,请检查输入或注册')
             # 然后重定向到登录页面
             return redirect(url_for('login'))
-            
-        # 查到了，判断密码
-        if not user.check_password(password):
-            # 如果用户不存在或者密码不正确就会闪现这条信息
-            print('密码错误')
-            # 然后重定向到登录页面
-            return redirect(url_for('login'))
+        else:
+            # 查到了，判断密码
+            if not user.check_password(password):
+                # 如果用户不存在或者密码不正确就会闪现这条信息
+                flash('密码错误')
+                # 然后重定向到登录页面
+                return redirect(url_for('login'))
+            if user.state==-1:
+                #被封号了
+                flash("您已被封号")
+                # 然后重定向到登录页面
+                return redirect(url_for('login')) 
 
-        # 记住登录状态，同时维护current_user
-        login_user(user, remember=remember_me)
-        return redirect(url_for('user.index'))
+            # 记住登录状态，同时维护current_user
+            login_user(user, remember=remember_me)
+            return redirect(url_for('user.index'))
 
     return render_template('login.html')
 
@@ -99,15 +105,20 @@ def register():
     if request.method == 'POST':
         user_id=request.form.get('user_id')
         password=request.form.get('password')
-        print(user_id,password)
+        is_admin=False
+        if request.form.get('is_admin')=='on':
+            is_admin=True
+        state=User_state.Normal.value
+        if is_admin:
+            state=User_state.Admin.value
 
         try:
             user = User.get(User.id == user_id)  # 查，此处还可以添加判断用户是否为管理员
-            print('该学号已被注册')
+            flash('该学号已被注册')
         except:
-            print("create user")
-            User.create(id=user_id,username=user_id,password_hash=generate_password_hash(password),email=str(user_id)+"@tongji.edu.cn")
-
+            User.create(id=user_id,username=user_id,state=state,
+                        password_hash=generate_password_hash(password),
+                        email=str(user_id)+"@tongji.edu.cn")
             return redirect(url_for('login'))
 
     return render_template('register.html')

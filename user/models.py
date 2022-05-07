@@ -7,6 +7,14 @@ from werkzeug.security import check_password_hash
 from hashlib import md5
 from flask_login import UserMixin
 
+from enum import Enum,unique
+#添加 unique 装饰器
+@unique
+class User_state(Enum):
+    #用户状态：0为普通用户，-1为封号，1为管理员
+    Normal = 0
+    Admin = 1
+    Under_ban=-1
 
 class User(UserMixin, BaseModel):
     """
@@ -26,17 +34,18 @@ class User(UserMixin, BaseModel):
                          index=True,
                          null=False,
                          unique=True)
-    score = pw.IntegerField(verbose_name="信誉分", default=100)#信誉分小于零可封号
-    #0为普通用户，-1为封号，1为管理员
-    state = pw.IntegerField(verbose_name="状态", null=False, default=0,
+
+    #用户状态：0为普通用户，-1为封号，1为管理员
+    state = pw.IntegerField(verbose_name="状态", null=False, default=User_state.Normal.value,
                                 constraints=[pw.Check("state >=-1")])
+    score = pw.IntegerField(verbose_name="信誉分", default=100)#信誉分小于零可封号
     
 
     #应甲方要求，为方便留学生使用
     #中国用户用+86 1xx xxxx xxxx存 其他国家用其他的前缀
-    telephone = pw.CharField(verbose_name="电话号码", max_length=32, unique=True)
-    wechat = pw.CharField(verbose_name="微信号", max_length=128, unique=True)
-    qq_number = pw.IntegerField(verbose_name="QQ号", unique=True)
+    telephone = pw.CharField(verbose_name="电话号码", max_length=32)
+    wechat = pw.CharField(verbose_name="微信号", max_length=128)
+    qq_number = pw.IntegerField(verbose_name="QQ号")
 
     campus_branch = pw.CharField(
         verbose_name="所在校区",
@@ -47,16 +56,16 @@ class User(UserMixin, BaseModel):
             pw.Check("campus_branch in ('四平路校区','嘉定校区','沪西校区','沪北校区')")
         ])
     dormitory = pw.CharField(verbose_name="所在宿舍楼", max_length=32)
-    #理论宿舍楼宇名字这里也应该写个check，保证他们不乱填，但是不熟，摸了
 
-    #gender_is_published = pw.BooleanField(verbose_name="是否公开性别", default=False)
     gender = pw.CharField(verbose_name="性别",
                           max_length=4,default='保密',
                           constraints=[pw.Check("gender in ('男', '女','保密')")])
+
     name_is_published = pw.BooleanField(verbose_name="是否公开姓名", default=False)
     name = pw.CharField(verbose_name="真实姓名", max_length=16)
     major_is_published = pw.BooleanField(verbose_name="是否公开专业", default=False)
     major = pw.CharField(verbose_name="专业", max_length=32)
+
     password_hash = pw.CharField(max_length=128)  #保证安全，只存密码的哈希，不存密码
 
     def check_password(self, password):

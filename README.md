@@ -15,8 +15,8 @@ python版本3.10.0
 安装方法：
 
 ```
-conda create -n your_env python==3.10.0
-conda activate your_env
+conda create -n tj_market python==3.10.0
+conda activate tj_market
 pip install -r requirements.txt
 或
 conda env create -f environment.yml
@@ -25,7 +25,6 @@ conda env create -f environment.yml
 ## 使用说明
 
 ```
-启动redis服务 命令行输入redis-server redis.windows.conf
 
-python app.py
-```
+python main.py
+

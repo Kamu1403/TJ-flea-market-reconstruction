@@ -8,8 +8,3 @@ from flask import Blueprint
 order_blue = Blueprint('order', __name__,static_folder="order")
 from . import models
 from . import routes
-models.Contact.create_table()
-models.Review.create_table()
-models.Order.create_table()
-models.Order_State_Item.create_table()
-models.Order_Item.create_table()
