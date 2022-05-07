@@ -61,10 +61,10 @@ def create_tables():
     Order_Item.create_table()
 
 def fake_data():
-    
+    pass
 
 
 def init_database():
     drop_tables()
     create_tables()
-
+    fake_data()
