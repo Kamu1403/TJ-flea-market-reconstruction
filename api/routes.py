@@ -35,6 +35,37 @@ statusCode:
 其他详见接口文档
 '''
 
+@api_blue.route('',method=['POST'])
+def login_using_password():
+    res=copy.deepcopy(default_res)
+    if request.method == 'POST':
+        user_id=request.form.get('user_id')
+        password=request.form.get('password')
+        remember_me=True
+        try:
+            user = User.get(User.id == user_id)  # 查，此处还可以添加判断用户是否时管理员        
+        except:
+            flash('无效的学号,请检查输入或注册')
+            # 然后重定向到登录页面
+            return redirect(url_for('login'))
+        else:
+            # 查到了，判断密码
+            if not user.check_password(password):
+                # 如果用户不存在或者密码不正确就会闪现这条信息
+                flash('密码错误')
+                # 然后重定向到登录页面
+                return redirect(url_for('login'))
+            if user.state==-1:
+                #被封号了
+                flash("您已被封号")
+                # 然后重定向到登录页面
+                return redirect(url_for('login')) 
+
+            # 记住登录状态，同时维护current_user
+            login_user(user, remember=remember_me)
+            return redirect(url_for('user.index'))
+
+
 def GetUserDict(i)->dict:
     user={}
     user['id']=i.id
@@ -144,6 +175,27 @@ def get_user_info():
             else:
                 res['data']=GetUserDict(tep)
                 res['message']="获取用户数据成功"
-
         return make_response(jsonify(res))
 
+@api_blue.route('/getlatestorder',methods=['POST'])
+def get_user_info():
+    if request.method == 'POST':
+        res=copy.deepcopy(default_res)
+        
+        # 判断当前用户是否验证
+        if not current_user.is_authenticated:
+            res['message']="该用户未通过验证"
+            res['statusCode']=401
+            res['success']=False
+        else:
+            user_id = request.form.get("user_id")
+            try:
+                tep=User.get(User.id==user_id)
+            except:
+                res['message']="未找到对应用户信息"
+                res['statusCode']=404
+                res['success']=False
+            else:
+                res['data']=GetUserDict(tep)
+                res['message']="获取用户数据成功"
+        return make_response(jsonify(res))
