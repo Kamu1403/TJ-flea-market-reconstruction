@@ -1,12 +1,13 @@
 <html>
     <head>
         <link rel="stylesheet" href="../static/css/chat.css">
-        <title>Flask-SocketIO-Chat: {{ room }}</title>
+        <title>Flask-SocketIO-Chat: {{ receiver }}</title>
         <script type="text/javascript" src="//code.jquery.com/jquery-1.4.2.min.js"></script>
         <script type="text/javascript" src="//cdn.socket.io/4.4.1/socket.io.min.js"></script>
         <script type="text/javascript" charset="utf-8">
             var socket;
-            var room=eval('{{ room|safe }}');
+            var room='{{ room|safe }}';
+            var receiver='{{ receiver|safe }}';
             $(document).ready(function(){
                 socket = io.connect('http://' + document.domain + ':' + location.port + '/chat');
                 socket.on('connect', function() {
@@ -54,8 +55,8 @@
     <body>
         <h1>Flask-SocketIO-Chat: {{ room }}</h1>
         <ul>
-            <li>1 </li>
-            <li>2 </li>
+            <li><a href="/chat/1950084">1950084 </a> </li>
+            <li><a href="/chat/1951705"> 1951705</a> </li>
         </ul>
         <textarea id="chat" cols="80" rows="20"></textarea><br><br>
         <input id="text" size="80" placeholder="Enter your message here"><br><br>

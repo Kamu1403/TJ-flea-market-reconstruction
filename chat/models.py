@@ -14,8 +14,6 @@ class Msg_type(Enum):
     Image = 1
     Notice=2
     
-
-
 class Room(BaseModel):
     """
     聊天室类
@@ -23,6 +21,9 @@ class Room(BaseModel):
     """
     room_id = pw.CharField(primary_key=True)  
     # 主键，该房间归属于通信双方，主键使用 user1_id '+' user2_id 记录
+    room_state =pw.IntegerField(verbose_name="房间状态",default=0,null=False,
+                                constraints=[pw.Check("room_state >=0")])
+    #房间状态 0-无人使用 1-单人使用 2-双方使用
     last_messgae =pw.CharField(verbose_name="最后消息")
     # 该房间内产生的最后一次通信记录，可以为空
 
@@ -34,14 +35,14 @@ class Message(BaseModel):
     记录某个房间内发生的所有聊天(发送和接收)，与房间一样，归属于发送者
     继承自BaseModel，直接关联db，并且也继承了Model Model有提供增删查改的函数
     """
-    msg_id = pw.IntegerField(primary_key=True,verbose_name="消息编号")
+    msg_id = pw.AutoField(primary_key=True,verbose_name="消息编号")
     msg_time = pw.DateField(verbose_name="发送时间",
                                 null=False,
                                 default=datetime.utcnow())
     
     room_id = pw.ForeignKeyField(Room,verbose_name="房间号")  
+    
     sender_id = pw.ForeignKeyField(User, verbose_name="发送方的学号")
-    receiver_id = pw.ForeignKeyField(User, verbose_name="接收方的学号")
 
     #消息类型 0-文本类型 1-图片类型 2-系统通知类型
     msg_type = pw.IntegerField(verbose_name="消息类型", null=False, default=Msg_type.Text.value,
