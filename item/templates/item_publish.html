@@ -1,5 +1,13 @@
 <html>
 
+<head>
+  <script>
+    function recall() {
+      window.location.href = "{{url_for('item.index')}}";
+    }
+  </script>
+</head>
+
 <body>
   <p>HTML:Hello world!</p>
   <form role="form" class="text-center" method="POST">
@@ -35,7 +43,7 @@
     </div>
     <div>
       <button type="submit">确认发布</button>
-      <button type="reset">取消发布</button>
+      <button type="reset" onclick="recall()">取消发布</button>
     </div>
   </form>
 </body>

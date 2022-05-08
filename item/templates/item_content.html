@@ -4,9 +4,17 @@
 
 <body>
     <a href="{{ url_for('item.index')}}">返回主页</a>
+    <!--
     <script>
-
+        var data = eval("{{data|safe}}");
+        console.log(data);
+        console.log(typeof data);
+        if (data["success"] == false) {
+            window.alert(data["message"]);
+            window.location.href = "{{ url_for('item.index') }}";
+        }
     </script>
+-->
 </body>
 
 </html>
