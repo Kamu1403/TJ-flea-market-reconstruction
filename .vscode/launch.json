@@ -5,16 +5,11 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Python: Flask",
+      "name": "Python: 当前文件",
       "type": "python",
       "request": "launch",
-      "module": "flask",
-      "env": {
-        "FLASK_APP": "app",
-        "FLASK_ENV": "development"
-      },
-      "args": ["run", "--no-debugger"],
-      "jinja": true,
+      "program": "./main.py",
+      "console": "externalTerminal",
       "justMyCode": true
     }
   ]
