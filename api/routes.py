@@ -176,7 +176,7 @@ def get_user_info():
                 res['message'] = "获取用户数据成功"
         return make_response(jsonify(res))
 
-
+"""
 @api_blue.route('/getlatestorder', methods=['POST'])
 def get_user_info():
     if request.method == 'POST':
@@ -199,3 +199,4 @@ def get_user_info():
                 res['data'] = GetUserDict(tep)
                 res['message'] = "获取用户数据成功"
         return make_response(jsonify(res))
+"""
