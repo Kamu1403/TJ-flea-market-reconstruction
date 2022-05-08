@@ -30,4 +30,6 @@ def index():
 @chat_blue.route('/<opt_userid>')
 def chat(opt_userid:int):
     #显示左侧聊天列表，右侧聊天框根据opt_user渲染
+    
+    Room.create()
     return render_template('chat.html', name=current_user, room=opt_userid)
