@@ -87,9 +87,9 @@ def generate(type_name:str,item_id:int):
     else:
         datas = it.__data__
         print(datas)
-        #op_id = datas['publisher_id']
+        person_id = datas['publisher_id'] if type_name == "want" else current_user.id
         ConData = list()
-        op_ConCats = Contact.select().where(Contact.user_id_id == current_user.id)
+        op_ConCats = Contact.select().where(Contact.user_id_id == person_id)
         for i in op_ConCats:
             data = i.__data__
             #data.pop('id')
