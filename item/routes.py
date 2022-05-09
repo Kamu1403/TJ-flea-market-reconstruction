@@ -47,13 +47,14 @@ def goods_content(item_id:int):#goods_id/want_id
     else:
         isAdmin = (current_user.state == User_state.Admin.value)
         isPub =  it.publisher_id.id == current_user.id
-    if not isAdmin and not isPub:
-        pass
-    elif isPub:
-        pass
-    else:
-        pass
-    return render_template('item_content.html')
+    data = json.dumps({"type":"goods","isAdmin":isAdmin,"isPub":isPub,"item_id":item_id})
+    # if not isAdmin and not isPub:
+    #     pass
+    # elif isPub:
+    #     pass
+    # else:
+    #     pass
+    return render_template('item_content.html',data = data)
 
 @item_blue.route('/want/<item_id>/', methods=['GET', 'POST'])
 def want_content(item_id:int):#goods_id/want_id
@@ -70,13 +71,14 @@ def want_content(item_id:int):#goods_id/want_id
     else:
         isAdmin = (current_user.state == User_state.Admin.value)
         isPub =  (it.publisher_id.id == current_user.id)
-    if not isAdmin and not isPub:
-        pass
-    elif isPub:
-        pass
-    else:
-        pass
-    return render_template('item_content.html')
+    data = json.dumps({"type":"want","isAdmin":isAdmin,"isPub":isPub,"item_id":item_id})
+    # if not isAdmin and not isPub:
+    #     pass
+    # elif isPub:
+    #     pass
+    # else:
+    #     pass
+    return render_template('item_content.html',data=data)
 
 @item_blue.route('/publish/goods/', methods=['GET', 'POST'])
 def goods_publish():
