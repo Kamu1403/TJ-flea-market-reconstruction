@@ -362,15 +362,15 @@ def get_search():
     else:
         orderWay = (bases.publish_time.desc(), )  # 改：默认其实为相似度
 
-    need = (bases.name, bases.publisher_id, bases.publish_time, bases.price)
+    need = (bases.id,bases.name, bases.publisher_id, bases.publish_time, bases.price)
     select_need = [bases.name.contains(key_word)]
     try:
         start_time = request.form.get("start_time")
-        if start_time != "":
+        if start_time != "" and start_time is not None:
             start_time = datetime.strptime(start_time, "%Y-%m-%d")
             select_need.append(bases.publish_time >= start_time)
         end_time = request.form.get("end_time")
-        if end_time != "":
+        if end_time != "" and end_time is not None:
             end_time = datetime.strptime(end_time, "%Y-%m-%d")
             select_need.append(bases.publish_time <= end_time)
     except Exception as e:
