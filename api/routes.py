@@ -14,9 +14,114 @@ from admin.models import Feedback, User_Management
 from order.models import Contact, Review, Order, Order_State_Item, Order_Item
 from item.models import Goods, Want, HistoryGoods, HistoryWant, FavorGoods, FavorWant
 import copy
+import os
+import re
+import json
+import datetime
+import time
 
 #返回值规范
 default_res = {'success': True, 'statusCode': 200, 'message': '', 'data': {}}
+'''
+statusCode:
+•	200：操作成功返回。
+•	201：表示创建成功，POST 添加数据成功后必须返回此状态码。
+•	400：请求格式不对。
+•	401：未授权。（User/Admin）
+•	404：请求的资源未找到。
+•	500：内部程序错误。
+
+其他详见接口文档
+'''
+
+
+def judge_user_id(user_id: str):
+    try:
+        user_id = str(user_id).strip()
+    except:
+        return [400, "账号格式错误"]
+    if '@' not in user_id:
+        user_id += "@tongji.edu.cn"
+    pattern = re.compile(r'^\d{7}@tongji\.edu\.cn$')
+    result = pattern.findall(user_id)
+    if len(result) > 0:
+        return [0, "验证通过"]
+    pattern = re.compile(r'@tongji\.edu\.cn$')
+    result = pattern.findall(user_id)
+    if len(result) > 1:
+        return [400, "邮箱账号必须为学号！"]
+    return [400, "账号格式错误"]
+
+
+curpath = os.path.dirname(__file__)
+config = os.path.join(curpath, 'verify_code.json')  # [{"time": int(time.time()), "user_id":str, "code":str}]
+if not os.path.exists(config):
+    with open(config, "w", encoding="utf-8") as fp:
+        print("[]", file=fp)
+
+
+def save_verify_code(code: json):
+    with open(config, "w", encoding="utf-8") as fp:
+        json.dump(code, fp, indent=4, ensure_ascii=False)
+
+
+def get_verify_code():
+    with open(config, "r", encoding="utf-8") as fp:
+        return (json.load(fp))
+
+
+def judge_code(user_id: str, code: str) -> list:
+    '''
+    验证code：
+    if 该用户下不存在验证码：400，验证码不存在，请点击发送验证码
+    elif 验证码过期：400，验证码已过期，请重新点击发送验证码
+    elif 验证码错误：400，验证码错误，请重新点击发送验证码
+    '''
+    try:
+        code = str(code).strip()
+    except:
+        return [400, "验证码格式错误"]
+    if len(code) == 0:
+        return [400, "验证码不可为空"]
+
+    jui = judge_user_id(user_id)
+    if jui[0] != 0:
+        return jui
+    code_list = get_verify_code()
+    save_verify_code(list(filter(lambda x: x["time"] - time < 900, code_list)))  # 验证码有效期15min
+    nowtime = int(time.time())
+    code_exist_but_wrong = False
+    code_exist_but_outofdate = False
+    for i, code_record in enumerate(code_list):
+        if code_record["user_id"] == user_id:
+            if nowtime - code_record["time"] <= 900:
+                if code_record["code"] == code:
+                    return [0, "验证成功"]
+                code_exist_but_wrong = True
+            else:
+                code_exist_but_outofdate = True
+
+    if code_exist_but_wrong:
+        return [400, "验证码错误"]
+    if code_exist_but_outofdate:
+        return [400, "验证码过期，请重新获取验证码"]
+    return [400, "验证码不存在，请先获取验证码"]
+
+
+def judge_password(password: str):
+    if type(password) != str:
+        return [400, "密码格式错误"]
+    if len(password) < 6:
+        return [400, "密码过短"]
+    if len(password) > 32:
+        return [400, "密码过长"]
+    pattern = re.compile(r'[a-zA-Z0-9_-]')
+    result = pattern.findall(password)
+    if len(result) != len(password):
+        return [400, "密码含有非法字符"]
+    return [0, "验证通过"]
+
+
 '''
 statusCode:
 •	200：操作成功返回。
@@ -175,6 +280,7 @@ def get_user_info():
                 res['data'] = GetUserDict(tep)
                 res['message'] = "获取用户数据成功"
         return make_response(jsonify(res))
+
 
 """
 @api_blue.route('/getlatestorder', methods=['POST'])
