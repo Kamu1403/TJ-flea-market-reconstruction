@@ -205,7 +205,6 @@ def get_user_info():
 def get_item_info():
     item_id = request.args.get('id')
     need_type = request.args.get("type")
-    print(item_id)
     if need_type == "goods":
         bases = Goods
     elif need_type == "want":

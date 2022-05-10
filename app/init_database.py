@@ -44,10 +44,10 @@ def drop_tables():
         Message.drop_table()
     if Room.table_exists:
         Room.drop_table()
-    
+
     if User.table_exists:
         User.drop_table()
-        
+
 def create_tables():
     User.create_table()
 
@@ -70,7 +70,7 @@ def create_tables():
     Room.create_table()
     Recent_Chat_List.create_table()
     Message.create_table()
-    
+
 
 from datetime import datetime
 from werkzeug.security import generate_password_hash
@@ -91,17 +91,17 @@ def fake_data():#填一些假数据进去
     #反馈
     Feedback.create(user_id=1951705,feedback_content="哈哈哈哈")
     Feedback.create(user_id=1953493,state=-1,feedback_content="有bug啊",reply_content="bug在哪?")
-    
+
     #封号 程森被封到2022.6.1
     User_Management.create(user_id=1953493,ban_reason="恶意利用网站bug",ban_time=datetime(2022,6,1))
 
     #商品、悬赏
-    Goods.create(name="苹果",publisher_id=1951705,price=1.11,tag="食物",pic_num=0)
-    Goods.create(name="方便面",publisher_id=1950084,price=3.33,shelved_num=999)
+    Goods.create(name="苹果",publisher_id=1951705,price=1.11,tag="食物",pic_num=0,publish_time=datetime(2002,1,4))
+    Goods.create(name="方便面",publisher_id=1950084,price=3.33,shelved_num=999,publish_time=datetime(1996,3,4))
     Goods.create(name="肉",publisher_id=1950084,price=10,shelved_num=999)
     Want.create(name="沈坚作业",publisher_id=1951705,price=0.01,tag="作业",description="求帮忙写sj作业")
     Want.create(name="耳机",publisher_id=1953493,price=300,tag="电子用品",description="求耳机一副")
-    
+
     #浏览 收藏
     HistoryGoods.create(visitor_id=1951705,goods_id=2)
     HistoryGoods.create(visitor_id=1951566,goods_id=2)
@@ -115,7 +115,7 @@ def fake_data():#填一些假数据进去
     FavorWant.create(collector_id=1951705,want_id=2)
     FavorWant.create(collector_id=1951566,want_id=2)
     FavorWant.create(collector_id=1950084,want_id=1)
-    
+
 
     Contact.create(user_id=1951705,name="高曾谊",telephone="+86 111111111",addr="xxx")
     Contact.create(user_id=1950084,name="陈泓仰",telephone="+86 1112111111",addr="xyxx")
@@ -134,7 +134,7 @@ def fake_data():#填一些假数据进去
     Order_State_Item.create(order_id=1,user_review_id=1,op_user_review_id=4)
     Order_State_Item.create(order_id=2,cancel_user=1950084,cancel_reason="沈坚作业不能作为悬赏！")
     Order_State_Item.create(order_id=3)
-    
+
     #订单3中包含 5份肉 3份方便面
     Order_Item.create(order_id=3,quantity=3,kind=0,goods_id=2)#方便面
     Order_Item.create(order_id=3,quantity=5,kind=0,goods_id=3)#肉
