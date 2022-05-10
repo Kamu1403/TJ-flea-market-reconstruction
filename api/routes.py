@@ -287,19 +287,22 @@ def get_search():
         res['message'] = "搜索类型仅能指定商品或悬赏"
         res['success'] = False
     else:
+
         #get_data = bases.select().where().exectue()
         res['statusCode'] = 200
         res['message'] = "已搜索如下结果"
         res['success'] = True
         if search_goods:
-            get_data = Goods.select(Goods.name,Goods.publisher_id,Goods.publish_time,Goods.price).execute()
+            goods_need = (Goods.name,Goods.publisher_id,Goods.publish_time,Goods.price)
+            get_data = Goods.select(*goods_need).execute()
             for i in get_data:
                 j = i.__data__
                 j['price'] = float(j['price'])
                 j['type'] = "goods"
                 res['data'].append(j)
         if search_want:
-            get_data = Want.select(Want.name,Want.publisher_id,Want.publish_time,Want.price).execute()
+            Want_need = Want.name,Want.publisher_id,Want.publish_time,Want.price
+            get_data = Want.select(*Want_need).execute()
             for i in get_data:
                 j = i.__data__
                 j['price'] = float(j['price'])
