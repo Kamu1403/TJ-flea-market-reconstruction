@@ -31,14 +31,17 @@ if not os.path.exists(config):
         print("[]", file=fp)
 
 
-def save_verify_code(code: json):
+def save_verify_code(code: List[dict]):
+    nowtime = time.time()
     with open(config, "w", encoding="utf-8") as fp:
-        json.dump(code, fp, indent=4, ensure_ascii=False)
+        json.dump(list(filter(lambda x: nowtime - x["time"] < 900, code)), fp, indent=4, ensure_ascii=False)
 
 
 def get_verify_code() -> List[dict]:
     with open(config, "r", encoding="utf-8") as fp:
-        return (json.load(fp))
+        code = json.load(fp)
+    save_verify_code(code)
+    return code
 
 
 def judge_code_frequency(user_id: str) -> list:
@@ -51,7 +54,6 @@ def judge_code_frequency(user_id: str) -> list:
         return jui
     code_list = get_verify_code()
     nowtime = int(time.time())
-    save_verify_code(list(filter(lambda x: x["time"] - nowtime < 900, code_list)))  # 验证码有效期15min
 
     for code_record in code_list:
         if code_record["user_id"] == user_id:
@@ -60,7 +62,7 @@ def judge_code_frequency(user_id: str) -> list:
     return [0, ""]
 
 
-def judge_code(user_id: str, code: str = None) -> list:
+def judge_code(user_id: str, code: str) -> list:
     '''
     验证验证码是否正确
     :return [statusCode:0|400, message:str]
@@ -77,7 +79,6 @@ def judge_code(user_id: str, code: str = None) -> list:
         return jui
     code_list = get_verify_code()
     nowtime = int(time.time())
-    save_verify_code(list(filter(lambda x: x["time"] - nowtime < 900, code_list)))  # 验证码有效期15min
     code_exist_but_wrong = False
     code_exist_but_outofdate = False
     for code_record in code_list:
@@ -145,14 +146,15 @@ def send_verification_code():
     return make_response_json(retcode, "验证码发送成功")
 
 
-def _login(user_id, password):
+def _login(user_id, password=None):
     try:
         user = User.get(User.email == user_id)  # 此处还可以添加判断用户是否时管理员
     except:
         return make_response_json(400, "账号不存在")
 
-    if not user.check_password(password):
-        return make_response_json(400, "密码错误")
+    if password != None:
+        if not user.check_password(password):
+            return make_response_json(400, "密码错误")
 
     if user.state == -1:
         return make_response_json(400, "您的账号已被冻结")
@@ -185,9 +187,9 @@ def register_or_login_using_verification_code():
         jp = judge_password(password)
         if jp[0] != 0:
             return make_response_json(quick_response=jp)
-    code = request.form.get('code')
 
-    jc = judge_code(code)
+    code = request.form.get('code')
+    jc = judge_code(user_id, code)
     if jc[0] != 0:
         return make_response_json(quick_response=jc)
     user_exist = True
@@ -206,7 +208,7 @@ def register_or_login_using_verification_code():
             return make_response_json(200, "密码修改成功")
     else:
         if user_exist:
-            return _login(user_id, password)
+            return _login(user_id)
         else:
             return make_response_json(401, "请输入密码以完成注册")
 
