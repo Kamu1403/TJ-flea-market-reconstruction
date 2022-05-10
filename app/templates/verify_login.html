@@ -18,34 +18,31 @@
                         </div>
                         <div class="card fat">
                             <div class="card-body">
-                                <h4 class="card-title">验证码登录/注册</h4>
+                                <h4 class="card-title" id="title_verification_code_login_or_register">验证码登录/注册</h4>
                                 <form method="POST" class="my-login-validation" novalidate="">
                                     <div class="form-group">
-                                        <label for="email">邮箱/账号</label>
-                                        <input id="email" type="email" class="form-control" placeholder="学号@tongji.edu.cn" name="email" required />
-                                        <div class="invalid-feedback">邮箱不合理，必须输入同济邮箱</div>
+                                        <label for="email">邮箱</label>
+                                        <input id="email" type="email" class="form-control" placeholder="7位学号@tongji.edu.cn" name="email" required />
                                     </div>
 
                                     <div class="form-group">
                                         <label for="verify"
                                             >验证码
                                             <div class="float-right">
-                                                <button type="button" class="btn-primary" id="send_verify" onclick="send_email()">发送验证码</button>
+                                                <button type="button" class="btn btn-primary btn-sm" id="send_verify" onclick="send_email()">发送验证码</button>
                                             </div>
                                         </label>
-
-                                        <input id="code" type="text" class="form-control" placeholder="请输入6位验证码" name="verify" required />
-                                        <div class="invalid-feedback">请输入邮箱的验证码</div>
+                                        <input id="code" type="text" class="form-control" placeholder="请输入验证码" name="verify" required />
                                     </div>
 
                                     <div id="hidden_passwd" hidden="hidden">
                                         <div class="form-group">
                                             <label for="password">密码</label>
-                                            <input id="password" type="password" class="form-control" placeholder="请设置密码" name="password" />
+                                            <input id="password" type="password" class="form-control" placeholder="请设置6-32位密码，仅接受[a-zA-Z0-9_-]。" name="password" />
                                         </div>
                                     </div>
 
-                                    <button type="button" class="btn btn-primary btn-block" onclick="register_or_login()">登录/注册</button>
+                                    <button type="button" id="login_or_register_button" class="btn btn-primary btn-block" onclick="register_or_login()">登录/注册</button>
 
                                     <div class="mt-4 text-center"><a href="{{url_for('login')}}">点击</a>使用密码登录</div>
                                 </form>
@@ -62,30 +59,31 @@
 
         <script type="text/javascript">
             function send_email() {
-                console.log("send_email");
-                var countdown = 15; //15s
                 var email = $("#email").val(); //获取邮箱，学号;
-                console.log(email);
-                $("#send_verify").attr("disabled", true);
-
+                console.log("send_email", email);
+                $("#send_verify").attr("disabled", true); // 禁用“发送验证码”按钮
+                var count_down = 60;
+                var timer = setInterval(function () {
+                    document.getElementById("send_verify").innerHTML = "" + count_down + "s";
+                    console.log("" + count_down + "s");
+                    count_down -= 1;
+                }, 1000);
+                setTimeout(function () {
+                    $("#send_verify").attr("disabled", false);
+                    clearInterval(timer);
+                    document.getElementById("send_verify").innerHTML = "发送验证码";
+                }, 1000 * count_down); // 过这么多秒后重新启用
                 $.post("/api/send_verification_code", { user_id: email }, function (ret) {
                     console.log(ret);
-                    if (!(ret.statusCode == 200 || ret.statusCode == 201)) {
-                        $("#send_verify").attr("disabled", false); //启用
+                    alert(ret.message);
+                    if (ret.statusCode >= 400) {
+                        $("#send_verify").attr("disabled", false); // 产生错误则不禁用“发送验证码”按钮
+                        clearInterval(timer);
+                        document.getElementById("send_verify").innerHTML = "发送验证码";
                     }
-                    if (ret.statusCode == 400 || ret.statusCode == 200) {
-                        alert(ret.message); //打印
-                    } else if (ret.statusCode == 201) {
-                        console.log("hidden");
-
-                        //解除隐藏
-                        $("#hidden_passwd").removeAttr("hidden");
-                        //需要输入注册密码
-                    } else if (ret.statusCode == 200 || ret.statusCode == 201) {
-                        //不允许再发送验证码了
-                        setTimeout(function () {
-                            $("#send_verify").attr("disabled", false); //启用
-                        }, 1000 * countdown);
+                    if (ret.statusCode == 201) {
+                        $("#hidden_passwd").removeAttr("hidden"); // 如果是新用户，开放注册按钮
+                        document.getElementById("login_or_register_button").innerHTML = "注册";
                     }
                 });
             }
@@ -98,11 +96,19 @@
                 console.log(code);
 
                 $.post("/api/register_or_login_using_verification_code", { user_id: email, password: password, code: code }, function (ret) {
-                    console.log(ret);
                     if (typeof ret == "string") window.location.href = ret;
-                    if (ret.statusCode == 400 || ret.statusCode == 200 || ret.statusCode == 401) {
-                        alert(ret.message); //打印
-                    }
+                    if (ret.statusCode == 400 || ret.statusCode == 200 || ret.statusCode == 401) alert(ret.message); //打印
+                    if (ret.statusCode == 200) window.location.href = "{{url_for('login')}}";
+                });
+            }
+        </script>
+        <script type="text/javascript" charset="utf-8">
+            var forget = "{{ forget|safe }}";
+            if (forget == "True") {
+                $(document).ready(function () {
+                    $("#hidden_passwd").removeAttr("hidden");
+                    document.getElementById("login_or_register_button").innerHTML = "确认";
+                    document.getElementById("title_verification_code_login_or_register").innerHTML = "重置密码";
                 });
             }
         </script>

@@ -74,6 +74,11 @@ def register():
     return render_template('verify_login.html')
 
 
+@app.route('/forget', methods=['GET'])
+def forget():
+    return render_template('verify_login.html', forget=True)
+
+
 @app.route('/login', methods=['GET'])
 def login():
     # 判断当前用户是否验证，如果通过的话返回首页
