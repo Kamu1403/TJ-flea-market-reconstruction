@@ -245,6 +245,8 @@ def get_item_info():
 @api_blue.route('/search',methods=['POST'])
 def get_search():
     search_type = request.form.get("search_type")
+    key_word = request.form.get("key_word")
+    order_type = request.form.get("order_type")
     res = copy.deepcopy(default_res)
     res['data'] = list()
     if search_type == "goods":
@@ -259,18 +261,31 @@ def get_search():
         res['success'] = False
     else:
         #get_data = bases.select().where().exectue()
-        res['statusCode'] = 200
-        res['message'] = "已搜索如下结果"
-        res['success'] = True
-        need = (bases.name,bases.publisher_id,bases.publish_time,bases.price)
-        get_data = bases.select(*need).execute()
-        for i in get_data:
-            j = i.__data__
-            j['price'] = float(j['price'])
-            j['type'] = search_type
-            res['data'].append(j)
-        #order
-        res['data'].sort(key=lambda x:x['publish_time'])
-        for i in res['data']:
-            i['publish_time'] = str(i['publish_time'])
+        if order_type == "time":
+            orderWay = bases.publish_time.asc()
+        elif order_type == "price":
+            orderWay == bases.publish_time.asc()
+        elif order_type == "name":
+            orderWay = bases.publish_time.asc()
+        else:
+            orderWay = None
+        if orderWay is not None:
+            res['statusCode'] = 200
+            res['message'] = "已搜索如下结果"
+            res['success'] = True
+            need = (bases.name,bases.publisher_id,bases.publish_time,bases.price)
+            get_data = bases.select(*need).where(bases.name.contains(key_word)).order_by(orderWay).execute()
+            for i in get_data:
+                j = i.__data__
+                j['price'] = float(j['price'])
+                j['type'] = search_type
+                res['data'].append(j)
+            #order
+            res['data'].sort(key=lambda x:x['publish_time'])
+            for i in res['data']:
+                i['publish_time'] = str(i['publish_time'])
+        else:
+            res['statusCode'] = 400
+            res['message'] = "排序类型仅能指定价格、时间或内容相似度"
+            res['success'] = False
     return make_response(jsonify(res))
