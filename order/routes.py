@@ -51,7 +51,7 @@ def review(order_id:int):#order_id为订单ID
     if request.method == "POST":
         pass
 
-    return render_template('order_review.html',data = json.dumps(data))
+    return render_template('order_review.html',data = data)
 @order_blue.route('/manage', methods=['GET', 'POST'])
 def manage():
     if not current_user.is_authenticated:
@@ -95,9 +95,12 @@ def generate(type_name:str,item_id:int):
         it = bases.get(bases.id==item_id)
     except Exception as e:
         flash("查询失败,请求出错")
-        return redirect(url_for('index'))
+        return redirect(url_for('user.index'))
     else:
         datas = it.__data__
+        if datas['publisher_id'] == current_user.id:
+            flash("请不要和自己做生意")
+            return redirect(url_for('user.index'))
         print(datas)
         person_id = datas['publisher_id'] if type_name == "want" else current_user.id
         ConData = list()
@@ -106,6 +109,7 @@ def generate(type_name:str,item_id:int):
             data = i.__data__
             #data.pop('id')
             ConData.append(data)
-    return render_template('order_generate.html',ConData = ConData)
+        print(ConData)
+    return render_template('order_generate.html',data = datas,ConData = ConData)
 
 

@@ -2,6 +2,24 @@
 
 <body>
     <p>HTML:Hello world!</p>
+    {% if ConData %}
+    <table>
+        <th>
+        <td>学号</td>
+        <td>姓名</td>
+        <td>电话号码</td>
+        <td>地址</td>
+        </th>
+        {% for line in ConData %}
+        <tr>
+            <td>{{line.user_id}}</td>
+            <td>{{line.name}}</td>
+            <td>{{line.telephone}}</td>
+            <td>{{line.addr}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
 </body>
 
 </html>
