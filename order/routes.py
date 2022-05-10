@@ -33,7 +33,6 @@ def review(order_id:int):#order_id为订单ID
         flash("请求的订单不存在")
         return redirect(url_for('index'))
     else:
-        print(get_order.user_id.id,get_order.op_user_id.id)
         if not current_user.is_authenticated:
             flash("请先登录")
             return redirect(url_for('user.login'))
@@ -43,10 +42,16 @@ def review(order_id:int):#order_id为订单ID
             return redirect(url_for('user.index'))
             # 报错3
         # return redirect(url_for('index'))
+    data = get_order.__data__
+    for i in data:
+        if 'time' in i:
+            data[i] = str(data[i])
+        elif i == 'payment':
+            data[i] = float(data[i])
     if request.method == "POST":
         pass
 
-    return render_template('order_review.html')
+    return render_template('order_review.html',data = json.dumps(data))
 @order_blue.route('/manage', methods=['GET', 'POST'])
 def manage():
     if not current_user.is_authenticated:
@@ -56,15 +61,22 @@ def manage():
         try:
             print("now:{}".format(current_user.id))
             user_orders = Order.select().where(Order.user_id_id == current_user.id).execute()
+            # 然后此数据交由前端进行显示
+        except Exception as e:
+            flash("获取信息出错,请联系管理员\n")
+            return redirect(url_for('user.index'))
+        else:
             order_list = list()
             for i in user_orders:
                 data = i.__data__
-                #data.pop('id')
+                for j in data:
+                    if 'time' in j:
+                        data[j] = str(data[j])
+                    elif i == 'payment':
+                        data[j] = float(data[j])
+                # data.pop('id')
                 order_list.append(data)
-            # 然后此数据交由前端进行显示
-        except Exception as e:
-            print(repr(e))
-    return render_template('order_manage.html')
+    return render_template('order_manage.html',order_list = order_list)
 
 
 @order_blue.route('/generate/<string:type_name>/<int:item_id>', methods=['GET', 'POST'])
@@ -94,7 +106,6 @@ def generate(type_name:str,item_id:int):
             data = i.__data__
             #data.pop('id')
             ConData.append(data)
-        print(ConData)
-    return render_template('order_generate.html')
+    return render_template('order_generate.html',ConData = ConData)
 
 
