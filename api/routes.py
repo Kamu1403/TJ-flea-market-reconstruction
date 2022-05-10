@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
 from operator import methodcaller
+from typing import List
 from flask_login import current_user
 from api import api_blue
 from flask import make_response, request, jsonify
@@ -34,6 +35,21 @@ statusCode:
 
 其他详见接口文档
 '''
+
+
+def make_response_json(statusCode: int = 200, message: str = "", data: dict = {}, success: bool = None, quick_response: List[int, str] = None):
+    '''
+    quick_response: [statusCode（若为0，则自动改为200）, message]
+    如果success未指定，则当statusCode==200时为True，否则False
+    '''
+    if type(quick_response) == list and len(quick_response) == 2:
+        statusCode = quick_response[0]
+        if statusCode == 0:
+            statusCode = 200
+        message = quick_response[1]
+    if success == None:
+        success = True if statusCode == 200 else False
+    return make_response(jsonify({'success': success, 'statusCode': statusCode, 'message': message, 'data': data}))
 
 
 def judge_user_id(user_id: str):
@@ -71,12 +87,28 @@ def get_verify_code():
         return (json.load(fp))
 
 
-def judge_code(user_id: str, code: str) -> list:
+def judge_code_frequency(user_id: str) -> List[int, str]:
     '''
-    验证code：
-    if 该用户下不存在验证码：400，验证码不存在，请点击发送验证码
-    elif 验证码过期：400，验证码已过期，请重新点击发送验证码
-    elif 验证码错误：400，验证码错误，请重新点击发送验证码
+    验证上次发送验证码间隔是否>1min
+    :return [statusCode:0|400, message:str]
+    '''
+    jui = judge_user_id(user_id)
+    if jui[0] != 0:
+        return jui
+    code_list = get_verify_code()
+    save_verify_code(list(filter(lambda x: x["time"] - time < 900, code_list)))  # 验证码有效期15min
+    nowtime = int(time.time())
+    for code_record in code_list:
+        if code_record["user_id"] == user_id:
+            if nowtime - code_record["time"] < 59:
+                return [400, "验证码申请过于频繁"]
+    return [0, ""]
+
+
+def judge_code(user_id: str, code: str = None) -> list:
+    '''
+    验证验证码是否正确
+    :return [statusCode:0|400, message:str]
     '''
     try:
         code = str(code).strip()
@@ -93,7 +125,7 @@ def judge_code(user_id: str, code: str) -> list:
     nowtime = int(time.time())
     code_exist_but_wrong = False
     code_exist_but_outofdate = False
-    for i, code_record in enumerate(code_list):
+    for code_record in code_list:
         if code_record["user_id"] == user_id:
             if nowtime - code_record["time"] <= 900:
                 if code_record["code"] == code:
@@ -123,17 +155,17 @@ def judge_password(password: str):
     return [0, "验证通过"]
 
 
-'''
-statusCode:
-•	200：操作成功返回。
-•	201：表示创建成功，POST 添加数据成功后必须返回此状态码。
-•	400：请求格式不对。
-•	401：未授权。（User/Admin）
-•	404：请求的资源未找到。
-•	500：内部程序错误。
+@api_blue.route('/send_verification_code', method=['POST'])
+def send_verification_code():
+    res = copy.deepcopy(default_res)  # {'success': True, 'statusCode': 200, 'message': '', 'data': {}}
+    if request.method == 'POST':
+        user_id = request.form.get('user_id')
+        jcf = judge_code_frequency(user_id)
+        if jcf[0] != 0:
+            return make_response(jsonify(jcf))
+        send_email("")
 
-其他详见接口文档
-'''
+
 """
 @api_blue.route('',method=['POST'])
 def login_using_password():
