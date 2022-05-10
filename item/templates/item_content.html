@@ -1,12 +1,31 @@
 <html>
 
-<head></head>
+<head>
+    <script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js">
+    </script>
+    <script>
+        var str = window.location.href;
+        var temp = str.split("/")
+        var data = { "type": temp[temp.length - 3], "id": temp[temp.length - 2] };
+        $.ajax(
+            {
+                type: "GET",
+                dataType: "JSON",
+                data: data,
+                url: "{{url_for('api.get_item_info')}}",
+                success: function show(result) {
+                    console.log(result);
+                }
+            }
+        )
+    </script>
+</head>
 
 <body>
     <a href="{{ url_for('item.index')}}">返回主页</a>
-    <script>
+    <div id="test">
 
-    </script>
+    </div>
 </body>
 
 </html>
