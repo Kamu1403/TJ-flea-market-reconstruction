@@ -274,16 +274,14 @@ def get_search():
             res['message'] = "已搜索如下结果"
             res['success'] = True
             need = (bases.name,bases.publisher_id,bases.publish_time,bases.price)
-            get_data = bases.select(*need).where(bases.name.contains(key_word)).order_by(orderWay).execute()
+            select_need = (bases.name.contains(key_word),)
+            get_data = bases.select(*need).where(*select_need).order_by(orderWay).execute()
             for i in get_data:
                 j = i.__data__
                 j['price'] = float(j['price'])
                 j['type'] = search_type
                 res['data'].append(j)
             #order
-            res['data'].sort(key=lambda x:x['publish_time'])
-            for i in res['data']:
-                i['publish_time'] = str(i['publish_time'])
         else:
             res['statusCode'] = 400
             res['message'] = "排序类型仅能指定价格、时间或内容相似度"
