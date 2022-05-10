@@ -3,13 +3,12 @@
 from item import item_blue
 from app import database
 from item.models import Goods, Want, HistoryGoods, HistoryWant, FavorGoods, FavorWant
-from datetime import datetime
+from datetime import date
 from flask import make_response, jsonify, render_template, flash, redirect, url_for, request
 from flask_login import current_user
 
 from user.models import User_state
-
-
+import json
 
 @item_blue.before_request
 def before_request():
@@ -30,47 +29,15 @@ def root_index():
 
 @item_blue.route('/index', methods=['GET', 'POST'])
 def index():
-    return 'Hello World!'
+    return render_template('item_index.html')
 
 
 @item_blue.route('/goods/<item_id>/', methods=['GET', 'POST'])
 def goods_content(item_id:int):#goods_id/want_id
-    print(item_id)
-    try:
-        it = Goods.get(id==item_id)
-    except Exception as e:
-        it = None
-    if it is None:
-        #报错
-        return redirect(url_for("item.index"))
-    isAdmin =  current_user.state == User_state.Admin.value
-    isPub = current_user.id == it.publish_id
-    if not isAdmin and not isPub:
-        pass
-    elif isPub:
-        pass
-    else:
-        pass
     return render_template('item_content.html')
 
 @item_blue.route('/want/<item_id>/', methods=['GET', 'POST'])
 def want_content(item_id:int):#goods_id/want_id
-    print(item_id)
-    try:
-        it = Want.get(id==item_id)
-    except Exception as e:
-        it = None
-    if it is None:
-        # 报错
-        return redirect(url_for("item.index"))
-    isAdmin =  current_user.state == User_state.Admin.value
-    isPub = current_user.id == it.publish_id
-    if not isAdmin and not isPub:
-        pass
-    elif isPub:
-        pass
-    else:
-        pass
     return render_template('item_content.html')
 
 @item_blue.route('/publish/goods/', methods=['GET', 'POST'])
@@ -78,19 +45,28 @@ def goods_publish():
     if request.method == "POST":
         if not current_user.is_authenticated:
             #总共是个报错
+            flash("您还未登录,无法发布")
             return redirect(url_for("item.index"))
+
+
         data = request.form.to_dict()
         data['publish_id'] = current_user.id
-        data['publish_time'] =str(datetime.today())
+        data['publish_time'] =str(date.today())
         data['lock_num'] = 0
+        print(data)
         try:
             Goods.insert(data).execute()
-        except Exception as e:
             pass
+        except Exception as e:
+            flash(f"发布商品时出现问题,具体为{str(e)}\n{repr(e)}\n")
+            # return render_template('item_publish.html',name="goods")
         else:
+            # return render_template('item_publish.html',name="goods")
             # 表示发布成功
+            flash("发布商品成功")
+        finally:
             return redirect(url_for("item.index"))
-    return render_template('item_publish.html')
+    return render_template('item_publish.html',name="goods")
 
 @item_blue.route('/publish/want/', methods=['GET', 'POST'])
 def want_publish():
@@ -101,13 +77,18 @@ def want_publish():
             return redirect(url_for("item.index"))
         data = request.form.to_dict()
         data['publish_id'] = current_user.id
-        data['publish_time'] =str(datetime.today())
+        data['publish_time'] =str(date.today())
         data['lock_num'] = 0
+        print(data)
         try:
             Want.insert(data).execute()
         except Exception as e:
-            pass
+            flash(f"发布悬赏时出现问题,具体为{str(e)}\n{repr(e)}\n")
+            # return render_template('item_publish.html',name='want')
         else:
+            flash("发布悬赏成功")
+            # return render_template('item_publish.html',name='want')
             # 表示发布成功
+        finally:
             return redirect(url_for("item.index"))
-    return render_template('item_publish.html')
+    return render_template('item_publish.html',name='want')

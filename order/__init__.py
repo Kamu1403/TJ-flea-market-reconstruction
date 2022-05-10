@@ -5,6 +5,6 @@
 
 from flask import Blueprint
 
-order_blue = Blueprint('order', __name__,static_folder="order")
+order_blue = Blueprint('order', __name__,template_folder="templates",static_folder="static")
 from . import models
 from . import routes

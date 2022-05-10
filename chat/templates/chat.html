@@ -1,16 +1,23 @@
 <html>
     <head>
-        <title>Flask-SocketIO-Chat: {{ room }}</title>
-        <script type="text/javascript" src="//code.jquery.com/jquery-1.4.2.min.js"></script>
+        <link rel="stylesheet" href="../static/css/chat.css">
+        <title>Flask-SocketIO-Chat: {{ receiver }}</title>
+        <script type="text/javascript" src="//code.jquery.com/jquery-1.8.3.min.js"></script>
         <script type="text/javascript" src="//cdn.socket.io/4.4.1/socket.io.min.js"></script>
         <script type="text/javascript" charset="utf-8">
             var socket;
-            var room=eval('{{ room|safe }}');
+            var room='{{ room|safe }}';
+            var receiver='{{ receiver|safe }}';
             $(document).ready(function(){
-                socket = io.connect('http://' + document.domain + ':' + location.port + '/chat');
+                socket = io.connect('ws://' + document.domain + ':' + location.port + '/chat');
                 socket.on('connect', function() {
                     let cur_time =new Date(new Date().getTime()).toLocaleString();
-                    socket.emit('joined', {time:cur_time,room:room});
+                    socket.emit('joined', {time:cur_time,room:room,receiver:receiver});
+                });
+                socket.on('disconnect', function() {
+                    socket.emit('left', {room:room}, function() {
+                        socket.disconnect();
+                    });
                 });
                 socket.on('status', function(data) {
                     $('#chat').val($('#chat').val() + '<' +data.time+">\n"+ data.msg +'\n');
@@ -26,7 +33,8 @@
                     if (code == 13) {
                         text = $('#text').val();
                         $('#text').val('');
-                        socket.emit('text', {msg: text,time:cur_time,room:room,type:"text"});
+                        if (text!="")
+                            socket.emit('text', {msg: text,time:cur_time,receiver:receiver,room:room,type:"text"});
                     }
                 });
                 $('#image').change(function(e)
@@ -35,14 +43,23 @@
                     setTimeout('test()',2000);
                     alert("submitted!");
                 });
+                
+                window.addEventListener('beforeunload', function (event) {  // or 'unload'
+                navigator.sendBeacon("/chat/close",room);
+            
+                // more safely (optional...?)
+                var until = new Date().getTime() + 500;
+                while (new Date().getTime() < until);
             });
+            });
+            
             function test(){
                 let width=$('#preview').width();
                 let height=$('#preview').height();
                 console.log(width,height);
             }
             function leave_room() {
-                socket.emit('left', {}, function() {
+                socket.emit('left', {room:room}, function() {
                     socket.disconnect();
                     // go back to the index page
                     window.location.href = "{{ url_for('user.index') }}";
@@ -51,7 +68,11 @@
         </script>
     </head>
     <body>
-        <h1>Flask-SocketIO-Chat: {{ room }}</h1>
+        <h1>Flask-SocketIO-Chat: {{ receiver }}</h1>
+        <ul>
+            <li><a href="/chat/1950084">1950084 </a> </li>
+            <li><a href="/chat/1951705"> 1951705</a> </li>
+        </ul>
         <textarea id="chat" cols="80" rows="20"></textarea><br><br>
         <input id="text" size="80" placeholder="Enter your message here"><br><br>
         <input id="image" type="file"><br><br>
