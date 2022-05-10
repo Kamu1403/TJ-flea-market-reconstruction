@@ -1,37 +1,48 @@
 <html>
 
 <head>
+    <script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js">
+    </script>
     <script>
+        var str = window.location.href;
+        var temp = str.split("/")
+        var data = { "type": temp[temp.length - 3], "id": temp[temp.length - 2] };
+        $.ajax(
+            {
+                type: "GET",
+                dataType: "JSON",
+                data: data,
+                url: "/api/get_item_info",
+                success: function show(result) {
+                    var show = document.getElementById("show");
+                    for (i in result) {
+                        if (i != 'data') {
+                            show.innerHTML += "<tr><td>" + i + "</td><td>" + result[i] + "</td></tr>";
+                        }
+                        else {
+                            for (j in result[i]) {
+                                show.innerHTML += "<tr><td>" + j + "</td><td>" + result[i][j] + "</td></tr>";
+                            }
+                        }
+                    }
+                }
+            }
+        )
         function jump() {
-            window.open("{{ url_for('order.generate',type_name=data.type,item_id=data.item_id)}}");
+            var str = window.location.href;
+            var temp = str.split("/")
+            var data = { "type": temp[temp.length - 3], "id": temp[temp.length - 2] };
+            window.open('/order/generate/' + data["type"] + "/" + data["id"]);
         }
     </script>
 </head>
 
 <body>
-    <a href="{{ url_for('index')}}">返回主页</a>
+    <a href="{{ url_for('item.index')}}">返回主页</a>
+    <table id="show"></table>
     <div id="test">
-        {% if data.isAdmin == false and data.isPub == false%}
-        <button onclick="jump()">
-            {% if data.type==goods %}
-            购买商品
-            {% else %}
-            接取悬赏
-            {% endif %}
-        </button>
-        <button>
-            聊天
-        </button>
-        {% else %}
-        {% if data.isPub == true %}
-        <button>修改</button>
-        {% endif %}
-        {% if data.isAdmin == true %}
-        <button>聊天</button>
-        {% endif %}
-        {% endif %}
+        <button onclick="jump()"> 测试</button>
     </div>
-
 </body>
 
 </html>
