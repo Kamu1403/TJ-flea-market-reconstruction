@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
 from operator import methodcaller
+from typing import Dict, List
 from flask_login import current_user
 from api import api_blue
 from flask import make_response, request, jsonify
@@ -19,6 +20,7 @@ import re
 import json
 import datetime
 import time
+import random
 from .send_verification_mail import send_email
 
 #返回值规范
@@ -36,13 +38,28 @@ statusCode:
 '''
 
 
+def make_response_json(statusCode: int = 200, message: str = "", data: dict = {}, success: bool = None, quick_response: list = None):
+    '''
+    :params quick_response: [statusCode（若为0，则自动改为200）, message]
+    如果success未指定，则当statusCode==200时为True，否则False
+    '''
+    if type(quick_response) == list and len(quick_response) == 2:
+        statusCode = quick_response[0]
+        if statusCode == 0:
+            statusCode = 200
+        message = quick_response[1]
+    if success == None:
+        success = True if statusCode // 100 == 2 else False
+    return make_response(jsonify({'success': success, 'statusCode': statusCode, 'message': message, 'data': data}))
+
+
 def judge_user_id(user_id: str):
     try:
         user_id = str(user_id).strip()
     except:
         return [400, "账号格式错误"]
-    if '@' not in user_id:
-        user_id += "@tongji.edu.cn"
+    #if '@' not in user_id:
+    #    user_id += "@tongji.edu.cn"
     pattern = re.compile(r'^\d{7}@tongji\.edu\.cn$')
     result = pattern.findall(user_id)
     if len(result) > 0:
@@ -66,17 +83,33 @@ def save_verify_code(code: json):
         json.dump(code, fp, indent=4, ensure_ascii=False)
 
 
-def get_verify_code():
+def get_verify_code() -> List[dict]:
     with open(config, "r", encoding="utf-8") as fp:
         return (json.load(fp))
 
 
-def judge_code(user_id: str, code: str) -> list:
+def judge_code_frequency(user_id: str) -> list:
     '''
-    验证code：
-    if 该用户下不存在验证码：400，验证码不存在，请点击发送验证码
-    elif 验证码过期：400，验证码已过期，请重新点击发送验证码
-    elif 验证码错误：400，验证码错误，请重新点击发送验证码
+    验证上次发送验证码间隔是否>1min
+    :return [statusCode:0|400, message:str]
+    '''
+    jui = judge_user_id(user_id)
+    if jui[0] != 0:
+        return jui
+    code_list = get_verify_code()
+    save_verify_code(list(filter(lambda x: x["time"] - time < 900, code_list)))  # 验证码有效期15min
+    nowtime = int(time.time())
+    for code_record in code_list:
+        if code_record["user_id"] == user_id:
+            if nowtime - code_record["time"] < 59:
+                return [400, "验证码申请过于频繁"]
+    return [0, ""]
+
+
+def judge_code(user_id: str, code: str = None) -> list:
+    '''
+    验证验证码是否正确
+    :return [statusCode:0|400, message:str]
     '''
     try:
         code = str(code).strip()
@@ -93,7 +126,7 @@ def judge_code(user_id: str, code: str) -> list:
     nowtime = int(time.time())
     code_exist_but_wrong = False
     code_exist_but_outofdate = False
-    for i, code_record in enumerate(code_list):
+    for code_record in code_list:
         if code_record["user_id"] == user_id:
             if nowtime - code_record["time"] <= 900:
                 if code_record["code"] == code:
@@ -123,27 +156,53 @@ def judge_password(password: str):
     return [0, "验证通过"]
 
 
-'''
-statusCode:
-•	200：操作成功返回。
-•	201：表示创建成功，POST 添加数据成功后必须返回此状态码。
-•	400：请求格式不对。
-•	401：未授权。（User/Admin）
-•	404：请求的资源未找到。
-•	500：内部程序错误。
+import string
 
-其他详见接口文档
-'''
-"""
-@api_blue.route('',method=['POST'])
-def login_using_password():
-    res=copy.deepcopy(default_res)
+
+def create_string_number(n):
+    """
+    生成一串指定位数的字符+数组混合的字符串
+    """
+    m = random.randint(1, n)
+    a = "".join([str(random.randint(0, 9)) for _ in range(m)])
+    b = "".join([random.choice(string.ascii_letters) for _ in range(n - m)])
+    return ''.join(random.sample(list(a + b), n))
+
+
+@api_blue.route('/send_verification_code', methods=['POST'])
+def send_verification_code():
+    res = copy.deepcopy(default_res)  # {'success': True, 'statusCode': 200, 'message': '', 'data': {}}
     if request.method == 'POST':
-        user_id=request.form.get('user_id')
-        password=request.form.get('password')
-        remember_me=True
+        user_id = request.form.get('user_id')
+        jcf = judge_code_frequency(user_id)
+        if jcf[0] != 0:
+            return make_response(jsonify(jcf))
+        verification_code = create_string_number(6)
+        ret = send_email("同济跳蚤市场 注册验证码", [user_id], f'您的注册验证码为：{verification_code}。有效期为15分钟。\n此邮件为系统自动发出，请勿回复。')
+
+        code_list = get_verify_code()
+        code_list.append({"time": int(time.time()), "user_id": user_id, "code": verification_code.upper()})
+        save_verify_code(code_list)
+        if ret["status"] == False:
+            return make_response_json(400, "验证码邮件发送失败，请重试或联系网站管理员。")
+        retcode = 200
         try:
-            user = User.get(User.id == user_id)  # 查，此处还可以添加判断用户是否时管理员        
+            User.get(User.id == user_id)
+        except:
+            retcode = 201
+        return make_response_json(retcode, "验证码发送成功")
+
+
+@api_blue.route('/login_using_password', methods=['POST'])
+def login_using_password():
+    return
+    res = copy.deepcopy(default_res)
+    if request.method == 'POST':
+        user_id = request.form.get('user_id')
+        password = request.form.get('password')
+        remember_me = True
+        try:
+            user = User.get(User.id == user_id)  # 查，此处还可以添加判断用户是否时管理员
         except:
             flash('无效的学号,请检查输入或注册')
             # 然后重定向到登录页面
@@ -155,17 +214,20 @@ def login_using_password():
                 flash('密码错误')
                 # 然后重定向到登录页面
                 return redirect(url_for('login'))
-            if user.state==-1:
+            if user.state == -1:
                 #被封号了
                 flash("您已被封号")
                 # 然后重定向到登录页面
-                return redirect(url_for('login')) 
+                return redirect(url_for('login'))
 
             # 记住登录状态，同时维护current_user
             login_user(user, remember=remember_me)
             return redirect(url_for('user.index'))
 
-"""
+
+@api_blue.route('/register_or_login_using_verification_code', methods=['POST'])
+def register_or_login_using_verification_code():
+    return
 
 
 def GetUserDict(i) -> dict:
