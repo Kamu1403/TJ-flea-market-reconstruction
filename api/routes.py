@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
+from datetime import datetime
 from operator import methodcaller
 from tkinter import W
 from flask_login import current_user
@@ -270,19 +271,35 @@ def get_search():
         else:
             orderWay = None
         if orderWay is not None:
-            res['statusCode'] = 200
-            res['message'] = "已搜索如下结果"
-            res['success'] = True
             need = (bases.name,bases.publisher_id,bases.publish_time,bases.price)
-            select_need = (bases.name.contains(key_word),)
-            get_data = bases.select(*need).where(*select_need).order_by(orderWay).execute()
-            for i in get_data:
-                j = i.__data__
-                j['price'] = float(j['price'])
-                j['type'] = search_type
-                j['publish_time'] = str(j['publish_time'])
-                res['data'].append(j)
-            #order
+            select_need = [bases.name.contains(key_word)]
+            try:
+                start_time = request.form.get("start_time")
+                if start_time != "":
+                    start_time = datetime.strptime(start_time,"%Y-%m-%d")
+                    select_need.append(bases.publish_time>=start_time)
+                end_time = request.form.get("end_time")
+                if end_time != "":
+                    end_time = datetime.strptime(end_time,"%Y-%m-%d")
+                    select_need.append(bases.publish_time<=end_time)
+            except Exception as e:
+                print(e)
+                res['message'] = '时间格式错误,应为年-月-日格式'
+                res['statusCode'] = 400
+                res['success'] = False
+            else:
+                res['statusCode'] = 200
+                res['message'] = "已搜索如下结果"
+                res['success'] = True
+
+                get_data = bases.select(*need).where(*select_need).order_by(orderWay).execute()
+                for i in get_data:
+                    j = i.__data__
+                    j['price'] = float(j['price'])
+                    j['type'] = search_type
+                    j['publish_time'] = str(j['publish_time'])
+                    res['data'].append(j)
+                #order
         else:
             res['statusCode'] = 400
             res['message'] = "排序类型仅能指定价格、时间或内容相似度"
