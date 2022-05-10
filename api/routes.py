@@ -201,12 +201,20 @@ def get_user_info():
                 res['message'] = "获取用户数据成功"
         return make_response(jsonify(res))
 """
-@api_blue.route('/get_goods_info',methods=['GET'])
-def get_goods_data():
+@api_blue.route('/get_item_info',methods=['GET'])
+def get_item_info():
     item_id = request.args.get('id')
+    need_type = request.args.get("type")
+    print(item_id)
+    if need_type == "goods":
+        bases = Goods
+    elif need_type == "want":
+        bases = Want
+    else:
+        bases = None
     res = copy.deepcopy(default_res)
     try:
-        it = Goods.get(Goods.id==item_id)
+        it = bases.get(bases.id==item_id)
     except Exception as e:
         it = None
     if it is None:
@@ -216,7 +224,7 @@ def get_goods_data():
         res['message'] = "未找到商品信息"
         res['data'] = dict()
     else:
-        res['statusCode']=200
+        res['statusCode'] = 200
         res['success'] = True
         res['message'] = "已找到商品信息"
         dic = it.__data__
@@ -230,86 +238,40 @@ def get_goods_data():
             isPub = False
         else:
             isAdmin = (current_user.state == User_state.Admin.value)
-            isPub =  (it.publisher_id.id == current_user.id)
-        res["isAdmin"]=isAdmin
-        res["isPub"]=isPub
+            isPub = (it.publisher_id.id == current_user.id)
+        res["isAdmin"] = isAdmin
+        res["isPub"] = isPub
     return make_response(jsonify(res))
 
-@api_blue.route('/get_want_info',methods=['GET'])
-def get_want_data():
-    item_id = int(request.args.get("id"))
-    res = copy.deepcopy(default_res)
-    try:
-        it = Want.get(Want.id==item_id)
-    except Exception as e:
-        it = None
-    if it is None:
-        #报错
-        res['statusCode'] = 404
-        res['success'] = False
-        res['message'] = "未找到悬赏信息"
-        res['data'] = dict()
-    else:
-        res['statusCode']=200
-        res['success'] = True
-        res['message'] = "已找到悬赏信息"
-        dic = it.__data__
-        dic.pop('id')
-        dic.pop('locked_num')
-        dic['publish_time'] = str(dic['publish_time'])
-        dic['price'] = float(dic['price'])
-        res['data'] = dic
-        if not current_user.is_authenticated:
-            isAdmin = False
-            isPub = False
-        else:
-            isAdmin = (current_user.state == User_state.Admin.value)
-            isPub =  it.publisher_id.id == current_user.id
-        res["isAdmin"]=isAdmin
-        res["isPub"]=isPub
-    return make_response(jsonify(res))
-
-@api_blue.route('/search',methods = ['POST'])
+@api_blue.route('/search',methods=['POST'])
 def get_search():
     search_type = request.form.get("search_type")
     res = copy.deepcopy(default_res)
     res['data'] = list()
-    if search_type == "goods" or search_type == 'all':
-        search_goods = True
+    if search_type == "goods":
+        bases = Goods
+    elif search_type == "want":
+        bases = Want
     else:
-        search_goods = False
-    if search_type == "want" or search_type == 'all':
-        search_want = True
-    else:
-        search_want = False
-    if not search_goods and not search_want:
+        bases = None
+    if bases is None:
         res['statusCode'] = 400
         res['message'] = "搜索类型仅能指定商品或悬赏"
         res['success'] = False
     else:
-
         #get_data = bases.select().where().exectue()
         res['statusCode'] = 200
         res['message'] = "已搜索如下结果"
         res['success'] = True
-        if search_goods:
-            goods_need = (Goods.name,Goods.publisher_id,Goods.publish_time,Goods.price)
-            get_data = Goods.select(*goods_need).execute()
-            for i in get_data:
-                j = i.__data__
-                j['price'] = float(j['price'])
-                j['type'] = "goods"
-                res['data'].append(j)
-        if search_want:
-            Want_need = Want.name,Want.publisher_id,Want.publish_time,Want.price
-            get_data = Want.select(*Want_need).execute()
-            for i in get_data:
-                j = i.__data__
-                j['price'] = float(j['price'])
-                j['type'] = "want"
-                res['data'].append(j)
+        need = (bases.name,bases.publisher_id,bases.publish_time,bases.price)
+        get_data = bases.select(*need).execute()
+        for i in get_data:
+            j = i.__data__
+            j['price'] = float(j['price'])
+            j['type'] = search_type
+            res['data'].append(j)
         #order
-
+        res['data'].sort(key=lambda x:x['publish_time'])
         for i in res['data']:
             i['publish_time'] = str(i['publish_time'])
     return make_response(jsonify(res))
