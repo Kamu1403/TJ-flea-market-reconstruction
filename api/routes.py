@@ -386,8 +386,4 @@ def get_search():
             j['type'] = search_type
             j['publish_time'] = str(j['publish_time'])
             data.append(j)
-<<<<<<< HEAD
         return make_response_json(200, "搜索结果如下", data)
-=======
-        return make_response_json(200, "搜索结果如下", data)
->>>>>>> develop
