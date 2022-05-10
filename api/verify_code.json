@@ -1,3 +1,12 @@
 [
-
+    {
+        "time": 1652208697,
+        "user_id": "1234567@tongji.edu.cn",
+        "code": "075787"
+    },
+    {
+        "time": 1652208889,
+        "user_id": "7654321@tongji.edu.cn",
+        "code": "DSWRN8"
+    }
 ]
