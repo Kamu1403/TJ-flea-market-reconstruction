@@ -161,7 +161,7 @@ def _login(user_id, password):
     # 记住登录状态，同时维护current_user
     login_user(user, True, datetime.timedelta(days=30))
 
-    return redirect(url_for('user.index'))
+    return url_for('user.index')
 
 
 @api_blue.route('/login_using_password', methods=['POST'])
@@ -175,8 +175,6 @@ def login_using_password():
     jp = judge_password(password)
     if jp[0] != 0:
         return make_response_json(quick_response=jp)
-    print(user_id)
-    print(password)
     return _login(user_id, password)
 
 
@@ -354,7 +352,9 @@ def get_user_info():
                 res['message'] = "获取用户数据成功"
         return make_response(jsonify(res))
 """
-@api_blue.route('/get_item_info',methods=['GET'])
+
+
+@api_blue.route('/get_item_info', methods=['GET'])
 def get_item_info():
     item_id = request.args.get('id')
     need_type = request.args.get("type")
@@ -367,7 +367,7 @@ def get_item_info():
         bases = None
     res = copy.deepcopy(default_res)
     try:
-        it = bases.get(bases.id==item_id)
+        it = bases.get(bases.id == item_id)
     except Exception as e:
         it = None
     if it is None:
@@ -396,7 +396,8 @@ def get_item_info():
         res["isPub"] = isPub
     return make_response(jsonify(res))
 
-@api_blue.route('/search',methods=['POST'])
+
+@api_blue.route('/search', methods=['POST'])
 def get_search():
     search_type = request.form.get("search_type")
     key_word = request.form.get("key_word")
@@ -424,17 +425,17 @@ def get_search():
         else:
             orderWay = None
         if orderWay is not None:
-            need = (bases.name,bases.publisher_id,bases.publish_time,bases.price)
+            need = (bases.name, bases.publisher_id, bases.publish_time, bases.price)
             select_need = [bases.name.contains(key_word)]
             try:
                 start_time = request.form.get("start_time")
                 if start_time != "":
-                    start_time = datetime.strptime(start_time,"%Y-%m-%d")
-                    select_need.append(bases.publish_time>=start_time)
+                    start_time = datetime.strptime(start_time, "%Y-%m-%d")
+                    select_need.append(bases.publish_time >= start_time)
                 end_time = request.form.get("end_time")
                 if end_time != "":
-                    end_time = datetime.strptime(end_time,"%Y-%m-%d")
-                    select_need.append(bases.publish_time<=end_time)
+                    end_time = datetime.strptime(end_time, "%Y-%m-%d")
+                    select_need.append(bases.publish_time <= end_time)
             except Exception as e:
                 print(e)
                 res['message'] = '时间格式错误,应为年-月-日格式'
