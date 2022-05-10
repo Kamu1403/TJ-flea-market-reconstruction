@@ -69,9 +69,14 @@ def manage():
             order_list = list()
             for i in user_orders:
                 data = i.__data__
-                data.pop('id')
+                for j in data:
+                    if 'time' in j:
+                        data[j] = str(data[j])
+                    elif i == 'payment':
+                        data[j] = float(data[j])
+                # data.pop('id')
                 order_list.append(data)
-    return render_template('order_manage.html')
+    return render_template('order_manage.html',order_list = order_list)
 
 
 @order_blue.route('/generate/<string:type_name>/<int:item_id>', methods=['GET', 'POST'])
@@ -101,7 +106,6 @@ def generate(type_name:str,item_id:int):
             data = i.__data__
             #data.pop('id')
             ConData.append(data)
-        print(ConData)
-    return render_template('order_generate.html')
+    return render_template('order_generate.html',ConData = ConData)
 
 
