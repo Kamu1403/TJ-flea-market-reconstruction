@@ -140,35 +140,77 @@ def send_verification_code():
             return make_response_json(400, "验证码邮件发送失败，请重试或联系网站管理员。")
         retcode = 200
         try:
-            User.get(User.id == user_id)
+            User.get(User.email == user_id)
         except:
             retcode = 201
         return make_response_json(retcode, "验证码发送成功")
 
 
+def _login(user_id, password):
+    try:
+        user = User.get(User.email == user_id)  # 此处还可以添加判断用户是否时管理员
+    except:
+        return make_response_json(400, "账号不存在")
+
+    if not user.check_password(password):
+        return make_response_json(400, "密码错误")
+
+    if user.state == -1:
+        return make_response_json(400, "您的账号已被冻结")
+
+    # 记住登录状态，同时维护current_user
+    login_user(user, True, datetime.timedelta(days=30))
+
+    return redirect(url_for('user.index'))
+
+
 @api_blue.route('/login_using_password', methods=['POST'])
 def login_using_password():
     user_id = request.form.get('user_id')
+    jui = judge_user_id(user_id)
+
+    if jui[0] != 0:
+        return make_response_json(quick_response=jui)
     password = request.form.get('password')
-    remember_me = True
-    try:
-        user = User.get(User.id == user_id)  # 查，此处还可以添加判断用户是否时管理员
-    except:
-        return make_response_json(400, "账号不存在")
-    else:
-        # 查到了，判断密码
-        if not user.check_password(password):
-            # 如果用户不存在或者密码不正确就会闪现这条信息
-            return make_response_json(400, "密码错误")
-        if user.state == -1:
-            return make_response_json(400, "您的账号已被冻结")
-        # 记住登录状态，同时维护current_user
-        login_user(user, True, datetime.timedelta(days=30))
-        return redirect(url_for('user.index'))
+    jp = judge_password(password)
+    if jp[0] != 0:
+        return make_response_json(quick_response=jp)
+    print(user_id)
+    print(password)
+    return _login(user_id, password)
 
 
 @api_blue.route('/register_or_login_using_verification_code', methods=['POST'])
 def register_or_login_using_verification_code():
+    user_id = request.form.get('user_id')
+    password = request.form.get('password')
+    if password != "":
+        jp = judge_password(password)
+        if jp[0] != 0:
+            return make_response_json(quick_response=jp)
+    code = request.form.get('code')
+    if code != "":
+        jc = judge_code(code)
+        if jc[0] != 0:
+            return make_response_json(quick_response=jc)
+    user_exist = True
+    try:
+        tep = User.get(User.email == user_id)
+    except:
+        user_exist = False
+    if password != "":
+        if not user_exist:
+            # 新用户加入数据库
+            return make_response_json(200, "注册成功")
+        else:
+            # 数据库中修改密码
+            return make_response_json(200, "密码修改成功")
+    else:
+        if user_exist:
+            return _login(user_id, password)
+        else:
+            return make_response_json(401, "请输入密码以完成注册")
+
     return
 
 
@@ -244,7 +286,7 @@ def ban_user():
         elif current_user.state == User_state.Admin.value:  #如果当前用户是管理员
             user_id = request.form.get("user_id")
             try:
-                tep = User.get(User.id == user_id)
+                tep = User.get(User.email == user_id)
             except:
                 res['message'] = "未找到对应用户信息"
                 res['statusCode'] = 404
@@ -253,9 +295,10 @@ def ban_user():
                 res['message'] = "已将对应用户封号"
                 tep.state = -1
                 tep.save()
-                #query=User.update(state=-1).where(User.id==user_id)
+                #query=User.update(state=-1).where(User.email==user_id)
                 #query.execute()
         else:  #非管理员
+
             res['message'] = "非管理员无此权限"
             res['statusCode'] = 401
             res['success'] = False
@@ -276,7 +319,7 @@ def get_user_info():
         else:
             user_id = request.form.get("user_id")
             try:
-                tep = User.get(User.id == user_id)
+                tep = User.get(User.email == user_id)
             except:
                 res['message'] = "未找到对应用户信息"
                 res['statusCode'] = 404
@@ -288,7 +331,7 @@ def get_user_info():
 
 
 """
-@api_blue.route('/getlatestorder', methods=['POST'])
+@api_blue.route('/get_latest_order', methods=['POST'])
 def get_user_info():
     if request.method == 'POST':
         res = copy.deepcopy(default_res)
@@ -301,7 +344,7 @@ def get_user_info():
         else:
             user_id = request.form.get("user_id")
             try:
-                tep = User.get(User.id == user_id)
+                tep = User.get(User.email == user_id)
             except:
                 res['message'] = "未找到对应用户信息"
                 res['statusCode'] = 404
