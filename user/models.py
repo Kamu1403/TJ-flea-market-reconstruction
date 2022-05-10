@@ -17,6 +17,13 @@ class User_state(Enum):
     Normal = 0
     Admin = 1
     Under_ban = -1
+    '''
+    -1 封号
+    0 游客
+    1 普通用户
+    20 管理员
+    999 系统管理员
+    '''
 
 
 class User(UserMixin, BaseModel):
