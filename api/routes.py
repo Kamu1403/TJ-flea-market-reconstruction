@@ -19,6 +19,7 @@ import re
 import json
 import datetime
 import time
+from .send_verification_mail import send_email
 
 #返回值规范
 default_res = {'success': True, 'statusCode': 200, 'message': '', 'data': {}}
