@@ -267,3 +267,8 @@ def get_want_data():
         res["isAdmin"]=isAdmin
         res["isPub"]=isPub
     return make_response(jsonify(res))
+
+@api_blue.route('/search',methods = ['POST'])
+def get_search():
+    data = request.form.to_dict()
+    return data
