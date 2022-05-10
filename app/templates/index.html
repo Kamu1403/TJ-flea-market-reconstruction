@@ -10,22 +10,54 @@
     <link
       rel="shortcut icon"
       type="image/x-icon"
-      href="../static/img/favicon.png"
+      href="{{url_for('static',filename='img/icon/favicon.png')}}"
     />
-    <!-- Place favicon.ico in the root directory -->
 
     <!-- CSS here -->
-    <link rel="stylesheet" href="../static/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="../static/css/animate.min.css" />
-    <link rel="stylesheet" href="../static/css/magnific-popup.css" />
-    <link rel="stylesheet" href="../static/css/fontawesome-all.min.css" />
-    <link rel="stylesheet" href="../static/css/jquery-ui.css" />
-    <link rel="stylesheet" href="../static/css/flaticon.css" />
-    <link rel="stylesheet" href="../static/css/aos.css" />
-    <link rel="stylesheet" href="../static/css/slick.css" />
-    <link rel="stylesheet" href="../static/css/default.css" />
-    <link rel="stylesheet" href="../static/css/style.css" />
-    <link rel="stylesheet" href="../static/css/responsive.css" />
+    <link
+      rel="stylesheet"
+      href="{{url_for('static',filename='css/bootstrap.min.css')}}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{url_for('static',filename='css/animate.min.css')}}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{url_for('static',filename='css/magnific-popup.css')}}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{url_for('static',filename='css/fontawesome-all.min.css')}}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{url_for('static',filename='css/jquery-ui.css')}}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{url_for('static',filename='css/flaticon.css')}}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{url_for('static',filename='css/aos.css')}}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{url_for('static',filename='css/slick.css')}}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{url_for('static',filename='css/default.css')}}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{url_for('static',filename='css/style.css')}}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{url_for('static',filename='css/responsive.css')}}"
+    />
   </head>
   <body>
     <!-- preloader -->
@@ -121,7 +153,9 @@
             <div class="col-xl-2 col-lg-3 d-none d-lg-block">
               <div class="logo">
                 <a href="index.html"
-                  ><img src="../static/img/logo/logo.png" alt="Logo"
+                  ><img
+                    src="{{url_for('static',filename='img/logo/logo.png')}}"
+                    alt="Logo"
                 /></a>
               </div>
             </div>
@@ -224,7 +258,7 @@
                                                 <ul class="minicart">
                                                     <li class="d-flex align-items-start">
                                                         <div class="cart-img">
-                                                            <a href="shop-details.html"><img src="../static/img/product/cart_p01.jpg" alt=""></a>
+                                                            <a href="shop-details.html"><img src="{{url_for('static',filename='img/product/cart_p01.jpg')}}" alt=""></a>
                                                         </div>
                                                         <div class="cart-content">
                                                             <h4><a href="shop-details.html">Organic Farm Fresh Nuts</a></h4>
@@ -239,7 +273,7 @@
                                                     </li>
                                                     <li class="d-flex align-items-start">
                                                         <div class="cart-img">
-                                                            <a href="shop-details.html"><img src="../static/img/product/cart_p02.jpg" alt=""></a>
+                                                            <a href="shop-details.html"><img src="{{url_for('static',filename='img/product/cart_p02.jpg')}}" alt=""></a>
                                                         </div>
                                                         <div class="cart-content">
                                                             <h4><a href="shop-details.html">Organic Fresh Nuts Vanla Butter</a></h4>
@@ -286,7 +320,9 @@
                 <nav class="menu-nav">
                   <div class="logo d-block d-lg-none">
                     <a href="index.html"
-                      ><img src="../static/img/logo/logo.png" alt=""
+                      ><img
+                        src="{{url_for('static',filename='img/logo/logo.png')}}"
+                        alt=""
                     /></a>
                   </div>
                   <div class="header-category d-none d-lg-block">
@@ -352,7 +388,7 @@
                               <li class="mega-menu-banner">
                                 <a href="shop.html"
                                   ><img
-                                    src="../static/img/images/megamenu_banner.jpg"
+                                    src="{{url_for('static',filename='img/images/megamenu_banner.jpg')}}"
                                     alt=""
                                 /></a>
                               </li>
@@ -437,7 +473,7 @@
               <!-- <div class="mobile-menu">
                                 <nav class="menu-box">
                                     <div class="close-btn"><i class="fas fa-times"></i></div>
-                                    <div class="nav-logo"><a href="index.html"><img src="../static/img/logo/logo.png" alt="" title=""></a>
+                                    <div class="nav-logo"><a href="index.html"><img src="{{url_for('static',filename='img/logo/logo.png')}}" alt="" title=""></a>
                                     </div>
                                     <div class="menu-outer">
                                         <!--Here Menu Will Come Automatically Via Javascript / Same Menu as in Header-->
@@ -467,7 +503,7 @@
       <!-- slider-area -->
       <section
         class="slider-area"
-        data-background="../static/img/bg/slider_area_bg.jpg"
+        data-background="{{url_for('static',filename='img/bg/slider_area_bg.jpg')}}"
       >
         <div class="container custom-container">
           <div class="row">
@@ -475,7 +511,7 @@
               <div class="slider-active">
                 <div
                   class="single-slider slider-bg"
-                  data-background="../static/img/slider/slider_bg01.jpg"
+                  data-background="{{url_for('static',filename='img/slider/slider_bg01.jpg')}}"
                 >
                   <div class="slider-content">
                     <h5
@@ -506,7 +542,7 @@
                 </div>
                 <div
                   class="single-slider slider-bg"
-                  data-background="../static/img/slider/slider_bg01.jpg"
+                  data-background="{{url_for('static',filename='img/slider/slider_bg01.jpg')}}"
                 >
                   <div class="slider-content">
                     <h5
@@ -537,7 +573,7 @@
                 </div>
                 <div
                   class="single-slider slider-bg"
-                  data-background="../static/img/slider/slider_bg01.jpg"
+                  data-background="{{url_for('static',filename='img/slider/slider_bg01.jpg')}}"
                 >
                   <div class="slider-content">
                     <h5
@@ -571,19 +607,25 @@
             <div class="col-3">
               <div class="slider-banner-img mb-20">
                 <a href="shop.html"
-                  ><img src="../static/img/slider/slider_banner01.jpg" alt=""
+                  ><img
+                    src="{{url_for('static',filename='img/slider/slider_banner01.jpg')}}"
+                    alt=""
                 /></a>
               </div>
               <div class="slider-banner-img">
                 <a href="shop.html"
-                  ><img src="../static/img/slider/slider_banner02.jpg" alt=""
+                  ><img
+                    src="{{url_for('static',filename='img/slider/slider_banner02.jpg')}}"
+                    alt=""
                 /></a>
               </div>
             </div>
             <div class="col-3">
               <div class="slider-banner-img">
                 <a href="shop.html"
-                  ><img src="../static/img/slider/slider_banner03.jpg" alt=""
+                  ><img
+                    src="{{url_for('static',filename='img/slider/slider_banner03.jpg')}}"
+                    alt=""
                 /></a>
               </div>
             </div>
@@ -599,7 +641,7 @@
                   <a href="shop.html" class="category-link"></a>
                   <div class="category-thumb">
                     <img
-                      src="../static/img/product/category_img01.png"
+                      src="{{url_for('static',filename='img/product/category_img01.png')}}"
                       alt=""
                     />
                   </div>
@@ -613,7 +655,7 @@
                   <a href="shop.html" class="category-link"></a>
                   <div class="category-thumb">
                     <img
-                      src="../static/img/product/category_img02.png"
+                      src="{{url_for('static',filename='img/product/category_img02.png')}}"
                       alt=""
                     />
                   </div>
@@ -627,7 +669,7 @@
                   <a href="shop.html" class="category-link"></a>
                   <div class="category-thumb">
                     <img
-                      src="../static/img/product/category_img03.png"
+                      src="{{url_for('static',filename='img/product/category_img03.png')}}"
                       alt=""
                     />
                   </div>
@@ -641,7 +683,7 @@
                   <a href="shop.html" class="category-link"></a>
                   <div class="category-thumb">
                     <img
-                      src="../static/img/product/category_img04.png"
+                      src="{{url_for('static',filename='img/product/category_img04.png')}}"
                       alt=""
                     />
                   </div>
@@ -655,7 +697,7 @@
                   <a href="shop.html" class="category-link"></a>
                   <div class="category-thumb">
                     <img
-                      src="../static/img/product/category_img05.png"
+                      src="{{url_for('static',filename='img/product/category_img05.png')}}"
                       alt=""
                     />
                   </div>
@@ -669,7 +711,7 @@
                   <a href="shop.html" class="category-link"></a>
                   <div class="category-thumb">
                     <img
-                      src="../static/img/product/category_img06.png"
+                      src="{{url_for('static',filename='img/product/category_img06.png')}}"
                       alt=""
                     />
                   </div>
@@ -692,7 +734,10 @@
             <div class="col-xl-4 col-lg-6 col-md-8">
               <div class="discount-item mb-20">
                 <div class="discount-thumb">
-                  <img src="../static/img/product/discount_img01.jpg" alt="" />
+                  <img
+                    src="{{url_for('static',filename='img/product/discount_img01.jpg')}}"
+                    alt=""
+                  />
                 </div>
                 <div class="discount-content">
                   <span>healthy food</span>
@@ -706,7 +751,10 @@
             <div class="col-xl-4 col-lg-6 col-md-8">
               <div class="discount-item mb-20">
                 <div class="discount-thumb">
-                  <img src="../static/img/product/discount_img02.jpg" alt="" />
+                  <img
+                    src="{{url_for('static',filename='img/product/discount_img02.jpg')}}"
+                    alt=""
+                  />
                 </div>
                 <div class="discount-content">
                   <span>healthy food</span>
@@ -720,7 +768,10 @@
             <div class="col-xl-4 col-lg-6 col-md-8">
               <div class="discount-item style-two mb-20">
                 <div class="discount-thumb">
-                  <img src="../static/img/product/discount_img03.jpg" alt="" />
+                  <img
+                    src="{{url_for('static',filename='img/product/discount_img03.jpg')}}"
+                    alt=""
+                  />
                 </div>
                 <div class="discount-content">
                   <span>healthy food</span>
@@ -758,7 +809,7 @@
                 <div class="best-deal-thumb">
                   <a href="shop-details.html"
                     ><img
-                      src="../static/img/product/best_deal_product01.png"
+                      src="{{url_for('static',filename='img/product/best_deal_product01.png')}}"
                       alt=""
                   /></a>
                 </div>
@@ -785,7 +836,7 @@
                 <div class="best-deal-thumb">
                   <a href="shop-details.html"
                     ><img
-                      src="../static/img/product/best_deal_product02.png"
+                      src="{{url_for('static',filename='img/product/best_deal_product02.png')}}"
                       alt=""
                   /></a>
                 </div>
@@ -812,7 +863,7 @@
                 <div class="best-deal-thumb">
                   <a href="shop-details.html"
                     ><img
-                      src="../static/img/product/best_deal_product03.png"
+                      src="{{url_for('static',filename='img/product/best_deal_product03.png')}}"
                       alt=""
                   /></a>
                 </div>
@@ -839,7 +890,7 @@
                 <div class="best-deal-thumb">
                   <a href="shop-details.html"
                     ><img
-                      src="../static/img/product/best_deal_product04.png"
+                      src="{{url_for('static',filename='img/product/best_deal_product04.png')}}"
                       alt=""
                   /></a>
                 </div>
@@ -866,7 +917,7 @@
                 <div class="best-deal-thumb">
                   <a href="shop-details.html"
                     ><img
-                      src="../static/img/product/best_deal_product05.png"
+                      src="{{url_for('static',filename='img/product/best_deal_product05.png')}}"
                       alt=""
                   /></a>
                 </div>
@@ -915,7 +966,7 @@
                 <div class="special-products-add">
                   <div class="sp-add-thumb">
                     <img
-                      src="../static/img/product/special_products_add.jpg"
+                      src="{{url_for('static',filename='img/product/special_products_add.jpg')}}"
                       alt=""
                     />
                   </div>
@@ -935,7 +986,7 @@
                         <span class="batch">New</span>
                         <a href="shop-details.html"
                           ><img
-                            src="../static/img/product/sp_products01.png"
+                            src="{{url_for('static',filename='img/product/sp_products01.png')}}"
                             alt=""
                         /></a>
                       </div>
@@ -970,7 +1021,7 @@
                         <span class="batch discount">15%</span>
                         <a href="shop-details.html"
                           ><img
-                            src="../static/img/product/sp_products02.png"
+                            src="{{url_for('static',filename='img/product/sp_products02.png')}}"
                             alt=""
                         /></a>
                       </div>
@@ -1005,7 +1056,7 @@
                         <span class="batch discount">25%</span>
                         <a href="shop-details.html"
                           ><img
-                            src="../static/img/product/sp_products03.png"
+                            src="{{url_for('static',filename='img/product/sp_products03.png')}}"
                             alt=""
                         /></a>
                       </div>
@@ -1040,7 +1091,7 @@
                         <span class="batch">new</span>
                         <a href="shop-details.html"
                           ><img
-                            src="../static/img/product/sp_products04.png"
+                            src="{{url_for('static',filename='img/product/sp_products04.png')}}"
                             alt=""
                         /></a>
                       </div>
@@ -1075,7 +1126,7 @@
                         <span class="batch discount">25%</span>
                         <a href="shop-details.html"
                           ><img
-                            src="../static/img/product/sp_products05.png"
+                            src="{{url_for('static',filename='img/product/sp_products05.png')}}"
                             alt=""
                         /></a>
                       </div>
@@ -1110,7 +1161,7 @@
                         <span class="batch">new</span>
                         <a href="shop-details.html"
                           ><img
-                            src="../static/img/product/sp_products06.png"
+                            src="{{url_for('static',filename='img/product/sp_products06.png')}}"
                             alt=""
                         /></a>
                       </div>
@@ -1145,7 +1196,7 @@
                         <span class="batch discount">10%</span>
                         <a href="shop-details.html"
                           ><img
-                            src="../static/img/product/sp_products07.png"
+                            src="{{url_for('static',filename='img/product/sp_products07.png')}}"
                             alt=""
                         /></a>
                       </div>
@@ -1180,7 +1231,7 @@
                         <span class="batch discount">10%</span>
                         <a href="shop-details.html"
                           ><img
-                            src="../static/img/product/sp_products08.png"
+                            src="{{url_for('static',filename='img/product/sp_products08.png')}}"
                             alt=""
                         /></a>
                       </div>
@@ -1229,7 +1280,10 @@
                 </div>
                 <div class="coupon-code-wrap">
                   <h5 class="code">ganic21abs</h5>
-                  <img src="../static/img/images/coupon_code.png" alt="" />
+                  <img
+                    src="{{url_for('static',filename='img/images/coupon_code.png')}}"
+                    alt=""
+                  />
                 </div>
               </div>
             </div>
@@ -1262,7 +1316,7 @@
                     <span class="batch">New</span>
                     <a href="shop-details.html"
                       ><img
-                        src="../static/img/product/sp_products09.png"
+                        src="{{url_for('static',filename='img/product/sp_products09.png')}}"
                         alt=""
                     /></a>
                   </div>
@@ -1297,7 +1351,7 @@
                     <span class="batch discount">15%</span>
                     <a href="shop-details.html"
                       ><img
-                        src="../static/img/product/sp_products02.png"
+                        src="{{url_for('static',filename='img/product/sp_products02.png')}}"
                         alt=""
                     /></a>
                   </div>
@@ -1330,7 +1384,7 @@
                     <span class="batch discount">25%</span>
                     <a href="shop-details.html"
                       ><img
-                        src="../static/img/product/sp_products03.png"
+                        src="{{url_for('static',filename='img/product/sp_products03.png')}}"
                         alt=""
                     /></a>
                   </div>
@@ -1365,7 +1419,7 @@
                     <span class="batch">new</span>
                     <a href="shop-details.html"
                       ><img
-                        src="../static/img/product/sp_products04.png"
+                        src="{{url_for('static',filename='img/product/sp_products04.png')}}"
                         alt=""
                     /></a>
                   </div>
@@ -1400,7 +1454,7 @@
                     <span class="batch discount">25%</span>
                     <a href="shop-details.html"
                       ><img
-                        src="../static/img/product/sp_products05.png"
+                        src="{{url_for('static',filename='img/product/sp_products05.png')}}"
                         alt=""
                     /></a>
                   </div>
@@ -1443,7 +1497,7 @@
               <div class="discount-item-two">
                 <div class="discount-thumb">
                   <img
-                    src="../static/img/product/s_discount_img01.jpg"
+                    src="{{url_for('static',filename='img/product/s_discount_img01.jpg')}}"
                     alt=""
                   />
                 </div>
@@ -1461,7 +1515,7 @@
               <div class="discount-item-two">
                 <div class="discount-thumb">
                   <img
-                    src="../static/img/product/s_discount_img02.jpg"
+                    src="{{url_for('static',filename='img/product/s_discount_img02.jpg')}}"
                     alt=""
                   />
                 </div>
@@ -1491,7 +1545,9 @@
               <div class="footer-widget mb-50">
                 <div class="footer-logo mb-25">
                   <a href="index.html"
-                    ><img src="../static/img/logo/logo.png" alt=""
+                    ><img
+                      src="{{url_for('static',filename='img/logo/logo.png')}}"
+                      alt=""
                   /></a>
                 </div>
                 <div class="footer-contact-list">
@@ -1597,10 +1653,14 @@
                   </div>
                   <div class="download-btns">
                     <a href="index.html"
-                      ><img src="../static/img/icon/g_play.png" alt=""
+                      ><img
+                        src="{{url_for('static',filename='img/icon/g_play.png')}}"
+                        alt=""
                     /></a>
                     <a href="index.html"
-                      ><img src="../static/img/icon/app_store.png" alt=""
+                      ><img
+                        src="{{url_for('static',filename='img/icon/app_store.png')}}"
+                        alt=""
                     /></a>
                   </div>
                 </div>
@@ -1632,7 +1692,10 @@
             </div>
             <div class="col-md-6">
               <div class="payment-accepted text-center text-md-right">
-                <img src="../static/img/images/payment_card.png" alt="" />
+                <img
+                  src="{{url_for('static',filename='img/images/payment_card.png')}}"
+                  alt=""
+                />
               </div>
             </div>
           </div>
@@ -1642,18 +1705,18 @@
     <!-- footer-area-end -->
 
     <!-- JS here -->
-    <script src="../static/js/vendor/jquery-3.6.0.min.js"></script>
-    <script src="../static/js/bootstrap.min.js"></script>
-    <script src="../static/js/isotope.pkgd.min.js"></script>
-    <script src="../static/js/imagesloaded.pkgd.min.js"></script>
-    <script src="../static/js/jquery.magnific-popup.min.js"></script>
-    <script src="../static/js/jquery.countdown.min.js"></script>
-    <script src="../static/js/jquery-ui.min.js"></script>
-    <script src="../static/js/slick.min.js"></script>
-    <script src="../static/js/ajax-form.js"></script>
-    <script src="../static/js/wow.min.js"></script>
-    <script src="../static/js/aos.js"></script>
-    <script src="../static/js/plugins.js"></script>
-    <script src="../static/js/main.js"></script>
+    <script src="{{url_for('static',filename='js/vendor/jquery-3.6.0.min.js')}}"></script>
+    <script src="{{url_for('static',filename='js/bootstrap.min.js')}}"></script>
+    <script src="{{url_for('static',filename='js/isotope.pkgd.min.js')}}"></script>
+    <script src="{{url_for('static',filename='js/imagesloaded.pkgd.min.js')}}"></script>
+    <script src="{{url_for('static',filename='js/jquery.magnific-popup.min.js')}}"></script>
+    <script src="{{url_for('static',filename='js/jquery.countdown.min.js')}}"></script>
+    <script src="{{url_for('static',filename='js/jquery-ui.min.js')}}"></script>
+    <script src="{{url_for('static',filename='js/slick.min.js')}}"></script>
+    <script src="{{url_for('static',filename='js/ajax-form.js')}}"></script>
+    <script src="{{url_for('static',filename='js/wow.min.js')}}"></script>
+    <script src="{{url_for('static',filename='js/aos.js')}}"></script>
+    <script src="{{url_for('static',filename='js/plugins.js')}}"></script>
+    <script src="{{url_for('static',filename='js/main.js')}}"></script>
   </body>
 </html>
