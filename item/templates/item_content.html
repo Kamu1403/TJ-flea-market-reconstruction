@@ -14,17 +14,26 @@
                 data: data,
                 url: "/api/get_item_info",
                 success: function show(result) {
-                    var show = document.getElementById("show");
-                    for (i in result) {
-                        if (i != 'data') {
-                            show.innerHTML += "<tr><td>" + i + "</td><td>" + result[i] + "</td></tr>";
-                        }
-                        else {
-                            for (j in result[i]) {
-                                show.innerHTML += "<tr><td>" + j + "</td><td>" + result[i][j] + "</td></tr>";
-                            }
+                    for (i in result['data']) {
+                        var j = document.getElementById(i);
+                        if (j) {
+                            j.innerHTML = result['data'][i];
                         }
                     }
+                    var t = document.getElementById("test");
+                    if (!result['isPub']) {
+                        t.innerHTML += "<button>和对方聊天</button><button>生成订单</button>";
+                        if (result['isAdmin']) {
+                            t.innerHTML += "<button>修改上架信息</button><button>下架</button>";
+                        }
+                    }
+                    else {
+                        t.innerHTML += "<button>修改上架信息</button>";
+                        if (result['isAdmin']) {
+                            t.innerHTML += "<button>下架</button>";
+                        }
+                    }
+
                 }
             }
         )
@@ -39,9 +48,42 @@
 
 <body>
     <a href="{{ url_for('item.index')}}">返回主页</a>
-    <table id="show"></table>
+    <div>
+        <table>
+            <tbody id="show">
+                <tr>
+                    <td>名称</td>
+                    <td id="name"></td>
+                </tr>
+                <tr>
+                    <td>单价</td>
+                    <td id="price"></td>
+                </tr>
+                <tr>
+                    <td>上架学生学号</td>
+                    <td id="publisher_id"></td>
+                </tr>
+                <tr>
+                    <td>上架时间</td>
+                    <td id="publish_time"></td>
+                </tr>
+                <tr>
+                    <td>上架数量</td>
+                    <td id="shelved_num"></td>
+                </tr>
+                <tr>
+                    <td>标签</td>
+                    <td id="tag"></td>
+                </tr>
+                <tr>
+                    <td>描述</td>
+                    <td id="description"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
     <div id="test">
-        <button onclick="jump()"> 测试</button>
+
     </div>
 </body>
 
