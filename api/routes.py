@@ -199,10 +199,12 @@ def register_or_login_using_verification_code():
         user_exist = False
     if password != "":
         if not user_exist:
-            # 新用户加入数据库
+            xuehao = user_id.split('@')[0]
+            User.create(id=int(xuehao), username=xuehao, password_hash=generate_password_hash(password), email=user_id)
             return make_response_json(200, "注册成功")
         else:
-            # 数据库中修改密码
+            tep.password_hash = generate_password_hash(password)
+            tep.save()
             return make_response_json(200, "密码修改成功")
     else:
         if user_exist:
