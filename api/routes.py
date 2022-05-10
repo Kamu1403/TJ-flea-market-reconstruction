@@ -88,7 +88,7 @@ def get_verify_code() -> List[dict]:
         return (json.load(fp))
 
 
-def judge_code_frequency(user_id: str) -> List[int, str]:
+def judge_code_frequency(user_id: str) -> list:
     '''
     验证上次发送验证码间隔是否>1min
     :return [statusCode:0|400, message:str]
@@ -169,7 +169,7 @@ def create_string_number(n):
     return ''.join(random.sample(list(a + b), n))
 
 
-@api_blue.route('/send_verification_code', method=['POST'])
+@api_blue.route('/send_verification_code', methods=['POST'])
 def send_verification_code():
     res = copy.deepcopy(default_res)  # {'success': True, 'statusCode': 200, 'message': '', 'data': {}}
     if request.method == 'POST':
@@ -193,7 +193,7 @@ def send_verification_code():
         return make_response_json(retcode, "验证码发送成功")
 
 
-@api_blue.route('/login_using_password', method=['POST'])
+@api_blue.route('/login_using_password', methods=['POST'])
 def login_using_password():
     return
     res = copy.deepcopy(default_res)
@@ -225,7 +225,7 @@ def login_using_password():
             return redirect(url_for('user.index'))
 
 
-@api_blue.route('/register_or_login_using_verification_code', method=['POST'])
+@api_blue.route('/register_or_login_using_verification_code', methods=['POST'])
 def register_or_login_using_verification_code():
     return
 
