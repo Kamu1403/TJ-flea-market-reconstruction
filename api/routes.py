@@ -311,15 +311,8 @@ def get_user_info():
                 res['message'] = "获取用户数据成功"
         return make_response(jsonify(res))
 """
-<<<<<<< HEAD
 @api_blue.route('/get_item_info',methods=['GET'])
 def get_item_info():
-=======
-
-
-@api_blue.route('/get_goods_info', methods=['GET'])
-def get_goods_data():
->>>>>>> c5c64a4eefda97184741eed44a439eab52cb2b28
     item_id = request.args.get('id')
     need_type = request.args.get("type")
     print(item_id)
@@ -331,11 +324,7 @@ def get_goods_data():
         bases = None
     res = copy.deepcopy(default_res)
     try:
-<<<<<<< HEAD
         it = bases.get(bases.id==item_id)
-=======
-        it = Goods.get(Goods.id == item_id)
->>>>>>> c5c64a4eefda97184741eed44a439eab52cb2b28
     except Exception as e:
         it = None
     if it is None:
@@ -364,47 +353,7 @@ def get_goods_data():
         res["isPub"] = isPub
     return make_response(jsonify(res))
 
-<<<<<<< HEAD
 @api_blue.route('/search',methods = ['POST'])
-=======
-
-@api_blue.route('/get_want_info', methods=['GET'])
-def get_want_data():
-    item_id = int(request.args.get("id"))
-    res = copy.deepcopy(default_res)
-    try:
-        it = Want.get(Want.id == item_id)
-    except Exception as e:
-        it = None
-    if it is None:
-        #报错
-        res['statusCode'] = 404
-        res['success'] = False
-        res['message'] = "未找到悬赏信息"
-        res['data'] = dict()
-    else:
-        res['statusCode'] = 200
-        res['success'] = True
-        res['message'] = "已找到悬赏信息"
-        dic = it.__data__
-        dic.pop('id')
-        dic.pop('locked_num')
-        dic['publish_time'] = str(dic['publish_time'])
-        dic['price'] = float(dic['price'])
-        res['data'] = dic
-        if not current_user.is_authenticated:
-            isAdmin = False
-            isPub = False
-        else:
-            isAdmin = (current_user.state == User_state.Admin.value)
-            isPub = it.publisher_id.id == current_user.id
-        res["isAdmin"] = isAdmin
-        res["isPub"] = isPub
-    return make_response(jsonify(res))
-
-
-@api_blue.route('/search', methods=['POST'])
->>>>>>> c5c64a4eefda97184741eed44a439eab52cb2b28
 def get_search():
     search_type = request.form.get("search_type")
     res = copy.deepcopy(default_res)
