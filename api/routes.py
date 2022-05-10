@@ -432,6 +432,7 @@ def get_search():
             get_data = Want.select(*Want_need).execute()
             for i in get_data:
                 j = i.__data__
+                j['publish_time'] = str(j['publish_time'])
                 j['price'] = float(j['price'])
                 j['type'] = "want"
                 res['data'].append(j)
