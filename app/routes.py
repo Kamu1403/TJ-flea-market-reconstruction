@@ -63,35 +63,17 @@ def search(keyword: str):  #keyword为你搜索的东西
     return render_template('search.html', keyword=keyword)
 
 
+@app.route('/register', methods=['GET'])
+def register():
+    # 判断当前用户是否验证，如果通过的话返回首页
+    if current_user.is_authenticated:
+        return redirect(url_for('user.index'))
+    return render_template('verify_login.html')
+
+
 @app.route('/login', methods=['GET'])
 def login():
     # 判断当前用户是否验证，如果通过的话返回首页
     if current_user.is_authenticated:
         return redirect(url_for('user.index'))
     return render_template('password_login.html')
-
-
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    # 判断当前用户是否验证，如果通过的话返回首页
-    if current_user.is_authenticated:
-        return redirect(url_for('user.index'))
-
-    if request.method == 'POST':
-        user_id = request.form.get('user_id')
-        password = request.form.get('password')
-        is_admin = False
-        if request.form.get('is_admin') == 'on':
-            is_admin = True
-        state = User_state.Normal.value
-        if is_admin:
-            state = User_state.Admin.value
-
-        try:
-            user = User.get(User.id == user_id)  # 查，此处还可以添加判断用户是否为管理员
-            flash('该学号已被注册')
-        except:
-            User.create(id=user_id, username=user_id, state=state, password_hash=generate_password_hash(password), email=str(user_id) + "@tongji.edu.cn")
-            return redirect(url_for('login'))
-
-    return render_template('register.html')
