@@ -185,19 +185,24 @@ def send_verification_code():
         save_verify_code(code_list)
         if ret["status"] == False:
             return make_response_json(400, "验证码邮件发送失败，请重试或联系网站管理员。")
-        return make_response_json(200, "验证码发送成功")  # 改 若非注册用户 201
-
-
-"""
-@api_blue.route('',method=['POST'])
-def login_using_password():
-    res=copy.deepcopy(default_res)
-    if request.method == 'POST':
-        user_id=request.form.get('user_id')
-        password=request.form.get('password')
-        remember_me=True
+        retcode = 200
         try:
-            user = User.get(User.id == user_id)  # 查，此处还可以添加判断用户是否时管理员        
+            User.get(User.id == user_id)
+        except:
+            retcode = 201
+        return make_response_json(retcode, "验证码发送成功")
+
+
+@api_blue.route('/login_using_password', method=['POST'])
+def login_using_password():
+    return
+    res = copy.deepcopy(default_res)
+    if request.method == 'POST':
+        user_id = request.form.get('user_id')
+        password = request.form.get('password')
+        remember_me = True
+        try:
+            user = User.get(User.id == user_id)  # 查，此处还可以添加判断用户是否时管理员
         except:
             flash('无效的学号,请检查输入或注册')
             # 然后重定向到登录页面
@@ -209,17 +214,20 @@ def login_using_password():
                 flash('密码错误')
                 # 然后重定向到登录页面
                 return redirect(url_for('login'))
-            if user.state==-1:
+            if user.state == -1:
                 #被封号了
                 flash("您已被封号")
                 # 然后重定向到登录页面
-                return redirect(url_for('login')) 
+                return redirect(url_for('login'))
 
             # 记住登录状态，同时维护current_user
             login_user(user, remember=remember_me)
             return redirect(url_for('user.index'))
 
-"""
+
+@api_blue.route('/register_or_login_using_verification_code', method=['POST'])
+def register_or_login_using_verification_code():
+    return
 
 
 def GetUserDict(i) -> dict:

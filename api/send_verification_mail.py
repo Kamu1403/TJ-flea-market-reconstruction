@@ -1,4 +1,3 @@
-from email.mime.message import MIMEMessage
 import json
 import os
 import smtplib
@@ -7,14 +6,13 @@ from email.mime.multipart import MIMEMultipart
 from email.header import Header
 from email.mime.image import MIMEImage
 import logging
-import asyncio
 
 
 def forma(s: str) -> str:
     return s.replace('\\', '/').replace('//', '/').split('/')[-1]
 
 
-async def emailChanel(sender, receiverList, user, emailPwd, smtpServer, commonPort, emailTitle, htmlPath=None, attachPathList=None, text=None):
+def emailChanel(sender, receiverList, user, emailPwd, smtpServer, commonPort, emailTitle, htmlPath=None, attachPathList=None, text=None):
     try:
         multiPart = MIMEMultipart()
         multiPart['From'] = sender
@@ -84,7 +82,7 @@ async def emailChanel(sender, receiverList, user, emailPwd, smtpServer, commonPo
         return {"status": False, "message": repr(e)}
 
 
-async def send_email(emailTitle: str, receiverList: list, text: str = None, htmlPath: str = None, attachPathList: list = None) -> json:
+def send_email(emailTitle: str, receiverList: list, text: str = None, htmlPath: str = None, attachPathList: list = None) -> json:
     if type(receiverList) == str:
         receiverList = [receiverList]
     sender = 'TongjiMarket@ellye.cn'
@@ -92,12 +90,12 @@ async def send_email(emailTitle: str, receiverList: list, text: str = None, html
     emailPwd = 'sn5diPhone6'
     smtpServer = 'smtp.office365.com'
     commonPort = 587
-    return await emailChanel(sender, receiverList, user, emailPwd, smtpServer, commonPort, emailTitle, htmlPath, attachPathList, text)
+    return emailChanel(sender, receiverList, user, emailPwd, smtpServer, commonPort, emailTitle, htmlPath, attachPathList, text)
 
 
 if __name__ == '__main__':
-    loop = asyncio.get_event_loop()
-    a = send_email("mail test", 'ellyeChen@tongji.edu.cn', "final13579")
-    b = send_email("mail test", 'didiking@yeah.net', "final02468")
-    print(loop.run_until_complete(asyncio.gather(a, b)))
-    send_email()
+    #loop = asyncio.get_event_loop()
+    a = send_email("mail test", 'ellyeChen@tongji.edu.cn', "fx13579")
+    #b = send_email("mail test", 'didiking@yeah.net', "final02468")
+    #print(loop.run_until_complete(asyncio.gather(a, b)))
+    #send_email()
