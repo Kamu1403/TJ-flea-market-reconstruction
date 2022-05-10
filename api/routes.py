@@ -66,7 +66,7 @@ def judge_code(user_id: str, code: str = None) -> list:
     :return [statusCode:0|400, message:str]
     '''
     try:
-        code = str(code).strip()
+        code = str(code).strip().upper()
     except:
         return [400, "验证码格式错误"]
     if len(code) == 0:
@@ -181,15 +181,15 @@ def login_using_password():
 def register_or_login_using_verification_code():
     user_id = request.form.get('user_id')
     password = request.form.get('password')
-    if password != "":
+    if len(password) != 0:
         jp = judge_password(password)
         if jp[0] != 0:
             return make_response_json(quick_response=jp)
     code = request.form.get('code')
-    if code != "":
-        jc = judge_code(code)
-        if jc[0] != 0:
-            return make_response_json(quick_response=jc)
+
+    jc = judge_code(code)
+    if jc[0] != 0:
+        return make_response_json(quick_response=jc)
     user_exist = True
     try:
         tep = User.get(User.email == user_id)
