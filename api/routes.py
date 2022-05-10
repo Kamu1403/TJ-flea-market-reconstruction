@@ -1,57 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
-from operator import methodcaller
-from typing import Dict, List
-from flask_login import current_user, login_user, logout_user, login_required
+from api.utils import *
 from api import api_blue
-from flask import make_response, request, jsonify, render_template, flash, redirect, url_for
 
-#enum
-from user.models import User_state
-from admin.models import Feedback_kind, Feedback_state
-from order.models import Order_state
-#model
-from user.models import User
-from admin.models import Feedback, User_Management
-from order.models import Contact, Review, Order, Order_State_Item, Order_Item
-from item.models import Goods, Want, HistoryGoods, HistoryWant, FavorGoods, FavorWant
-import copy
-import os
-import re
-import json
-import datetime
-import time
-import random
 from .send_verification_mail import send_email
-
-#返回值规范
-default_res = {'success': True, 'statusCode': 200, 'message': '', 'data': {}}
-'''
-statusCode:
-•	200：操作成功返回。
-•	201：表示创建成功，POST 添加数据成功后必须返回此状态码。
-•	400：请求格式不对。
-•	401：未授权。（User/Admin）
-•	404：请求的资源未找到。
-•	500：内部程序错误。
-
-其他详见接口文档
-'''
-
-
-def make_response_json(statusCode: int = 200, message: str = "", data: dict = {}, success: bool = None, quick_response: list = None):
-    '''
-    :params quick_response: [statusCode（若为0，则自动改为200）, message]
-    如果success未指定，则当statusCode==200时为True，否则False
-    '''
-    if type(quick_response) == list and len(quick_response) == 2:
-        statusCode = quick_response[0]
-        if statusCode == 0:
-            statusCode = 200
-        message = quick_response[1]
-    if success == None:
-        success = True if statusCode // 100 == 2 else False
-    return make_response(jsonify({'success': success, 'statusCode': statusCode, 'message': message, 'data': data}))
 
 
 def judge_user_id(user_id: str):
@@ -359,12 +311,14 @@ def get_user_info():
                 res['message'] = "获取用户数据成功"
         return make_response(jsonify(res))
 """
-@api_blue.route('/get_goods_info',methods=['GET'])
+
+
+@api_blue.route('/get_goods_info', methods=['GET'])
 def get_goods_data():
     item_id = request.args.get('id')
     res = copy.deepcopy(default_res)
     try:
-        it = Goods.get(Goods.id==item_id)
+        it = Goods.get(Goods.id == item_id)
     except Exception as e:
         it = None
     if it is None:
@@ -374,7 +328,7 @@ def get_goods_data():
         res['message'] = "未找到商品信息"
         res['data'] = dict()
     else:
-        res['statusCode']=200
+        res['statusCode'] = 200
         res['success'] = True
         res['message'] = "已找到商品信息"
         dic = it.__data__
@@ -388,17 +342,18 @@ def get_goods_data():
             isPub = False
         else:
             isAdmin = (current_user.state == User_state.Admin.value)
-            isPub =  (it.publisher_id.id == current_user.id)
-        res["isAdmin"]=isAdmin
-        res["isPub"]=isPub
+            isPub = (it.publisher_id.id == current_user.id)
+        res["isAdmin"] = isAdmin
+        res["isPub"] = isPub
     return make_response(jsonify(res))
 
-@api_blue.route('/get_want_info',methods=['GET'])
+
+@api_blue.route('/get_want_info', methods=['GET'])
 def get_want_data():
     item_id = int(request.args.get("id"))
     res = copy.deepcopy(default_res)
     try:
-        it = Want.get(Want.id==item_id)
+        it = Want.get(Want.id == item_id)
     except Exception as e:
         it = None
     if it is None:
@@ -408,7 +363,7 @@ def get_want_data():
         res['message'] = "未找到悬赏信息"
         res['data'] = dict()
     else:
-        res['statusCode']=200
+        res['statusCode'] = 200
         res['success'] = True
         res['message'] = "已找到悬赏信息"
         dic = it.__data__
@@ -422,12 +377,13 @@ def get_want_data():
             isPub = False
         else:
             isAdmin = (current_user.state == User_state.Admin.value)
-            isPub =  it.publisher_id.id == current_user.id
-        res["isAdmin"]=isAdmin
-        res["isPub"]=isPub
+            isPub = it.publisher_id.id == current_user.id
+        res["isAdmin"] = isAdmin
+        res["isPub"] = isPub
     return make_response(jsonify(res))
 
-@api_blue.route('/search',methods = ['POST'])
+
+@api_blue.route('/search', methods=['POST'])
 def get_search():
     search_type = request.form.get("search_type")
     res = copy.deepcopy(default_res)
@@ -451,7 +407,7 @@ def get_search():
         res['message'] = "已搜索如下结果"
         res['success'] = True
         if search_goods:
-            goods_need = (Goods.name,Goods.publisher_id,Goods.publish_time,Goods.price)
+            goods_need = (Goods.name, Goods.publisher_id, Goods.publish_time, Goods.price)
             get_data = Goods.select(*goods_need).execute()
             for i in get_data:
                 j = i.__data__
@@ -459,7 +415,7 @@ def get_search():
                 j['type'] = "goods"
                 res['data'].append(j)
         if search_want:
-            Want_need = Want.name,Want.publisher_id,Want.publish_time,Want.price
+            Want_need = Want.name, Want.publisher_id, Want.publish_time, Want.price
             get_data = Want.select(*Want_need).execute()
             for i in get_data:
                 j = i.__data__
