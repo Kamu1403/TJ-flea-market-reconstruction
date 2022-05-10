@@ -49,7 +49,7 @@ def make_response_json(statusCode: int = 200, message: str = "", data: dict = {}
             statusCode = 200
         message = quick_response[1]
     if success == None:
-        success = True if statusCode == 200 else False
+        success = True if statusCode // 100 == 2 else False
     return make_response(jsonify({'success': success, 'statusCode': statusCode, 'message': message, 'data': data}))
 
 
