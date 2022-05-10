@@ -63,42 +63,11 @@ def search(keyword: str):  #keyword为你搜索的东西
     return render_template('search.html', keyword=keyword)
 
 
-@app.route('/login', methods=['GET', 'POST'])
+@app.route('/login', methods=['GET'])
 def login():
     # 判断当前用户是否验证，如果通过的话返回首页
     if current_user.is_authenticated:
         return redirect(url_for('user.index'))
-
-    if request.method == 'POST':
-        user_id = request.form.get('user_id')
-        password = request.form.get('password')
-        remember_me = False
-        if request.form.get('remember_me') == 'on':
-            remember_me = True
-
-        try:
-            user = User.get(User.id == user_id)  # 查，此处还可以添加判断用户是否时管理员
-        except:
-            flash('无效的学号,请检查输入或注册')
-            # 然后重定向到登录页面
-            return redirect(url_for('login'))
-        else:
-            # 查到了，判断密码
-            if not user.check_password(password):
-                # 如果用户不存在或者密码不正确就会闪现这条信息
-                flash('密码错误')
-                # 然后重定向到登录页面
-                return redirect(url_for('login'))
-            if user.state == -1:
-                #被封号了
-                flash("您已被封号")
-                # 然后重定向到登录页面
-                return redirect(url_for('login'))
-
-            # 记住登录状态，同时维护current_user
-            login_user(user, remember=remember_me)
-            return redirect(url_for('user.index'))
-
     return render_template('password_login.html')
 
 
@@ -122,11 +91,7 @@ def register():
             user = User.get(User.id == user_id)  # 查，此处还可以添加判断用户是否为管理员
             flash('该学号已被注册')
         except:
-            User.create(id=user_id,
-                        username=user_id,
-                        state=state,
-                        password_hash=generate_password_hash(password),
-                        email=str(user_id) + "@tongji.edu.cn")
+            User.create(id=user_id, username=user_id, state=state, password_hash=generate_password_hash(password), email=str(user_id) + "@tongji.edu.cn")
             return redirect(url_for('login'))
 
     return render_template('register.html')
