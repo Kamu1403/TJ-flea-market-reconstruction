@@ -22,7 +22,9 @@
         <link rel="stylesheet" href="  {{url_for('static', filename='css/tab.css')}}">
         <link rel="stylesheet" href="  {{url_for('static', filename='css/dropdown.css')}}">
     </head>
+
     <body>
+
 
         <!-- preloader -->
         <div id="preloader">
@@ -96,13 +98,10 @@
                         <div class="d-block d-sm-flex align-items-center justify-content-end">
                             <div class="col-md-9">
                                 <div class="header-search-wrap">
-                                    <form action="#">
-                                        <select class="custom-select">
-                                            <option selected="">所有种类</option>
-                                            <option>-- 学习用品</option>
-                                            <option>-- 生活用品</option>
-                                            <option>-- 其他（待添加）</option>
-                                            <option>-- 其他</option>
+                                    <form role="form" class="text-center" method="POST">
+                                        <select class="custom-select" id="search_type">
+                                            <option value="goods" selected="">商品</option>
+                                            <option value="want">悬赏</option>
                                             <!-- <option>-- Fresh Fish</option>
                                             <option>-- Fresh Nuts</option>
                                             <option>-- Fresh Meats</option>
@@ -112,12 +111,15 @@
                                             <option>-- Dried Fruits</option>
                                             <option>-- Others Food</option> -->
                                         </select>
-                                        <input type="text" placeholder="搜索...">
-                                        <button><i class="flaticon-loupe-1"></i></button>
+                                        <input
+                                            type="text" 
+                                            placeholder="搜索..."
+                                            id="key_word"
+                                        />
+                                        <button type="submit"><i class="flaticon-loupe-1"></i></button>
                                     </form>
                                 </div>
                             </div>
-                        <!-- </div> -->
                             <div class="col-lg-1">
                                 <div class="header-action">
                                     <ul>
@@ -320,10 +322,10 @@
                             <div class="col-3 d-none d-lg-block">
                                 <div class="tabs">
 
-                                    <input checked id="one" name="tabs" type="radio">
+                                    <input checked id="one" name="tabs" type="radio" style="opacity: 0;">
                                     <label for="one">我的待售</label>
                             
-                                    <input id="two" name="tabs" type="radio" value="Two">
+                                    <input id="two" name="tabs" type="radio" value="Two"  style="opacity: 0;">
                                     <label for="two">我的悬赏</label>
                             
                                     <div class="panels">

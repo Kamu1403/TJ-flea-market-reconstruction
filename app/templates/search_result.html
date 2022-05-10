@@ -1,0 +1,636 @@
+﻿<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>search-result</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<link rel="shortcut icon" type="image/x-icon" href="{{url_for('static', filename='img/favicon.png')}}">
+        <!-- Place favicon.ico in the root directory -->
+
+		<!-- CSS here -->
+        <link rel="stylesheet" href=" {{url_for('static', filename='css/bootstrap.min.css')}}">
+        <link rel="stylesheet" href=" {{url_for('static', filename='css/animate.min.css')}}">
+        <link rel="stylesheet" href=" {{url_for('static', filename='css/magnific-popup.css')}}">
+        <link rel="stylesheet" href="{{url_for('static', filename='css/fontawesome-all.min.css')}}">
+        <link rel="stylesheet" href="  {{url_for('static', filename='css/jquery-ui.css')}}">
+        <link rel="stylesheet" href="  {{url_for('static', filename='css/flaticon.css')}}">
+        <link rel="stylesheet" href="  {{url_for('static', filename='css/aos.css')}}">
+        <link rel="stylesheet" href="  {{url_for('static', filename='css/slick.css')}}">
+        <link rel="stylesheet" href="  {{url_for('static', filename='css/default.css')}}">
+        <link rel="stylesheet" href="  {{url_for('static', filename='css/style.css')}}">
+        <link rel="stylesheet" href="  {{url_for('static', filename='css/responsive.css')}}">
+        <!-- <link rel="stylesheet" href="  {{url_for('static', filename='css/tab.css')}}"> -->
+        <link rel="stylesheet" href="  {{url_for('static', filename='css/dropdown.css')}}">
+        <!-- <script>
+            function selectOnchange(obj){  
+                //获取被选中的option标签选项
+
+                if (obj.selectedIndex==4){
+                    //获取需要悬浮的对象  alert(obj.selectedIndex);
+                    let time_range = document.getElementById("time_range");
+                    time_range.style.display="block";
+                }
+                else{
+                    let time_range = document.getElementById("time_range");
+                    time_range.style.display="block";
+                }
+            }
+        </script> -->
+    </head>
+    <body>
+
+        <!-- preloader -->
+        <div id="preloader">
+            <div id="loading-center">
+                <div class="loader">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+        <!-- preloader-end -->
+
+
+		<!-- Scroll-top ，顶部滚动-->
+        <button class="scroll-top scroll-to-target" data-target="html">
+            <i class="fas fa-angle-up"></i>
+        </button>
+        <!-- Scroll-top-end-->
+
+        <!-- header-area -->
+        <header>
+
+            <!-- header-top-start -->
+            <div class="header-top-wrap">
+                <div class="container custom-container">
+                    <div class="row align-items-center">
+                        <div class="col-md-7">
+                            <div class="header-top-left">
+                                <ul>
+                                    <li class="header-top-lang">
+                                        <div class="dropdown">
+                                            <button class="dropdown-toggle" type="button" id="dropdownMenuButton2" data-toggle="dropdown" aria-haspopup="true"
+                                                aria-expanded="false">English</button>
+                                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
+                                                <a class="dropdown-item" href="index.html">English</a>
+                                                <a class="dropdown-item" href="index.html">Chinese</a>
+                                                <a class="dropdown-item" href="index.html">German</a>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <!-- <li class="header-top-currency">
+                                        <div class="dropdown">
+                                            <button class="dropdown-toggle" type="button" id="dropdownMenuButton3" data-toggle="dropdown" aria-haspopup="true"
+                                                aria-expanded="false">USD - US Dollar</button>
+                                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton3">
+                                                <a class="dropdown-item" href="index.html">INR - IN Rupe</a>
+                                                <a class="dropdown-item" href="index.html">BDT - BD Taka</a>
+                                                <a class="dropdown-item" href="index.html">SAR - SA Riyal</a>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="header-work-time">
+                                        Working time: <span> Mon - Sat : 8:00 - 21:0</span>
+                                    </li> -->
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="header-top-right">
+                                <ul>
+                                    <!-- <li><a href="contact.html">My Account</a></li>
+                                    <li><a href="about-us.html">About Us</a></li> -->
+                                    <li><a href="contact.html">Contact</a></li>
+                                    <!-- <li><a href="contact.html">FAQ</a></li> -->
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- header-top-end -->
+
+            <!-- header-search-area -->
+            <div class="header-search-area">
+                <div class="container custom-container">
+                    <div class="row align-items-center">
+                        <div class="col-xl-2 col-lg-3 d-none d-lg-block">
+                            <div class="logo">
+                                <a href="index.html"><img src="{{url_for('static', filename='img/logo/logo.png')}}" alt="Logo"></a>
+                            </div>
+                        </div>
+                        <div class="d-block d-sm-flex align-items-center justify-content-end">
+                            <div class="col-md-9">
+                                <div class="header-search-wrap">
+                                <form role="form" class="text-center" method="POST">
+                                        <select class="custom-select" name="search_type">
+                                            <option value="goods" selected="">商品</option>
+                                            <option value="want">悬赏</option>
+                                            <!-- <option>-- Fresh Fish</option>
+                                            <option>-- Fresh Nuts</option>
+                                            <option>-- Fresh Meats</option>
+                                            <option>-- Bread & Bakery</option>
+                                            <option>-- Vegetable</option>
+                                            <option>-- Kids Food</option>
+                                            <option>-- Dried Fruits</option>
+                                            <option>-- Others Food</option> -->
+                                        </select>
+                                        <input
+                                            type="text" 
+                                            placeholder="搜索..."
+                                            name="key_word"
+                                        />
+                                        <button type="submit"><i class="flaticon-loupe-1"></i></button>
+                                    </form>
+                                </div>
+                            </div>
+                        <!-- </div> -->
+                            <div class="col-lg-1">
+                                <div class="header-action">
+                                    <ul>
+                                        <!-- 心表示收藏 -->
+                                        <li class="header-wishlist">
+                                            <a href="#"><i class="flaticon-heart-shape-outline"></i></a>
+                                            <span class="item-count">0</span>
+                                        </li>
+                                        <!-- 消息通知 -->
+                                        <li class="header-wishlist">
+                                            <a href="#"><i class="flaticon-mail"></i></a>
+                                            <span class="item-count">0</span>
+                                        </li>
+
+                                        <li class="dropdown">
+                                                <span><img src="{{url_for('static', filename='img/images/user1.png')}}" alt="" width="60" height="60" class="img-circle">
+                                                </span>
+                                                <!--页面待制作-->
+                                                <div class="dropdown-content">
+                                                    <a href="personal-center.html">个人中心</a>
+                                                    <a href="cart.html">我的主页</a>
+                                                    <a href="history.html">我的足迹</a>
+                                                    <a href="history.html">退出登录</a>
+                                                </div>
+                                        </li>
+                                        
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- header-search-area-end -->
+
+        </header>
+        <!-- header-area-end -->
+
+
+        <!-- main-area -->
+        <main>
+
+            <!-- breadcrumb-area -->
+            <!-- <div class="breadcrumb-area breadcrumb-bg-two">
+                <div class="container custom-container">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="breadcrumb-content">
+                                <nav aria-label="breadcrumb">
+                                    <ol class="breadcrumb">
+                                        <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                                        <li class="breadcrumb-item"><a href="shop.html">Shop</a></li>
+                                        <li class="breadcrumb-item active" aria-current="page">Spices Food</li>
+                                    </ol>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> -->
+            <!-- breadcrumb-area-end -->
+
+            <!-- shop-area -->
+            <section class="shop--area pt-40 pb-40">
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col-3 order-2 order-lg-0">
+                            <aside class="shop-sidebar">
+                                <div class="widget shop-widget">
+                                    <div class="shop-widget-title">
+                                        <h6 class="title">分类</h6>
+                                    </div>
+                                    <div class="shop-cat-list">
+                                        <ul>
+                                            <li><a href="shop.html">商品</a></li>
+                                            <li><a href="shop.html">悬赏</a></li>
+                                            <!-- <li><a href="shop.html">Accessories <span>+</span></a></li>
+                                            <li><a href="shop.html">Vegetables <span>+</span></a></li>
+                                            <li><a href="shop.html">Spices Food <span>+</span></a></li>
+                                            <li><a href="shop.html">Dairy <span>+</span></a></li>
+                                            <li><a href="shop.html">Baby Food <span>+</span></a></li>
+                                            <li><a href="shop.html">Kitchen Accessories <span>+</span></a></li> -->
+                                        </ul>
+                                    </div>
+                                </div>
+                                <!-- <div class="widget shop-widget">
+                                    <div class="shop-widget-title">
+                                        <h6 class="title">价格区间</h6>
+                                    </div>
+                                    <div class="price_filter">
+                                        <div id="slider-range"></div>
+                                        <div class="price_slider_amount">
+                                            <span>Price :</span>
+                                            <input type="text" id="amount" name="price" placeholder="Add Your Price" />
+                                        </div>
+                                    </div>
+                                </div> -->
+                                <div class="widget shop-widget">
+                                    <div class="shop-widget-title">
+                                        <h6 class="title">时间区间</h6>
+                                    </div>
+                                    <div class="test_trigue">
+                                        <select name="select" onchange="selectOnchange(this)">
+                                            <option value="">无限制</option>
+                                            <option>一周内</option>
+                                            <option>30天内</option>
+                                            <option>180天内</option>
+                                            <option>一年内</option>
+                                            <!-- <option>自定义</option> -->
+                                        </select>
+                                        <!-- <div id="time_range" style="display: none;">
+                                            <p>从:</p>
+                                            <input name="fromDate" id="fromDate" type="text"  class="daterangepicker"/>
+
+                                            <p>至:</p>
+                                            <input type="text" id="datetime" />
+                                        </div> -->
+
+                                    </div>
+                                </div>
+                            </aside>
+                        </div>
+                        <div class="col-9">
+                            <div class="shop-top-meta mb-30">
+                                <div class="row">
+                                    <div class="col-md-6 col-sm-7">
+                                        <div class="shop-top-left">
+                                            <ul>
+                                                <li><a href="#"><i class="fas fa-bars"></i> FILTER</a></li>
+                                                <li>"{{keyword}}"的搜索结果</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-sm-5">
+                                        <div class="shop-top-right">
+                                            <form action="#">
+                                                <select name="select">
+                                                    <option value="">结果相似度</option>
+                                                    <option>最新发布</option>
+                                                    <option>价格正序</option>
+                                                    <option>价格倒序</option>
+                                                </select>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="shop-products-wrap">
+                                <div class="row justify-content-center">
+                                    <div class="col-xl-3 col-md-4 col-sm-6">
+                                        <div class="sp-product-item">
+                                            <div class="sp-product-thumb">
+                                                <span class="batch">New</span>
+                                                <a href="shop-details.html"><img src="{{url_for('static', filename='img/product/sp_products09.png')}}" alt=""></a>
+                                            </div>
+                                            <div class="sp-product-content">
+                                                <div class="rating">
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                </div>
+                                                <h6 class="title"><a href="shop-details.html">Uncle Orange Bens Ready Pice</a></h6>
+                                                <span class="product-status">IN Stock</span>
+                                                <div class="sp-cart-wrap">
+                                                    <form action="#">
+                                                        <div class="cart-plus-minus">
+                                                            <input type="text" value="1">
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                                <p>$1.50 - 1 kg</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-3 col-md-4 col-sm-6">
+                                        <div class="sp-product-item">
+                                            <div class="sp-product-thumb">
+                                                <span class="batch discount">25%</span>
+                                                <a href="shop-details.html"><img src="{{url_for('static', filename='img/product/sp_products02.png')}}" alt=""></a>
+                                            </div>
+                                            <div class="sp-product-content">
+                                                <div class="rating">
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                </div>
+                                                <h6 class="title"><a href="shop-details.html">Dannon Max Vanla Ice Cream</a></h6>
+                                                <span class="product-status">IN Stock</span>
+                                                <div class="sp-cart-wrap">
+                                                    <form action="#">
+                                                        <div class="cart-plus-minus">
+                                                            <input type="text" value="1">
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                                <p>$1.50 - 1 lt</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-3 col-md-4 col-sm-6">
+                                        <div class="sp-product-item">
+                                            <div class="sp-product-thumb">
+                                                <span class="batch discount">25%</span>
+                                                <a href="shop-details.html"><img src="{{url_for('static', filename='img/product/sp_products10.png')}}" alt=""></a>
+                                            </div>
+                                            <div class="sp-product-content">
+                                                <div class="rating">
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                </div>
+                                                <h6 class="title"><a href="shop-details.html">Walnuts Max Vanla Greek Pice</a></h6>
+                                                <span class="product-status">IN Stock</span>
+                                                <div class="sp-cart-wrap">
+                                                    <form action="#">
+                                                        <div class="cart-plus-minus">
+                                                            <input type="text" value="1">
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                                <p>$1.50 - 1 kg</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-3 col-md-4 col-sm-6">
+                                        <div class="sp-product-item">
+                                            <div class="sp-product-thumb">
+                                                <span class="batch">New</span>
+                                                <a href="shop-details.html"><img src="{{url_for('static', filename='img/product/sp_products04.png')}}" alt=""></a>
+                                            </div>
+                                            <div class="sp-product-content">
+                                                <div class="rating">
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                </div>
+                                                <h6 class="title"><a href="shop-details.html">Uncle Bens Vanla Ready Pice</a></h6>
+                                                <span class="product-status">IN Stock</span>
+                                                <div class="sp-cart-wrap">
+                                                    <form action="#">
+                                                        <div class="cart-plus-minus">
+                                                            <input type="text" value="1">
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                                <p>$1.50 - 1 kg</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-3 col-md-4 col-sm-6">
+                                        <div class="sp-product-item">
+                                            <div class="sp-product-thumb">
+                                                <span class="batch discount">25%</span>
+                                                <a href="shop-details.html"><img src="{{url_for('static', filename='img/product/sp_products11.png')}}" alt=""></a>
+                                            </div>
+                                            <div class="sp-product-content">
+                                                <div class="rating">
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                </div>
+                                                <h6 class="title"><a href="shop-details.html">Capsicum Vanla Ben Ready Pice</a></h6>
+                                                <span class="product-status">IN Stock</span>
+                                                <div class="sp-cart-wrap">
+                                                    <form action="#">
+                                                        <div class="cart-plus-minus">
+                                                            <input type="text" value="1">
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                                <p>$1.50 - 1 kg</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-3 col-md-4 col-sm-6">
+                                        <div class="sp-product-item">
+                                            <div class="sp-product-thumb">
+                                                <span class="batch">New</span>
+                                                <a href="shop-details.html"><img src="{{url_for('static', filename='img/product/sp_products06.png')}}" alt=""></a>
+                                            </div>
+                                            <div class="sp-product-content">
+                                                <div class="rating">
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                </div>
+                                                <h6 class="title"><a href="shop-details.html">Potato Max Vanla Greek Pice</a></h6>
+                                                <span class="product-status">IN Stock</span>
+                                                <div class="sp-cart-wrap">
+                                                    <form action="#">
+                                                        <div class="cart-plus-minus">
+                                                            <input type="text" value="1">
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                                <p>$1.99 - 1 kg</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="pagination-wrap">
+                                <ul>
+                                    <li class="prev"><a href="shop.html">Prev</a></li>
+                                    <li class="active"><a href="shop.html">1</a></li>
+                                    <li><a href="shop.html">2</a></li>
+                                    <li><a href="shop.html">3</a></li>
+                                    <li><a href="shop.html">4</a></li>
+                                    <li><a href="shop.html">...</a></li>
+                                    <li><a href="shop.html">10</a></li>
+                                    <li class="next"><a href="shop.html">Next</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- shop-area-end -->
+
+        </main>
+        <!-- main-area-end -->
+
+
+        <!-- footer-area -->
+        <footer>
+            <div class="footer-area gray-bg pt-80 pb-30">
+                <div class="container">
+                    <div class="row justify-content-between">
+                        <div class="col-xl-3 col-lg-4 col-md-6">
+                            <div class="footer-widget mb-50">
+                                <div class="footer-logo mb-25">
+                                    <a href="index.html"><img src="{{url_for('static', filename='img/logo/logo.png')}}" alt=""></a>
+                                </div>
+                                <div class="footer-contact-list">
+                                    <ul>
+                                        <li>
+                                            <div class="icon"><i class="flaticon-place"></i></div>
+                                            <p>PO Box W75 Street West New Queens, TX 16819</p>
+                                        </li>
+                                        <li>
+                                            <div class="icon"><i class="flaticon-telephone-1"></i></div>
+                                            <h5 class="number"><a href="tel:12027993245">+120 279 932 45</a></h5>
+                                        </li>
+                                        <li>
+                                            <div class="icon"><i class="flaticon-mail"></i></div>
+                                            <p><a href="/cdn-cgi/l/email-protection#d3a0a6a3a3bca1a793a5b6b4b6bdfdb0bcbe"><span class="__cf_email__" data-cfemail="43303633332c313703352624262d6d202c2e">[email&#160;protected]</span></a></p>
+                                        </li>
+                                        <li>
+                                            <div class="icon"><i class="flaticon-wall-clock"></i></div>
+                                            <p>Week 7 days from 7:00 to 20:00</p>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="footer-social">
+                                    <ul>
+                                        <li><a href="#"><i class="fab fa-facebook-f"></i></a></li>
+                                        <li><a href="#"><i class="fab fa-twitter"></i></a></li>
+                                        <li><a href="#"><i class="fab fa-youtube"></i></a></li>
+                                        <li><a href="#"><i class="fab fa-linkedin-in"></i></a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6">
+                            <div class="footer-widget mb-50">
+                                <div class="fw-title">
+                                    <h5 class="title">Customer Service</h5>
+                                </div>
+                                <div class="fw-link">
+                                    <ul>
+                                        <li><a href="shop.html">Secure Shopping</a></li>
+                                        <li><a href="cart.html">Order Status</a></li>
+                                        <li><a href="shop.html">International Shipping</a></li>
+                                        <li><a href="checkout.html">Payment Method</a></li>
+                                        <li><a href="blog.html">Our Blog</a></li>
+                                        <li><a href="terms-conditios.html">Orders and Returns</a></li>
+                                        <li><a href="checkout.html">Track Your Orders</a></li>
+                                        <li><a href="index.html">Footer Links</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6">
+                            <div class="footer-widget mb-50">
+                                <div class="fw-title">
+                                    <h5 class="title">Useful Links</h5>
+                                </div>
+                                <div class="fw-link">
+                                    <ul>
+                                        <li><a href="checkout.html">Delivery</a></li>
+                                        <li><a href="terms-conditios.html">Legal Notice</a></li>
+                                        <li><a href="about-us.html">About us</a></li>
+                                        <li><a href="contact.html">Sitemap</a></li>
+                                        <li><a href="checkout.html">Track Your Orders</a></li>
+                                        <li><a href="index.html">Footer Links</a></li>
+                                        <li><a href="terms-conditios.html">Orders and Returns</a></li>
+                                        <li><a href="contact.html">Contact Us</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-4 col-lg-4 col-md-6">
+                            <div class="footer-widget footer-box-widget mb-50">
+                                <div class="f-download-wrap">
+                                    <div class="fw-title">
+                                        <h5 class="title">Download App</h5>
+                                    </div>
+                                    <div class="download-btns">
+                                        <a href="index.html"><img src="{{url_for('static', filename='img/icon/g_play.png')}}" alt=""></a>
+                                        <a href="index.html"><img src="{{url_for('static', filename='img/icon/app_store.png')}}" alt=""></a>
+                                    </div>
+                                </div>
+                                <div class="f-newsletter">
+                                    <div class="fw-title">
+                                        <h5 class="title">Newsletter</h5>
+                                    </div>
+                                    <form action="#">
+                                        <input type="email" placeholder="Email Address">
+                                        <button><i class="flaticon-send"></i></button>
+                                    </form>
+                                    <p>Do Not Show Your Mail</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="copyright-wrap">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <div class="copyright-text">
+                                <p>Copyright &copy; 2021 Ganic All Rights By <a href="http://www.bootstrapmb.com/">bootstrapmb</a></p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="payment-accepted text-center text-md-right">
+                                <img src="{{url_for('static', filename='img/images/payment_card.png')}}" alt="">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- footer-area-end -->
+
+
+
+
+
+		<!-- JS here -->
+        <script src="  {{url_for('static', filename='js/vendor/jquery-3.6.0.min.js')}}"></script>
+        <script src="  {{url_for('static', filename='js/bootstrap.min.js')}}"></script>
+        <script src="  {{url_for('static', filename='js/isotope.pkgd.min.js')}}"></script>
+        <script src="  {{url_for('static', filename='js/imagesloaded.pkgd.min.js')}}"></script>
+        <script src="  {{url_for('static', filename='js/jquery.magnific-popup.min.js')}}"></script>
+        <script src="  {{url_for('static', filename='js/jquery.countdown.min.js')}}"></script>
+        <script src="  {{url_for('static', filename='js/jquery-ui.min.js')}}"></script>
+        <script src="  {{url_for('static', filename='js/slick.min.js')}}"></script>
+        <script src="  {{url_for('static', filename='js/ajax-form.js')}}"></script>
+        <script src="  {{url_for('static', filename='js/wow.min.js')}}"></script>
+        <script src="  {{url_for('static', filename='js/aos.js')}}"></script>
+        <script src="  {{url_for('static', filename='js/plugins.js')}}"></script>
+        <script src="  {{url_for('static', filename='js/main.js')}}"></script>
+        <script src="  {{url_for('static', filename='js/dropdown.js')}}"></script>
+
+    </body>
+</html>
