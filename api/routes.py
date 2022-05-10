@@ -1,56 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
-from operator import methodcaller
-from typing import Dict, List
-from flask_login import current_user
+from api.utils import *
 from api import api_blue
-from flask import make_response, request, jsonify
-#enum
-from user.models import User_state
-from admin.models import Feedback_kind, Feedback_state
-from order.models import Order_state
-#model
-from user.models import User
-from admin.models import Feedback, User_Management
-from order.models import Contact, Review, Order, Order_State_Item, Order_Item
-from item.models import Goods, Want, HistoryGoods, HistoryWant, FavorGoods, FavorWant
-import copy
-import os
-import re
-import json
-import datetime
-import time
-import random
+
 from .send_verification_mail import send_email
-
-#返回值规范
-default_res = {'success': True, 'statusCode': 200, 'message': '', 'data': {}}
-'''
-statusCode:
-•	200：操作成功返回。
-•	201：表示创建成功，POST 添加数据成功后必须返回此状态码。
-•	400：请求格式不对。
-•	401：未授权。（User/Admin）
-•	404：请求的资源未找到。
-•	500：内部程序错误。
-
-其他详见接口文档
-'''
-
-
-def make_response_json(statusCode: int = 200, message: str = "", data: dict = {}, success: bool = None, quick_response: list = None):
-    '''
-    :params quick_response: [statusCode（若为0，则自动改为200）, message]
-    如果success未指定，则当statusCode==200时为True，否则False
-    '''
-    if type(quick_response) == list and len(quick_response) == 2:
-        statusCode = quick_response[0]
-        if statusCode == 0:
-            statusCode = 200
-        message = quick_response[1]
-    if success == None:
-        success = True if statusCode // 100 == 2 else False
-    return make_response(jsonify({'success': success, 'statusCode': statusCode, 'message': message, 'data': data}))
 
 
 def judge_user_id(user_id: str):
@@ -195,34 +148,23 @@ def send_verification_code():
 
 @api_blue.route('/login_using_password', methods=['POST'])
 def login_using_password():
-    return
-    res = copy.deepcopy(default_res)
-    if request.method == 'POST':
-        user_id = request.form.get('user_id')
-        password = request.form.get('password')
-        remember_me = True
-        try:
-            user = User.get(User.id == user_id)  # 查，此处还可以添加判断用户是否时管理员
-        except:
-            flash('无效的学号,请检查输入或注册')
-            # 然后重定向到登录页面
-            return redirect(url_for('login'))
-        else:
-            # 查到了，判断密码
-            if not user.check_password(password):
-                # 如果用户不存在或者密码不正确就会闪现这条信息
-                flash('密码错误')
-                # 然后重定向到登录页面
-                return redirect(url_for('login'))
-            if user.state == -1:
-                #被封号了
-                flash("您已被封号")
-                # 然后重定向到登录页面
-                return redirect(url_for('login'))
-
-            # 记住登录状态，同时维护current_user
-            login_user(user, remember=remember_me)
-            return redirect(url_for('user.index'))
+    user_id = request.form.get('user_id')
+    password = request.form.get('password')
+    remember_me = True
+    try:
+        user = User.get(User.id == user_id)  # 查，此处还可以添加判断用户是否时管理员
+    except:
+        return make_response_json(400, "账号不存在")
+    else:
+        # 查到了，判断密码
+        if not user.check_password(password):
+            # 如果用户不存在或者密码不正确就会闪现这条信息
+            return make_response_json(400, "密码错误")
+        if user.state == -1:
+            return make_response_json(400, "您的账号已被冻结")
+        # 记住登录状态，同时维护current_user
+        login_user(user, True, datetime.timedelta(days=30))
+        return redirect(url_for('user.index'))
 
 
 @api_blue.route('/register_or_login_using_verification_code', methods=['POST'])
@@ -257,7 +199,7 @@ def GetUserDict(i) -> dict:
 
 
 #管理员获取所有用户信息
-@api_blue.route('/getalluser', methods=['GET'])
+@api_blue.route('/get_all_user', methods=['GET'])
 def get_all_user():
     res = copy.deepcopy(default_res)
     data_list = []
@@ -289,7 +231,7 @@ def get_all_user():
 
 
 #管理员封号
-@api_blue.route('/banuser', methods=['PUT'])
+@api_blue.route('/ban_user', methods=['PUT'])
 def ban_user():
     if request.method == 'PUT':
         res = copy.deepcopy(default_res)
@@ -321,7 +263,7 @@ def ban_user():
         return make_response(jsonify(res))
 
 
-@api_blue.route('/getuserinfo', methods=['POST'])
+@api_blue.route('/get_user_info', methods=['POST'])
 def get_user_info():
     if request.method == 'POST':
         res = copy.deepcopy(default_res)
@@ -369,8 +311,15 @@ def get_user_info():
                 res['message'] = "获取用户数据成功"
         return make_response(jsonify(res))
 """
+<<<<<<< HEAD
 @api_blue.route('/get_item_info',methods=['GET'])
 def get_item_info():
+=======
+
+
+@api_blue.route('/get_goods_info', methods=['GET'])
+def get_goods_data():
+>>>>>>> c5c64a4eefda97184741eed44a439eab52cb2b28
     item_id = request.args.get('id')
     need_type = request.args.get("type")
     print(item_id)
@@ -382,7 +331,11 @@ def get_item_info():
         bases = None
     res = copy.deepcopy(default_res)
     try:
+<<<<<<< HEAD
         it = bases.get(bases.id==item_id)
+=======
+        it = Goods.get(Goods.id == item_id)
+>>>>>>> c5c64a4eefda97184741eed44a439eab52cb2b28
     except Exception as e:
         it = None
     if it is None:
@@ -392,7 +345,7 @@ def get_item_info():
         res['message'] = "未找到商品信息"
         res['data'] = dict()
     else:
-        res['statusCode']=200
+        res['statusCode'] = 200
         res['success'] = True
         res['message'] = "已找到商品信息"
         dic = it.__data__
@@ -406,12 +359,52 @@ def get_item_info():
             isPub = False
         else:
             isAdmin = (current_user.state == User_state.Admin.value)
-            isPub =  (it.publisher_id.id == current_user.id)
-        res["isAdmin"]=isAdmin
-        res["isPub"]=isPub
+            isPub = (it.publisher_id.id == current_user.id)
+        res["isAdmin"] = isAdmin
+        res["isPub"] = isPub
     return make_response(jsonify(res))
 
+<<<<<<< HEAD
 @api_blue.route('/search',methods = ['POST'])
+=======
+
+@api_blue.route('/get_want_info', methods=['GET'])
+def get_want_data():
+    item_id = int(request.args.get("id"))
+    res = copy.deepcopy(default_res)
+    try:
+        it = Want.get(Want.id == item_id)
+    except Exception as e:
+        it = None
+    if it is None:
+        #报错
+        res['statusCode'] = 404
+        res['success'] = False
+        res['message'] = "未找到悬赏信息"
+        res['data'] = dict()
+    else:
+        res['statusCode'] = 200
+        res['success'] = True
+        res['message'] = "已找到悬赏信息"
+        dic = it.__data__
+        dic.pop('id')
+        dic.pop('locked_num')
+        dic['publish_time'] = str(dic['publish_time'])
+        dic['price'] = float(dic['price'])
+        res['data'] = dic
+        if not current_user.is_authenticated:
+            isAdmin = False
+            isPub = False
+        else:
+            isAdmin = (current_user.state == User_state.Admin.value)
+            isPub = it.publisher_id.id == current_user.id
+        res["isAdmin"] = isAdmin
+        res["isPub"] = isPub
+    return make_response(jsonify(res))
+
+
+@api_blue.route('/search', methods=['POST'])
+>>>>>>> c5c64a4eefda97184741eed44a439eab52cb2b28
 def get_search():
     search_type = request.form.get("search_type")
     res = copy.deepcopy(default_res)
@@ -435,7 +428,7 @@ def get_search():
         res['message'] = "已搜索如下结果"
         res['success'] = True
         if search_goods:
-            goods_need = (Goods.name,Goods.publisher_id,Goods.publish_time,Goods.price)
+            goods_need = (Goods.name, Goods.publisher_id, Goods.publish_time, Goods.price)
             get_data = Goods.select(*goods_need).execute()
             for i in get_data:
                 j = i.__data__
@@ -443,7 +436,7 @@ def get_search():
                 j['type'] = "goods"
                 res['data'].append(j)
         if search_want:
-            Want_need = Want.name,Want.publisher_id,Want.publish_time,Want.price
+            Want_need = Want.name, Want.publisher_id, Want.publish_time, Want.price
             get_data = Want.select(*Want_need).execute()
             for i in get_data:
                 j = i.__data__
