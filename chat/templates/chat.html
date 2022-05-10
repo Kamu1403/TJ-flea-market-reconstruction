@@ -33,7 +33,8 @@
                     if (code == 13) {
                         text = $('#text').val();
                         $('#text').val('');
-                        socket.emit('text', {msg: text,time:cur_time,receiver:receiver,room:room,type:"text"});
+                        if (text!="")
+                            socket.emit('text', {msg: text,time:cur_time,receiver:receiver,room:room,type:"text"});
                     }
                 });
                 $('#image').change(function(e)

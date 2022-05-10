@@ -29,11 +29,7 @@ def joined(message):
                          'time':str(user.msg_time),'type':user.msg_type},
          room=sender)
 
-
-    '''
-    sender用户的id作为roomid的键 即进入自己的room
-    第一次建立 连接形成的sid作为roomid的值 
-    '''
+    #Room表中标记用户在线
     Room.update(room_state=Room.room_state+1).where(Room.room_id==roomid).execute()
     print("+")
     
@@ -49,10 +45,6 @@ def joined(message):
          room=sender)
     '''进入提醒可删除'''
     
-    '''
-    读取历史记录
-    
-    '''
     if not database.is_closed():
         database.close()
 

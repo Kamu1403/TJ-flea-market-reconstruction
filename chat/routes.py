@@ -40,7 +40,7 @@ def chat(opt_userid:int):
         room = sender + '-' + receiver
         reroom = receiver + '-' + sender
         tag1,tag2=0,0
-        #查询是否存在该聊天,发送接收双方此时共享一个聊天室
+        #查询是否存在该聊天,发送接收双方此时共享一个聊天室(聊天记录)
         try:
             roomid = Room.get(Room.room_id==room)
         except:
