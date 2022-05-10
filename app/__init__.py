@@ -28,7 +28,7 @@ socketio.init_app(app)
 import peewee as pw
 # py_peewee连接的数据库名:database
 database = pw.MySQLDatabase(
-    database=database_name, 
+    database=database_name,
     host='127.0.0.1',
     user=user,
     passwd=password,  #记得改密码，不然你可能调试不了
@@ -52,6 +52,7 @@ from admin import admin_blue
 from api import api_blue
 from order import order_blue
 from chat import chat_blue
+app.config['JSON_AS_ASCII'] = False
 app.register_blueprint(item_blue, url_prefix='/item')
 app.register_blueprint(user_blue, url_prefix='/user')
 app.register_blueprint(admin_blue,url_prefix='/admin')

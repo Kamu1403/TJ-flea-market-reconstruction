@@ -37,7 +37,7 @@ def login_using_password():
         password=request.form.get('password')
         remember_me=True
         try:
-            user = User.get(User.id == user_id)  # 查，此处还可以添加判断用户是否时管理员        
+            user = User.get(User.id == user_id)  # 查，此处还可以添加判断用户是否时管理员
         except:
             flash('无效的学号,请检查输入或注册')
             # 然后重定向到登录页面
@@ -53,7 +53,7 @@ def login_using_password():
                 #被封号了
                 flash("您已被封号")
                 # 然后重定向到登录页面
-                return redirect(url_for('login')) 
+                return redirect(url_for('login'))
 
             # 记住登录状态，同时维护current_user
             login_user(user, remember=remember_me)
@@ -200,3 +200,70 @@ def get_user_info():
                 res['message'] = "获取用户数据成功"
         return make_response(jsonify(res))
 """
+@api_blue.route('/get_goods_info',methods=['GET'])
+def get_goods_data():
+    item_id = request.args.get('id')
+    res = copy.deepcopy(default_res)
+    try:
+        it = Goods.get(Goods.id==item_id)
+    except Exception as e:
+        it = None
+    if it is None:
+        #报错
+        res['statusCode'] = 404
+        res['success'] = False
+        res['message'] = "未找到商品信息"
+        res['data'] = dict()
+    else:
+        res['statusCode']=200
+        res['success'] = True
+        res['message'] = "已找到商品信息"
+        dic = it.__data__
+        dic.pop('id')
+        dic.pop('locked_num')
+        res['data'] = dic
+        dic['publish_time'] = str(dic['publish_time'])
+        dic['price'] = float(dic['price'])
+        if not current_user.is_authenticated:
+            isAdmin = False
+            isPub = False
+        else:
+            isAdmin = (current_user.state == User_state.Admin.value)
+            isPub =  it.publisher_id.id == current_user.id
+        res["isAdmin"]=isAdmin
+        res["isPub"]=isPub
+    return make_response(jsonify(res))
+
+@api_blue.route('/get_want_info',methods=['GET'])
+def get_want_data():
+    item_id = int(request.args.get("id"))
+    res = copy.deepcopy(default_res)
+    try:
+        it = Want.get(Want.id==item_id)
+    except Exception as e:
+        it = None
+    if it is None:
+        #报错
+        res['statusCode'] = 404
+        res['success'] = False
+        res['message'] = "未找到悬赏信息"
+        res['data'] = dict()
+    else:
+        res['statusCode']=200
+        res['success'] = True
+        res['message'] = "已找到悬赏信息"
+        dic = it.__data__
+        dic.pop('id')
+        dic.pop('locked_num')
+        dic['publish_time'] = str(dic['publish_time'])
+        dic['price'] = float(dic['price'])
+        res['data'] = dic
+        if not current_user.is_authenticated:
+            isAdmin = False
+            isPub = False
+        else:
+            isAdmin = (current_user.state == User_state.Admin.value)
+            isPub =  it.publisher_id.id == current_user.id
+        res["isAdmin"]=isAdmin
+        res["isPub"]=isPub
+    return make_response(jsonify(res))
