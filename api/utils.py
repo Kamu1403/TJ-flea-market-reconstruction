@@ -20,6 +20,7 @@ import json
 import datetime
 import time
 import random
+from werkzeug.security import generate_password_hash
 '''
 statusCode:
 •	200：操作成功返回。

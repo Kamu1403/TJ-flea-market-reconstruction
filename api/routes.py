@@ -52,6 +52,7 @@ def judge_code_frequency(user_id: str) -> list:
     code_list = get_verify_code()
     nowtime = int(time.time())
     save_verify_code(list(filter(lambda x: x["time"] - nowtime < 900, code_list)))  # 验证码有效期15min
+
     for code_record in code_list:
         if code_record["user_id"] == user_id:
             if nowtime - code_record["time"] < 59:
@@ -199,18 +200,18 @@ def register_or_login_using_verification_code():
         user_exist = False
     if password != "":
         if not user_exist:
-            # 新用户加入数据库
+            xuehao = user_id.split('@')[0]
+            User.create(id=int(xuehao), username=xuehao, password_hash=generate_password_hash(password), email=user_id)
             return make_response_json(200, "注册成功")
         else:
-            # 数据库中修改密码
+            tep.password_hash = generate_password_hash(password)
+            tep.save()
             return make_response_json(200, "密码修改成功")
     else:
         if user_exist:
             return _login(user_id, password)
         else:
             return make_response_json(401, "请输入密码以完成注册")
-
-    return
 
 
 def GetUserDict(i) -> dict:
@@ -242,117 +243,59 @@ def GetUserDict(i) -> dict:
 #管理员获取所有用户信息
 @api_blue.route('/get_all_user', methods=['GET'])
 def get_all_user():
-    res = copy.deepcopy(default_res)
-    data_list = []
-    # 判断当前用户是否验证
     if not current_user.is_authenticated:
-        res['message'] = "该用户未通过验证"
-        res['statusCode'] = 401
-        res['success'] = False
-    elif current_user.state == User_state.Admin.value:  #如果当前用户是管理员
-        users = User.select().where(User.state != User_state.Admin.value)
-        for i in users:
-            user_dic = GetUserDict(i)
-            data_list.append(user_dic)
-        res['data'] = data_list
+        return make_response_json(401, "该用户未通过验证")
 
-        if len(data_list) > 0:
-            res['message'] = "所有用户信息获取成功"
-        else:
-            res['message'] = "未找到对应用户信息"
-            res['statusCode'] = 404
-            res['success'] = False
+    if current_user.state < User_state.Admin.value:
+        return make_response_json(401, "权限不足")
 
-    else:  #非管理员
-        res['message'] = "非管理员无此权限"
-        res['statusCode'] = 401
-        res['success'] = False
+    users = User.select().where(User.state != User_state.Admin.value)
+    data_list = []
+    for i in users:
+        user_dic = GetUserDict(i)
+        data_list.append(user_dic)
 
-    return make_response(jsonify(res))
+    if len(data_list) == 0:
+        return make_response_json(404, "无用户信息")
+    return make_response_json(200, "所有用户信息获取成功", data_list)
 
 
 #管理员封号
 @api_blue.route('/ban_user', methods=['PUT'])
 def ban_user():
-    if request.method == 'PUT':
-        res = copy.deepcopy(default_res)
-        # 判断当前用户是否验证
-        if not current_user.is_authenticated:
-            res['message'] = "该用户未通过验证"
-            res['statusCode'] = 401
-            res['success'] = False
-        #在APIFOX测试运行时current_user未经认证，需要先在apifox上登录后才current_user才有效
-        elif current_user.state == User_state.Admin.value:  #如果当前用户是管理员
-            user_id = request.form.get("user_id")
-            try:
-                tep = User.get(User.email == user_id)
-            except:
-                res['message'] = "未找到对应用户信息"
-                res['statusCode'] = 404
-                res['success'] = False
-            else:
-                res['message'] = "已将对应用户封号"
-                tep.state = -1
-                tep.save()
-                #query=User.update(state=-1).where(User.email==user_id)
-                #query.execute()
-        else:  #非管理员
+    if not current_user.is_authenticated:
+        return make_response_json(401, "该用户未通过验证")
 
-            res['message'] = "非管理员无此权限"
-            res['statusCode'] = 401
-            res['success'] = False
+    if current_user.state < User_state.Admin.value:
+        return make_response_json(401, "权限不足")
 
-        return make_response(jsonify(res))
+    #在APIFOX测试运行时current_user未经认证，需要先在apifox上登录后才current_user才有效
+    user_id = request.form.get("user_id")
+    try:
+        tep = User.get(User.email == user_id)
+    except:
+        return make_response_json(404, "未找到用户")
+    else:
+        tep.state = -1
+        tep.save()
+        return make_response_json(200, "操作成功")
+
+        #query=User.update(state=-1).where(User.email==user_id)
+        #query.execute()
 
 
 @api_blue.route('/get_user_info', methods=['POST'])
 def get_user_info():
-    if request.method == 'POST':
-        res = copy.deepcopy(default_res)
+    if not current_user.is_authenticated:
+        return make_response_json(401, "该用户未通过验证")
 
-        # 判断当前用户是否验证
-        if not current_user.is_authenticated:
-            res['message'] = "该用户未通过验证"
-            res['statusCode'] = 401
-            res['success'] = False
-        else:
-            user_id = request.form.get("user_id")
-            try:
-                tep = User.get(User.email == user_id)
-            except:
-                res['message'] = "未找到对应用户信息"
-                res['statusCode'] = 404
-                res['success'] = False
-            else:
-                res['data'] = GetUserDict(tep)
-                res['message'] = "获取用户数据成功"
-        return make_response(jsonify(res))
-
-
-"""
-@api_blue.route('/get_latest_order', methods=['POST'])
-def get_user_info():
-    if request.method == 'POST':
-        res = copy.deepcopy(default_res)
-
-        # 判断当前用户是否验证
-        if not current_user.is_authenticated:
-            res['message'] = "该用户未通过验证"
-            res['statusCode'] = 401
-            res['success'] = False
-        else:
-            user_id = request.form.get("user_id")
-            try:
-                tep = User.get(User.email == user_id)
-            except:
-                res['message'] = "未找到对应用户信息"
-                res['statusCode'] = 404
-                res['success'] = False
-            else:
-                res['data'] = GetUserDict(tep)
-                res['message'] = "获取用户数据成功"
-        return make_response(jsonify(res))
-"""
+    user_id = request.form.get("user_id")
+    try:
+        tep = User.get(User.email == user_id)
+    except:
+        return make_response_json(404, "未找到用户")
+    else:
+        return make_response_json(200, "获取用户数据成功", GetUserDict(tep))
 
 
 @api_blue.route('/get_item_info', methods=['GET'])
@@ -401,62 +344,45 @@ def get_item_info():
 @api_blue.route('/search', methods=['POST'])
 def get_search():
     search_type = request.form.get("search_type")
-    key_word = request.form.get("key_word")
-    order_type = request.form.get("order_type")
-    res = copy.deepcopy(default_res)
-    res['data'] = list()
     if search_type == "goods":
         bases = Goods
     elif search_type == "want":
         bases = Want
     else:
-        bases = None
-    if bases is None:
-        res['statusCode'] = 400
-        res['message'] = "搜索类型仅能指定商品或悬赏"
-        res['success'] = False
-    else:
-        #get_data = bases.select().where().exectue()
-        if order_type == "time":
-            orderWay = bases.publish_time.asc()
-        elif order_type == "price":
-            orderWay = bases.price.asc()
-        elif order_type == "name":
-            orderWay = bases.publish_time.asc()
-        else:
-            orderWay = None
-        if orderWay is not None:
-            need = (bases.name, bases.publisher_id, bases.publish_time, bases.price)
-            select_need = [bases.name.contains(key_word)]
-            try:
-                start_time = request.form.get("start_time")
-                if start_time != "":
-                    start_time = datetime.strptime(start_time, "%Y-%m-%d")
-                    select_need.append(bases.publish_time >= start_time)
-                end_time = request.form.get("end_time")
-                if end_time != "":
-                    end_time = datetime.strptime(end_time, "%Y-%m-%d")
-                    select_need.append(bases.publish_time <= end_time)
-            except Exception as e:
-                print(e)
-                res['message'] = '时间格式错误,应为年-月-日格式'
-                res['statusCode'] = 400
-                res['success'] = False
-            else:
-                res['statusCode'] = 200
-                res['message'] = "已搜索如下结果"
-                res['success'] = True
+        return make_response_json(400, "搜索类型仅能指定商品或悬赏")
 
-                get_data = bases.select(*need).where(*select_need).order_by(orderWay).execute()
-                for i in get_data:
-                    j = i.__data__
-                    j['price'] = float(j['price'])
-                    j['type'] = search_type
-                    j['publish_time'] = str(j['publish_time'])
-                    res['data'].append(j)
-                #order
-        else:
-            res['statusCode'] = 400
-            res['message'] = "排序类型仅能指定价格、时间或内容相似度"
-            res['success'] = False
-    return make_response(jsonify(res))
+    key_word = request.form.get("key_word")
+    order_type = request.form.get("order_type")
+    data = []
+
+    #get_data = bases.select().where().exectue()
+    if order_type == "time":
+        orderWay = (bases.publish_time.desc(), )
+    elif order_type == "price":
+        orderWay = (bases.price.asc(), )
+    else:
+        orderWay = (bases.publish_time.desc(), )  # 改：默认其实为相似度
+
+    need = (bases.id,bases.name, bases.publisher_id, bases.publish_time, bases.price)
+    select_need = [bases.name.contains(key_word)]
+    try:
+        start_time = request.form.get("start_time")
+        if start_time != "" and start_time is not None:
+            start_time = datetime.strptime(start_time, "%Y-%m-%d")
+            select_need.append(bases.publish_time >= start_time)
+        end_time = request.form.get("end_time")
+        if end_time != "" and end_time is not None:
+            end_time = datetime.strptime(end_time, "%Y-%m-%d")
+            select_need.append(bases.publish_time <= end_time)
+    except Exception as e:
+        print(e)
+        return make_response_json(400, '时间格式错误,应为年-月-日格式')
+    else:
+        get_data = bases.select(*need).where(*select_need).order_by(*orderWay).execute()
+        for i in get_data:
+            j = i.__data__
+            j['price'] = float(j['price'])
+            j['type'] = search_type
+            j['publish_time'] = str(j['publish_time'])
+            data.append(j)
+        return make_response_json(200, "搜索结果如下", data)

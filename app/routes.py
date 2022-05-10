@@ -54,7 +54,10 @@ def rootindex():
 def index():
     if request.method == 'POST':
         search_keyword = request.form.get('search')
-        return redirect(url_for('search', keyword=search_keyword))
+        if len(search_keyword) > 0:
+            return redirect(url_for('search', keyword=search_keyword))
+    if current_user.is_authenticated:
+        return redirect(url_for('user.index'))
     return render_template('index.html')
 
 
