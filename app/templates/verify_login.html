@@ -136,7 +136,7 @@
     <script type="text/javascript">
       function send_email() {
         console.log("send_email");
-        var countdown = 60; //60s
+        var countdown = 15; //15s
         var email = $("#email").val(); //获取邮箱，学号;
         console.log(email);
         $("#send_verify").attr("disabled", true);
@@ -219,12 +219,15 @@
 
       function register() {
         var email = $("#email").val(); //获取邮箱，学号
+        console.log(email);
         var password = $("#password").val();
+        console.log(password);
         var code = $("#code").val();
+        console.log(code);
 
         $.post(
           "/api/register_or_login_using_verification_code",
-          { user_id: email, password: password, code: code },
+          { user_id: email, password: password, codze: code },
           function (ret) {
             console.log(ret);
             if (
