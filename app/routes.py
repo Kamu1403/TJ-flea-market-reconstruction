@@ -63,6 +63,14 @@ def search(keyword: str):  #keyword为你搜索的东西
     return render_template('search.html', keyword=keyword)
 
 
+@app.route('/register', methods=['GET'])
+def login():
+    # 判断当前用户是否验证，如果通过的话返回首页
+    if current_user.is_authenticated:
+        return redirect(url_for('user.index'))
+    return render_template('verify_login.html')
+
+
 @app.route('/login', methods=['GET'])
 def login():
     # 判断当前用户是否验证，如果通过的话返回首页
