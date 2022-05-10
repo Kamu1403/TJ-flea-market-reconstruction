@@ -64,7 +64,7 @@ def search(keyword: str):  #keyword为你搜索的东西
 
 
 @app.route('/register', methods=['GET'])
-def login():
+def register():
     # 判断当前用户是否验证，如果通过的话返回首页
     if current_user.is_authenticated:
         return redirect(url_for('user.index'))
