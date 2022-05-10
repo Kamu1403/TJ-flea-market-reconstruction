@@ -2,9 +2,10 @@
 # -*- coding: UTF-8 -*-
 from operator import methodcaller
 from typing import Dict, List
-from flask_login import current_user
+from flask_login import current_user, login_user, logout_user, login_required
 from api import api_blue
-from flask import make_response, request, jsonify
+from flask import make_response, request, jsonify, render_template, flash, redirect, url_for
+
 #enum
 from user.models import User_state
 from admin.models import Feedback_kind, Feedback_state
@@ -195,34 +196,23 @@ def send_verification_code():
 
 @api_blue.route('/login_using_password', methods=['POST'])
 def login_using_password():
-    return
-    res = copy.deepcopy(default_res)
-    if request.method == 'POST':
-        user_id = request.form.get('user_id')
-        password = request.form.get('password')
-        remember_me = True
-        try:
-            user = User.get(User.id == user_id)  # 查，此处还可以添加判断用户是否时管理员
-        except:
-            flash('无效的学号,请检查输入或注册')
-            # 然后重定向到登录页面
-            return redirect(url_for('login'))
-        else:
-            # 查到了，判断密码
-            if not user.check_password(password):
-                # 如果用户不存在或者密码不正确就会闪现这条信息
-                flash('密码错误')
-                # 然后重定向到登录页面
-                return redirect(url_for('login'))
-            if user.state == -1:
-                #被封号了
-                flash("您已被封号")
-                # 然后重定向到登录页面
-                return redirect(url_for('login'))
-
-            # 记住登录状态，同时维护current_user
-            login_user(user, remember=remember_me)
-            return redirect(url_for('user.index'))
+    user_id = request.form.get('user_id')
+    password = request.form.get('password')
+    remember_me = True
+    try:
+        user = User.get(User.id == user_id)  # 查，此处还可以添加判断用户是否时管理员
+    except:
+        return make_response_json(400, "账号不存在")
+    else:
+        # 查到了，判断密码
+        if not user.check_password(password):
+            # 如果用户不存在或者密码不正确就会闪现这条信息
+            return make_response_json(400, "密码错误")
+        if user.state == -1:
+            return make_response_json(400, "您的账号已被冻结")
+        # 记住登录状态，同时维护current_user
+        login_user(user, True, datetime.timedelta(days=30))
+        return redirect(url_for('user.index'))
 
 
 @api_blue.route('/register_or_login_using_verification_code', methods=['POST'])
