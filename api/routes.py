@@ -417,11 +417,13 @@ def get_search():
     else:
         #get_data = bases.select().where().exectue()
         if order_type == "time":
-            orderWay = bases.publish_time.asc()
+            orderWay = (bases.publish_time.asc(),)
         elif order_type == "price":
-            orderWay = bases.price.asc()
+            orderWay = (bases.price.asc(),)
         elif order_type == "name":
-            orderWay = bases.publish_time.asc()
+            orderWay = (bases.publish_time.asc(),)
+        elif order_type == "":
+            orderWay = tuple()
         else:
             orderWay = None
         if orderWay is not None:
@@ -446,7 +448,7 @@ def get_search():
                 res['message'] = "已搜索如下结果"
                 res['success'] = True
 
-                get_data = bases.select(*need).where(*select_need).order_by(orderWay).execute()
+                get_data = bases.select(*need).where(*select_need).order_by(*orderWay).execute()
                 for i in get_data:
                     j = i.__data__
                     j['price'] = float(j['price'])
