@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
 from operator import methodcaller
-from typing import List
+from typing import Dict, List
 from flask_login import current_user
 from api import api_blue
 from flask import make_response, request, jsonify
@@ -20,6 +20,7 @@ import re
 import json
 import datetime
 import time
+import random
 from .send_verification_mail import send_email
 
 #返回值规范
@@ -37,9 +38,9 @@ statusCode:
 '''
 
 
-def make_response_json(statusCode: int = 200, message: str = "", data: dict = {}, success: bool = None, quick_response: List[int, str] = None):
+def make_response_json(statusCode: int = 200, message: str = "", data: dict = {}, success: bool = None, quick_response: list = None):
     '''
-    quick_response: [statusCode（若为0，则自动改为200）, message]
+    :params quick_response: [statusCode（若为0，则自动改为200）, message]
     如果success未指定，则当statusCode==200时为True，否则False
     '''
     if type(quick_response) == list and len(quick_response) == 2:
@@ -57,8 +58,8 @@ def judge_user_id(user_id: str):
         user_id = str(user_id).strip()
     except:
         return [400, "账号格式错误"]
-    if '@' not in user_id:
-        user_id += "@tongji.edu.cn"
+    #if '@' not in user_id:
+    #    user_id += "@tongji.edu.cn"
     pattern = re.compile(r'^\d{7}@tongji\.edu\.cn$')
     result = pattern.findall(user_id)
     if len(result) > 0:
@@ -82,7 +83,7 @@ def save_verify_code(code: json):
         json.dump(code, fp, indent=4, ensure_ascii=False)
 
 
-def get_verify_code():
+def get_verify_code() -> List[dict]:
     with open(config, "r", encoding="utf-8") as fp:
         return (json.load(fp))
 
@@ -155,6 +156,19 @@ def judge_password(password: str):
     return [0, "验证通过"]
 
 
+import string
+
+
+def create_string_number(n):
+    """
+    生成一串指定位数的字符+数组混合的字符串
+    """
+    m = random.randint(1, n)
+    a = "".join([str(random.randint(0, 9)) for _ in range(m)])
+    b = "".join([random.choice(string.ascii_letters) for _ in range(n - m)])
+    return ''.join(random.sample(list(a + b), n))
+
+
 @api_blue.route('/send_verification_code', method=['POST'])
 def send_verification_code():
     res = copy.deepcopy(default_res)  # {'success': True, 'statusCode': 200, 'message': '', 'data': {}}
@@ -163,7 +177,15 @@ def send_verification_code():
         jcf = judge_code_frequency(user_id)
         if jcf[0] != 0:
             return make_response(jsonify(jcf))
-        send_email("")
+        verification_code = create_string_number(6)
+        ret = send_email("同济跳蚤市场 注册验证码", [user_id], f'您的注册验证码为：{verification_code}。有效期为15分钟。\n此邮件为系统自动发出，请勿回复。')
+
+        code_list = get_verify_code()
+        code_list.append({"time": int(time.time()), "user_id": user_id, "code": verification_code.upper()})
+        save_verify_code(code_list)
+        if ret["status"] == False:
+            return make_response_json(400, "验证码邮件发送失败，请重试或联系网站管理员。")
+        return make_response_json(200, "验证码发送成功")  # 改 若非注册用户 201
 
 
 """
