@@ -88,22 +88,24 @@ def goods_publish():
             flash("您还未登录,无法发布")
             return redirect(url_for("item.index"))
 
+
+        data = request.form.to_dict()
+        data['publish_id'] = current_user.id
+        data['publish_time'] =str(date.today())
+        data['lock_num'] = 0
+        print(data)
         try:
-            data = request.form.to_dict()
-            data['publish_id'] = current_user.id
-            data['publish_time'] =str(datetime.today())
-            data['lock_num'] = 0
-            print(data)
-            # Goods.insert(data).execute()
+            Goods.insert(data).execute()
             pass
         except Exception as e:
-            pass
+            flash(f"发布商品时出现问题,具体为{str(e)}\n{repr(e)}\n")
             # return render_template('item_publish.html',name="goods")
         else:
-            pass
             # return render_template('item_publish.html',name="goods")
             # 表示发布成功
-            #return redirect(url_for("item.index"))
+            flash("发布商品成功")
+        finally:
+            return redirect(url_for("item.index"))
     return render_template('item_publish.html',name="goods")
 
 @item_blue.route('/publish/want/', methods=['GET', 'POST'])
@@ -114,20 +116,21 @@ def want_publish():
             flash("您还未登录,无法发布")
             return redirect(url_for("item.index"))
 
+
+        data = request.form.to_dict()
+        data['publish_id'] = current_user.id
+        data['publish_time'] =str(date.today())
+        data['lock_num'] = 0
+        print(data)
         try:
-            data = request.form.to_dict()
-            data['publish_id'] = current_user.id
-            data['publish_time'] =str(date.today())
-            data['lock_num'] = 0
-            print(data)
-            # Want.insert(data).execute()
-            pass
+            Want.insert(data).execute()
         except Exception as e:
-            pass
+            flash(f"发布悬赏时出现问题,具体为{str(e)}\n{repr(e)}\n")
             # return render_template('item_publish.html',name='want')
         else:
-            pass
+            flash("发布悬赏成功")
             # return render_template('item_publish.html',name='want')
             # 表示发布成功
-            #return redirect(url_for("item.index"))
+        finally:
+            return redirect(url_for("item.index"))
     return render_template('item_publish.html',name='want')
