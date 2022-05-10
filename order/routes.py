@@ -23,7 +23,6 @@ def teardown_request(exc):#exc必须写上
 
 @order_blue.route('/review/<order_id>', methods=['GET', 'POST'])
 def review(order_id:int):#order_id为订单ID
-    print(order_id)
     try:
         get_order = Order.get(Order.id == order_id)
     except Exception as e:
@@ -86,15 +85,15 @@ def generate(type_name:str,item_id:int):
     elif type_name == "want":
         bases = Want
     else:
-        flash("类别错误")
+        print("类别错误")
         return redirect(url_for('index'))
     if not current_user.is_authenticated:
-        flash("请先登录")
+        print("请先登录")
         return redirect(url_for('index'))
     try:
         it = bases.get(bases.id==item_id)
     except Exception as e:
-        flash("查询失败,请求出错")
+        print("查询失败,请求出错")
         return redirect(url_for('index'))
     else:
         datas = it.__data__

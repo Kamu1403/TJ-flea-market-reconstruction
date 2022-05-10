@@ -12,19 +12,36 @@
                 type: "GET",
                 dataType: "JSON",
                 data: data,
-                url: "{{url_for('api.get_item_info')}}",
+                url: "/api/get_item_info",
                 success: function show(result) {
-                    console.log(result);
+                    var show = document.getElementById("show");
+                    for (i in result) {
+                        if (i != 'data') {
+                            show.innerHTML += "<tr><td>" + i + "</td><td>" + result[i] + "</td></tr>";
+                        }
+                        else {
+                            for (j in result[i]) {
+                                show.innerHTML += "<tr><td>" + j + "</td><td>" + result[i][j] + "</td></tr>";
+                            }
+                        }
+                    }
                 }
             }
         )
+        function jump() {
+            var str = window.location.href;
+            var temp = str.split("/")
+            var data = { "type": temp[temp.length - 3], "id": temp[temp.length - 2] };
+            window.open('/order/generate/' + data["type"] + "/" + data["id"]);
+        }
     </script>
 </head>
 
 <body>
     <a href="{{ url_for('item.index')}}">返回主页</a>
+    <table id="show"></table>
     <div id="test">
-
+        <button onclick="jump()"> 测试</button>
     </div>
 </body>
 
