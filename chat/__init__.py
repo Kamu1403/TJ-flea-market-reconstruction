@@ -1,4 +1,4 @@
-###商品/悬赏管理
+###鍟嗗搧/鎮祻绠＄悊
 from flask import Blueprint
 
 chat_blue = Blueprint('chat', __name__,template_folder="templates", static_folder='/chat')
