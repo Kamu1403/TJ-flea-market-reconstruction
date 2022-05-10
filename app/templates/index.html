@@ -130,8 +130,8 @@
                                             <option>-- Dried Fruits</option>
                                             <option>-- Others Food</option> -->
                                     </select>
-                                    <input type="text" placeholder="搜索..." />
-                                    <button><i class="flaticon-loupe-1"></i></button>
+                                    <input id="item_name" type="text" placeholder="搜索..." />
+                                    <button type="button" onclick="search_item()"><i class="flaticon-loupe-1"></i></button>
                                 </form>
                             </div>
                         </div>
@@ -1445,6 +1445,14 @@
     <script src="{{url_for('static',filename='js/aos.js')}}"></script>
     <script src="{{url_for('static',filename='js/plugins.js')}}"></script>
     <script src="{{url_for('static',filename='js/main.js')}}"></script>
+    <script type="text/javascript">
+        function search_item() {
+            var item=$('#item_name').val();
+            console.log(item)
+            window.location.href="/search/"+item;
+        }
+    </script>
+
 </body>
 
 </html>

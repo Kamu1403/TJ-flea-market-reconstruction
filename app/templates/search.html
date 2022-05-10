@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    </head>
+    <body>
+        <div>
+        </div>
+    </body>
+    <script src="{{url_for('static',filename='js/vendor/jquery-3.6.0.min.js')}}"></script>
+    <script src="{{url_for('static',filename='js/bootstrap.min.js')}}"></script>
+    <script type="text/javascript" charset="utf-8">
+        var keyword= '{{ keyword|safe }}';
+        console.log(keyword);
+
+        $(document).ready(function(){
+            $.post("/api/search", {search_type:"goods",key_word:keyword}, function (ret) {
+                if (ret.statusCode == 400) {
+                    alert(ret.message);
+                } else {
+                    consolo.log(ret);
+                }
+            });
+        
+        });
+    </script>
+</html>
