@@ -3,7 +3,7 @@
 from item import item_blue
 from app import database
 from item.models import Goods, Want, HistoryGoods, HistoryWant, FavorGoods, FavorWant
-from datetime import datetime
+from datetime import date
 from flask import make_response, jsonify, render_template, flash, redirect, url_for, request
 from flask_login import current_user
 
@@ -117,7 +117,7 @@ def want_publish():
         try:
             data = request.form.to_dict()
             data['publish_id'] = current_user.id
-            data['publish_time'] =str(datetime.today())
+            data['publish_time'] =str(date.today())
             data['lock_num'] = 0
             print(data)
             # Want.insert(data).execute()
