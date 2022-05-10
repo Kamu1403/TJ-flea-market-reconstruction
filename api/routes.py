@@ -199,7 +199,7 @@ def GetUserDict(i) -> dict:
 
 
 #管理员获取所有用户信息
-@api_blue.route('/getalluser', methods=['GET'])
+@api_blue.route('/get_all_user', methods=['GET'])
 def get_all_user():
     res = copy.deepcopy(default_res)
     data_list = []
@@ -231,7 +231,7 @@ def get_all_user():
 
 
 #管理员封号
-@api_blue.route('/banuser', methods=['PUT'])
+@api_blue.route('/ban_user', methods=['PUT'])
 def ban_user():
     if request.method == 'PUT':
         res = copy.deepcopy(default_res)
@@ -263,7 +263,7 @@ def ban_user():
         return make_response(jsonify(res))
 
 
-@api_blue.route('/getuserinfo', methods=['POST'])
+@api_blue.route('/get_user_info', methods=['POST'])
 def get_user_info():
     if request.method == 'POST':
         res = copy.deepcopy(default_res)
