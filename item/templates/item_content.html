@@ -2,8 +2,8 @@
 
 <head>
     <script>
-        function jump(path) {
-            window.location.href = "/order/generate/" + data["type"] + "/" + data["item_id"];
+        function jump() {
+            window.location.href = "{{ url_for('order.generate',type_name=data.type,item_id=data.item_id)}}"
         }
     </script>
 </head>
@@ -11,33 +11,23 @@
 <body>
     <a href="{{ url_for('item.index')}}">返回主页</a>
     <div id="test">
-
+        {% if data.isAdmin == false and data.isPub == false%}
+        <button onclick="jump()">
+            {{data.type}}
+        </button>
+        <button>
+            聊天
+        </button>
+        {% else %}
+        {% if data.isPub == true %}
+        <button>修改</button>
+        {% endif %}
+        {% if data.isAdmin == true %}
+        <button>聊天</button>
+        {% endif %}
+        {% endif %}
     </div>
-    <script>
-        var data = JSON.parse('{{data|safe}}');
-        console.log(data);
-        console.log(typeof data);
-        var test = document.getElementById("test");
-        if (data["isPub"] == false && data["isAdmin"] == false) {
-            var name;
-            if (data['type'] == "goods") {
-                name = "购买商品";
-            }
-            else {
-                name = "接取悬赏";
-            }
-            test.innerHTML = "<button onclick='jump(data)'>" + name + "</button><button name='test'>聊天</button>";
 
-        }
-        else {
-            if (data["isPub"]) {
-                test.innerHTML = "<button>修改</button>";
-            }
-            if (data["isAdmin"]) {
-                test.innerHTML += "<button>下架</button>";
-            }
-        }
-    </script>
 </body>
 
 </html>
