@@ -3,6 +3,7 @@
     <head>
     </head>
     <body>
+        <a href="{{ url_for('index')}}">返回主页</a>
         <div id="display">
             
         </div>
@@ -17,12 +18,14 @@
                     alert(ret.message);
                 } else {
                     var items=ret.data
+                    console.log(items)
                     for (let i=0;i<items.length;i++){
-                    $(display).append('<span class="data">商品名: '+ret.data[0]['name']+'</span><br>')
-                    $(display).append('<span class="data">价格: '+ret.data[0]['price']+'</span><br>')
-                    $(display).append('<span class="data">上架时间: '+ret.data[0]['publish_time']+'</span><br>')
-                    $(display).append('<span class="data">卖家id: '+ret.data[0]['publisher_id']+'</span><br>')
-                    $(display).append('<span class="data">类型: '+ret.data[0]['type']+'</span><br><br>')
+                    $(display).append('<span class="data">商品id: <a href="/item/'+ret.data[i]['type']+"/"+ret.data[i]['id']+'">'+ret.data[i]['id']+'</a></span><br>');
+                    $(display).append('<span class="data">商品名: '+ret.data[i]['name']+'</span><br>');
+                    $(display).append('<span class="data">价格: '+ret.data[i]['price']+'</span><br>');
+                    $(display).append('<span class="data">上架时间: '+ret.data[i]['publish_time']+'</span><br>');
+                    $(display).append('<span class="data">卖家id: '+ret.data[i]['publisher_id']+'</span><br>');
+                    $(display).append('<span class="data">类型: '+ret.data[i]['type']+'</span><br><br>');
                     }
                 }
             });
