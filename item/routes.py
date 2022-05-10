@@ -31,6 +31,9 @@ def root_index():
 def index():
     return render_template('item_index.html')
 
+@item_blue.route('/search',methods=['GET','POST'])
+def search():
+    return render_template("item_search.html")
 
 @item_blue.route('/goods/<item_id>/', methods=['GET', 'POST'])
 def goods_content(item_id:int):#goods_id/want_id

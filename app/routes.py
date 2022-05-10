@@ -51,7 +51,7 @@ def rootindex():
 def index():
     if request.method=='POST':
         search_keyword=request.form.get('search')
-        return redirect(url_for('search',keyword=search_keyword))      
+        return redirect(url_for('search',keyword=search_keyword))
     return render_template('index.html')
 
 @app.route('/search/<keyword>', methods=['GET', 'POST'])
@@ -72,7 +72,7 @@ def login():
             remember_me=True
 
         try:
-            user = User.get(User.id == user_id)  # 查，此处还可以添加判断用户是否时管理员        
+            user = User.get(User.id == user_id)  # 查，此处还可以添加判断用户是否时管理员
         except:
             flash('无效的学号,请检查输入或注册')
             # 然后重定向到登录页面
@@ -88,7 +88,7 @@ def login():
                 #被封号了
                 flash("您已被封号")
                 # 然后重定向到登录页面
-                return redirect(url_for('login')) 
+                return redirect(url_for('login'))
 
             # 记住登录状态，同时维护current_user
             login_user(user, remember=remember_me)

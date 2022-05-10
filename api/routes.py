@@ -280,6 +280,7 @@ def get_search():
                 j = i.__data__
                 j['price'] = float(j['price'])
                 j['type'] = search_type
+                j['publish_time'] = str(j['publish_time'])
                 res['data'].append(j)
             #order
         else:
