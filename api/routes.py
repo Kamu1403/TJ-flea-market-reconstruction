@@ -396,48 +396,65 @@ def get_item_info():
         res["isPub"] = isPub
     return make_response(jsonify(res))
 
-@api_blue.route('/search',methods = ['POST'])
+@api_blue.route('/search',methods=['POST'])
 def get_search():
     search_type = request.form.get("search_type")
+    key_word = request.form.get("key_word")
+    order_type = request.form.get("order_type")
     res = copy.deepcopy(default_res)
     res['data'] = list()
-    if search_type == "goods" or search_type == 'all':
-        search_goods = True
+    if search_type == "goods":
+        bases = Goods
+    elif search_type == "want":
+        bases = Want
     else:
-        search_goods = False
-    if search_type == "want" or search_type == 'all':
-        search_want = True
-    else:
-        search_want = False
-    if not search_goods and not search_want:
+        bases = None
+    if bases is None:
         res['statusCode'] = 400
         res['message'] = "搜索类型仅能指定商品或悬赏"
         res['success'] = False
     else:
-
         #get_data = bases.select().where().exectue()
-        res['statusCode'] = 200
-        res['message'] = "已搜索如下结果"
-        res['success'] = True
-        if search_goods:
-            goods_need = (Goods.name, Goods.publisher_id, Goods.publish_time, Goods.price)
-            get_data = Goods.select(*goods_need).execute()
-            for i in get_data:
-                j = i.__data__
-                j['price'] = float(j['price'])
-                j['type'] = "goods"
-                res['data'].append(j)
-        if search_want:
-            Want_need = Want.name, Want.publisher_id, Want.publish_time, Want.price
-            get_data = Want.select(*Want_need).execute()
-            for i in get_data:
-                j = i.__data__
-                j['publish_time'] = str(j['publish_time'])
-                j['price'] = float(j['price'])
-                j['type'] = "want"
-                res['data'].append(j)
-        #order
+        if order_type == "time":
+            orderWay = bases.publish_time.asc()
+        elif order_type == "price":
+            orderWay = bases.price.asc()
+        elif order_type == "name":
+            orderWay = bases.publish_time.asc()
+        else:
+            orderWay = None
+        if orderWay is not None:
+            need = (bases.name,bases.publisher_id,bases.publish_time,bases.price)
+            select_need = [bases.name.contains(key_word)]
+            try:
+                start_time = request.form.get("start_time")
+                if start_time != "":
+                    start_time = datetime.strptime(start_time,"%Y-%m-%d")
+                    select_need.append(bases.publish_time>=start_time)
+                end_time = request.form.get("end_time")
+                if end_time != "":
+                    end_time = datetime.strptime(end_time,"%Y-%m-%d")
+                    select_need.append(bases.publish_time<=end_time)
+            except Exception as e:
+                print(e)
+                res['message'] = '时间格式错误,应为年-月-日格式'
+                res['statusCode'] = 400
+                res['success'] = False
+            else:
+                res['statusCode'] = 200
+                res['message'] = "已搜索如下结果"
+                res['success'] = True
 
-        for i in res['data']:
-            i['publish_time'] = str(i['publish_time'])
+                get_data = bases.select(*need).where(*select_need).order_by(orderWay).execute()
+                for i in get_data:
+                    j = i.__data__
+                    j['price'] = float(j['price'])
+                    j['type'] = search_type
+                    j['publish_time'] = str(j['publish_time'])
+                    res['data'].append(j)
+                #order
+        else:
+            res['statusCode'] = 400
+            res['message'] = "排序类型仅能指定价格、时间或内容相似度"
+            res['success'] = False
     return make_response(jsonify(res))
