@@ -1,0 +1,10 @@
+<html>
+  <body>
+    <p>{{current_user.username}}，您好！</p>
+    <br /><br /><br />
+    <a href="{{url_for('logout')}}">Log out</a>
+    {% for message in get_flashed_messages() %}
+    <div class="flash">{{ message }}</div>
+    {% endfor %}
+  </body>
+</html>
