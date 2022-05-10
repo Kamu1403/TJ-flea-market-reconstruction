@@ -83,31 +83,31 @@ $(function() {
           event.preventDefault();
           event.stopPropagation();
         }
-		var user_id=$("#email").val(); //获取邮箱，学号
-		var password=$("#password").val();
-		var remember_me=$("renmenber").val();
-		var fd=new FormData();
-		fd.append("user_id",user_id);
-		fd.append("password",password);
-		fd.append("remember_id",remember_me);
-		//这个或许不是这个意思，这是改变样式的
-		$.ajax({
-			type:'POST',
-			url:'/api/login_using_password',
-			data:fd,
-			// dataTypes: 指定返回数据的类型
-			success: function(data){//返回的数据
-				console.log(data);
-				if(data.statusCode==200){
-					//跳转
-				}
-				else{  //400,登录失败
-					alert(data.message);
-					console.log(data.message);
-				}
+		// var user_id=$("#email").val(); //获取邮箱，学号
+		// var password=$("#password").val();
+		// var remember_me=$("renmenber").val();
+		// var fd=new FormData();
+		// fd.append("user_id",user_id);
+		// fd.append("password",password);
+		// fd.append("remember_id",remember_me);
+		// //这个或许不是这个意思，这是改变样式的
+		// $.ajax({
+		// 	type:'POST',
+		// 	url:'/api/login_using_password',
+		// 	data:fd,
+		// 	// dataTypes: 指定返回数据的类型
+		// 	success: function(data){//返回的数据
+		// 		console.log(data);
+		// 		if(data.statusCode==200){
+		// 			//跳转
+		// 		}
+		// 		else{  //400,登录失败
+		// 			alert(data.message);
+		// 			console.log(data.message);
+		// 		}
 
-			}						'
-		});
+		// 	}						'
+		// });
 
 		form.addClass('was-validated'); //form.submit
 	});

@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="x-ua-compatible" content="ie=edge">
-        <title>tj-flea-market - 同济大学跳瘙市场（主页）</title>
+        <title>tj-flea-market - 同济大学跳蚤市场（主页）</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -22,6 +22,49 @@
         <link rel="stylesheet" href="css/default.css">
         <link rel="stylesheet" href="css/style.css">
         <link rel="stylesheet" href="css/responsive.css">
+        <link rel="stylesheet" href="css/tab.css">
+        <link rel="stylesheet" href="css/dropdown.css">
+        <!-- <script>
+            window.onload = function(){
+                //获取需要悬浮的对象
+                let user = document.getElementById("user");
+                //获取被隐藏的菜单
+                let menu = document.getElementById("menu");
+    
+                //给user添加鼠标悬浮事件
+                user.onmouseover = function(){
+                    //改变菜单的内联样式display为block
+                    menu.style.display = "block";
+                }
+    
+                //
+                user.onmouseout = function(){
+                    //获取菜单栏的坐标值
+                    let menux = menu.offsetLeft;
+                    let menuy = menu.offsetTop;
+                    let menuX = menu.offsetLeft+menu.offsetWidth;
+                    let menuY = menu.offsetTop+menu.offsetHeight;
+    
+                    //获取鼠标的坐标值
+                    let event = window.event;
+                    let mouseX = event.clientX;
+                    let mouseY = event.clientY;
+    
+                    if(mouseX<menux || mouseX>menuX || mouseY<menuY || mouseY>menuY){
+                        menu.style.display = "none";
+                    }
+                }
+    
+                //分别给menu对象绑定鼠标悬浮和鼠标离开事件
+                menu.onmouseover = function(){
+                    menu.style.display = "block";
+                }
+                menu.onmouseleave = function(){
+                    menu.style.display = "none";
+                }
+            }
+        </script> -->
+
     </head>
     <body>
 
@@ -150,42 +193,16 @@
                                             <span class="item-count">0</span>
                                         </li>
 
-                                        <!-- <li class="header-user">
-                                            <!-- 一点会跳转，那悬浮呢？ -->
-                                            <!--不要带a,可以直接下拉框
-                                            <a href="cart.html"><i class="flaticon-user"></i></a>
-                                            <div class="dropdown-menu">
-                                                <a class="dropdown-item" href="#">Link 1</a>
-                                                <a class="dropdown-item" href="#">Link 2</a>
-                                                <a class="dropdown-item" href="#">Link 3</a>
-                                                <div class="dropdown-divider"></div>
-                                                <a class="dropdown-item" href="#">Another link</a>
-                                              </div>
-                                        </li> -->
-
-                                        <li class="header-user">
-                                            <a href="#"><i class="flaticon-user"></i></a>
+                                        <li class="dropdown">
+                                                <span><img src="img/images/user1.png" alt="" width="60" height="60" class="img-circle">
+                                                </span>
+                                                <!--页面待制作-->
+                                                <div class="dropdown-content">
+                                                    <a href="personal-center.html">个人中心</a>
+                                                    <a href="cart.html">我的主页</a>
+                                                    <a href="history.html">我的足迹</a>
+                                                </div>
                                         </li>
-                                        
-                                        <!-- 这个不行，下拉菜单能不显示箭头吗？ -->
-                                        <li>
-                                            <div class="dropdown">
-                                                <a href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
-                                                    <i></i>
-                                                </a>
-                                                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                                                    <a class="dropdown-item" href="#">Link 1</a>
-                                                    <a class="dropdown-item" href="#">Link 2</a>
-                                                    <a class="dropdown-item" href="#">Link 3</a>
-                                                    <div class="dropdown-divider"></div>
-                                                    <a class="dropdown-item" href="#">Another link</a>
-                                                  </div>                                      
-                                            </div>
-
-
-                                        </li>
-                                    
-                                        <!-- 个人中心应该式能点的-->
                                         
                                         <!-- 收藏页面 -->
                                         <!--
@@ -311,7 +328,7 @@
                                                     </li>
                                                 </ul>
                                             </li>
-                                            <li><a href="shop.html"><i class="flaticon-cherry"></i> 生活用品</a></li>
+                                            <li><a href="shop.html"><i class="flaticon-cherry"></i> 洗护产品</a></li>
                                             <li><a href="shop.html"><i class="flaticon-fish"></i> 衣物租借</a></li>
                                         
                                             <li><a href="shop.html"><i class="flaticon-nut"></i> 其他</a></li>
@@ -392,7 +409,7 @@
         <main>
 
             <!-- slider-area -->
-            <section class="slider-area" data-background="img/bg/slider_area_bg.jpg">
+            <!-- <section class="slider-area" data-background="img/bg/slider_area_bg.jpg">
                 <div class="container custom-container">
                     <div class="row">
                         <div class="col-7">
@@ -437,88 +454,14 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> -->
 
-                <!-- category-area -->
-                <div class="container custom-container">
-                    <div class="slider-category-wrap">
-                        <div class="row category-active">
-                            <div class="col-lg-2">
-                                <div class="category-item active">
-                                    <a href="shop.html" class="category-link"></a>
-                                    <div class="category-thumb">
-                                        <img src="img/product/category_img01.png" alt="">
-                                    </div>
-                                    <div class="category-content">
-                                        <h6 class="title">奶茶 & 饮料</h6>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-2">
-                                <div class="category-item">
-                                    <a href="shop.html" class="category-link"></a>
-                                    <div class="category-thumb">
-                                        <img src="img/product/category_img02.png" alt="">
-                                    </div>
-                                    <div class="category-content">
-                                        <h6 class="title">水果蔬菜</h6>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-2">
-                                <div class="category-item">
-                                    <a href="shop.html" class="category-link"></a>
-                                    <div class="category-thumb">
-                                        <img src="img/product/category_img03.png" alt="">
-                                    </div>
-                                    <div class="category-content">
-                                        <h6 class="title">零食</h6>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-2">
-                                <div class="category-item">
-                                    <a href="shop.html" class="category-link"></a>
-                                    <div class="category-thumb">
-                                        <img src="img/product/category_img04.png" alt="">
-                                    </div>
-                                    <div class="category-content">
-                                        <h6 class="title">生活用品</h6>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-2">
-                                <div class="category-item">
-                                    <a href="shop.html" class="category-link"></a>
-                                    <div class="category-thumb">
-                                        <img src="img/product/category_img05.png" alt="">
-                                    </div>
-                                    <div class="category-content">
-                                        <h6 class="title">学习用品</h6>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-2">
-                                <div class="category-item">
-                                    <a href="shop.html" class="category-link"></a>
-                                    <div class="category-thumb">
-                                        <img src="img/product/category_img06.png" alt="">
-                                    </div>
-                                    <div class="category-content">
-                                        <h6 class="title">化妆品</h6>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- category-area-end -->
 
             </section>
             <!-- slider-area-end -->
 
             <!-- discount-area -->
-            <section class="discount-area pt-80">
+            <!-- <section class="discount-area pt-80">
                 <div class="container">
                     <div class="row justify-content-center">
                         <div class="col-xl-4 col-lg-6 col-md-8">
@@ -559,11 +502,11 @@
                         </div>
                     </div>
                 </div>
-            </section>
+            </section> -->
             <!-- discount-area-end -->
 
             <!-- best-deal-area -->
-            <section class="best-deal-area pt-60 pb-80">
+            <!-- <section class="best-deal-area pt-60 pb-80">
                 <div class="container">
                     <div class="row justify-content-center">
                         <div class="col-xl-7 col-lg-9">
@@ -684,29 +627,17 @@
                         </div>
                     </div>
                 </div>
-            </section>
+            </section> -->
             <!-- best-deal-area-end -->
 
             <!-- special-products-area -->
-            <section class="special-products-area gray-bg pt-75 pb-60">
+            
+            <section class="special-products-area gray-bg pt-20 pb-20">
                 <div class="container">
-                    <div class="row align-items-end mb-50">
-                        <div class="col-md-8 col-sm-9">
-                            <div class="section-title">
-                                <span class="sub-title">Awesome Shop</span>
-                                <h2 class="title">Our Special Products</h2>
-                            </div>
-                        </div>
-                        <div class="col-md-4 col-sm-3">
-                            <div class="section-btn text-left text-md-right">
-                                <a href="shop.html" class="btn">View All</a>
-                            </div>
-                        </div>
-                    </div>
                     <div class="special-products-wrap">
                         <div class="row">
                             <div class="col-3 d-none d-lg-block">
-                                <div class="special-products-add">
+                                <!-- <div class="special-products-add">
                                     <div class="sp-add-thumb">
                                         <img src="img/product/special_products_add.jpg" alt="">
                                     </div>
@@ -716,9 +647,144 @@
                                         <p>Super Offer TO 50% OFF</p>
                                         <a href="shop.html" class="btn rounded-btn">shop now</a>
                                     </div>
+                                </div>-->
+                                <div class="tabs">
+
+                                    <input checked id="one" name="tabs" type="radio">
+                                    <label for="one">我的待售</label>
+                            
+                                    <input id="two" name="tabs" type="radio" value="Two">
+                                    <label for="two">我的悬赏</label>
+                            
+                                    <div class="panels">
+                                        <div class="panel"> 
+
+                                            <div class="media" style="margin-top: 15px;">
+                                                    <a href="shop-details.html"><img src="img/product/bdw_products01.png" class="align-self-start mr-2" style="width:64px;height:64px">
+                                                    </a>
+                                                <div class="media-body" style="margin-left: 8px;">
+                                                    <h6 class="media-heading">新鲜美味可口大橘子汁……
+                                                    </h6>
+
+                                                    <p>2022-04-10 12:20:30  </p>
+                                                    <a href="shop-details.html"><strong>查看详情</strong> </a>
+                                                </div>
+                                            </div>
+                                            <div class="media" style="margin-top: 15px;">
+                                                <a href="shop-details.html"><img src="img/product/bdw_products01.png" class="align-self-start mr-2" style="width:64px;height:64px">
+                                                </a>
+                                                <div class="media-body" style="margin-left: 8px;">
+                                                    <h6 class="media-heading">新鲜美味可口大橘子汁……
+                                                    </h6>
+
+                                                    <p>2022-04-10 12:20:30  </p>
+                                                    <a href="shop-details.html"><strong>查看详情</strong> </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                            
+                                        <div class="panel">
+                                            <h2>This is Panel Two</h2>
+                                            <p>Aliquam vitae leo et sapien volutpat accumsan quis eget turpis. Etiam ac metus vitae purus semper pretium. Curabitur id nisl nisl. Cras ut massa sed dolor ullamcorper consequat ut sed dolor.</p>
+                            
+                                            <p>Nam sodales, mi eu convallis adipiscing, ligula justo consectetur tellus, tincidunt vestibulum tortor elit a augue. Ut elementum ultricies orci, vel luctus neque varius in. Phasellus turpis nunc, eleifend ac fringilla at, malesuada in eros.</p>
+                                        </div>
+                            
+                                    </div>
+                            
                                 </div>
                             </div>
                             <div class="col-9">
+                                <div class="row align-items-end mb-20">
+                                    <div class="col-md-8 col-sm-9">
+                                        
+
+                                        <div class="section-title mt-20">
+                                            <!-- <span class="sub-title">推荐</span> -->
+                                            <h2 class="title" style="margin-left:20px;">推荐</h2>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 col-sm-3">
+                                        <div class="section-btn text-left text-md-right">
+                                            <a href="shop.html" class="btn">View All</a>
+                                        </div>
+                                    </div>
+                                    
+                                <!-- category-area -->
+                                <div class="container custom-container">
+                                    <div class="slider-category-wrap">
+                                        <div class="row category-active">
+                                            <div class="col-lg-2">
+                                                <div class="category-item active">
+                                                    <a href="shop.html" class="category-link"></a>
+                                                    <div class="category-thumb">
+                                                        <img src="img/product/category_img01.png" alt="">
+                                                    </div>
+                                                    <div class="category-content">
+                                                        <h6 class="title">奶茶 & 饮料</h6>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-2">
+                                                <div class="category-item">
+                                                    <a href="shop.html" class="category-link"></a>
+                                                    <div class="category-thumb">
+                                                        <img src="img/product/category_img02.png" alt="">
+                                                    </div>
+                                                    <div class="category-content">
+                                                        <h6 class="title">水果蔬菜</h6>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-2">
+                                                <div class="category-item">
+                                                    <a href="shop.html" class="category-link"></a>
+                                                    <div class="category-thumb">
+                                                        <img src="img/product/category_img03.png" alt="">
+                                                    </div>
+                                                    <div class="category-content">
+                                                        <h6 class="title">零食</h6>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-2">
+                                                <div class="category-item">
+                                                    <a href="shop.html" class="category-link"></a>
+                                                    <div class="category-thumb">
+                                                        <img src="img/product/category_img04.png" alt="">
+                                                    </div>
+                                                    <div class="category-content">
+                                                        <h6 class="title">洗护产品</h6>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-2">
+                                                <div class="category-item">
+                                                    <a href="shop.html" class="category-link"></a>
+                                                    <div class="category-thumb">
+                                                        <img src="img/product/category_img05.png" alt="">
+                                                    </div>
+                                                    <div class="category-content">
+                                                        <h6 class="title">学习用品</h6>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-2">
+                                                <div class="category-item">
+                                                    <a href="shop.html" class="category-link"></a>
+                                                    <div class="category-thumb">
+                                                        <img src="img/product/category_img06.png" alt="">
+                                                    </div>
+                                                    <div class="category-content">
+                                                        <h6 class="title">日用百货</h6>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- category-area-end -->
+                                </div>
                                 <div class="row justify-content-center">
                                     <div class="col-xl-3 col-md-4 col-sm-6">
                                         <div class="sp-product-item mb-20">
@@ -945,7 +1011,7 @@
             <!-- special-products-area-end -->
 
             <!-- coupon-area -->
-            <div class="coupon-area gray-bg pb-80">
+            <!-- <div class="coupon-area gray-bg pb-80">
                 <div class="container">
                     <div class="row">
                         <div class="col-12">
@@ -962,11 +1028,11 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
             <!-- coupon-area-end -->
 
             <!-- best-sellers-area -->
-            <section class="best-sellers-area pt-75">
+            <!-- <section class="best-sellers-area pt-75">
                 <div class="container">
                     <div class="row align-items-end mb-50">
                         <div class="col-md-8 col-sm-9">
@@ -1121,11 +1187,11 @@
                         </div>
                     </div>
                 </div>
-            </section>
+            </section> -->
             <!-- best-sellers-area-end -->
 
             <!-- discount-area -->
-            <section class="discount-style-two pt-60 pb-50">
+            <!-- <section class="discount-style-two pt-60 pb-50">
                 <div class="container">
                     <div class="row">
                         <div class="col-lg-6">
@@ -1156,7 +1222,7 @@
                         </div>
                     </div>
                 </div>
-            </section>
+            </section> -->
             <!-- discount-area-end -->
 
         </main>
@@ -1300,5 +1366,7 @@
         <script src="js/aos.js"></script>
         <script src="js/plugins.js"></script>
         <script src="js/main.js"></script>
+        <script src="js/dropdown.js"></script>
+
     </body>
 </html>
