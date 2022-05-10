@@ -1,11 +1,42 @@
 <html>
 
-<head></head>
+<head>
+    <script>
+        function jump(path) {
+            window.location.href = "/order/generate/" + data["type"] + "/" + data["item_id"];
+        }
+    </script>
+</head>
 
 <body>
     <a href="{{ url_for('item.index')}}">返回主页</a>
-    <script>
+    <div id="test">
 
+    </div>
+    <script>
+        var data = JSON.parse('{{data|safe}}');
+        console.log(data);
+        console.log(typeof data);
+        var test = document.getElementById("test");
+        if (data["isPub"] == false && data["isAdmin"] == false) {
+            var name;
+            if (data['type'] == "goods") {
+                name = "购买商品";
+            }
+            else {
+                name = "接取悬赏";
+            }
+            test.innerHTML = "<button onclick='jump(data)'>" + name + "</button><button name='test'>聊天</button>";
+
+        }
+        else {
+            if (data["isPub"]) {
+                test.innerHTML = "<button>修改</button>";
+            }
+            if (data["isAdmin"]) {
+                test.innerHTML += "<button>下架</button>";
+            }
+        }
     </script>
 </body>
 
