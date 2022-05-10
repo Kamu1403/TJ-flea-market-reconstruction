@@ -125,27 +125,24 @@ def create_string_number(n):
 
 @api_blue.route('/send_verification_code', methods=['POST'])
 def send_verification_code():
-    #res = copy.deepcopy(default_res)  # {'success': True, 'statusCode': 200, 'message': '', 'data': {}}
-    if request.method == 'POST':
-        user_id = request.form.get('user_id')
-        jcf = judge_code_frequency(user_id)
-        if jcf[0] != 0:
-            return make_response(jsonify(jcf))
-        verification_code = create_string_number(6)
-        ret = send_email("同济跳蚤市场 注册验证码", [user_id], f'您的注册验证码为：{verification_code}。有效期为15分钟。\n此邮件为系统自动发出，请勿回复。')
+    user_id = request.form.get('user_id')
+    jcf = judge_code_frequency(user_id)
+    if jcf[0] != 0:
+        return make_response_json(quick_response=jcf)
+    verification_code = create_string_number(6)
+    ret = send_email("同济跳蚤市场 注册验证码", [user_id], f'您的注册验证码为：{verification_code}。有效期为15分钟。\n此邮件为系统自动发出，请勿回复。')
 
-        code_list = get_verify_code()
-        code_list.append({"time": int(time.time()), "user_id": user_id, "code": verification_code.upper()})
-        save_verify_code(code_list)
-        if ret["status"] == False:
-            return make_response_json(400, "验证码邮件发送失败，请重试或联系网站管理员。")
-        retcode = 200
-        try:
-            User.get(User.email == user_id)
-        except:
-            retcode = 201
-
-        return make_response_json(retcode, "验证码发送成功")
+    code_list = get_verify_code()
+    code_list.append({"time": int(time.time()), "user_id": user_id, "code": verification_code.upper()})
+    save_verify_code(code_list)
+    if ret["status"] == False:
+        return make_response_json(400, "验证码邮件发送失败，请重试或联系网站管理员。")
+    retcode = 200
+    try:
+        User.get(User.email == user_id)
+    except:
+        retcode = 201
+    return make_response_json(retcode, "验证码发送成功")
 
 
 def _login(user_id, password):
@@ -363,7 +360,7 @@ def get_search():
     else:
         orderWay = (bases.publish_time.desc(), )  # 改：默认其实为相似度
 
-    need = (bases.id,bases.name, bases.publisher_id, bases.publish_time, bases.price)
+    need = (bases.id, bases.name, bases.publisher_id, bases.publish_time, bases.price)
     select_need = [bases.name.contains(key_word)]
     try:
         start_time = request.form.get("start_time")
