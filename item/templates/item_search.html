@@ -12,7 +12,7 @@
 </body>
 <script>
   function search() {
-    var data = { 'search_type': "goods", 'order_type': "time" };
+    var data = { 'search_type': "goods", 'order_type': "price" };
     data['key_word'] = document.getElementById("key_word").value;
     $.ajax({
       type: "POST",

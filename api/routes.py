@@ -264,7 +264,7 @@ def get_search():
         if order_type == "time":
             orderWay = bases.publish_time.asc()
         elif order_type == "price":
-            orderWay == bases.publish_time.asc()
+            orderWay = bases.price.asc()
         elif order_type == "name":
             orderWay = bases.publish_time.asc()
         else:
