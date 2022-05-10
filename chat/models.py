@@ -36,7 +36,7 @@ class Message(BaseModel):
     继承自BaseModel，直接关联db，并且也继承了Model Model有提供增删查改的函数
     """
     msg_id = pw.AutoField(primary_key=True,verbose_name="消息编号")
-    msg_time = pw.DateField(verbose_name="发送时间",
+    msg_time = pw.DateTimeField(verbose_name="发送时间",
                                 null=False,
                                 default=datetime.utcnow())
     
@@ -66,7 +66,7 @@ class Recent_Chat_List(BaseModel):
     """
     receiver_id = pw.ForeignKeyField(User,primary_key=True, verbose_name="接收者的学号")
     #将接收者视作主键
-    
+    sender_id=pw.CharField(verbose_name="最后消息")
     last_time = pw.DateField(verbose_name="最后访问时间")
     
     unread = pw.IntegerField(verbose_name="未读条数", null=False, default=0)

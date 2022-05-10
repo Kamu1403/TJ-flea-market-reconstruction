@@ -1,6 +1,7 @@
 from flask import redirect, url_for, render_template, request
 from flask_login import current_user
 from chat import chat_blue
+from flask_socketio import leave_room
 from flask import make_response, request, jsonify
 from chat.models import Room,Recent_Chat_List
 from app import database
@@ -57,3 +58,15 @@ def chat(opt_userid:int):
         return render_template('chat.html',receiver=receiver,room=room)
     else:
         return redirect(url_for('login'))  # 重定向到/login
+
+@chat_blue.route('/close',methods=['POST','GET'])
+def close():
+    room=request.data.decode()
+    sender=str(current_user.id)
+    
+    print("-")
+    Room.update(room_state=Room.room_state-1).where(Room.room_id==room).execute()
+    
+    
+    print("close!")
+    return jsonify('status:200')

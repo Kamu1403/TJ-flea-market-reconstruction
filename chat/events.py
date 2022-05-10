@@ -3,30 +3,48 @@
 from flask import session, request
 from flask_login import current_user
 from flask_socketio import emit, join_room, leave_room
+from datetime import datetime
 from chat.models import Room,Message,Recent_Chat_List
 from app import socketio
 from app import database
+import json
 
 @socketio.on('joined', namespace='/chat')
 def joined(message):
     if database.is_closed():
         database.connect()
+        
+    sender = str(current_user.id) 
+    roomid = message['room']
+    
+    join_room(sender)
     """
     加入自身房间
     读取二者的历史记录
     """
     
-    sender = str(current_user.id) 
+    for user in Message.select().where(Message.room_id==roomid):
+        
+        emit('message', {'msg': str(user.sender_id) + ':' + user.msg_content,
+                         'time':str(user.msg_time),'type':user.msg_type},
+         room=sender)
 
-    roomid = message['room']
 
     '''
     sender用户的id作为roomid的键 即进入自己的room
     第一次建立 连接形成的sid作为roomid的值 
     '''
     Room.update(room_state=Room.room_state+1).where(Room.room_id==roomid).execute()
+    print("+")
     
-    join_room(sender)
+    #将最近列表中的未读信息数清空
+    Recent_Chat_List.update(last_time=datetime.utcnow(), unread=0).where(
+                Recent_Chat_List.receiver_id==sender
+                and Recent_Chat_List.sender_id==message['receiver']).execute()
+    
+    #将该房间内的所有未读信息全部置为已读
+    Message.update(msg_read=1).where(Message.room_id==roomid).execute()
+    
     emit('status', {'msg': sender+ ' has entered the room.','time':message['time']},
          room=sender)
     '''进入提醒可删除'''
@@ -48,10 +66,20 @@ def text(message):
     
     roomid = message['room']
 
-
     state=Room.get_or_none(Room.room_id==roomid)
-    read=1 if state.room_state==2 else 0
     
+    read=0
+    if (state==None):
+        pass
+    elif state.room_state==2:
+        read=1
+    
+    if read:
+        Recent_Chat_List.insert(
+            receiver_id=message['receiver'],
+            sender_id=sender,
+            unread=Recent_Chat_List.unread+1)
+        
     Message.create(
                 msg_time=message['time'],
                 room_id=roomid,
@@ -72,10 +100,11 @@ def left(message):
     sender = str(current_user.id)
     
     roomid = message['room']
-    user_list[sender]=None  #退出房间 未进入房间时 将userlist中对应的roomid置为空
-    
-    leave_room(room_dict[sender])
+
+    leave_room(sender)
     Room.update(room_state=Room.room_state-1).where(Room.room_id==roomid).execute()
+    print("-")
+    
     emit('status', {'msg': sender + ' has left the room.'},
          room=sender)
     '''退出提醒可删除'''
