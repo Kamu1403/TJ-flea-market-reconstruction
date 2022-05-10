@@ -50,8 +50,8 @@ def judge_code_frequency(user_id: str) -> list:
     if jui[0] != 0:
         return jui
     code_list = get_verify_code()
-    save_verify_code(list(filter(lambda x: x["time"] - time < 900, code_list)))  # 验证码有效期15min
     nowtime = int(time.time())
+    save_verify_code(list(filter(lambda x: x["time"] - nowtime < 900, code_list)))  # 验证码有效期15min
     for code_record in code_list:
         if code_record["user_id"] == user_id:
             if nowtime - code_record["time"] < 59:
@@ -75,8 +75,8 @@ def judge_code(user_id: str, code: str = None) -> list:
     if jui[0] != 0:
         return jui
     code_list = get_verify_code()
-    save_verify_code(list(filter(lambda x: x["time"] - time < 900, code_list)))  # 验证码有效期15min
     nowtime = int(time.time())
+    save_verify_code(list(filter(lambda x: x["time"] - nowtime < 900, code_list)))  # 验证码有效期15min
     code_exist_but_wrong = False
     code_exist_but_outofdate = False
     for code_record in code_list:
@@ -124,7 +124,7 @@ def create_string_number(n):
 
 @api_blue.route('/send_verification_code', methods=['POST'])
 def send_verification_code():
-    res = copy.deepcopy(default_res)  # {'success': True, 'statusCode': 200, 'message': '', 'data': {}}
+    #res = copy.deepcopy(default_res)  # {'success': True, 'statusCode': 200, 'message': '', 'data': {}}
     if request.method == 'POST':
         user_id = request.form.get('user_id')
         jcf = judge_code_frequency(user_id)
@@ -143,6 +143,7 @@ def send_verification_code():
             User.get(User.email == user_id)
         except:
             retcode = 201
+
         return make_response_json(retcode, "验证码发送成功")
 
 
