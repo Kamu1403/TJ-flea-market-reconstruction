@@ -34,50 +34,10 @@ def index():
 
 @item_blue.route('/goods/<item_id>/', methods=['GET', 'POST'])
 def goods_content(item_id:int):#goods_id/want_id
-    try:
-        it = Goods.get(Goods.id==item_id)
-    except Exception as e:
-        it = None
-    if it is None:
-        #报错
-        return redirect(url_for("item.index"))
-    if not current_user.is_authenticated:
-        isAdmin = False
-        isPub = False
-    else:
-        isAdmin = (current_user.state == User_state.Admin.value)
-        isPub =  it.publisher_id.id == current_user.id
-    data = json.dumps({"type":"goods","isAdmin":isAdmin,"isPub":isPub,"item_id":item_id})
-    # if not isAdmin and not isPub:
-    #     pass
-    # elif isPub:
-    #     pass
-    # else:
-    #     pass
     return render_template('item_content.html',data = data)
 
 @item_blue.route('/want/<item_id>/', methods=['GET', 'POST'])
 def want_content(item_id:int):#goods_id/want_id
-    try:
-        it = Want.get(Want.id==item_id)
-    except Exception as e:
-        it = None
-    if it is None:
-        #报错
-        return redirect(url_for("item.index"))
-    if not current_user.is_authenticated:
-        isAdmin = False
-        isPub = False
-    else:
-        isAdmin = (current_user.state == User_state.Admin.value)
-        isPub =  (it.publisher_id.id == current_user.id)
-    data = json.dumps({"type":"want","isAdmin":isAdmin,"isPub":isPub,"item_id":item_id})
-    # if not isAdmin and not isPub:
-    #     pass
-    # elif isPub:
-    #     pass
-    # else:
-    #     pass
     return render_template('item_content.html',data=data)
 
 @item_blue.route('/publish/goods/', methods=['GET', 'POST'])
