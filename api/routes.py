@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
 from operator import methodcaller
+from tkinter import W
 from flask_login import current_user
 from api import api_blue
 from flask import make_response, request, jsonify
@@ -229,7 +230,7 @@ def get_goods_data():
             isPub = False
         else:
             isAdmin = (current_user.state == User_state.Admin.value)
-            isPub =  it.publisher_id.id == current_user.id
+            isPub =  (it.publisher_id.id == current_user.id)
         res["isAdmin"]=isAdmin
         res["isPub"]=isPub
     return make_response(jsonify(res))
@@ -270,5 +271,42 @@ def get_want_data():
 
 @api_blue.route('/search',methods = ['POST'])
 def get_search():
-    data = request.form.to_dict()
-    return data
+    search_type = request.form.get("search_type")
+    res = copy.deepcopy(default_res)
+    res['data'] = list()
+    if search_type == "goods" or search_type == 'all':
+        search_goods = True
+    else:
+        search_goods = False
+    if search_type == "want" or search_type == 'all':
+        search_want = True
+    else:
+        search_want = False
+    if not search_goods and not search_want:
+        res['statusCode'] = 400
+        res['message'] = "搜索类型仅能指定商品或悬赏"
+        res['success'] = False
+    else:
+        #get_data = bases.select().where().exectue()
+        res['statusCode'] = 200
+        res['message'] = "已搜索如下结果"
+        res['success'] = True
+        if search_goods:
+            get_data = Goods.select(Goods.name,Goods.publisher_id,Goods.publish_time,Goods.price).execute()
+            for i in get_data:
+                j = i.__data__
+                j['price'] = float(j['price'])
+                j['type'] = "goods"
+                res['data'].append(j)
+        if search_want:
+            get_data = Want.select(Want.name,Want.publisher_id,Want.publish_time,Want.price).execute()
+            for i in get_data:
+                j = i.__data__
+                j['price'] = float(j['price'])
+                j['type'] = "want"
+                res['data'].append(j)
+        #order
+
+        for i in res['data']:
+            i['publish_time'] = str(i['publish_time'])
+    return make_response(jsonify(res))
