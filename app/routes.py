@@ -45,14 +45,22 @@ def rootindex():
 
 @app.route('/index', methods=['GET', 'POST'])
 def index():
-    if request.method=='POST':
-        search_keyword=request.form.get('key_word')  #输入框更名为key_word
-        return redirect(url_for('search',keyword=search_keyword))      
+    if request.method == 'POST':
+        search_keyword = request.form.get('search')
+        return redirect(url_for('search', keyword=search_keyword))
+    #-------------配合前端搜索框的修改---------------
+    # if request.method=='POST':
+    #     search_keyword=request.form.get('key_word')  #输入框更名为key_word
+    #     return redirect(url_for('search',keyword=search_keyword))      
     return render_template('index.html')
 
+
 @app.route('/search/<keyword>', methods=['GET', 'POST'])
-def search(keyword:str):#keyword为你搜索的东西
-    return render_template('search_result.html',keyword=keyword) #搜索结果页面
+def search(keyword: str):  #keyword为你搜索的东西
+    return render_template('search.html', keyword=keyword)
+
+#-------------配合前端添加搜索结果页面---------------
+#     return render_template('search_result.html',keyword=keyword) #搜索结果页面
 
 @app.route('/login',methods=['GET','POST'])
 def login():
