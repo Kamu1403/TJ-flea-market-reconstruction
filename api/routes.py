@@ -360,11 +360,7 @@ def get_search():
     else:
         orderWay = (bases.publish_time.desc(), )  # 改：默认其实为相似度
 
-<<<<<<< HEAD
-    need = (bases.name, bases.publisher_id, bases.publish_time, bases.price)
-=======
     need = (bases.id,bases.name, bases.publisher_id, bases.publish_time, bases.price)
->>>>>>> develop
     select_need = [bases.name.contains(key_word)]
     try:
         start_time = request.form.get("start_time")
