@@ -112,8 +112,8 @@
                                             <option>-- Dried Fruits</option>
                                             <option>-- Others Food</option> -->
                                         </select>
-                                        <input type="text" placeholder="搜索...">
-                                        <button><i class="flaticon-loupe-1"></i></button>
+                                        <input id="item_name" type="text" placeholder="搜索..." />
+                                        <button type="button" onclick="search_item()"><i class="flaticon-loupe-1"></i></button>
                                     </form>
                                 </div>
                             </div>
@@ -320,10 +320,10 @@
                             <div class="col-3 d-none d-lg-block">
                                 <div class="tabs">
 
-                                    <input checked id="one" name="tabs" type="radio">
+                                    <input checked id="one" name="tabs" type="radio" style="opacity:0;">
                                     <label for="one">我的待售</label>
                             
-                                    <input id="two" name="tabs" type="radio" value="Two">
+                                    <input id="two" name="tabs" type="radio" value="Two" style="opacity:0;">
                                     <label for="two">我的悬赏</label>
                             
                                     <div class="panels">
@@ -819,6 +819,12 @@
         <script src="  {{url_for('static', filename='js/plugins.js')}}"></script>
         <script src="  {{url_for('static', filename='js/main.js')}}"></script>
         <script src="  {{url_for('static', filename='js/dropdown.js')}}"></script>
-
+        <script type="text/javascript">
+            function search_item() {
+                var item=$('#item_name').val();
+                console.log(item)
+                window.location.href="/search/"+item;
+            }
+        </script>
     </body>
 </html>
