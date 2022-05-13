@@ -6,7 +6,7 @@ from app import BaseModel
 import peewee as pw
 from datetime import datetime
 from user.models import User
-from item.models import Goods, Want
+from item.models import Item
 
 
 class Contact(BaseModel):
@@ -103,8 +103,4 @@ class Order_Item(BaseModel):
     #id = pw.IntegerField(primary_key=True)  # 主键，不显式定义的话peewee默认定义一个自增的id
     order_id=pw.ForeignKeyField(Order,verbose_name="订单id")
     quantity=pw.IntegerField(verbose_name="购买数量")#乘以单价再与订单中其他物品相加等于订单中的总价
-    
-    #与哪张表相关联取决于kind
-    kind=pw.IntegerField(verbose_name="类型：悬赏还是商品",null=False,default=0)#0为商品，1为悬赏
-    goods_id=pw.ForeignKeyField(Goods,verbose_name="商品id",null=True)
-    want_id=pw.ForeignKeyField(Want,verbose_name="悬赏id",null=True)
+    item_id=pw.ForeignKeyField(Item,verbose_name="item id",null=True)

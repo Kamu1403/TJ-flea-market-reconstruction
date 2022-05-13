@@ -308,9 +308,9 @@ def get_item_info():
     need_type = request.args.get("type")
     print(item_id)
     if need_type == "goods":
-        bases = Goods
+        bases = Item
     elif need_type == "want":
-        bases = Want
+        bases = Item
     else:
         bases = None
     res = copy.deepcopy(default_res)
@@ -344,14 +344,13 @@ def get_item_info():
         res["isPub"] = isPub
     return make_response(jsonify(res))
 
-
 @api_blue.route('/search', methods=['POST'])
 def get_search():
     search_type = request.form.get("search_type")
     if search_type == "goods":
-        bases = Goods
+        bases = Item
     elif search_type == "want":
-        bases = Want
+        bases = Item
     else:
         return make_response_json(400, "搜索类型仅能指定商品或悬赏")
 
