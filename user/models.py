@@ -49,7 +49,7 @@ class User(UserMixin, BaseModel):
     #应甲方要求，为方便留学生使用
     #中国用户用+86 1xx xxxx xxxx存 其他国家用其他的前缀
     telephone_is_published = pw.BooleanField(verbose_name="是否公开电话号码", default=False)
-    telephone = pw.CharField(verbose_name="电话号码", max_length=32)
+    telephone = pw.CharField(verbose_name="电话号码", max_length=64)
     wechat_is_published = pw.BooleanField(verbose_name="是否公开微信号", default=False)
     wechat = pw.CharField(verbose_name="微信号", max_length=128)
     qq_is_published = pw.BooleanField(verbose_name="是否公开QQ号", default=False)

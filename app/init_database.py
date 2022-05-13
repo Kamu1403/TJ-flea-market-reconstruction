@@ -5,7 +5,7 @@
 from user.models import User
 from admin.models import Feedback, User_Management
 from order.models import Contact, Review, Order, Order_State_Item, Order_Item
-from item.models import Item , History, Favor
+from item.models import Item, History, Favor
 from chat.models import Room, Message, Recent_Chat_List
 
 
@@ -27,7 +27,6 @@ def drop_tables():
         History.drop_table()
     if Item.table_exists:
         Item.drop_table()
-
 
     if User_Management.table_exists:
         User_Management.drop_table()
@@ -94,11 +93,11 @@ def fake_data():  #填一些假数据进去
     User_Management.create(user_id=1953493, ban_reason="恶意利用网站bug", ban_time=datetime(2022, 6, 1))
 
     #商品、悬赏
-    Item.create(id=1,name="苹果", user_id=1951705, price=1.11, tag="食物", pic_num=0,type=0)
-    Item.create(id=2,name="方便面", user_id=1950084, price=3.33, shelved_num=999,type=0)
-    Item.create(id=3,name="肉", user_id=1950084, price=10, shelved_num=999,type=0)
-    Item.create(id=4,name="沈坚作业", user_id=1951705, price=0.01, tag="作业", description="求帮忙写sj作业",type=1)
-    Item.create(id=5,name="耳机", user_id=1953493, price=300, tag="电子用品", description="求耳机一副",type=1)
+    Item.create(id=1, name="苹果", user_id=1951705, price=1.11, tag="食物", pic_num=0, type=0)
+    Item.create(id=2, name="方便面", user_id=1950084, price=3.33, shelved_num=999, type=0)
+    Item.create(id=3, name="肉", user_id=1950084, price=10, shelved_num=999, type=0)
+    Item.create(id=4, name="沈坚作业", user_id=1951705, price=0.01, tag="作业", description="求帮忙写sj作业", type=1)
+    Item.create(id=5, name="耳机", user_id=1953493, price=300, tag="电子用品", description="求耳机一副", type=1)
 
     #浏览 收藏
     History.create(user_id=1951705, item_id=2)
@@ -124,17 +123,16 @@ def fake_data():  #填一些假数据进去
     Review.create(user_id=1953493, feedback_content="默认好评")
     Review.create(user_id=1951566, feedback_content="默认好评")
 
-    Order.create(user_id=1951705, op_user_id=1951566, contact_id=4, payment=1.11, state=2, end_time=datetime.utcnow())
-    Order.create(user_id=1951705, op_user_id=1953493, contact_id=3, payment=0.01, state=-1, close_time=datetime.utcnow(), note="我来帮你写sj！")
-    Order.create(user_id=1950084, op_user_id=1951566, contact_id=4, payment=59.99, state=0)  #5份肉 3份方便面
+    Order.create(user_id=1951705, op_user_id=1951566, contact_id=1, op_contact_id=4, payment=1.11, state=2, end_time=datetime.utcnow())
+    Order.create(user_id=1951705, op_user_id=1953493, contact_id=1, op_contact_id=3, payment=0.01, state=-1, close_time=datetime.utcnow(), note="我来帮你写sj！")
+    Order.create(user_id=1950084, op_user_id=1951566, contact_id=2, op_contact_id=4, payment=9.99, state=0)  #3份方便面
 
     Order_State_Item.create(order_id=1, user_review_id=1, op_user_review_id=4)
     Order_State_Item.create(order_id=2, cancel_user=1950084, cancel_reason="沈坚作业不能作为悬赏！")
     Order_State_Item.create(order_id=3)
 
-    #订单3中包含 5份肉 3份方便面
+    #订单3中包含 3份方便面
     Order_Item.create(order_id=3, quantity=3, kind=0, _id=2)  #方便面
-    Order_Item.create(order_id=3, quantity=5, kind=0, _id=3)  #肉
 
     #订单2中包含 1份沈坚作业
     Order_Item.create(order_id=2, quantity=1, kind=1, _id=1)  #沈坚作业

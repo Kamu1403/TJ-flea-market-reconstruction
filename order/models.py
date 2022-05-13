@@ -8,7 +8,6 @@ from datetime import datetime
 from user.models import User
 from item.models import Item
 
-
 class Contact(BaseModel):
     """
     收件人信息类
@@ -16,10 +15,14 @@ class Contact(BaseModel):
     """
     #id = pw.IntegerField(primary_key=True)  # 主键，不显式定义的话peewee默认定义一个自增的id
     user_id = pw.ForeignKeyField(User, verbose_name="订单发起者的学号")
-    name = pw.CharField(verbose_name="收件人用户名/姓名", max_length=1024)
-    telephone = pw.CharField(verbose_name="收件人电话号码", max_length=32)
-    addr = pw.CharField(verbose_name="收件地址", max_length=1024)
-
+    
+    #Address_json_str=pw.CharField(verbose_name="联系地址信息JSON/STR互转", max_length=1024)
+    default=pw.BooleanField(verbose_name="是否为默认收货地址，一个user只能有一个Contact对像此字段为True",default=False)#建议创建第一个的时候用True
+    name = pw.CharField(verbose_name="收件人用户名/姓名", max_length=32)
+    telephone = pw.CharField(verbose_name="收件人电话号码", max_length=64)
+    full_address = pw.CharField(verbose_name="详细收件地址", max_length=1024)
+    campus_branch = pw.CharField(verbose_name="所在校区", max_length=32, null=False, default="四平路校区",
+                                constraints=[pw.Check("campus_branch in ('四平路校区','嘉定校区','沪西校区','沪北校区')")])
 
 class Review(BaseModel):
     """
@@ -53,7 +56,8 @@ class Order(BaseModel):
     #id = pw.IntegerField(primary_key=True)  # 主键，不显式定义的话peewee默认定义一个自增的id
     user_id = pw.ForeignKeyField(User, verbose_name="订单发起者的学号")
     op_user_id = pw.ForeignKeyField(User, verbose_name="对方用户的学号")
-    contact_id=pw.ForeignKeyField(Contact,verbose_name="收件人信息id")
+    contact_id=pw.ForeignKeyField(Contact,verbose_name="订单发起者信息id")
+    op_contact_id=pw.ForeignKeyField(Contact,verbose_name="对方用户信息id")
     payment = pw.DecimalField(verbose_name="总价",max_digits=20, decimal_places=2)
 
     #订单状态-1-已关闭 0-未确认 1-已确认(双方) 2-已完成
