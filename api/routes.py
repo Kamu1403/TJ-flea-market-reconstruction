@@ -339,7 +339,7 @@ def get_item_info():
             isPub = False
         else:
             isAdmin = (current_user.state == User_state.Admin.value)
-            isPub = (it.publisher_id.id == current_user.id)
+            isPub = (it.user_id.id == current_user.id)
         res["isAdmin"] = isAdmin
         res["isPub"] = isPub
     return make_response(jsonify(res))
@@ -366,7 +366,7 @@ def get_search():
     else:
         orderWay = (bases.publish_time.desc(), )  # 改：默认其实为相似度
 
-    need = (bases.id, bases.name, bases.publisher_id, bases.publish_time, bases.price)
+    need = (bases.id, bases.name, bases.user_id, bases.publish_time, bases.price)
     select_need = [bases.name.contains(key_word)]
     try:
         start_time = request.form.get("start_time")
