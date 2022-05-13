@@ -4,6 +4,34 @@ from api.utils import *
 from api import api_blue
 from item.models import Item_type, Item_state
 
+@api_blue.route('/get_item_info', methods=['GET'])
+def get_item_info():
+    item_id = request.args.get('item_id')
+    res = copy.deepcopy(default_res)
+    try:
+        it = Item.get(Item.id == item_id)
+    except Exception as e:
+        return make_response_json(404, "未找到此商品")
+    else:
+        res['statusCode'] = 200
+        res['success'] = True
+        res['message'] = "已找到商品信息"
+        dic = it.__data__
+        print(dic)
+        dic.pop('id')
+        dic.pop('locked_num')
+        res['data'] = dic
+        dic['publish_time'] = str(dic['publish_time'])
+        dic['price'] = float(dic['price'])
+        if not current_user.is_authenticated:
+            isAdmin = False
+            isPub = False
+        else:
+            isAdmin = (current_user.state == User_state.Admin.value)
+            isPub = (it.user_id.id == current_user.id)
+        res["isAdmin"] = isAdmin
+        res["isPub"] = isPub
+    return make_response(jsonify(res))
 
 @api_blue.route('/search', methods=['POST'])
 def get_search():
