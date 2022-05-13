@@ -6,7 +6,7 @@ from item.models import Item_type, Item_state
 
 @api_blue.route('/get_item_info', methods=['GET'])
 def get_item_info():
-    item_id = request.args.get('item_id')
+    item_id = int(request.args.get('item_id'))
     res = copy.deepcopy(default_res)
     try:
         it = Item.get(Item.id == item_id)
@@ -17,7 +17,6 @@ def get_item_info():
         res['success'] = True
         res['message'] = "已找到商品信息"
         dic = it.__data__
-        print(dic)
         dic.pop('id')
         dic.pop('locked_num')
         res['data'] = dic
