@@ -27,7 +27,7 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
-
+api/verify_code.json
 config.py
 
 
