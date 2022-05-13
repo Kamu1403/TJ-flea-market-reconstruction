@@ -5,7 +5,7 @@ from order import order_blue
 from app import database
 from flask import render_template, flash, redirect, url_for, request
 from order.models import Order,Contact
-from item.models import Goods,Want
+from item.models import Item
 from user.models import User_state
 import json
 

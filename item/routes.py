@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 from item import item_blue
 from app import database
-from item.models import Goods, Want, HistoryGoods, HistoryWant, FavorGoods, FavorWant
+from item.models import Item, History, Favor
 from datetime import date
 from flask import make_response, jsonify, render_template, flash, redirect, url_for, request
 from flask_login import current_user
@@ -55,7 +55,7 @@ def goods_publish():
         data['lock_num'] = 0
         print(data)
         try:
-            Goods.insert(data).execute()
+            Item.insert(data).execute()
             pass
         except Exception as e:
             flash(f"发布商品时出现问题,具体为{str(e)}\n{repr(e)}\n")
@@ -81,7 +81,7 @@ def want_publish():
         data['lock_num'] = 0
         print(data)
         try:
-            Want.insert(data).execute()
+            Item.insert(data).execute()
         except Exception as e:
             flash(f"发布悬赏时出现问题,具体为{str(e)}\n{repr(e)}\n")
             # return render_template('item_publish.html',name='want')

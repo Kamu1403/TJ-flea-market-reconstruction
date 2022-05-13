@@ -42,7 +42,7 @@ class Message(BaseModel):
     
     room_id = pw.ForeignKeyField(Room,verbose_name="房间号")  
     
-    sender_id = pw.ForeignKeyField(User, verbose_name="发送方的学号")
+    sender_id = pw.ForeignKeyField(User, verbose_name="发送方的id")
 
     #消息类型 0-文本类型 1-图片类型 2-系统通知类型
     msg_type = pw.IntegerField(verbose_name="消息类型", null=False, default=Msg_type.Text.value,
@@ -64,7 +64,7 @@ class Recent_Chat_List(BaseModel):
     近期消息类
     继承自BaseModel，直接关联db，并且也继承了Model Model有提供增删查改的函数
     """
-    receiver_id = pw.ForeignKeyField(User,primary_key=True, verbose_name="接收者的学号")
+    receiver_id = pw.ForeignKeyField(User,primary_key=True, verbose_name="接收者的id")
     #将接收者视作主键
     sender_id=pw.CharField(verbose_name="最后消息")
     last_time = pw.DateField(verbose_name="最后访问时间")

@@ -23,7 +23,7 @@
                     var t = document.getElementById("test");
 
                     if (!result['isPub']) {
-                        $('#button1').append("<a href='/chat/"+ result['data']['publisher_id']+"'>和对方聊天</a>");
+                        $('#button1').append("<a href='/chat/" + result['data']['publisher_id'] + "'>和对方聊天</a>");
                         $('#button2').append("生成订单");
                         if (result['isAdmin']) {
                             t.innerHTML += "<button>修改上架信息</button><button>下架</button>";
