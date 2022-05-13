@@ -1,34 +1,35 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8" />
-    </head>
 
-    <body>
-        <a href="{{ url_for('index')}}">返回主页</a>
-        <div id="display"></div>
-    </body>
-    <script src="{{url_for('static',filename='js/vendor/jquery-3.6.0.min.js')}}"></script>
-    <script src="{{url_for('static',filename='js/bootstrap.min.js')}}"></script>
-    <script type="text/javascript" charset="utf-8">
-        var keyword = "{{ keyword|safe }}";
-        $(document).ready(function () {
-            $.post("/api/search", { search_type: 0, start_time: "", end_time: "", order_type: "", key_word: keyword }, function (ret) {
-                if (ret.statusCode == 400) {
-                    alert(ret.message);
-                } else {
-                    var items = ret.data;
-                    console.log(items);
-                    for (let i = 0; i < items.length; i++) {
-                        $(display).append('<span class="data">商品id: <a href="/item/' + ret.data[i]["type"] + "/" + ret.data[i]["id"] + '">' + ret.data[i]["id"] + "</a></span><br>");
-                        $(display).append('<span class="data">商品名: ' + ret.data[i]["name"] + "</span><br>");
-                        $(display).append('<span class="data">价格: ' + ret.data[i]["price"] + "</span><br>");
-                        $(display).append('<span class="data">上架时间: ' + ret.data[i]["publish_time"] + "</span><br>");
-                        $(display).append('<span class="data">卖家id: ' + ret.data[i]["publisher_id"] + "</span><br>");
-                        $(display).append('<span class="data">类型: ' + ret.data[i]["type"] + "</span><br><br>");
-                    }
+<head>
+    <meta charset="utf-8" />
+</head>
+
+<body>
+    <a href="{{ url_for('index')}}">返回主页</a>
+    <div id="display"></div>
+</body>
+<script src="{{url_for('static',filename='js/vendor/jquery-3.6.0.min.js')}}"></script>
+<script src="{{url_for('static',filename='js/bootstrap.min.js')}}"></script>
+<script type="text/javascript" charset="utf-8">
+    var keyword = "{{ keyword|safe }}";
+    $(document).ready(function () {
+        $.post("/api/search", { search_type: 0, start_time: "", end_time: "", order_type: "", key_word: keyword }, function (ret) {
+            if (ret.statusCode == 400) {
+                alert(ret.message);
+            } else {
+                var items = ret.data;
+                console.log(items);
+                for (let i = 0; i < items.length; i++) {
+                    $(display).append('<span class="data">商品id: <a href="/item/' + ret.data[i]["type"] + "/" + ret.data[i]["id"] + '">' + ret.data[i]["id"] + "</a></span><br>");
+                    $(display).append('<span class="data">商品名: ' + ret.data[i]["name"] + "</span><br>");
+                    $(display).append('<span class="data">价格: ' + ret.data[i]["price"] + "</span><br>");
+                    $(display).append('<span class="data">上架时间: ' + ret.data[i]["publish_time"] + "</span><br>");
+                    $(display).append('<span class="data">卖家id: ' + ret.data[i]["user_id"] + "</span><br>");
                 }
-            });
+            }
         });
-    </script>
+    });
+</script>
+
 </html>
