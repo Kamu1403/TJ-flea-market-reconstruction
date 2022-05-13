@@ -6,7 +6,7 @@
     <script>
         var str = window.location.href;
         var temp = str.split("/")
-        var data = { "type": temp[temp.length - 3], "id": temp[temp.length - 2] };
+        var data = { "type": temp[temp.length - 3], "item_id": temp[temp.length - 2] };
         $.ajax(
             {
                 type: "GET",

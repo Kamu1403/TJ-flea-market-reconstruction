@@ -32,26 +32,13 @@ def index():
     return render_template('item_index.html')
 
 
-@item_blue.route('/goods/<item_id>/', methods=['GET', 'POST'])
+@item_blue.route('/content/<item_id>/', methods=['GET', 'POST'])
 def goods_content(item_id:int):#goods_id/want_id
     if current_user.is_authenticated:
         try:
-            last = History.get(History.item_id_id == item_id)
+            last = History.get(History.user_id == current_user.id, History.item_id == item_id)
         except  Exception as e:
-            last = History({"user_id":current_user.id,"item_id":item_id,"visit_time":datetime.utcnow()})
-        else:
-            last.visit_time = datetime.utcnow()
-        finally:
-            last.save()
-    return render_template('item_content.html')
-
-@item_blue.route('/want/<item_id>/', methods=['GET', 'POST'])
-def want_content(item_id:int):#goods_id/want_id
-    if current_user.is_authenticated:
-        try:
-            last = History.get(History.item_id_id == item_id)
-        except  Exception as e:
-            last = History({"user_id":current_user.id,"item_id":item_id,"visit_time":datetime.utcnow()})
+            last = History(user_id=current_user.id,item_id=item_id,visit_time=datetime.utcnow())
         else:
             last.visit_time = datetime.utcnow()
         finally:

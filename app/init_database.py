@@ -100,14 +100,14 @@ def fake_data():  #填一些假数据进去
     Item.create(id=5,name="耳机", user_id=1953493, price=300, tag="电子用品", description="求耳机一副",type=1,pic_num=2)
 
     #浏览 收藏
-    History.create(user_id=1951705, item_id=2)
+    History.create(user_id=1951705, item_id=2,visit_time=datetime(2022,4,1))
     History.create(user_id=1951566, item_id=2)
     History.create(user_id=1950084, item_id=1)
     Favor.create(user_id=1951705, item_id=2)
     Favor.create(user_id=1951566, item_id=3)
     Favor.create(user_id=1950084, item_id=1)
 
-    History.create(user_id=1951705, item_id=5)
+    History.create(user_id=1951705, item_id=5,visit_time=datetime(2022,4,3))
     History.create(user_id=1951566, item_id=5)
     History.create(user_id=1950084, item_id=4)
     Favor.create(user_id=1951705, item_id=5)

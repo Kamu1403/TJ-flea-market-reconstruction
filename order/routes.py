@@ -36,7 +36,7 @@ def review(order_id:int):#order_id为订单ID
             flash("请先登录")
             return redirect(url_for('user.login'))
             # 报错2
-        elif current_user.id != get_order.user_id.id and current_user.id != get_order.op_user_id and current_user.state != User_state.Admin.value:
+        elif current_user.id != get_order.user_id and current_user.id != get_order.op_user_id and current_user.state != User_state.Admin.value:
             flash("您无权访问该订单")
             return redirect(url_for('user.index'))
             # 报错3
@@ -47,6 +47,7 @@ def review(order_id:int):#order_id为订单ID
             data[i] = str(data[i])
         elif i == 'payment':
             data[i] = float(data[i])
+    print(data)
     if request.method == "POST":
         pass
 
