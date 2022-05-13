@@ -5,7 +5,7 @@ from order import order_blue
 from app import database
 from flask import render_template, flash, redirect, url_for, request
 from order.models import Order,Contact
-from item.models import Item
+from item.models import Item, Item_type
 from user.models import User_state
 import json
 
@@ -36,7 +36,7 @@ def review(order_id:int):#order_id为订单ID
             flash("请先登录")
             return redirect(url_for('user.login'))
             # 报错2
-        elif current_user.id != get_order.user_id.id and current_user.id != get_order.op_user_id and current_user.state != User_state.Admin.value:
+        elif current_user.id != get_order.user_id and current_user.id != get_order.op_user_id and current_user.state != User_state.Admin.value:
             flash("您无权访问该订单")
             return redirect(url_for('user.index'))
             # 报错3
@@ -47,6 +47,7 @@ def review(order_id:int):#order_id为订单ID
             data[i] = str(data[i])
         elif i == 'payment':
             data[i] = float(data[i])
+    print(data)
     if request.method == "POST":
         pass
 
@@ -78,27 +79,20 @@ def manage():
     return render_template('order_manage.html',order_list = order_list)
 
 
-@order_blue.route('/generate/<string:type_name>/<int:item_id>', methods=['GET', 'POST'])
-def generate(type_name:str,item_id:int):
-    if type_name == "goods":
-        bases = Goods
-    elif type_name == "want":
-        bases = Want
-    else:
-        print("类别错误")
-        return redirect(url_for('index'))
+@order_blue.route('/generate/<int:item_id>', methods=['GET', 'POST'])
+def generate(item_id:int):
     if not current_user.is_authenticated:
         print("请先登录")
         return redirect(url_for('index'))
     try:
-        it = bases.get(bases.id==item_id)
+        it = Item.get(Item.id==item_id)
     except Exception as e:
         print("查询失败,请求出错")
         return redirect(url_for('index'))
     else:
         datas = it.__data__
         print(datas)
-        person_id = datas['publisher_id'] if type_name == "want" else current_user.id
+        person_id = datas['publisher_id'] #if datas["type"] == Item_type.Want.value else current_user.id
         ConData = list()
         op_ConCats = Contact.select().where(Contact.user_id_id == person_id)
         for i in op_ConCats:

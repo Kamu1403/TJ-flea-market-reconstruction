@@ -3,7 +3,7 @@
 from item import item_blue
 from app import database
 from item.models import Item, History, Favor
-from datetime import date
+from datetime import date, datetime
 from flask import make_response, jsonify, render_template, flash, redirect, url_for, request
 from flask_login import current_user
 
@@ -32,12 +32,17 @@ def index():
     return render_template('item_index.html')
 
 
-@item_blue.route('/goods/<item_id>/', methods=['GET', 'POST'])
+@item_blue.route('/content/<item_id>/', methods=['GET', 'POST'])
 def goods_content(item_id:int):#goods_id/want_id
-    return render_template('item_content.html')
-
-@item_blue.route('/want/<item_id>/', methods=['GET', 'POST'])
-def want_content(item_id:int):#goods_id/want_id
+    if current_user.is_authenticated:
+        try:
+            last = History.get(History.user_id == current_user.id, History.item_id == item_id)
+        except  Exception as e:
+            last = History(user_id=current_user.id,item_id=item_id,visit_time=datetime.utcnow())
+        else:
+            last.visit_time = datetime.utcnow()
+        finally:
+            last.save()
     return render_template('item_content.html')
 
 @item_blue.route('/publish/goods/', methods=['GET', 'POST'])
@@ -47,8 +52,6 @@ def goods_publish():
             #总共是个报错
             flash("您还未登录,无法发布")
             return redirect(url_for("item.index"))
-
-
         data = request.form.to_dict()
         data['publish_id'] = current_user.id
         data['publish_time'] =str(date.today())
