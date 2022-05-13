@@ -5,7 +5,7 @@
 from user.models import User
 from admin.models import Feedback, User_Management
 from order.models import Contact, Review, Order, Order_State_Item, Order_Item
-from item.models import Item , History, Favor
+from item.models import Item, History, Favor
 from chat.models import Room, Message, Recent_Chat_List
 
 
@@ -27,7 +27,6 @@ def drop_tables():
         History.drop_table()
     if Item.table_exists:
         Item.drop_table()
-
 
     if User_Management.table_exists:
         User_Management.drop_table()
@@ -105,8 +104,9 @@ def fake_data():  #填一些假数据进去
     History.create(user_id=1951566, item_id=2)
     History.create(user_id=1950084, item_id=1)
     Favor.create(user_id=1951705, item_id=2)
-    Favor.create(user_id=1951566, item_id=2)
+    Favor.create(user_id=1951566, item_id=3)
     Favor.create(user_id=1950084, item_id=1)
+
     History.create(user_id=1951705, item_id=5)
     History.create(user_id=1951566, item_id=5)
     History.create(user_id=1950084, item_id=4)
@@ -114,27 +114,26 @@ def fake_data():  #填一些假数据进去
     Favor.create(user_id=1951566, item_id=5)
     Favor.create(user_id=1950084, item_id=4)
 
-    Contact.create(user_id=1951705, name="高曾谊", telephone="+86 111111111", addr="xxx")
-    Contact.create(user_id=1950084, name="陈泓仰", telephone="+86 1112111111", addr="xyxx")
-    Contact.create(user_id=1953493, name="程森", telephone="+86 1111111131", addr="zzzx")
-    Contact.create(user_id=1951566, name="贾仁军", telephone="+86 11123111131", addr="kkzx")
+    Contact.create(id=1,user_id=1951705, name="高曾谊", telephone="+86 111111111", full_address="xxx",default=True)
+    Contact.create(id=2,user_id=1950084, name="陈泓仰", telephone="+86 1112111111", full_address="xyxx",default=True)
+    Contact.create(id=3,user_id=1953493, name="程森", telephone="+86 1111111131", full_address="zzzx",default=True)
+    Contact.create(id=4,user_id=1951566, name="贾仁军", telephone="+86 11123111131", full_address="kkzx",default=True)
 
-    Review.create(user_id=1951705, feedback_content="默认好评")
-    Review.create(user_id=1950084, feedback_content="默认好评")
-    Review.create(user_id=1953493, feedback_content="默认好评")
-    Review.create(user_id=1951566, feedback_content="默认好评")
+    Review.create(id=1,user_id=1951705, feedback_content="默认好评")
+    Review.create(id=2,user_id=1950084, feedback_content="默认好评")
+    Review.create(id=3,user_id=1953493, feedback_content="默认好评")
+    Review.create(id=4,user_id=1951566, feedback_content="默认好评")
 
-    Order.create(user_id=1951705, op_user_id=1951566, contact_id=4, payment=1.11, state=2, end_time=datetime.utcnow())
-    Order.create(user_id=1951705, op_user_id=1953493, contact_id=3, payment=0.01, state=-1, close_time=datetime.utcnow(), note="我来帮你写sj！")
-    Order.create(user_id=1951566, op_user_id=1950084, contact_id=4, payment=59.99, state=0)  #5份肉 3份方便面
+    Order.create(id=1,user_id=1951566, op_user_id=1951705, contact_id=4, op_contact_id=1, payment=1.11, state=2, end_time=datetime.utcnow())
+    Order.create(id=2,user_id=1953493, op_user_id=1951705, contact_id=3, op_contact_id=1, payment=0.01, state=-1, close_time=datetime.utcnow(), note="我来帮你写sj！")
+    Order.create(id=3,user_id=1951566, op_user_id=1950084, contact_id=4, op_contact_id=2, payment=9.99, state=0)  #3份方便面
 
     Order_State_Item.create(order_id=1, user_review_id=1, op_user_review_id=4)
     Order_State_Item.create(order_id=2, cancel_user=1950084, cancel_reason="沈坚作业不能作为悬赏！")
     Order_State_Item.create(order_id=3)
 
-    #订单3中包含 5份肉 3份方便面
+    #订单3中包含 3份方便面
     Order_Item.create(order_id=3, quantity=3, kind=0, _id=2)  #方便面
-    Order_Item.create(order_id=3, quantity=5, kind=0, _id=3)  #肉
 
     #订单2中包含 1份沈坚作业
     Order_Item.create(order_id=2, quantity=1, kind=1, _id=1)  #沈坚作业
