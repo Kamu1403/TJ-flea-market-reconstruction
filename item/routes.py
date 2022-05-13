@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 from item import item_blue
 from app import database
-from item.models import Item, History, Favor
+from item.models import Item, History, Favor,Item_type
 from datetime import date, datetime
 from flask import make_response, jsonify, render_template, flash, redirect, url_for, request
 from flask_login import current_user
@@ -45,53 +45,6 @@ def goods_content(item_id:int):#goods_id/want_id
             last.save()
     return render_template('item_content.html')
 
-@item_blue.route('/publish/goods/', methods=['GET', 'POST'])
+@item_blue.route('/publish/', methods=['GET', 'POST'])
 def goods_publish():
-    if request.method == "POST":
-        if not current_user.is_authenticated:
-            #总共是个报错
-            flash("您还未登录,无法发布")
-            return redirect(url_for("item.index"))
-        data = request.form.to_dict()
-        data['publish_id'] = current_user.id
-        data['publish_time'] =str(date.today())
-        data['lock_num'] = 0
-        print(data)
-        try:
-            Item.insert(data).execute()
-            pass
-        except Exception as e:
-            flash(f"发布商品时出现问题,具体为{str(e)}\n{repr(e)}\n")
-            # return render_template('item_publish.html',name="goods")
-        else:
-            # return render_template('item_publish.html',name="goods")
-            # 表示发布成功
-            flash("发布商品成功")
-        finally:
-            return redirect(url_for("item.index"))
-    return render_template('item_publish.html',name="goods")
-
-@item_blue.route('/publish/want/', methods=['GET', 'POST'])
-def want_publish():
-    if request.method == "POST":
-        if not current_user.is_authenticated:
-            #总共是个报错
-            flash("您还未登录,无法发布")
-            return redirect(url_for("item.index"))
-        data = request.form.to_dict()
-        data['publish_id'] = current_user.id
-        data['publish_time'] =str(date.today())
-        data['lock_num'] = 0
-        print(data)
-        try:
-            Item.insert(data).execute()
-        except Exception as e:
-            flash(f"发布悬赏时出现问题,具体为{str(e)}\n{repr(e)}\n")
-            # return render_template('item_publish.html',name='want')
-        else:
-            flash("发布悬赏成功")
-            # return render_template('item_publish.html',name='want')
-            # 表示发布成功
-        finally:
-            return redirect(url_for("item.index"))
-    return render_template('item_publish.html',name='want')
+    return render_template('item_publish.html')

@@ -7,6 +7,7 @@
         var str = window.location.href;
         var temp = str.split("/")
         var data = { "item_id": temp[temp.length - 2] };
+        console.log(data);
         $.ajax(
             {
                 type: "GET",
@@ -30,8 +31,9 @@
                                 dataType: "JSON",
                                 data: data,
                                 url: "/api/get_item_info",
-                                success: function () {
-                                    window.location.href = "/order/generate/" + data["item_id"] + "/";
+                                success: function (result) {
+                                    var order_id = result.data.id;
+                                    window.location.href = "/order/generate/" + order_id + "/";
                                 }
                             })
                         })
