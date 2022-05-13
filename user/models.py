@@ -31,6 +31,8 @@ class User(UserMixin, BaseModel):
     用户类
     继承自UserMixin，可以方便地使用各种flask_login的API
     同时继承自BaseModel，直接关联db，并且也继承了Model Model有提供增删查改的函数
+    用户头像统一存储在./user/static/resource/user-pic/{user-id}/avatar.jpg
+    要换头像就先把avatar.jpg放到同目录下history文件夹中，名字随机命名，然后再把用户上传的头像压缩成jpg放在指定目录
     """
     #id = pw.IntegerField(primary_key=True)  # 主键，不显式定义的话peewee默认定义一个自增的id
     username = pw.CharField(verbose_name='用户名,这里保证唯一', max_length=64, index=True, null=False, unique=True)

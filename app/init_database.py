@@ -94,11 +94,11 @@ def fake_data():  #填一些假数据进去
     User_Management.create(user_id=1953493, ban_reason="恶意利用网站bug", ban_time=datetime(2022, 6, 1))
 
     #商品、悬赏
-    Item.create(id=1,name="苹果", user_id=1951705, price=1.11, tag="食物", pic_num=0,type=0)
-    Item.create(id=2,name="方便面", user_id=1950084, price=3.33, shelved_num=999,type=0)
-    Item.create(id=3,name="肉", user_id=1950084, price=10, shelved_num=999,type=0)
+    Item.create(id=1,name="苹果", user_id=1951705, price=1.11, tag="食物", pic_num=2,type=0)
+    Item.create(id=2,name="方便面", user_id=1950084, price=3.33, shelved_num=999,type=0,pic_num=0)
+    Item.create(id=3,name="肉", user_id=1950084, price=10, shelved_num=999,type=0,pic_num=1)
     Item.create(id=4,name="沈坚作业", user_id=1951705, price=0.01, tag="作业", description="求帮忙写sj作业",type=1)
-    Item.create(id=5,name="耳机", user_id=1953493, price=300, tag="电子用品", description="求耳机一副",type=1)
+    Item.create(id=5,name="耳机", user_id=1953493, price=300, tag="电子用品", description="求耳机一副",type=1,pic_num=2)
 
     #浏览 收藏
     History.create(user_id=1951705, item_id=2)
@@ -126,7 +126,7 @@ def fake_data():  #填一些假数据进去
 
     Order.create(user_id=1951705, op_user_id=1951566, contact_id=4, payment=1.11, state=2, end_time=datetime.utcnow())
     Order.create(user_id=1951705, op_user_id=1953493, contact_id=3, payment=0.01, state=-1, close_time=datetime.utcnow(), note="我来帮你写sj！")
-    Order.create(user_id=1950084, op_user_id=1951566, contact_id=4, payment=59.99, state=0)  #5份肉 3份方便面
+    Order.create(user_id=1951566, op_user_id=1950084, contact_id=4, payment=59.99, state=0)  #5份肉 3份方便面
 
     Order_State_Item.create(order_id=1, user_review_id=1, op_user_review_id=4)
     Order_State_Item.create(order_id=2, cancel_user=1950084, cancel_reason="沈坚作业不能作为悬赏！")

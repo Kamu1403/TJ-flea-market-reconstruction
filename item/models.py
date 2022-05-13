@@ -55,7 +55,7 @@ class Item(BaseModel):
 
     description = pw.CharField(verbose_name="详细描述", max_length=1024)
     pic_num = pw.IntegerField(verbose_name="图片数量", null=False, default=0)
-    #pic_path 商品缩略图可默认存储在 ./item/static/resource/item-pic/item-id/{pic_num个文件}
+    #商品缩略图默认存储在 ./item/static/resource/item-pic/{item-id}/{pic_num个文件}
 
 class History(BaseModel):
     """
