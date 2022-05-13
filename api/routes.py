@@ -126,7 +126,7 @@ def create_string_number(n):
 
 @api_blue.route('/send_verification_code', methods=['POST'])
 def send_verification_code():
-    user_id = request.form.get('user_id')
+    user_id = request.form.get('email')
     jcf = judge_code_frequency(user_id)
     if jcf[0] != 0:
         return make_response_json(quick_response=jcf)
@@ -167,7 +167,7 @@ def _login(user_id, password=None):
 
 @api_blue.route('/login_using_password', methods=['POST'])
 def login_using_password():
-    user_id = request.form.get('user_id')
+    user_id = request.form.get('email')
     jui = judge_user_id(user_id)
 
     if jui[0] != 0:
@@ -181,7 +181,7 @@ def login_using_password():
 
 @api_blue.route('/register_or_login_using_verification_code', methods=['POST'])
 def register_or_login_using_verification_code():
-    user_id = request.form.get('user_id')
+    user_id = request.form.get('email')
     password = request.form.get('password')
     if len(password) != 0:
         jp = judge_password(password)
@@ -271,7 +271,7 @@ def ban_user():
     #在APIFOX测试运行时current_user未经认证，需要先在apifox上登录后才current_user才有效
     user_id = request.form.get("user_id")
     try:
-        tep = User.get(User.email == user_id)
+        tep = User.get(User.id == user_id)
     except:
         return make_response_json(404, "未找到用户")
     else:
@@ -279,7 +279,7 @@ def ban_user():
         tep.save()
         return make_response_json(200, "操作成功")
 
-        #query=User.update(state=-1).where(User.email==user_id)
+        #query=User.update(state=-1).where(User.id==user_id)
         #query.execute()
 
 
@@ -290,7 +290,7 @@ def get_user_info():
 
     user_id = request.form.get("user_id")
     try:
-        tep = User.get(User.email == user_id)
+        tep = User.get(User.id == user_id)
     except:
         return make_response_json(404, "未找到用户")
     else:

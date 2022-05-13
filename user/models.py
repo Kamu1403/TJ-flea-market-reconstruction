@@ -32,24 +32,34 @@ class User(UserMixin, BaseModel):
     继承自UserMixin，可以方便地使用各种flask_login的API
     同时继承自BaseModel，直接关联db，并且也继承了Model Model有提供增删查改的函数
     """
-    id = pw.IntegerField(verbose_name="学工号,作为主键使用", primary_key=True)
+    #id = pw.IntegerField(primary_key=True)  # 主键，不显式定义的话peewee默认定义一个自增的id
     username = pw.CharField(verbose_name='用户名,这里保证唯一', max_length=64, index=True, null=False, unique=True)
     email = pw.CharField(verbose_name="唯一的邮箱", max_length=128, index=True, null=False, unique=True)
 
     #用户状态：0为普通用户，-1为封号，1为管理员
     state = pw.IntegerField(verbose_name="状态", null=False, default=User_state.Normal.value, constraints=[pw.Check("state >=-1")])
     score = pw.IntegerField(verbose_name="信誉分", default=100)  #信誉分小于零可封号
+    
+    #以下为个人信息栏
+    gender = pw.CharField(verbose_name="性别", max_length=4, default='保密', 
+                            constraints=[pw.Check("gender in ('男', '女','保密')")])#三个图标
 
+    campus_is_published = pw.BooleanField(verbose_name="是否公开所在校区", default=False)
+    user_no = pw.CharField(verbose_name="学工号,字符串存储便于拓展",index=True,max_length=64)
     #应甲方要求，为方便留学生使用
     #中国用户用+86 1xx xxxx xxxx存 其他国家用其他的前缀
+    telephone_is_published = pw.BooleanField(verbose_name="是否公开电话号码", default=False)
     telephone = pw.CharField(verbose_name="电话号码", max_length=32)
+    wechat_is_published = pw.BooleanField(verbose_name="是否公开微信号", default=False)
     wechat = pw.CharField(verbose_name="微信号", max_length=128)
-    qq_number = pw.IntegerField(verbose_name="QQ号")
+    qq_is_published = pw.BooleanField(verbose_name="是否公开QQ号", default=False)
+    qq_number = pw.CharField(verbose_name="QQ号,字符串存储便于拓展",max_length=64)
 
-    campus_branch = pw.CharField(verbose_name="所在校区", max_length=32, null=False, default="四平路校区", constraints=[pw.Check("campus_branch in ('四平路校区','嘉定校区','沪西校区','沪北校区')")])
+    campus_is_published = pw.BooleanField(verbose_name="是否公开所在校区", default=False)
+    campus_branch = pw.CharField(verbose_name="所在校区", max_length=32, null=False, default="四平路校区",
+                                constraints=[pw.Check("campus_branch in ('四平路校区','嘉定校区','沪西校区','沪北校区')")])
+    dormitory_is_published = pw.BooleanField(verbose_name="是否公开宿舍楼", default=False)
     dormitory = pw.CharField(verbose_name="所在宿舍楼", max_length=32)
-
-    gender = pw.CharField(verbose_name="性别", max_length=4, default='保密', constraints=[pw.Check("gender in ('男', '女','保密')")])
 
     name_is_published = pw.BooleanField(verbose_name="是否公开姓名", default=False)
     name = pw.CharField(verbose_name="真实姓名", max_length=16)
