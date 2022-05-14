@@ -1,4 +1,4 @@
-from flask import redirect, url_for, render_template, request
+from flask import redirect, url_for, render_template, request,flash
 from flask_login import current_user
 from chat import chat_blue
 from flask_socketio import leave_room
@@ -56,7 +56,7 @@ def chat(opt_userid:int):
             Room.create(room_id=room)
         elif tag1:
             room=reroom
-        return render_template('chat.html',receiver=receiver,room=room)
+        return render_template('chat.html',sender=sender,receiver=receiver,room=room)
     else:
         return redirect(url_for('login'))  # 重定向到/login
 

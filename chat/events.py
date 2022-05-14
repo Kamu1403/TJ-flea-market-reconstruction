@@ -71,7 +71,7 @@ def text(message):
         Recent_Chat_List.insert(
             receiver_id=message['receiver'],
             sender_id=sender,
-            unread=Recent_Chat_List.unread+1)
+            unread=Recent_Chat_List.unread+1).execute()
         
     Message.create(
                 msg_time=message['time'],

@@ -8,8 +8,14 @@
     <script type="text/javascript" charset="utf-8">
         var socket;
         var room = '{{ room|safe }}';
+        var sender='{{ sender|safe }}';
         var receiver = '{{ receiver|safe }}';
         $(document).ready(function () {
+            if (sender!="" && sender==receiver)
+            {
+                alert("不能给自己发消息哦~");
+                window.location.href = "{{ url_for('chat.index') }}";
+            }
             socket = io.connect('ws://' + document.domain + ':' + location.port + '/chat');
             socket.on('connect', function () {
                 let cur_time = new Date(new Date().getTime()).toLocaleString();

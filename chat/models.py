@@ -67,6 +67,6 @@ class Recent_Chat_List(BaseModel):
     receiver_id = pw.ForeignKeyField(User,primary_key=True, verbose_name="接收者的id")
     #将接收者视作主键
     sender_id=pw.CharField(verbose_name="最后消息")
-    last_time = pw.DateField(verbose_name="最后访问时间")
+    last_time = pw.DateTimeField(verbose_name="最后访问时间")
     
     unread = pw.IntegerField(verbose_name="未读条数", null=False, default=0)
