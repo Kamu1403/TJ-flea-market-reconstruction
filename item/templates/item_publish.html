@@ -5,6 +5,10 @@
     function recall() {
       window.location.href = "{{url_for('item.index')}}";
     }
+    function show() {
+      var f = document.getElementsByName("pic");
+      console.log(f.files);
+    }
   </script>
 </head>
 
@@ -12,6 +16,9 @@
   <p>HTML:Hello world!</p>
   <form role="form" class="text-center" method="POST">
     <div>
+      <div class="pic">
+        <input type="file" name="pic" multiple="multiple" accept="image/* " onload="show()">
+      </div>
       <table>
         <tr>
           <td>

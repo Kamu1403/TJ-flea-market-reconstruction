@@ -78,7 +78,7 @@ def get_search():
 @api_blue.route("/change_item_status", methods=["PUT"])
 def change_item_status():
     if not current_user.is_authenticated:
-        return make_response_json(400, "当前用户未登录")
+        return make_response_json(401, "当前用户未登录")
     data = json.loads(request.get_json())
     try:
         item = Item.get(Item.id == data["item_id"])
@@ -91,12 +91,27 @@ def change_item_status():
             if current_user.state == User_state.Admin.value:
                 return make_response_json(200, "操作成功")
             elif current_user.state == User_state.Under_ban.value:
-                return make_response_json(400, "您当前已被封号,请联系管理员解封")
+                return make_response_json(401, "您当前已被封号,请联系管理员解封")
             else:
                 if current_user.id != item.user_id_id:
-                    return make_response_json(400, "不可改变其他人的商品状态")
+                    return make_response_json(401, "不可改变其他人的商品状态")
                 else:
                     if data["state"] == Item_state.Freeze.value:
-                        return make_response_json(400, "权限不足")
+                        return make_response_json(401, "权限不足")
                     else:
                         return make_response_json(200, "操作成功")
+
+@api_blue.route("/post_item_info",methods = ["POST"])
+def post_item_info():
+    #return make_response_json(200,"发布成功")
+    #if not current_user.is_authenticated:
+    #    return make_response_json(401,"当前用户未登录")
+    #if current_user.state == User_state.Under_ban.value:
+    #    return make_response_json(401,"当前用户已被封号")
+    data = request.get_json()
+    print(data)
+    if data["price"]<=0:
+        make_response_json(400,"物品不存在负价格")
+    if data["type"] != Item_type.Goods.value and data["type"] != Item_type.Want.value:
+        make_response_json(400,"仅能上传物品")
+    return make_response_json(200,"上传成功")

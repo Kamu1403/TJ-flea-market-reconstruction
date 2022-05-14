@@ -46,5 +46,5 @@ def goods_content(item_id:int):#goods_id/want_id
     return render_template('item_content.html')
 
 @item_blue.route('/publish/', methods=['GET', 'POST'])
-def goods_publish():
+def publish():
     return render_template('item_publish.html')
