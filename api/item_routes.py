@@ -104,11 +104,11 @@ def change_item_status():
 
 @api_blue.route("/post_item_info",methods = ["POST"])
 def post_item_info():
-    #return make_response_json(200,"发布成功")
-    #if not current_user.is_authenticated:
-    #    return make_response_json(401,"当前用户未登录")
-    #if current_user.state == User_state.Under_ban.value:
-    #    return make_response_json(401,"当前用户已被封号")
+    return make_response_json(200,"发布成功")
+    if not current_user.is_authenticated:
+        return make_response_json(401,"当前用户未登录")
+    if current_user.state == User_state.Under_ban.value:
+        return make_response_json(401,"当前用户已被封号")
     data = request.get_json()
     print(data)
     if data["price"]<=0:
@@ -128,11 +128,7 @@ def post_item_info():
             return make_response_json(400,"仅能选定一张头图")
         else:
             head_pic = head_pics[0]
-    if not os.path.exists("./image/item"):
-        os.makekdirs("./image")
-    elif not os.path.isdir("./image/item"):
-        os.removedirs("./image/item")
-        os.makekdisr("./image/item")
+
 
 
     data["user_id"] = current_user.id
