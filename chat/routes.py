@@ -17,6 +17,7 @@ def teardown_request(exc):#exc必须写上
         database.close()
 
 #聊天室初始
+@chat_blue.route("", methods=['GET', 'POST'])
 @chat_blue.route("/", methods=['GET', 'POST'])
 def root_index():
     return redirect(url_for('chat.index'))  # 重定向到/user/index

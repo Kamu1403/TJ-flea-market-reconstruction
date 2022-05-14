@@ -67,7 +67,7 @@ def text(message):
     elif state.room_state==2:
         read=1
     
-    if read:
+    if read==0:
         Recent_Chat_List.insert(
             receiver_id=message['receiver'],
             sender_id=sender,
