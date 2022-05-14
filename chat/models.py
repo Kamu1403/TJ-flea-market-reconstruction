@@ -24,7 +24,7 @@ class Room(BaseModel):
     room_state =pw.IntegerField(verbose_name="房间状态",default=0,null=False,
                                 constraints=[pw.Check("room_state >=0")])
     #房间状态 0-无人使用 1-单人使用 2-双方使用
-    last_messgae =pw.CharField(verbose_name="最后消息")
+    last_message =pw.CharField(verbose_name="最后消息")
     # 该房间内产生的最后一次通信记录，可以为空
 
 
@@ -64,9 +64,10 @@ class Recent_Chat_List(BaseModel):
     近期消息类
     继承自BaseModel，直接关联db，并且也继承了Model Model有提供增删查改的函数
     """
-    receiver_id = pw.ForeignKeyField(User,primary_key=True, verbose_name="接收者的id")
-    #将接收者视作主键
-    sender_id=pw.CharField(verbose_name="最后消息")
+    receiver_id = pw.ForeignKeyField(User, verbose_name="接收者的id")
+    sender_id = pw.ForeignKeyField(User, verbose_name="发送者的id")
+    
+    last_msg = pw.CharField(verbose_name="最后消息")
     last_time = pw.DateTimeField(verbose_name="最后访问时间")
     
     unread = pw.IntegerField(verbose_name="未读条数", null=False, default=0)

@@ -40,22 +40,16 @@ def chat(opt_userid:int):
         receiver=opt_userid
         room = sender + '-' + receiver
         reroom = receiver + '-' + sender
-        tag1,tag2=0,0
         #查询是否存在该聊天,发送接收双方此时共享一个聊天室(聊天记录)
-        try:
-            roomid = Room.get(Room.room_id==room)
-        except:
-            tag1=1
         
-        try:
-            roomid = Room.get(Room.room_id==reroom)
-        except:
-            tag2=1
-
-        if (tag1 and tag2):
-            Room.create(room_id=room)
-        elif tag1:
-            room=reroom
+        if (sender!=receiver):
+            roomid = Room.get_or_none(Room.room_id==room)
+            reroomid=Room.get_or_none(Room.room_id==reroom)
+            if (roomid==None and reroomid==None):
+                Room.create(room_id=room)
+            elif reroomid!=None:
+                room=reroom
+                
         return render_template('chat.html',sender=sender,receiver=receiver,room=room)
     else:
         return redirect(url_for('login'))  # 重定向到/login
@@ -71,3 +65,14 @@ def close():
     
     print("close!")
     return jsonify('status:200')
+
+@chat_blue.route('/message_cnt',methods=['POST','GET'])
+def message_cnt():
+    if (current_user.is_authenticated):
+        user=str(current_user.id)
+        unread=0
+        for chat in Recent_Chat_List.select().where(Recent_Chat_List.receiver_id==user):
+            unread+=chat.unread
+        return unread
+    else:
+        return make_response_json(400, "当前用户未登录")
