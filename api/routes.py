@@ -3,7 +3,6 @@
 from api.utils import *
 from api import api_blue
 
-
 from .send_verification_mail import send_email
 
 
@@ -179,7 +178,7 @@ def _login(user_id, password=None):
     # 记住登录状态，同时维护current_user
     login_user(user, True, datetime.timedelta(days=30))
 
-    return url_for('user.index')
+    return make_response_json(data={"url": url_for('user.index')})
 
 
 @api_blue.route('/login_using_password', methods=['POST'])
@@ -315,8 +314,3 @@ def get_user_info():
         return make_response_json(404, "未找到用户")
     else:
         return make_response_json(200, "获取用户数据成功", GetUserDict(tep))
-
-
-
-
-
