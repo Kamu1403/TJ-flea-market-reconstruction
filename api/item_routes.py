@@ -3,7 +3,8 @@
 from api.utils import *
 from api import api_blue
 from item.models import Item_type, Item_state
-
+from datetime import datetime
+from hashlib import md5
 @api_blue.route('/get_item_info', methods=['GET'])
 def get_item_info():
     item_id = int(request.args.get('item_id'))
@@ -114,4 +115,45 @@ def post_item_info():
         return make_response_json(400,"物品不存在负价格")
     if data["type"] != Item_type.Goods.value and data["type"] != Item_type.Want.value:
         return make_response_json(400,"仅能上传物品")
+    if data["shelved_num"]<=0:
+        return make_response_json(400,"不允许发布负数个物品")
+    if len(data["urls"]) == 0:
+        #给一个默认图
+        pass
+    else:
+        head_pics = [i for i in data["urls"] if i[1] == 1]
+        if len(head_pics) == 0:
+            head_pic = data["urls"][0]
+        elif len(head_pics)>1:
+            return make_response_json(400,"仅能选定一张头图")
+        else:
+            head_pic = head_pics[0]
+    if not os.path.exists("./image/item"):
+        os.makekdirs("./image")
+    elif not os.path.isdir("./image/item"):
+        os.removedirs("./image/item")
+        os.makekdisr("./image/item")
+
+
+    data["user_id"] = current_user.id
+    data["publish_time"] = datetime.utcnow()
+    try:
+        new = Item.create(**data)
+    except Exception as e:
+        return make_response_json(400,f"上传失败\n{str(e)}:{repr(e)}")
     return make_response_json(200,"上传成功")
+
+
+@api_blue.route("/post_item_pic",methods = ["POST"])
+def post_item_pic():
+    try:
+        data = request.files["file"]
+        file_byte = data.read()
+        md5code = md5(file_byte).hexdigest()
+        if not os.path.exists("./temp"):
+            os.mkdir("./temp")
+        with open(f"./temp/{md5code}.jpg","wb") as f:
+            f.write(file_byte)
+    except Exception as e:
+        return make_response_json(400,f"上传失败\n{str(e)}{repr(e)}")
+    return make_response_json(200,"上传图片成功",{"str":md5code})

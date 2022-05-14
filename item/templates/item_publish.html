@@ -1,64 +1,55 @@
 <html>
 
 <head>
-  <script>
-    function recall() {
-      window.location.href = "{{url_for('item.index')}}";
-    }
-    function show() {
-      var f = document.getElementsByName("pic");
-      console.log(f.files);
-    }
-  </script>
+  <script src="{{url_for('static',filename='js/vendor/jquery-3.6.0.min.js')}}"></script>
 </head>
 
 <body>
-  <p>HTML:Hello world!</p>
-  <form role="form" class="text-center" method="POST">
-    <div>
-      <div class="pic">
-        <input type="file" name="pic" multiple="multiple" accept="image/* " onload="show()">
-      </div>
-      <table>
-        <tr>
-          <td>
-            名称
-          </td>
-          <td><input type="text" name="name"></td>
-        </tr>
-        <tr>
-          <td>类别</td>
-          <td><input type="radio" name="type" value="0">商品
-            <input type="radio" name="type" value="1">悬赏
-          </td>
-        </tr>
-        <tr>
-          <td>
-            价格
-          </td>
-          <td>
-            <input type="text" name="price">
-          </td>
-        </tr>
-        <tr>
-          <td>数量</td>
-          <td>
-            <input type="text" name="shelved_num">
-          </td>
-        </tr>
-        <tr>
-          <td>详细描述</td>
-          <td>
-            <input type="text" name="description">
-          </td>
-        </tr>
-      </table>
-    </div>
-    <div>
-      <button type="submit">确认发布</button>
-      <button type="reset" onclick="recall()">取消发布</button>
-    </div>
-  </form>
+  <div>
+    <img src="" id="show_img" style="width: 150px; height: 150px" />
+    <input type="file" id="file" style="display: none" />
+    <a href="javascript:void(0)" onclick="selectImg()">选择图片</a>
+    <a href="javascript:void(0)" onclick="uploadImg()">上传</a>
+    <!-- href="javascript:void(0) : 让超链接去执行一个js函数，而不是去跳转到一个地址-->
+  </div>
 </body>
+<script>
+  function selectImg() {
+    $("#file").click(); // 相当于模拟点击一下选择图片按钮
+  }
+
+  $("#file").on("change", function () {
+    // 当你想显示选择的图片时
+    var objUrl = getObjectURL(this.files[0]);
+    if (objUrl) $("#show_img").attr("src", objUrl);
+  });
+  function getObjectURL(file) {
+    var url = null;
+    if (window.createObjectURL != undefined) url = window.createObjectURL(file); // basic
+    else if (window.URL != undefined) url = window.URL.createObjectURL(file); // mozilla(firefox)
+    else if (window.webkitURL != undefined) url = window.webkitURL.createObjectURL(file); // webkit or chrome
+    return url;
+  }
+
+  function uploadImg() {
+    var file = $("#file")[0].files[0];
+    console.log("开始上传图片：" + file);
+    if (file) {
+      var formData = new FormData();
+      formData.append("file", file);
+      $.ajax({
+        url: "/api/post_item_pic",
+        type: "post",
+        data: formData,
+        contentType: false,
+        processData: false,
+        success: function (res) {
+          console.log("上传图片成功：" + JSON.stringify(res));
+        },
+      });
+    }
+  }
+</script>
+
 
 </html>
