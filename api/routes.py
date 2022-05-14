@@ -3,6 +3,7 @@
 from api.utils import *
 from api import api_blue
 
+
 from .send_verification_mail import send_email
 
 
@@ -25,7 +26,9 @@ def judge_user_id(user_id: str):
 
 
 curpath = os.path.dirname(__file__)
-config = os.path.join(curpath, 'verify_code.json')  # [{"time": int(time.time()), "user_id":str, "code":str}]
+config = os.path.join(
+    curpath, 'verify_code.json'
+)  # [{"time": int(time.time()), "user_id":str, "code":str}]
 if not os.path.exists(config):
     with open(config, "w", encoding="utf-8") as fp:
         print("[]", file=fp)
@@ -34,7 +37,10 @@ if not os.path.exists(config):
 def save_verify_code(code: List[dict]):
     nowtime = time.time()
     with open(config, "w", encoding="utf-8") as fp:
-        json.dump(list(filter(lambda x: nowtime - x["time"] < 900, code)), fp, indent=4, ensure_ascii=False)
+        json.dump(list(filter(lambda x: nowtime - x["time"] < 900, code)),
+                  fp,
+                  indent=4,
+                  ensure_ascii=False)
 
 
 def get_verify_code() -> List[dict]:
@@ -78,8 +84,8 @@ def judge_code(user_id: str, code: str) -> list:
     jui = judge_user_id(user_id)
     if jui[0] != 0:
         return jui
-
-    if code == "iew32dGCbcDzi2B3eLJ7kIAS4HQZmU0M":  # 测试用后门
+    #print(code)
+    if code == "IEW32DGCBCDZI2B3ELJ7KIAS4HQZMU0M":  # 测试用后门
         return [0, "验证通过"]
 
     code_list = get_verify_code()
@@ -136,10 +142,16 @@ def send_verification_code():
     if jcf[0] != 0:
         return make_response_json(quick_response=jcf)
     verification_code = create_string_number(6)
-    ret = send_email("同济跳蚤市场 注册验证码", [user_id], f'您的注册验证码为：{verification_code}。有效期为15分钟。\n此邮件为系统自动发出，请勿回复。')
+    ret = send_email(
+        "同济跳蚤市场 注册验证码", [user_id],
+        f'您的注册验证码为：{verification_code}。有效期为15分钟。\n此邮件为系统自动发出，请勿回复。')
 
     code_list = get_verify_code()
-    code_list.append({"time": int(time.time()), "user_id": user_id, "code": verification_code.upper()})
+    code_list.append({
+        "time": int(time.time()),
+        "user_id": user_id,
+        "code": verification_code.upper()
+    })
     save_verify_code(code_list)
     if ret["status"] == False:
         return make_response_json(400, "验证码邮件发送失败，请重试或联系网站管理员。")
@@ -205,7 +217,10 @@ def register_or_login_using_verification_code():
     if password != "":
         if not user_exist:
             xuehao = user_id.split('@')[0]
-            User.create(id=int(xuehao), username=xuehao, password_hash=generate_password_hash(password), email=user_id)
+            User.create(id=int(xuehao),
+                        username=xuehao,
+                        password_hash=generate_password_hash(password),
+                        email=user_id)
             return make_response_json(200, "注册成功")
         else:
             tep.password_hash = generate_password_hash(password)
@@ -302,90 +317,6 @@ def get_user_info():
         return make_response_json(200, "获取用户数据成功", GetUserDict(tep))
 
 
-@api_blue.route('/get_item_info', methods=['GET'])
-def get_item_info():
-    item_id = request.args.get('id')
-    need_type = request.args.get("type")
-    print(item_id)
-    if need_type == "goods":
-        bases = Item
-    elif need_type == "want":
-        bases = Item
-    else:
-        bases = None
-    res = copy.deepcopy(default_res)
-    try:
-        it = bases.get(bases.id == item_id)
-    except Exception as e:
-        it = None
-    if it is None:
-        #报错
-        res['statusCode'] = 404
-        res['success'] = False
-        res['message'] = "未找到商品信息"
-        res['data'] = dict()
-    else:
-        res['statusCode'] = 200
-        res['success'] = True
-        res['message'] = "已找到商品信息"
-        dic = it.__data__
-        dic.pop('id')
-        dic.pop('locked_num')
-        res['data'] = dic
-        dic['publish_time'] = str(dic['publish_time'])
-        dic['price'] = float(dic['price'])
-        if not current_user.is_authenticated:
-            isAdmin = False
-            isPub = False
-        else:
-            isAdmin = (current_user.state == User_state.Admin.value)
-            isPub = (it.user_id.id == current_user.id)
-        res["isAdmin"] = isAdmin
-        res["isPub"] = isPub
-    return make_response(jsonify(res))
 
-@api_blue.route('/search', methods=['POST'])
-def get_search():
-    search_type = request.form.get("search_type")
-    if search_type == "goods":
-        bases = Item
-    elif search_type == "want":
-        bases = Item
-    else:
-        return make_response_json(400, "搜索类型仅能指定商品或悬赏")
 
-    key_word = request.form.get("key_word")
-    order_type = request.form.get("order_type")
-    data = []
 
-    #get_data = bases.select().where().exectue()
-    if order_type == "time":
-        orderWay = (bases.publish_time.desc(), )
-    elif order_type == "price":
-        orderWay = (bases.price.asc(), )
-    else:
-        orderWay = (bases.publish_time.desc(), )  # 改：默认其实为相似度
-
-    need = (bases.id, bases.name, bases.user_id, bases.publish_time, bases.price)
-    select_need = [bases.name.contains(key_word)]
-    try:
-        start_time = request.form.get("start_time")
-        if start_time != "" and start_time is not None:
-            start_time = datetime.strptime(start_time, "%Y-%m-%d")
-            select_need.append(bases.publish_time >= start_time)
-        end_time = request.form.get("end_time")
-        if end_time != "" and end_time is not None:
-            end_time = datetime.strptime(end_time, "%Y-%m-%d")
-            select_need.append(bases.publish_time <= end_time)
-    except Exception as e:
-        print(e)
-        return make_response_json(400, '时间格式错误,应为年-月-日格式')
-    else:
-        get_data = bases.select(*need).where(*select_need).order_by(*orderWay).execute()
-        for i in get_data:
-            j = i.__data__
-            j['price'] = float(j['price'])
-            j['type'] = search_type
-            j['publish_time'] = str(j['publish_time'])
-            data.append(j)
-        return make_response_json(200, "搜索结果如下", data)

@@ -6,7 +6,8 @@
     <script>
         var str = window.location.href;
         var temp = str.split("/")
-        var data = { "type": temp[temp.length - 3], "id": temp[temp.length - 2] };
+        var data = { "item_id": temp[temp.length - 2] };
+        console.log(data);
         $.ajax(
             {
                 type: "GET",
@@ -20,13 +21,24 @@
                             j.innerHTML = result['data'][i];
                         }
                     }
-                    var t = document.getElementById("test");
 
                     if (!result['isPub']) {
                         $('#button1').append("<a href='/chat/" + result['data']['publisher_id'] + "'>和对方聊天</a>");
                         $('#button2').append("生成订单");
+                        $('#button2').click(function () {
+                            $.ajax({
+                                type: "PUT",
+                                dataType: "JSON",
+                                data: data,
+                                url: "/api/get_item_info",
+                                success: function (result) {
+                                    var order_id = result.data.id;
+                                    window.location.href = "/order/generate/" + order_id + "/";
+                                }
+                            })
+                        })
                         if (result['isAdmin']) {
-                            t.innerHTML += "<button>修改上架信息</button><button>下架</button>";
+                            $("#test").append("<button>修改上架信息</button><button>下架</button>");
                         }
                     }
                     else {

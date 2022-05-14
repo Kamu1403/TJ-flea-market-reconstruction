@@ -787,14 +787,14 @@
 
 </body>
 <script type="text/javascript" charset="utf-8">
-    var keyword = '{{ keyword|safe }}';
+    var keyword = "{{ keyword|safe }}";
     $(document).ready(function () {
-        $.post("/api/search", { search_type: "goods", start_time: "", end_time: "", order_type: "", key_word: keyword }, function (ret) {
+        $.post("/api/search", { search_type: 0, start_time: "", end_time: "", order_type: "", key_word: keyword }, function (ret) {
             if (ret.statusCode == 400) {
                 alert(ret.message);
             } else {
-                var items = ret.data
-                console.log(items)
+                var items = ret.data;
+                console.log(items);
                 for (let i = 0; i < items.length; i++) {
                     var str=
                     '<div class="col-xl-3 col-md-4 col-sm-6">\
