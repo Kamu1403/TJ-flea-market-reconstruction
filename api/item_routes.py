@@ -111,7 +111,7 @@ def post_item_info():
     data = request.get_json()
     print(data)
     if data["price"]<=0:
-        make_response_json(400,"物品不存在负价格")
+        return make_response_json(400,"物品不存在负价格")
     if data["type"] != Item_type.Goods.value and data["type"] != Item_type.Want.value:
-        make_response_json(400,"仅能上传物品")
+        return make_response_json(400,"仅能上传物品")
     return make_response_json(200,"上传成功")
