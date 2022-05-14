@@ -4,6 +4,7 @@ from chat import chat_blue
 from flask_socketio import leave_room
 from flask import make_response, request, jsonify
 from chat.models import Room,Recent_Chat_List
+from api.utils import *
 from app import database
 
 @chat_blue.before_request
