@@ -104,7 +104,6 @@ def change_item_status():
 
 @api_blue.route("/post_item_info",methods = ["POST"])
 def post_item_info():
-    return make_response_json(200,"发布成功")
     if not current_user.is_authenticated:
         return make_response_json(401,"当前用户未登录")
     if current_user.state == User_state.Under_ban.value:
