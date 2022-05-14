@@ -35,7 +35,7 @@ def joined(message):
     print("+")
     
     #将最近列表中的未读信息数清空
-    Recent_Chat_List.update(last_time=datetime.utcnow(), unread=0).where(
+    Recent_Chat_List.update(unread=0).where(
                 Recent_Chat_List.receiver_id==sender
                 and Recent_Chat_List.sender_id==message['receiver']).execute()
     
@@ -68,10 +68,18 @@ def text(message):
         read=1
     
     if read==0:
-        Recent_Chat_List.insert(
+        if Recent_Chat_List.get_or_none(receiver_id=message['receiver'])==None:
+            Recent_Chat_List.insert(
             receiver_id=message['receiver'],
             sender_id=sender,
-            unread=Recent_Chat_List.unread+1)
+            last_time=message['time'],
+            last_msg=message['msg'],
+            unread=1).execute()
+        else:
+            Recent_Chat_List.update(
+            last_time=message['time'],
+            last_msg=message['msg'],
+            unread=Recent_Chat_List.unread+1).where(Recent_Chat_List.receiver_id==message['receiver'] and Recent_Chat_List.sender_id==sender).execute()
         
     Message.create(
                 msg_time=message['time'],
@@ -80,6 +88,8 @@ def text(message):
                 msg_type=message['type'],
                 msg_content=message['msg'],
                 msg_read=read)
+    
+    Room.update(last_message=message['msg']).where(Room.room_id==roomid).execute()
     
     emit('message', {'msg': sender + ':' + message['msg'],'time':message['time'],'type':message['type']},
          room=sender)
