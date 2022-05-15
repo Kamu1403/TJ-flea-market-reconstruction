@@ -127,6 +127,8 @@ def post_item_info():
             return make_response_json(400,"仅能选定一张头图")
         else:
             head_pic = head_pics[0]
+        #将所有的图片转到用户对应文件夹
+
 
 
 
