@@ -1,15 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
-from statistics import quantiles
-from tkinter import E
 from api.utils import *
 from api import api_blue
 from item.models import Item_type, Item_state
 from order.models import Contact
+from datetime import date,timedelta
 
 @api_blue.route("/get_order",methods=["GET"])
 def get_order():
-    pass
+    data = dict(request.args)
+    if "range" in data:
+        td = timedelta(days=int(data["range"]))
+        last_time = date.now()
+    return make_response_json(200,"谢谢")
 
 @api_blue.route("/get_address",methods=['GET'])
 def get_address():
