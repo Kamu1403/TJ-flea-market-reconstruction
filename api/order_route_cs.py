@@ -26,6 +26,7 @@ def get_address():
 
 
 
-@api_blue.route("/generate_order",methods=["PUT"])
+
+@api_blue.route("/generate_order", methods=["PUT"])
 def generate_order():
-    return make_response_json(404,"NOT FOUND")
+    return make_response_json(404, "NOT FOUND")

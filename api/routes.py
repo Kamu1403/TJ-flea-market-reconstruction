@@ -218,6 +218,7 @@ def register_or_login_using_verification_code():
             xuehao = user_id.split('@')[0]
             User.create(id=int(xuehao),
                         username=xuehao,
+                        user_no=xuehao,
                         password_hash=generate_password_hash(password),
                         email=user_id)
             return make_response_json(200, "注册成功")
@@ -230,87 +231,3 @@ def register_or_login_using_verification_code():
             return _login(user_id)
         else:
             return make_response_json(401, "请输入密码以完成注册")
-
-
-def GetUserDict(i) -> dict:
-    user = {}
-    user['id'] = i.id
-    user['username'] = i.username
-    user['email'] = i.email
-    user['state'] = i.state
-    user['score'] = i.score
-    user['telephone'] = i.telephone
-    user['wechat'] = i.wechat
-    user['qq_number'] = i.qq_number
-    user['campus_branch'] = i.campus_branch
-    user['dormitory'] = i.dormitory
-    user['gender'] = i.gender
-    user['name_is_published'] = i.name_is_published
-    if i.name_is_published == True:
-        user['name'] = i.name
-    else:
-        user['name'] = '保密'
-    user['major_is_published'] = i.major_is_published
-    if i.major_is_published == True:
-        user['major'] = i.major
-    else:
-        user['major'] = '保密'
-    return user
-
-
-#管理员获取所有用户信息
-@api_blue.route('/get_all_user', methods=['GET'])
-def get_all_user():
-    if not current_user.is_authenticated:
-        return make_response_json(401, "该用户未通过验证")
-
-    if current_user.state < User_state.Admin.value:
-        return make_response_json(401, "权限不足")
-
-    users = User.select().where(User.state != User_state.Admin.value)
-    data_list = []
-    for i in users:
-        user_dic = GetUserDict(i)
-        data_list.append(user_dic)
-
-    if len(data_list) == 0:
-        return make_response_json(404, "无用户信息")
-    return make_response_json(200, "所有用户信息获取成功", data_list)
-
-
-#管理员封号
-@api_blue.route('/ban_user', methods=['PUT'])
-def ban_user():
-    if not current_user.is_authenticated:
-        return make_response_json(401, "该用户未通过验证")
-
-    if current_user.state < User_state.Admin.value:
-        return make_response_json(401, "权限不足")
-
-    #在APIFOX测试运行时current_user未经认证，需要先在apifox上登录后才current_user才有效
-    user_id = request.form.get("user_id")
-    try:
-        tep = User.get(User.id == user_id)
-    except:
-        return make_response_json(404, "未找到用户")
-    else:
-        tep.state = -1
-        tep.save()
-        return make_response_json(200, "操作成功")
-
-        #query=User.update(state=-1).where(User.id==user_id)
-        #query.execute()
-
-
-@api_blue.route('/get_user_info', methods=['POST'])
-def get_user_info():
-    if not current_user.is_authenticated:
-        return make_response_json(401, "该用户未通过验证")
-
-    user_id = request.form.get("user_id")
-    try:
-        tep = User.get(User.id == user_id)
-    except:
-        return make_response_json(404, "未找到用户")
-    else:
-        return make_response_json(200, "获取用户数据成功", GetUserDict(tep))
