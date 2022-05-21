@@ -27,12 +27,16 @@ def get_address():
     return make_response_json(200,"获取成功",data)
 
 
+#@api_blue.route("/")
 
 
-
-@api_blue.route("/order_post", methods=["PUT"])
+@api_blue.route("/order_post", methods=["POST"])
 def order_post():
     data = request.get_json()
+    try:
+        data["num"] = int(data["num"])
+    except Exception as e:
+        return make_response_json(400,"请指定物品个数")
     if not current_user.is_authenticated:
         return make_response_json(401,"当前用户未登录")
     if current_user.state == User_state.Under_ban.value:
@@ -41,24 +45,22 @@ def order_post():
         item = Item.get(Item.id == data["item_id"])
     except Exception as e:
         return make_response_json(400,"不存在此款物品")
-    if "num" not in data:
-        return make_response_json(401,"请指定物品个数")
     if item.shelved_num < data["num"]:
         return make_response_json(401,"物品库存不足")
-    if current_user.id == item.user_id:
+    if current_user.id == item.user_id.id:
         return make_response_json(401,"不可自己和自己做生意")
     try:
         contact = Contact.get(Contact.id == data["contact_id"])
     except Exception as e:
         return make_response_json(400,"您指定的联系方式不存在")
     try:
-        op_contact = Contact.get(Contact.user_id == item.user_id)
+        op_contact = Contact.get(Contact.user_id == item.user_id.id)
     except Exception as e:
         return make_response_json(400,"对方未存储联系方式")
     try:
         order_data = dict()
         order_data["user_id"] = current_user.id
-        order_data["op_user_id"] = item.user_id
+        order_data["op_user_id"] = item.user_id.id
         order_data["contact_id"] = data["contact_id"]
         order_data["op_contact_id"] = op_contact.id
         order_data["note"] = data["note"]
