@@ -14,13 +14,14 @@ def get_address():
     need = [Contact.name,Contact.telephone,Contact.full_address,Contact.default,Contact.campus_branch]
     try:
         datas = Contact.select(*need).where(Contact.user_id==current_user.id).execute()
-        print(datas)
     except Exception as e:
         return make_response_json(500,f"发生如下错误\n{repr(e)}")
     else:
         data = list()
         for i in datas:
             data.append(i.__data__)
+        if len(data) == 0:
+            return make_response_json(404,"该用户未设置任何联系地址")
     return make_response_json(200,"获取成功",data)
 
 
