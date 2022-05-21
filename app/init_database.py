@@ -185,7 +185,7 @@ def fake_data():  #填一些假数据进去
                  op_contact_id=1,
                  payment=1.11,
                  state=2,
-                 end_time=datetime.utcnow())
+                 end_time=datetime.now())
     Order.create(id=2,
                  user_id=1953493,
                  op_user_id=1951705,
@@ -193,7 +193,7 @@ def fake_data():  #填一些假数据进去
                  op_contact_id=1,
                  payment=0.01,
                  state=-1,
-                 close_time=datetime.utcnow(),
+                 close_time=datetime.now(),
                  note="我来帮你写sj！")
     Order.create(id=3,
                  user_id=1951566,

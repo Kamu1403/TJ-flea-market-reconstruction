@@ -5,7 +5,7 @@ from app import BaseModel
 import peewee as pw
 from datetime import datetime
 from user.models import User
-  
+
 
 from enum import Enum,unique
 #添加 unique 装饰器
@@ -25,7 +25,7 @@ class Feedback_kind(Enum):
     Transaction=4
     Other=5
 
-    
+
 class Feedback(BaseModel):
     """
     反馈信息
@@ -35,11 +35,11 @@ class Feedback(BaseModel):
     user_id = pw.ForeignKeyField(User, verbose_name="发布者的学号")
     publish_time = pw.DateField(verbose_name="发布时间",
                                 null=False,
-                                default=datetime.utcnow())
+                                default=datetime.now())
 
     #0-举报用户或交易 1-交易出现问题 2-网站bug问题，3-个人疑问 4-个人信息有问题等
-    kind=pw.IntegerField(verbose_name="反馈种类",null=False,default=Feedback_kind.User.value,constraints=[pw.Check("kind >=0")]) 
-    
+    kind=pw.IntegerField(verbose_name="反馈种类",null=False,default=Feedback_kind.User.value,constraints=[pw.Check("kind >=0")])
+
     #0为未读，1为已读 -1为已回复
     state = pw.IntegerField(verbose_name="状态", null=False, default=Feedback_state.Unread.value,
                                 constraints=[pw.Check("state >=-1")])
@@ -55,5 +55,5 @@ class User_Management(BaseModel):
     user_id = pw.ForeignKeyField(User, verbose_name="发布者的学号")
     ban_time=pw.DateField(verbose_name="解封时间",
                                 null=False,
-                                default=datetime.utcnow())#置当用户表中state=-1时，可以改变此项的值以实现封号时间
+                                default=datetime.now())#置当用户表中state=-1时，可以改变此项的值以实现封号时间
     ban_reason=pw.CharField(verbose_name="封号原因", max_length=1024)

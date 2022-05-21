@@ -143,7 +143,7 @@ def post_item_info():
 
 
     data["user_id"] = current_user.id
-    data["publish_time"] = datetime.utcnow()
+    data["publish_time"] = datetime.now()
     try:
         new = Item.create(**data)
     except Exception as e:

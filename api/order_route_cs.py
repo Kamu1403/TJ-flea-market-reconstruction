@@ -7,6 +7,10 @@ from api import api_blue
 from item.models import Item_type, Item_state
 from order.models import Contact
 
+@api_blue.route("/get_order",methods=["GET"])
+def get_order():
+    pass
+
 @api_blue.route("/get_address",methods=['GET'])
 def get_address():
     if not current_user.is_authenticated:

@@ -38,9 +38,9 @@ def goods_content(item_id:int):#goods_id/want_id
         try:
             last = History.get(History.user_id == current_user.id, History.item_id == item_id)
         except  Exception as e:
-            last = History(user_id=current_user.id,item_id=item_id,visit_time=datetime.utcnow())
+            last = History(user_id=current_user.id,item_id=item_id,visit_time=datetime.now())
         else:
-            last.visit_time = datetime.utcnow()
+            last.visit_time = datetime.now()
         finally:
             last.save()
     return render_template('item_content.html')
