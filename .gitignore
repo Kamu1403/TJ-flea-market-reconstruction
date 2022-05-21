@@ -135,3 +135,6 @@ dmypy.json
 # vscode setting file
 .vscode/
 api/verify_code.json
+
+# temp
+temp/

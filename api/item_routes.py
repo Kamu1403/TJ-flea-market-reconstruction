@@ -5,6 +5,14 @@ from api import api_blue
 from item.models import Item_type, Item_state
 from datetime import datetime
 from hashlib import md5
+
+def createPath(path:str)->None:
+    if not os.path.exists(path):
+        os.makedirs(path)
+    elif not os.path.isdir(path):
+        os.remove(path)
+        os.makedirs(path)
+
 @api_blue.route('/get_item_info', methods=['GET'])
 def get_item_info():
     item_id = int(request.args.get('item_id'))
@@ -41,7 +49,7 @@ def get_search():
 
     key_word = request.form.get("key_word")
     order_type = request.form.get("order_type")
-    data = []
+    data = list()
 
     #get_data = Item.select().where().exectue()
     if order_type == "time":
@@ -132,6 +140,7 @@ def post_item_info():
 
 
 
+
     data["user_id"] = current_user.id
     data["publish_time"] = datetime.utcnow()
     try:
@@ -143,13 +152,14 @@ def post_item_info():
 
 @api_blue.route("/post_item_pic",methods = ["POST"])
 def post_item_pic():
+    if not current_user.is_authenticated:
+        return make_response_json(400,"当前用户未登录")
     try:
         data = request.files["file"]
         file_byte = data.read()
         md5code = md5(file_byte).hexdigest()
-        if not os.path.exists("./temp"):
-            os.mkdir("./temp")
-        with open(f"./temp/{md5code}.jpg","wb") as f:
+        createPath("./temp/{}".format(current_user.id))
+        with open(f"./temp/{current_user.id}/{md5code}.jpg","wb") as f:
             f.write(file_byte)
     except Exception as e:
         return make_response_json(400,f"上传失败\n{str(e)}{repr(e)}")
