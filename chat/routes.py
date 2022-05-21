@@ -56,7 +56,8 @@ def chat(opt_userid:int):
                 meet_list[sender]=[receiver]
             else:
                 meet_list=user.meet_list
-                meet_list[sender].append(receiver)
+                if receiver not in meet_list[sender]:
+                    meet_list[sender].append(receiver)
             Meet_List.update(meet_list=meet_list).where(Meet_List.user_id==sender).execute()
 
 
