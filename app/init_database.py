@@ -6,7 +6,7 @@ from user.models import User
 from admin.models import Feedback, User_Management
 from order.models import Contact, Review, Order, Order_State_Item, Order_Item
 from item.models import Item, History, Favor
-from chat.models import Room, Message, Recent_Chat_List
+from chat.models import Room, Message, Recent_Chat_List,Meet_List
 
 
 def drop_tables():
@@ -39,6 +39,8 @@ def drop_tables():
         Message.drop_table()
     if Room.table_exists:
         Room.drop_table()
+    if Meet_List.table_exists:
+        Meet_List.drop_table()
 
     if User.table_exists:
         User.drop_table()
@@ -63,7 +65,7 @@ def create_tables():
     Room.create_table()
     Recent_Chat_List.create_table()
     Message.create_table()
-
+    Meet_List.create_table()
 
 from datetime import datetime
 from werkzeug.security import generate_password_hash
