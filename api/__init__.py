@@ -8,3 +8,4 @@ api_blue = Blueprint('api', __name__,template_folder="templates", static_folder=
 
 from . import routes
 from . import item_routes
+from . import chat_routes

@@ -3,9 +3,20 @@
 
 from app import BaseModel
 import peewee as pw
+import json
 from datetime import datetime
 from user.models import User
 from enum import Enum,unique
+
+class JSONField(pw.TextField):
+    def db_value(self, value):
+        return json.dumps(value)
+
+    def python_value(self, value):
+        if value is not None:
+            return json.loads(value)
+
+
 #添加 unique 装饰器
 @unique
 class Msg_type(Enum):
@@ -13,7 +24,7 @@ class Msg_type(Enum):
     Text = 0
     Image = 1
     Notice=2
-    
+
 class Room(BaseModel):
     """
     聊天室类
@@ -71,3 +82,11 @@ class Recent_Chat_List(BaseModel):
     last_time = pw.DateTimeField(verbose_name="最后访问时间")
     
     unread = pw.IntegerField(verbose_name="未读条数", null=False, default=0)
+
+class Meet_List(BaseModel):
+    """
+    会话列表类
+    继承自BaseModel，直接关联db，并且也继承了Model Model有提供增删查改的函数
+    """
+    user_id=pw.ForeignKeyField(User, primary_key=True,verbose_name="登录用户的id")
+    meet_list=JSONField(verbose_name="会话列表")
