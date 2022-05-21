@@ -210,13 +210,13 @@ def fake_data():  #填一些假数据进去
     Order_State_Item.create(order_id=3)
 
     #订单3中包含 3份方便面
-    Order_Item.create(order_id=3, quantity=3, kind=0, _id=2)  #方便面
+    Order_Item.create(order_id=3, quantity=3, item_id=2)  #方便面
 
     #订单2中包含 1份沈坚作业
-    Order_Item.create(order_id=2, quantity=1, kind=1, _id=1)  #沈坚作业
+    Order_Item.create(order_id=2, quantity=1, item_id=1)  #沈坚作业
 
     #订单1中包含 1份苹果
-    Order_Item.create(order_id=1, quantity=1, kind=0, _id=1)  #苹果
+    Order_Item.create(order_id=1, quantity=1, item_id=1)  #苹果
 
 
 def init_database(drop_database: bool):

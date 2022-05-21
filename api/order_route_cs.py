@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
+from statistics import quantiles
+from tkinter import E
 from api.utils import *
 from api import api_blue
 from item.models import Item_type, Item_state
@@ -28,6 +30,53 @@ def get_address():
 
 
 
-@api_blue.route("/generate_order", methods=["PUT"])
-def generate_order_cs():
-    return make_response_json(404, "NOT FOUND")
+@api_blue.route("/order_post", methods=["PUT"])
+def order_post():
+    data = request.get_json()
+    if not current_user.is_authenticated:
+        return make_response_json(401,"当前用户未登录")
+    if current_user.state == User_state.Under_ban.value:
+        return make_response_json(401,"当前用户被封禁中")
+    try:
+        item = Item.get(Item.id == data["item_id"])
+    except Exception as e:
+        return make_response_json(400,"不存在此款物品")
+    if "num" not in data:
+        return make_response_json(401,"请指定物品个数")
+    if item.shelved_num < data["num"]:
+        return make_response_json(401,"物品库存不足")
+    if current_user.id == item.user_id:
+        return make_response_json(401,"不可自己和自己做生意")
+    try:
+        contact = Contact.get(Contact.id == data["contact_id"])
+    except Exception as e:
+        return make_response_json(400,"您指定的联系方式不存在")
+    try:
+        op_contact = Contact.get(Contact.user_id == item.user_id)
+    except Exception as e:
+        return make_response_json(400,"对方未存储联系方式")
+    try:
+        order_data = dict()
+        order_data["user_id"] = current_user.id
+        order_data["op_user_id"] = item.user_id
+        order_data["contact_id"] = data["contact_id"]
+        order_data["op_contact_id"] = op_contact.id
+        order_data["note"] = data["note"]
+        order_data["payment"] = item.price*data["num"]
+        od = Order.create(**order_data)
+    except Exception as e:
+        return make_response_json(500,f"存储错误\n{repr(e)}")
+    else:
+        try:
+            od_it = Order_Item.create(order_id=od.id,quantity=data["num"],item_id=item.id)
+        except Exception as e:
+            od.delete_instance()
+            return make_response_json(500,f"存储错误\n{repr(e)}")
+        else:
+            try:
+                Order_State_Item.create(order_id=od.id)
+            except Exception as e:
+                od_it.delete_instance()
+                od.delete_instance()
+                return make_response_json(500,f"存储错误\n{repr(e)}")
+    return make_response_json(200, "订单生成成功，请等待商家确认",data=url_for("order.manage"))
