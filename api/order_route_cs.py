@@ -28,5 +28,5 @@ def get_address():
 
 
 @api_blue.route("/generate_order", methods=["PUT"])
-def generate_order():
+def generate_order_cs():
     return make_response_json(404, "NOT FOUND")
