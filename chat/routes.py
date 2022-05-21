@@ -3,7 +3,7 @@ from flask_login import current_user
 from chat import chat_blue
 from flask_socketio import leave_room
 from flask import make_response, request, jsonify
-from chat.models import Room,Recent_Chat_List
+from chat.models import Room,Recent_Chat_List,Meet_List
 from api.utils import *
 from app import database
 
@@ -50,7 +50,17 @@ def chat(opt_userid:int):
                 Room.create(room_id=room)
             elif reroomid!=None:
                 room=reroom
-                
+            user,created=Meet_List.get_or_create(user_id=sender)
+            meet_list={}
+            if created:
+                meet_list[sender]=[receiver]
+            else:
+                meet_list=user.meet_list
+                if receiver not in meet_list[sender]:
+                    meet_list[sender].append(receiver)
+            Meet_List.update(meet_list=meet_list).where(Meet_List.user_id==sender).execute()
+
+
         return render_template('chat.html',sender=sender,receiver=receiver,room=room)
     else:
         return redirect(url_for('login'))  # 重定向到/login
@@ -63,17 +73,4 @@ def close():
     print("-")
     Room.update(room_state=Room.room_state-1).where(Room.room_id==room).execute()
     
-    
-    print("close!")
     return jsonify('status:200')
-
-@chat_blue.route('/message_cnt',methods=['POST','GET'])
-def message_cnt():
-    if (current_user.is_authenticated):
-        user=str(current_user.id)
-        unread=0
-        for chat in Recent_Chat_List.select().where(Recent_Chat_List.receiver_id==user):
-            unread+=chat.unread
-        return unread
-    else:
-        return make_response_json(400, "当前用户未登录")

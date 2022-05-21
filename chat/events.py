@@ -80,6 +80,10 @@ def text(message):
             last_time=message['time'],
             last_msg=message['msg'],
             unread=Recent_Chat_List.unread+1).where(Recent_Chat_List.receiver_id==message['receiver'] and Recent_Chat_List.sender_id==sender).execute()
+            
+            Recent_Chat_List.update(
+            last_time=message['time'],
+            last_msg=message['msg'],).where(Recent_Chat_List.receiver_id==sender and Recent_Chat_List.sender_id==message['receiver']).execute()
         
     Message.create(
                 msg_time=message['time'],
