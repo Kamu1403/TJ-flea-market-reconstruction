@@ -36,7 +36,11 @@ statusCode:
 default_res = {'success': True, 'statusCode': 200, 'message': '', 'data': {}}
 
 
-def make_response_json(statusCode: int = 200, message: str = "", data: dict = {}, success: bool = None, quick_response: list = None):
+def make_response_json(statusCode: int = 200,
+                       message: str = "",
+                       data: dict = {},
+                       success: bool = None,
+                       quick_response: list = None):
     '''
     :params quick_response: [statusCode（若为0，则自动改为200）, message]
     如果success未指定，则当statusCode==200时为True，否则False
@@ -48,4 +52,10 @@ def make_response_json(statusCode: int = 200, message: str = "", data: dict = {}
         message = quick_response[1]
     if success == None:
         success = True if statusCode // 100 == 2 else False
-    return make_response(jsonify({'success': success, 'statusCode': statusCode, 'message': message, 'data': data}))
+    return make_response(
+        jsonify({
+            'success': success,
+            'statusCode': statusCode,
+            'message': message,
+            'data': data
+        }))
