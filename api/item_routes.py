@@ -124,6 +124,7 @@ def post_item_info():
         return make_response_json(400,"仅能上传物品")
     if data["shelved_num"]<=0:
         return make_response_json(400,"不允许发布负数个物品")
+    createPath(f"./PicData/{current_user.id}")
     if len(data["urls"]) == 0:
         #给一个默认图
         pass
