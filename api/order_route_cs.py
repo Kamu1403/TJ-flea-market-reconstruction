@@ -54,7 +54,7 @@ def order_post():
     except Exception as e:
         return make_response_json(400,"您指定的联系方式不存在")
     try:
-        op_contact = Contact.get(Contact.user_id == item.user_id.id)
+        op_contact = Contact.get(Contact.user_id == item.user_id.id,Contact.default==True)
     except Exception as e:
         return make_response_json(400,"对方未存储联系方式")
     try:
