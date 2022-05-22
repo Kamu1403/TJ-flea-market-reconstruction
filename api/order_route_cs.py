@@ -8,26 +8,58 @@ from datetime import date,timedelta
 
 @api_blue.route("/get_order",methods=["GET"])
 def get_order():
+    if not current_user.is_authenticated:
+        return make_response_json(401,"当前用户未登录")
     data = dict(request.args)
-    need = [Order.state==Order_state.Normal.value]
+    need = [(Order.user_id==current_user.id)|(Order.op_user_id==current_user.id)]
+    ordered_num = False
+    if "max_num" in data:
+        try:
+            data["max_num"] = int(data["max_num"])
+        except Exception as e:
+            return make_response_json(400,"请求格式错误")
+        else:
+            ordered_num = True
     if "range" in data:
-        td = timedelta(days=int(data["range"]))
-        last_time = date.today() - td
-        need.append(Order.create_time>=last_time)
+        try:
+            data["range"] = int(data["range"])
+        except Exception as e:
+            return make_response_json(400,"请求格式错误")
+        else:
+            td = timedelta(days=data["range"])
+            last_time = date.today() - td
+            need.append(Order.create_time>=last_time)
     try:
         need_od = Order.select().where(*need).order_by(Order.create_time.desc()).execute()
     except Exception as e:
         return make_response_json(500,f"查询发生错误 {repr(e)}")
     else:
-        datas = {"wait_confirmation_op":list(),"wait_confirmation_self":list()}
+        datas = {"wait_confirmation_op":list(),"wait_confirmation_self":list(),"others":list()}
         for i in need_od:
             j = i.__data__
-            try:
-                confirm_data = Order_State_Item.get(Order_State_Item.order_id==i['id'])
-            except Exception as e:
-                return make_response_json(500,f"查询发生错误 {repr(e)}")
-
-    return make_response_json(200,"谢谢")
+            if j["state"] == Order_state.Close.value or j["state"] == Order_state.End.value:
+                if ordered_num and len(datas["others"])==data["max_num"]:
+                    continue
+                datas["others"].append(j)
+            elif j["state"] == Order_state.Normal.value:
+                if j["user_id"] == current_user.id:
+                    if ordered_num and len(datas["others"])==data["max_num"]:
+                        continue
+                    datas["wait_confirmmation_op"].append(j)
+                else:
+                    if ordered_num and len(datas["others"])==data["max_num"]:
+                        continue
+                    datas["wait_confirmation_self"].append(j)
+            else:
+                if j["user_id"] == current_user.id:
+                    if ordered_num and len(datas["others"])==data["max_num"]:
+                        continue
+                    datas["wait_confirmmation_self"].append(j)
+                else:
+                    if ordered_num and len(datas["others"])==data["max_num"]:
+                        continue
+                    datas["wait_confirmation_op"].append(j)
+    return make_response_json(200,"返回订单",datas)
 
 @api_blue.route("/get_address",methods=['GET'])
 def get_address():
@@ -92,15 +124,15 @@ def order_post():
     except Exception as e:
         return make_response_json(400,"您指定的联系方式不存在")
     try:
-        op_contact = Contact.get(Contact.user_id == item.user_id,Contact.default==True)
+        op_contact = Contact.get(Contact.user_id == item.user_id)
     except Exception as e:
         return make_response_json(400,"对方未存储联系方式")
     try:
         order_data = dict()
-        order_data["user_id"] = current_user.id
-        order_data["op_user_id"] = item.user_id.id
-        order_data["contact_id"] = data["contact_id"]
-        order_data["op_contact_id"] = op_contact.id
+        order_data["user_id"] = item.user_id.id
+        order_data["op_user_id"] = current_user.id
+        order_data["contact_id"] = op_contact.id
+        order_data["op_contact_id"] = data["contact_id"]
         order_data["note"] = data["note"]
         order_data["payment"] = item.price*data["num"]
         od = Order.create(**order_data)
@@ -124,19 +156,20 @@ def order_post():
 
 @api_blue.route("/address",methods=["POST","PUT","DELETE"])
 def address():
-    # if not current_user.is_authenticated:
-    #     return make_response_json(401,"当前用户未登录")
+    if not current_user.is_authenticated:
+        return make_response_json(401,"当前用户未登录")
     data = request.get_json()
     temp = [None for i in range(len(data))]
     if request.method == "DELETE":
-        for i in data:
+        for i,j in enumerate(data):
             try:
-                temp[i] = Contact.get(Contact.id==int(data["contact_id"]))
+                temp[i] = Contact.get(Contact.id==int(j["contact_id"]))
             except Exception as e:
                 return make_response_json(401,"不存在的联络地址")
             else:
                 if temp[i].user_id.id != current_user.id:
                     return make_response_json(401,"不可删除其他用户的联络地址")
+        delete_default = False
         for i,j in enumerate(temp):
             try:
                 j.delete_istance()
@@ -144,13 +177,95 @@ def address():
                 for t in range(i):
                     temp[t].save()
                 return make_response_json(500,f"发生错误 {repr(e)}")
-    elif request.method == "PUT":
-        for i in data:
+            else:
+                if j.default:
+                    delete_default = True
+        if delete_default:
             try:
-                temp[i] = Contact.get(Contact.id==int(data["contact_id"]))
+                datas = Contact.select().where(Contact.user_id==current_user.id).order_by(Contact.id.desc()).execute()
+            except Exception as e:
+                print(repr(e))
+            else:
+                if len(datas)>0:
+                    p = Contact.get(Contact.id==datas[0].id)
+                    p.default = True
+                    p.save()
+    elif request.method == "PUT":
+        for i,j in enumerate(data):
+            try:
+                temp[i] = Contact.get(Contact.id==int(j["contact_id"]))
             except Exception as e:
                 return make_response_json(401,"不存在的联络地址")
             else:
                 if temp[i].user_id.id != current_user.id:
                     return make_response_json(401,"不可修改其他用户的联络地址")
+        update_data = list(range(len(data)))
+        has_default,num = False,0
+        for i,j in enumerate(data):
+            if "default" in j and j["default"]:
+                if not has_default:
+                    has_default,num=True,i
+                else:
+                    data[num]["default"] = False
+        old_default= None
+        if has_default:
+            try:
+                old_default = Contact.get(Contact.default == True)
+            except Exception as e:
+                pass
+            else:
+                if  old_default not in temp:
+                    old_default.default=False
+                    old_default.save()
+        for i in range(len(temp)):
+            try:
+                update_data[i]=Contact(**data[i])
+                update_data[i].save()
+            except Exception as e:
+                for t in range(i):
+                    temp[i].save()
+                if old_default is not None:
+                    old_default.default = True
+                    old_default.save()
+                return make_response_json(500,f"存储错误 {repr(e)}")
+    else:
+        has_default,num = False,0
+        old_default = None
+        for i,j in enumerate(data):
+            if "default" in j and j["default"]:
+                if not has_default:
+                    has_default,num=True,i
+                else:
+                    data[num]["default"] = False
+        if has_default:
+            try:
+                old_default = Contact.get(Contact.default == True)
+            except Exception as e:
+                pass
+            else:
+                old_default.default = False
+                old_default.save()
+        for i,j in enumerate(data):
+            try:
+                temp[i] = Contact.create(**j)
+            except Exception as e:
+                for t in range(i):
+                    temp[t].delete_istance()
+                if old_default is not None:
+                    old_default.default = True
+                    old_default.save()
+                return make_response_json(500,f"存储时出现错误 {repr(e)}")
+
     return make_response_json(200,"完成")
+
+@api_blue.route("/test",methods=["GET"])
+def test():
+    a = Contact.select().execute()
+    b = [Contact.get(Contact.id == i.id) for i in a]
+    c = Contact.get(Contact.user_id==1951705)
+    print(c in b)
+    for i in b:
+        if i.user_id.id==1951705:
+            i.default = not i.default
+    print(c in b)
+    return make_response_json()

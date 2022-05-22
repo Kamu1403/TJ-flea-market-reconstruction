@@ -13,9 +13,28 @@ def createPath(path:str)->None:
         os.remove(path)
         os.makedirs(path)
 
+
+@api_blue.route("/get_item_pics",methods=['GET'])
+def get_item_pics():
+    try:
+        item_id = int(request.args.get('item_id'))
+    except Exception as e:
+        return make_response_json(400,"请求格式错误")
+    pic_path = f"/PicData/{item_id}/pic"
+    if os.path.exists(pic_path):
+        pic_list = os.listdir(pic_path)
+        for i in range(len(pic_list)):
+            pic_list[i] = pic_path+pic_list[i]
+        return make_response_json(200,"图片查找成功",data={"url":pic_list})
+    else:
+        return make_response_json(400,"此物品不存在")
+
 @api_blue.route('/get_item_info', methods=['GET'])
 def get_item_info():
-    item_id = int(request.args.get('item_id'))
+    try:
+        item_id = int(request.args.get('item_id'))
+    except Exception as e:
+        return make_response_json(400,"请求格式错误")
     res = copy.deepcopy(default_res)
     try:
         it = Item.get(Item.id == item_id)
@@ -43,10 +62,12 @@ def get_item_info():
 
 @api_blue.route('/search', methods=['POST'])
 def get_search():
-    search_type = int(request.form.get("search_type"))
+    try:
+        search_type = int(request.form.get("search_type"))
+    except Exception as e:
+        return make_response_json(400,"请求格式错误")
     if search_type != Item_type.Goods.value and search_type != Item_type.Want.value:
         return make_response_json(400, "搜索类型仅能指定商品或悬赏")
-
     key_word = request.form.get("key_word")
     order_type = request.form.get("order_type")
     data = list()
@@ -88,7 +109,12 @@ def get_search():
 def change_item_status():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
-    data = json.loads(request.get_json())
+    data = request.get_json()
+    try:
+        data["item_id"] = int(data["item_id"])
+        data["state"] = int(data["state"])
+    except Exception as e:
+        return make_response_json(400,"请求格式不对")
     try:
         item = Item.get(Item.id == data["item_id"])
     except Exception as e:
@@ -98,17 +124,53 @@ def change_item_status():
             return make_response_json(400, "商品当前状态和希望更改的状态相同")
         else:
             if current_user.state == User_state.Admin.value:
+                item.state = data["state"]
+                item.save()
                 return make_response_json(200, "操作成功")
             elif current_user.state == User_state.Under_ban.value:
                 return make_response_json(401, "您当前已被封号,请联系管理员解封")
             else:
-                if current_user.id != item.user_id_id:
+                if current_user.id != item.user_id.id:
                     return make_response_json(401, "不可改变其他人的商品状态")
                 else:
                     if data["state"] == Item_state.Freeze.value:
                         return make_response_json(401, "权限不足")
                     else:
+                        item.state = data["state"]
+                        item.save()
                         return make_response_json(200, "操作成功")
+
+@api_blue.route("/change_item_num", methods=["PUT"])
+def change_item_num():
+    if not current_user.is_authenticated:
+        return make_response_json(401, "当前用户未登录")
+    data = request.get_json()
+    try:
+        data["item_id"] = int(data["item_id"])
+        data["num"] = int(data["num"])
+    except Exception as e:
+        return make_response_json(400,"请求格式不对")
+    try:
+        item = Item.get(Item.id == data["item_id"])
+    except Exception as e:
+        return make_response_json(404, "此商品不存在")
+    else:
+        if current_user.state == User_state.Admin.value:
+            item.shelved_num = data["num"]
+            item.save()
+            return make_response_json(200, "操作成功")
+        elif current_user.state == User_state.Under_ban.value:
+            return make_response_json(401, "您当前已被封号,请联系管理员解封")
+        else:
+            if current_user.id != item.user_id_id:
+                return make_response_json(401, "不可改变其他人的商品状态")
+            else:
+                if data["state"] == Item_state.Freeze.value:
+                    return make_response_json(401, "权限不足")
+                else:
+                    item.shelved_num = data["num"]
+                    item.save()
+                    return make_response_json(200, "操作成功")
 
 @api_blue.route("/post_item_info",methods = ["POST"])
 def post_item_info():
@@ -156,7 +218,7 @@ def post_item_info():
             g.close()
         for i,j in enumerate(data["urls"]):
             with open(f"./temp/{j['MD5']}.jpg","rb") as f:
-                g = open(f"./PicData/{new.id}/{i}.jpg","wb")
+                g = open(f"./PicData/{new.id}/pic/{i}.jpg","wb")
                 g.write(f.read())
                 g.close()
         #将所有的图片转到用户对应文件夹
