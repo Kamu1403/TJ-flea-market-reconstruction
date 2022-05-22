@@ -27,3 +27,27 @@ def get_meet_list():
         return make_response_json(200, "获取会话列表成功",res)
     else:
         return make_response_json(401, "当前用户未登录")
+    
+@api_blue.route('/get_last_msg',methods=['GET'])
+def get_last_msg():
+    if (current_user.is_authenticated):
+        user=str(current_user.id)
+        meet=Meet_List.get_or_none(Meet_List.user_id==user)
+        if meet==None:
+            meet_list=""
+        else:
+            meet_list=meet.meet_list[user]
+        res=[]
+        for m in meet_list:
+            room=user+'-'+m
+            reroom=m+'-'+user
+            roomid = Room.get_or_none(Room.room_id==room)
+            reroomid=Room.get_or_none(Room.room_id==reroom)
+            if roomid==None:
+                roomid=reroomid
+            msg=roomid.last_message
+            sender=roomid.last_sender_id.id
+            res.append({'sender_id:':sender,'last_msg':msg})
+        return make_response_json(200, "获取最后消息成功",res)
+    else:
+        return make_response_json(401, "当前用户未登录")
