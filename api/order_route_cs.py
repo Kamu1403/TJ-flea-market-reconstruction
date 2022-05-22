@@ -9,9 +9,24 @@ from datetime import date,timedelta
 @api_blue.route("/get_order",methods=["GET"])
 def get_order():
     data = dict(request.args)
+    need = [Order.state==Order_state.Normal.value]
     if "range" in data:
         td = timedelta(days=int(data["range"]))
-        last_time = date.now()
+        last_time = date.today() - td
+        need.append(Order.create_time>=last_time)
+    try:
+        need_od = Order.select().where(*need).order_by(Order.create_time.desc()).execute()
+    except Exception as e:
+        return make_response_json(500,f"查询发生错误 {repr(e)}")
+    else:
+        datas = {"wait_confirmation_op":list(),"wait_confirmation_self":list()}
+        for i in need_od:
+            j = i.__data__
+            try:
+                confirm_data = Order_State_Item.get(Order_State_Item.order_id==i['id'])
+            except Exception as e:
+                return make_response_json(500,f"查询发生错误 {repr(e)}")
+
     return make_response_json(200,"谢谢")
 
 @api_blue.route("/get_address",methods=['GET'])
@@ -34,7 +49,16 @@ def get_address():
     return make_response_json(200,"获取成功",data)
 
 
-#@api_blue.route("/")
+@api_blue.route("/generate_order",methods=["POST"])
+def generate_order():
+    data = dict(request.args)
+    if "item_id" not in data:
+        return make_response_json(400,"请求格式不对")
+    try:
+        p = Item.get(Item.id == data["item_id"])
+    except Exception as e:
+        pass
+
 
 
 @api_blue.route("/order_post", methods=["POST"])

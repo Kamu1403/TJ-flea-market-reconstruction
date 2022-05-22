@@ -21,7 +21,7 @@ def teardown_request(exc):#exc必须写上
     if not database.is_closed():
         database.close()
 
-@order_blue.route('/review/<order_id>', methods=['GET', 'POST'])
+@order_blue.route('/review/<order_id>/', methods=['GET', 'POST'])
 def review(order_id:int):#order_id为订单ID
     try:
         get_order = Order.get(Order.id == order_id)
@@ -52,7 +52,7 @@ def review(order_id:int):#order_id为订单ID
         pass
 
     return render_template('order_review.html',data = json.dumps(data))
-@order_blue.route('/manage', methods=['GET', 'POST'])
+@order_blue.route('/manage/', methods=['GET', 'POST'])
 def manage():
     if not current_user.is_authenticated:
         flash("请先登录")
@@ -79,7 +79,7 @@ def manage():
     return render_template('order_manage.html',order_list = order_list)
 
 
-@order_blue.route('/generate/<int:item_id>', methods=['GET', 'POST'])
+@order_blue.route('/generate/<int:item_id>/', methods=['GET', 'POST'])
 def generate(item_id:int):
     return render_template('order_generate.html')
 
