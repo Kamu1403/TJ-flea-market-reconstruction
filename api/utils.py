@@ -11,7 +11,7 @@ from order.models import Order_state
 from user.models import User
 from admin.models import Feedback, User_Management
 from order.models import Contact, Review, Order, Order_State_Item, Order_Item
-from item.models import Item, History, Favor
+from item.models import Item, History, Favor, Item_type
 #common
 import copy
 import os
