@@ -6,12 +6,14 @@ from item.models import Item_type, Item_state
 from datetime import datetime
 from hashlib import md5
 
-def createPath(path:str)->None:
+
+def createPath(path: str) -> None:
     if not os.path.exists(path):
         os.makedirs(path)
     elif not os.path.isdir(path):
         os.remove(path)
         os.makedirs(path)
+
 
 @api_blue.route('/get_item_info', methods=['GET'])
 def get_item_info():
@@ -40,6 +42,7 @@ def get_item_info():
         res["isAdmin"] = isAdmin
         res["isPub"] = isPub
     return make_response(jsonify(res))
+
 
 @api_blue.route('/search', methods=['POST'])
 def get_search():
@@ -110,70 +113,78 @@ def change_item_status():
                     else:
                         return make_response_json(200, "操作成功")
 
-@api_blue.route("/post_item_info",methods = ["POST"])
+
+@api_blue.route("/post_item_info", methods=["POST"])
 def post_item_info():
     if not current_user.is_authenticated:
-        return make_response_json(401,"当前用户未登录")
+        return make_response_json(401, "当前用户未登录")
     if current_user.state == User_state.Under_ban.value:
-        return make_response_json(401,"当前用户已被封号")
+        return make_response_json(401, "当前用户已被封号")
     data = request.get_json()
     print(data)
-    if data["price"]<=0:
-        return make_response_json(400,"物品不存在负价格")
-    if data["type"] != Item_type.Goods.value and data["type"] != Item_type.Want.value:
-        return make_response_json(400,"仅能上传物品")
-    if data["shelved_num"]<=0:
-        return make_response_json(400,"不允许发布负数个物品")
+    if data["price"] <= 0:
+        return make_response_json(400, "物品不存在负价格")
+    if data["type"] != Item_type.Goods.value and data[
+            "type"] != Item_type.Want.value:
+        return make_response_json(400, "仅能上传物品")
+    if data["shelved_num"] <= 0:
+        return make_response_json(400, "不允许发布负数个物品")
     data["user_id"] = current_user.id
     data["publish_time"] = datetime.now()
     try:
         new = Item.create(**data)
     except Exception as e:
-        return make_response_json(400,f"上传失败\n{str(e)}:{repr(e)}")
+        return make_response_json(400, f"上传失败\n{str(e)}:{repr(e)}")
     createPath(f"./PicData/{new.id}/head")
     createPath(f"./PicData/{new.id}/pic")
     if len(data["urls"]) == 0:
         #给一个默认图
-        with open("./default_pic/test.jpg","rb") as f:
-            g = open(f"./PicData/{new.id}/head/0.jpg","wb")
+        with open("./default_pic/test.jpg", "rb") as f:
+            g = open(f"./PicData/{new.id}/head/0.jpg", "wb")
             g.write(f.read())
             g.close()
-            h = open(f"./PicData/{new.id}/pic/0.jpg","wb")
+            h = open(f"./PicData/{new.id}/pic/0.jpg", "wb")
             h.write(f.read())
             h.close()
     else:
         head_pics = [i["MD5"] for i in data["urls"] if i["is_cover_pic"]]
         if len(head_pics) == 0:
             head_pic = data["urls"][0]["MD5"]
-        elif len(head_pics)>1:
+        elif len(head_pics) > 1:
             new.delete_instance()
-            return make_response_json(400,"仅能选定一张头图")
+            return make_response_json(400, "仅能选定一张头图")
         else:
             head_pic = head_pics[0]
-        with open(f"./temp/{head_pic}.jpg","rb") as f:
-            g = open(f"./PicData/{new.id}/head/0.jpg","wb")
+        with open(f"./temp/{head_pic}.jpg", "rb") as f:
+            g = open(f"./PicData/{new.id}/head/0.jpg", "wb")
             g.write(f.read())
             g.close()
-        for i,j in enumerate(data["urls"]):
-            with open(f"./temp/{j['MD5']}.jpg","rb") as f:
-                g = open(f"./PicData/{new.id}/{i}.jpg","wb")
+        for i, j in enumerate(data["urls"]):
+            with open(f"./temp/{j['MD5']}.jpg", "rb") as f:
+                g = open(f"./PicData/{new.id}/{i}.jpg", "wb")
                 g.write(f.read())
                 g.close()
         #将所有的图片转到用户对应文件夹
-    return make_response_json(200,"上传成功")
+    return make_response_json(200, "上传成功")
 
 
-@api_blue.route("/post_item_pic",methods = ["POST"])
+@api_blue.route("/post_item_pic", methods=["POST"])
 def post_item_pic():
     if not current_user.is_authenticated:
-        return make_response_json(400,"当前用户未登录")
+        return make_response_json(400, "当前用户未登录")
     try:
         data = request.files["file"]
         file_byte = data.read()
         md5code = md5(file_byte).hexdigest()
         createPath("./temp/{}".format(current_user.id))
-        with open(f"./temp/{current_user.id}/{md5code}.jpg","wb") as f:
+        with open(f"./temp/{current_user.id}/{md5code}.jpg", "wb") as f:
             f.write(file_byte)
     except Exception as e:
-        return make_response_json(400,f"上传失败\n{str(e)}{repr(e)}")
-    return make_response_json(200,"上传图片成功",{"str":md5code})
+        return make_response_json(400, f"上传失败\n{str(e)}{repr(e)}")
+    return make_response_json(200, "上传图片成功", {"str": md5code})
+
+
+@api_blue.route("/item_add_faver", methods=["POST"])
+def item_add_favor():
+    if not current_user.is_authenticated:
+        return make_response_json(401, "当前用户未登录")
