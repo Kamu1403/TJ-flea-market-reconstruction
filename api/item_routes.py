@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
+from distutils import filelist
 from api.utils import *
 from api import api_blue
 from item.models import Item_type, Item_state
+from item import item_blue
 from datetime import datetime
 from hashlib import md5
 
@@ -17,15 +19,19 @@ def createPath(path: str) -> None:
 
 @api_blue.route("/get_item_pics", methods=['GET'])
 def get_item_pics():
+    data = request.get_json()
     try:
-        item_id = int(request.args.get('item_id'))
+        item_id = int(data["item_id"])
     except Exception as e:
-        return make_response_json(400, "请求格式错误")
-    pic_path = f"/PicData/{item_id}/pic"
-    if os.path.exists(pic_path):
-        pic_list = os.listdir(pic_path)
-        for i in range(len(pic_list)):
-            pic_list[i] = pic_path + pic_list[i]
+        return make_response_json(400, f"请求格式错误 {repr(e)}")
+    pic_path = os.listdir(
+        os.path.join(item_blue.static_folder, 'resource/item_pic/1/pic'))
+    if len(pic_path):
+        pic_list = list()
+        for i in pic_path:
+            pic_list.append(
+                url_for('item.static',
+                        filename=f'resource/item_pic/{item_id}/pic/{i}'))
         return make_response_json(200, "图片查找成功", data={"url": pic_list})
     else:
         return make_response_json(400, "此物品不存在")
@@ -198,15 +204,27 @@ def post_item_info():
         new = Item.create(**data)
     except Exception as e:
         return make_response_json(400, f"上传失败\n{str(e)}:{repr(e)}")
-    createPath(f"./PicData/{new.id}/head")
-    createPath(f"./PicData/{new.id}/pic")
+    createPath(
+        os.path.join(item_blue.static_folder,
+                     f'resource/item_pic/{new.id}/head'))
+    createPath(
+        os.path.join(item_blue.static_folder,
+                     f'resource/item_pic/{new.id}/pic'))
     if len(data["urls"]) == 0:
         #给一个默认图
-        with open("./default_pic/test.jpg", "rb") as f:
-            g = open(f"./PicData/{new.id}/head/0.jpg", "wb")
+        with open(
+                url_for('item.static', filename=f'resource/default/test.jpg'),
+                "rb") as f:
+            g = open(
+                url_for('item.static',
+                        filename=f'resource/item_pic/{new.id}/head/0.jpg'),
+                "wb")
             g.write(f.read())
             g.close()
-            h = open(f"./PicData/{new.id}/pic/0.jpg", "wb")
+            h = open(
+                url_for('item.static',
+                        filename=f'resource/item_pic/{new.id}/pic/0.jpg'),
+                "wb")
             h.write(f.read())
             h.close()
     else:
@@ -218,13 +236,28 @@ def post_item_info():
             return make_response_json(400, "仅能选定一张头图")
         else:
             head_pic = head_pics[0]
-        with open(f"./temp/{head_pic}.jpg", "rb") as f:
-            g = open(f"./PicData/{new.id}/head/0.jpg", "wb")
+        with open(
+                url_for(
+                    'item.static',
+                    filename=f'resource/temp/{current_user.id}/{head_pic}.jpg'
+                ), "rb") as f:
+            g = open(
+                url_for('item.static',
+                        filename=f'resource/item_pic/{new.id}/head/0.jpg'),
+                "wb")
             g.write(f.read())
             g.close()
         for i, j in enumerate(data["urls"]):
-            with open(f"./temp/{j['MD5']}.jpg", "rb") as f:
-                g = open(f"./PicData/{new.id}/pic/{i}.jpg", "wb")
+            with open(
+                    url_for('item.static',
+                            filename=
+                            f'resource/temp/{current_user.id}/{j["MD5"]}.jpg'),
+                    "rb") as f:
+                g = open(
+                    url_for(
+                        'item.static',
+                        filename=f'resource/item_pic/{new.id}/pic/{i}.jpg'),
+                    "wb")
                 g.write(f.read())
                 g.close()
         #将所有的图片转到用户对应文件夹
@@ -239,8 +272,14 @@ def post_item_pic():
         data = request.files["file"]
         file_byte = data.read()
         md5code = md5(file_byte).hexdigest()
-        createPath("./temp/{}".format(current_user.id))
-        with open(f"./temp/{current_user.id}/{md5code}.jpg", "wb") as f:
+        createPath(
+            os.path.join(item_blue.static_folder,
+                         f'resource/temp/{current_user.id}/'))
+        with open(
+                url_for(
+                    'item.static',
+                    filename=f'resource/temp/{current_user.id}/{md5code}.jpg'),
+                "wb") as f:
             f.write(file_byte)
     except Exception as e:
         return make_response_json(400, f"上传失败\n{str(e)}{repr(e)}")
