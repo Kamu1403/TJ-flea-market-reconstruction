@@ -47,7 +47,7 @@ def chat(opt_userid:int):
             roomid = Room.get_or_none(Room.room_id==room)
             reroomid=Room.get_or_none(Room.room_id==reroom)
             if (roomid==None and reroomid==None):
-                Room.create(room_id=room)
+                Room.create(room_id=room,last_sender_id=sender)
             elif reroomid!=None:
                 room=reroom
             user,created=Meet_List.get_or_create(user_id=sender)
