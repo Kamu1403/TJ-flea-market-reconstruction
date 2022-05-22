@@ -124,5 +124,33 @@ def order_post():
 
 @api_blue.route("/address",methods=["POST","PUT","DELETE"])
 def address():
-    pass
-
+    # if not current_user.is_authenticated:
+    #     return make_response_json(401,"当前用户未登录")
+    data = request.get_json()
+    temp = [None for i in range(len(data))]
+    if request.method == "DELETE":
+        for i in data:
+            try:
+                temp[i] = Contact.get(Contact.id==int(data["contact_id"]))
+            except Exception as e:
+                return make_response_json(401,"不存在的联络地址")
+            else:
+                if temp[i].user_id.id != current_user.id:
+                    return make_response_json(401,"不可删除其他用户的联络地址")
+        for i,j in enumerate(temp):
+            try:
+                j.delete_istance()
+            except Exception as e:
+                for t in range(i):
+                    temp[t].save()
+                return make_response_json(500,f"发生错误 {repr(e)}")
+    elif request.method == "PUT":
+        for i in data:
+            try:
+                temp[i] = Contact.get(Contact.id==int(data["contact_id"]))
+            except Exception as e:
+                return make_response_json(401,"不存在的联络地址")
+            else:
+                if temp[i].user_id.id != current_user.id:
+                    return make_response_json(401,"不可修改其他用户的联络地址")
+    return make_response_json(200,"完成")
