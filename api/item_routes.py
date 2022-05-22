@@ -15,27 +15,28 @@ def createPath(path: str) -> None:
         os.makedirs(path)
 
 
-@api_blue.route("/get_item_pics",methods=['GET'])
+@api_blue.route("/get_item_pics", methods=['GET'])
 def get_item_pics():
     try:
         item_id = int(request.args.get('item_id'))
     except Exception as e:
-        return make_response_json(400,"请求格式错误")
+        return make_response_json(400, "请求格式错误")
     pic_path = f"/PicData/{item_id}/pic"
     if os.path.exists(pic_path):
         pic_list = os.listdir(pic_path)
         for i in range(len(pic_list)):
-            pic_list[i] = pic_path+pic_list[i]
-        return make_response_json(200,"图片查找成功",data={"url":pic_list})
+            pic_list[i] = pic_path + pic_list[i]
+        return make_response_json(200, "图片查找成功", data={"url": pic_list})
     else:
-        return make_response_json(400,"此物品不存在")
+        return make_response_json(400, "此物品不存在")
+
 
 @api_blue.route('/get_item_info', methods=['GET'])
 def get_item_info():
     try:
         item_id = int(request.args.get('item_id'))
     except Exception as e:
-        return make_response_json(400,"请求格式错误")
+        return make_response_json(400, "请求格式错误")
     res = copy.deepcopy(default_res)
     try:
         it = Item.get(Item.id == item_id)
@@ -67,7 +68,7 @@ def get_search():
     try:
         search_type = int(request.form.get("search_type"))
     except Exception as e:
-        return make_response_json(400,"请求格式错误")
+        return make_response_json(400, "请求格式错误")
     if search_type != Item_type.Goods.value and search_type != Item_type.Want.value:
         return make_response_json(400, "搜索类型仅能指定商品或悬赏")
     key_word = request.form.get("key_word")
@@ -116,7 +117,7 @@ def change_item_status():
         data["item_id"] = int(data["item_id"])
         data["state"] = int(data["state"])
     except Exception as e:
-        return make_response_json(400,"请求格式不对")
+        return make_response_json(400, "请求格式不对")
     try:
         item = Item.get(Item.id == data["item_id"])
     except Exception as e:
@@ -142,6 +143,7 @@ def change_item_status():
                         item.save()
                         return make_response_json(200, "操作成功")
 
+
 @api_blue.route("/change_item_num", methods=["PUT"])
 def change_item_num():
     if not current_user.is_authenticated:
@@ -151,7 +153,7 @@ def change_item_num():
         data["item_id"] = int(data["item_id"])
         data["num"] = int(data["num"])
     except Exception as e:
-        return make_response_json(400,"请求格式不对")
+        return make_response_json(400, "请求格式不对")
     try:
         item = Item.get(Item.id == data["item_id"])
     except Exception as e:
@@ -174,7 +176,8 @@ def change_item_num():
                     item.save()
                     return make_response_json(200, "操作成功")
 
-@api_blue.route("/post_item_info",methods = ["POST"])
+
+@api_blue.route("/post_item_info", methods=["POST"])
 def post_item_info():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
@@ -219,9 +222,9 @@ def post_item_info():
             g = open(f"./PicData/{new.id}/head/0.jpg", "wb")
             g.write(f.read())
             g.close()
-        for i,j in enumerate(data["urls"]):
-            with open(f"./temp/{j['MD5']}.jpg","rb") as f:
-                g = open(f"./PicData/{new.id}/pic/{i}.jpg","wb")
+        for i, j in enumerate(data["urls"]):
+            with open(f"./temp/{j['MD5']}.jpg", "rb") as f:
+                g = open(f"./PicData/{new.id}/pic/{i}.jpg", "wb")
                 g.write(f.read())
                 g.close()
         #将所有的图片转到用户对应文件夹
@@ -231,7 +234,7 @@ def post_item_info():
 @api_blue.route("/post_item_pic", methods=["POST"])
 def post_item_pic():
     if not current_user.is_authenticated:
-        return make_response_json(400, "当前用户未登录")
+        return make_response_json(401, "当前用户未登录")
     try:
         data = request.files["file"]
         file_byte = data.read()
@@ -244,7 +247,58 @@ def post_item_pic():
     return make_response_json(200, "上传图片成功", {"str": md5code})
 
 
-@api_blue.route("/item_add_faver", methods=["POST"])
-def item_add_favor():
+@api_blue.route("/add_favor", methods=["POST"])
+def add_favor():
+    if not current_user.is_authenticated:
+        return make_response_json(401, "当前用户未登录")
+    req = request.get_json()["item_id_list"]
+
+    tep = Item.select().where(Item.id << req)  #在一个列表中查询
+    if tep.count() != len(req):  #长度对不上
+        return make_response_json(404, "不存在对应物品")
+    try:
+        repeat = False
+        for i in req:
+            tep = Favor.select().where(
+                Favor.user_id == current_user.id & Favor.item_id == i)
+            if tep.count() > 0:
+                repeat = True
+            Favor.insert(user_id=current_user.id, item_id=i).execute()
+        if repeat == True:
+            return make_response_json(400, "重复添加")
+        return make_response_json(201, "添加成功")
+    except Exception as e:
+        return make_response_json(500, f"发生错误 {repr(e)}")
+
+
+@api_blue.route("/delete_favor", methods=["DELETE"])
+def item_delete_favor():
+    if not current_user.is_authenticated:
+        return make_response_json(401, "当前用户未登录")
+    req = request.get_json()["item_id_list"]
+
+    #tep = Item.select().where(Item.id << req)  #在一个列表中查询
+    #if tep.count() != len(req):  #长度对不上
+    #    return make_response_json(404, "不存在对应物品")
+    try:
+        NotFound = False
+        for i in req:
+            tep = Favor.select().where((Favor.user_id == current_user.id)
+                                       & (Favor.item_id == i))
+
+            if tep.count() <= 0:
+                NotFound = True
+            else:
+                Favor.delete().where((Favor.user_id == current_user.id)
+                                     & (Favor.item_id == i)).execute()
+        if NotFound == True:
+            return make_response_json(404, "不存在对应的收藏")
+        return make_response_json(200, "删除成功")
+    except Exception as e:
+        return make_response_json(500, f"发生错误 {repr(e)}")
+
+
+@api_blue.route("/get_favor", methods=["GET"])
+def item_get_favor():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")

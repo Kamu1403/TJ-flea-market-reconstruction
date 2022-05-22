@@ -30,7 +30,6 @@ def change_order_status():
     if current_user.state == User_state.Admin.value:  #管理员,无限权力
         order.state = req_state
         order.save()
-        print("这里是管理员")
         return make_response_json(200, "操作成功")
     elif req_state == Order_state.Normal.value:  #非管理员不允许设为初始状态
         return make_response_json(400, "请求格式不对")
