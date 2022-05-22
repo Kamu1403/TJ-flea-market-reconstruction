@@ -205,11 +205,23 @@ def fake_data():  #填一些假数据进去
                  payment=9.99,
                  state=0)  #3份方便面
 
+    Order.create(id=4,
+                user_id=1951566,
+                op_user_id=1950084,
+                contact_id=4,
+                op_contact_id=2,
+                payment=9.99,
+                state=1)  #3份方便面
+
     Order_State_Item.create(order_id=1, user_review_id=1, op_user_review_id=4)
     Order_State_Item.create(order_id=2,
                             cancel_user=1950084,
                             cancel_reason="沈坚作业不能作为悬赏！")
     Order_State_Item.create(order_id=3)
+    Order_State_Item.create(order_id=4)
+
+    #订单4中包含 3份方便面
+    Order_Item.create(order_id=4, quantity=3, item_id=2)  #方便面
 
     #订单3中包含 3份方便面
     Order_Item.create(order_id=3, quantity=3, item_id=2)  #方便面
