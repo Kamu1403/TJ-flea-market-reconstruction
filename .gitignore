@@ -138,3 +138,9 @@ api/verify_code.json
 
 # temp
 temp/
+
+# default_pic
+default_pic/
+
+# PicData
+PicData/

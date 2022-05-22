@@ -124,30 +124,42 @@ def post_item_info():
         return make_response_json(400,"仅能上传物品")
     if data["shelved_num"]<=0:
         return make_response_json(400,"不允许发布负数个物品")
-    createPath(f"./PicData/{current_user.id}")
-    if len(data["urls"]) == 0:
-        #给一个默认图
-        pass
-    else:
-        head_pics = [i for i in data["urls"] if i[1] == 1]
-        if len(head_pics) == 0:
-            head_pic = data["urls"][0]
-        elif len(head_pics)>1:
-            return make_response_json(400,"仅能选定一张头图")
-        else:
-            head_pic = head_pics[0]
-        #将所有的图片转到用户对应文件夹
-
-
-
-
-
     data["user_id"] = current_user.id
     data["publish_time"] = datetime.now()
     try:
         new = Item.create(**data)
     except Exception as e:
         return make_response_json(400,f"上传失败\n{str(e)}:{repr(e)}")
+    createPath(f"./PicData/{new.id}/head")
+    createPath(f"./PicData/{new.id}/pic")
+    if len(data["urls"]) == 0:
+        #给一个默认图
+        with open("./default_pic/test.jpg","rb") as f:
+            g = open(f"./PicData/{new.id}/head/0.jpg","wb")
+            g.write(f.read())
+            g.close()
+            h = open(f"./PicData/{new.id}/pic/0.jpg","wb")
+            h.write(f.read())
+            h.close()
+    else:
+        head_pics = [i["MD5"] for i in data["urls"] if i["is_cover_pic"]]
+        if len(head_pics) == 0:
+            head_pic = data["urls"][0]["MD5"]
+        elif len(head_pics)>1:
+            new.delete_instance()
+            return make_response_json(400,"仅能选定一张头图")
+        else:
+            head_pic = head_pics[0]
+        with open(f"./temp/{head_pic}.jpg","rb") as f:
+            g = open(f"./PicData/{new.id}/head/0.jpg","wb")
+            g.write(f.read())
+            g.close()
+        for i,j in enumerate(data["urls"]):
+            with open(f"./temp/{j['MD5']}.jpg","rb") as f:
+                g = open(f"./PicData/{new.id}/{i}.jpg","wb")
+                g.write(f.read())
+                g.close()
+        #将所有的图片转到用户对应文件夹
     return make_response_json(200,"上传成功")
 
 
