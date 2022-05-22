@@ -4,6 +4,8 @@ from api.utils import *
 from api import api_blue
 from item.models import Item_state
 
+MINUS_SCORE = 5  #取消一个已经确认了的订单，扣五分
+
 
 @api_blue.route("/change_order_status", methods=["PUT"])
 def change_order_status():
@@ -25,11 +27,13 @@ def change_order_status():
 
     order_user_id = order.user_id.id
     order_op_user_id = order.op_user_id.id
-    if current_user.state == User_state.Admin.value:  #管理员
+    if current_user.state == User_state.Admin.value:  #管理员,无限权力
         order.state = req_state
         order.save()
+        print("这里是管理员")
         return make_response_json(200, "操作成功")
-
+    elif req_state == Order_state.Normal.value:  #非管理员不允许设为初始状态
+        return make_response_json(400, "请求格式不对")
     elif current_user.id != order_user_id and current_user.id != order_op_user_id:  #不是订单双方
         return make_response_json(401, "当前用户不是订单双方之一，未授权")
     elif req_state == order.state:  #要修改的状态和数据库内订单状态重复了，改不改都一样，直接返回成功
@@ -57,31 +61,17 @@ def change_order_status():
                 return make_response_json(500, "数据库中订单状态错误！")
 
         elif req_state == Order_state.Close.value:  #想取消订单
+            if order.state == Order_state.Confirm.value:  #已经确认过的，要扣除信誉分 5 分
+                order.user_id.score -= MINUS_SCORE
+                order.user_id.save()
             order.state = Order_state.Close.value
             order.save()
             return make_response_json(200, "操作成功")
 
-        else:  #想确认订单或取消确认订单 即确认或者取消确认两种状态互转
-            try:
-                _order_state_item = Order_State_Item.get(
-                    Order_State_Item.order_id == order)  #根据order找状态明细
-            except Exception as e:
-                return make_response_json(404, f"没有找到此订单状态明细")
-            if req_state == Order_state.Confirm.value:  #或者确认订单
-                _order_state_item.user_confirm = True  #确认订单
-                _order_state_item.save()
-                if _order_state_item.op_user_confirm == True:  #对方也已经确认了
-                    order.state = Order_state.Confirm.value
-                    order.save()
-                return make_response_json(200, "操作成功")
-            elif req_state == Order_state.Normal.value:  #取消确认订单（让订单从本方已确认转为本方未确认）
-                _order_state_item.user_confirm = False  #取消确认订单
-                _order_state_item.save()
-                order.state = Order_state.Normal.value
-                order.save()
-                return make_response_json(200, "操作成功")
-            else:
-                return make_response_json(500, "req_state订单状态错误！")
+        elif req_state == Order_state.Confirm.value:  #想确认订单
+            return make_response_json(401, "未授权，您无需确认，请等待对方确认")
+        else:
+            return make_response_json(500, "req_state订单状态错误！")
 
     elif current_user.id == order_op_user_id:  #当前用户是物品发布者（非订单发起者）
         if req_state == Order_state.End.value:  #想完成订单
@@ -103,28 +93,16 @@ def change_order_status():
                 return make_response_json(500, "数据库中订单状态错误！")
 
         elif req_state == Order_state.Close.value:  #想取消订单
+            if order.state == Order_state.Confirm.value:  #已经确认过的，要扣除信誉分 5 分
+                order.op_user_id.score -= MINUS_SCORE
+                order.op_user_id.save()
             order.state = Order_state.Close.value
             order.save()
             return make_response_json(200, "操作成功")
 
-        else:  #想确认订单或取消确认订单 即确认或者取消确认两种状态互转
-            try:
-                _order_state_item = Order_State_Item.get(
-                    Order_State_Item.order_id == order)  #根据order找状态明细
-            except Exception as e:
-                return make_response_json(404, f"没有找到此订单状态明细")
-            if req_state == Order_state.Confirm.value:  #或者确认订单
-                _order_state_item.op_user_confirm = True  #确认订单
-                _order_state_item.save()
-                if _order_state_item.user_confirm == True:  #订单发布者也已经确认了
-                    order.state = Order_state.Confirm.value
-                    order.save()
-                return make_response_json(200, "操作成功")
-            elif req_state == Order_state.Normal.value:  #取消确认订单（让订单从本方已确认转为本方未确认）
-                _order_state_item.op_user_confirm = False  #取消确认订单
-                _order_state_item.save()
-                order.state = Order_state.Normal.value
-                order.save()
-                return make_response_json(200, "操作成功")
-            else:
-                return make_response_json(500, "数据库中订单状态错误！")
+        elif req_state == Order_state.Confirm.value:  #想确认订单
+            order.state = Order_state.Confirm.value
+            order.save()
+            return make_response_json(200, "操作成功")
+        else:
+            return make_response_json(500, "req_state订单状态错误！")

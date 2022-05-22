@@ -99,13 +99,7 @@ class Order_State_Item(BaseModel):
     """
     #id = pw.IntegerField(primary_key=True)  # 主键，不显式定义的话peewee默认定义一个自增的id
     order_id = pw.ForeignKeyField(Order, verbose_name="订单编号")
-    #订单状态为已生成0时：有两个变量：买方已确认 卖方已确认。当双方都确认时，订单状态转为3。
-    user_confirm = pw.BooleanField(verbose_name="发起方是否确认",
-                                   null=False,
-                                   default=True)
-    op_user_confirm = pw.BooleanField(verbose_name="对方是否确认",
-                                      null=False,
-                                      default=False)
+
     #订单状态处于已完成2时：有两个变量：买方评价的评价id（foreign key review_id on default null）,卖方评价id。
     user_review_id = pw.ForeignKeyField(Review,
                                         verbose_name="发起方评价ID",
