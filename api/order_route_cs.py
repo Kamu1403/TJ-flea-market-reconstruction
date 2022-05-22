@@ -51,14 +51,21 @@ def get_address():
 
 @api_blue.route("/generate_order",methods=["POST"])
 def generate_order():
-    data = dict(request.args)
+    data = request.get_json()
+    if not current_user.is_authenticated:
+        return make_response_json(401,"当前用户未登录")
+    print(data)
     if "item_id" not in data:
         return make_response_json(400,"请求格式不对")
     try:
+        data["item_id"] = int(data["item_id"])
         p = Item.get(Item.id == data["item_id"])
     except Exception as e:
-        pass
-
+        return make_response_json(400,"请求格式不对")
+    if p.shelved_num == 0:
+        return make_response_json(404,"您请求的物品暂无库存")
+    url = {"url":url_for('order.generate',item_id=data["item_id"])}
+    return make_response_json(200,"跳转到订单生成页面",data=url)
 
 
 @api_blue.route("/order_post", methods=["POST"])
@@ -113,3 +120,9 @@ def order_post():
                 od.delete_instance()
                 return make_response_json(500,f"存储错误\n{repr(e)}")
     return make_response_json(200, "订单生成成功，请等待商家确认",data=url_for("order.manage"))
+
+
+@api_blue.route("/address",methods=["POST","PUT","DELETE"])
+def address():
+    pass
+
