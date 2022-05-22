@@ -35,6 +35,8 @@ class Room(BaseModel):
     room_state =pw.IntegerField(verbose_name="房间状态",default=0,null=False,
                                 constraints=[pw.Check("room_state >=0")])
     #房间状态 0-无人使用 1-单人使用 2-双方使用
+    
+    last_sender_id =pw.ForeignKeyField(User, verbose_name="最后一条消息发送方的id")
     last_message =pw.CharField(verbose_name="最后消息")
     # 该房间内产生的最后一次通信记录，可以为空
 
