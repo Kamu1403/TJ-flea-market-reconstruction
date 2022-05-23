@@ -298,11 +298,12 @@ def add_favor():
     try:
         repeat = False
         for i in req:
-            tep = Favor.select().where(
-                Favor.user_id == current_user.id & Favor.item_id == i)
+            tep = Favor.select().where((Favor.user_id == current_user.id)
+                                       & (Favor.item_id == i))
             if tep.count() > 0:
                 repeat = True
-            Favor.insert(user_id=current_user.id, item_id=i).execute()
+            else:
+                Favor.insert(user_id=current_user.id, item_id=i).execute()
         if repeat == True:
             return make_response_json(400, "重复添加")
         return make_response_json(201, "添加成功")
@@ -341,3 +342,27 @@ def item_delete_favor():
 def item_get_favor():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
+    tep = Favor.select().where(Favor.user_id == current_user.id).execute()
+    data = []
+    for i in tep:
+        res = dict()
+        res['id'] = i.id
+        res['item_id'] = i.item_id.id
+        res['collect_time'] = str(i.collect_time)
+        data.append(res)
+    return make_response_json(200, "操作成功", data)
+
+
+@api_blue.route("/get_history", methods=["GET"])
+def get_history():
+    if not current_user.is_authenticated:
+        return make_response_json(401, "当前用户未登录")
+    tep = History.select().where(History.user_id == current_user.id).execute()
+    data = []
+    for i in tep:
+        res = dict()
+        res['id'] = i.id
+        res['item_id'] = i.item_id.id
+        res['visit_time'] = str(i.visit_time)
+        data.append(res)
+    return make_response_json(200, "操作成功", data)
