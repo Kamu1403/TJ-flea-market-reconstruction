@@ -5,7 +5,7 @@ from api import api_blue
 from item.models import Item_type, Item_state
 from item import item_blue
 from admin.models import Feedback,Feedback_kind,Feedback_state
-from datetime import datetime,date
+from datetime import datetime,date,timedelta
 from hashlib import md5
 
 
@@ -390,3 +390,45 @@ def report_item():
     except Exception as e:
         return make_response_json(500,f"存储出现问题 {repr(e)}")
     return make_response_json(200,"举报完成,请等待管理员处理...")
+
+
+@api_blue.route("/item_to_show",methods=["GET"])
+def item_to_show():
+    if not current_user.is_authenticated:
+        return make_response_json(401,"当前用户未登录")
+    data = dict(request.args)
+    need = list()
+    ordered_num = None
+    if "max_num" in data:
+        try:
+            data["max_num"] = int(data["max_num"])
+        except Exception as e:
+            return make_response_json(400,"请求格式错误")
+        else:
+            ordered_num = 0
+    if "range" in data:
+        try:
+            data["range"] = int(data["range"])
+        except Exception as e:
+            return make_response_json(400,"请求格式错误")
+        else:
+            td = timedelta(days=data["range"])
+            last_time = date.today() - td
+            need.append(Item.publish_time>=last_time)
+    try:
+        need_od = Item.select().where(*need).order_by(Item.publish_time.desc()).execute()
+    except Exception as e:
+        return make_response_json(500,f"查询发生错误 {repr(e)}")
+    else:
+        datas = {"show":list()}
+        for i in need_od:
+            j = i.__data__
+            if current_user.state != User_state.Admin.value:
+                j.pop("locaked_num")
+            if ordered_num is not None:
+                if ordered_num<data["max_num"]:
+                    datas["show"].append(j)
+                    ordered_num+=1
+                else:
+                    break
+    return make_response_json(200,"返回订单",datas)
