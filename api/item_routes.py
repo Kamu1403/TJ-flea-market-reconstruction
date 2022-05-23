@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
-from distutils import filelist
 from api.utils import *
 from api import api_blue
 from item.models import Item_type, Item_state
 from item import item_blue
-from datetime import datetime
+from admin.models import Feedback,Feedback_kind,Feedback_state
+from datetime import datetime,date
 from hashlib import md5
 
 
@@ -366,3 +366,27 @@ def get_history():
         res['visit_time'] = str(i.visit_time)
         data.append(res)
     return make_response_json(200, "操作成功", data)
+
+@api_blue.route("/report_item",methods=["POST"])
+def report_item():
+    if not current_user.is_authenticated:
+        return make_response_json(401,"当前用户还未登陆")
+    data = request.get_json()
+    if "reason" not in data:
+        return make_response_json(400,"请求格式不对")
+    try:
+        item_id = int(data["item_id"])
+    except Exception as e:
+        return make_response_json(400,"请求格式不对")
+    try:
+        item = Item.get(Item.id == item_id)
+    except Exception as e:
+        return make_response_json(404,"不存在的物品")
+    data["reason"] = "物品id:{} 物品名称:{} ".format(item_id,item.name)+data["reason"]
+    try:
+        feedback_data = {"user_id":current_user.id,"publish_time":date.today(),"kind":Feedback_kind.Item.value}
+        feedback_data["reply_content"]=data["reason"]
+        feedback = Feedback.create(**feedback_data)
+    except Exception as e:
+        return make_response_json(500,f"存储出现问题 {repr(e)}")
+    return make_response_json(200,"举报完成,请等待管理员处理...")

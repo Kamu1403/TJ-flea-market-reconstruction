@@ -295,7 +295,7 @@ def order_evaluate():
     return make_response_json(200,"评价完成",{"url":url_for('order.manage')})
 
 
-
+"""
 @api_blue.route("/test",methods=["GET"])
 def test():
     a = Contact.select().execute()
@@ -307,3 +307,4 @@ def test():
             i.default = not i.default
     print(c in b)
     return make_response_json()
+"""
