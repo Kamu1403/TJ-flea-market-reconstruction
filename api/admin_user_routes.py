@@ -55,7 +55,7 @@ def get_all_user():
     users = User.select().where(User.state != User_state.Admin.value)
     data_list = []
     for i in users:
-        user_dic = GetUserDict(i)
+        user_dic = GetUserDict(i, True)
         data_list.append(user_dic)
 
     if len(data_list) == 0:
@@ -64,8 +64,8 @@ def get_all_user():
 
 
 #管理员封号
-@api_blue.route('/ban_user', methods=['PUT'])
-def ban_user():
+@api_blue.route('/change_user_state', methods=['PUT'])
+def change_user_state():
     if not current_user.is_authenticated:
         return make_response_json(401, "该用户未通过验证")
 
@@ -73,13 +73,22 @@ def ban_user():
         return make_response_json(401, "权限不足")
 
     #在APIFOX测试运行时current_user未经认证，需要先在apifox上登录后才current_user才有效
-    user_id = request.form.get("user_id")
+    req = request.get_json()
+    try:
+        user_id = int(req['user_id'])
+        user_state = int(req['user_state'])
+    except:
+        return make_response_json(400, "请求格式不对")
+
+    if user_state not in User_state._value2member_map_:
+        return make_response_json(400, "请求格式不对")
+
     try:
         tep = User.get(User.id == user_id)
     except:
         return make_response_json(404, "未找到用户")
     else:
-        tep.state = User_state.Under_ban.value
+        tep.state = user_state
         tep.save()
         return make_response_json(200, "操作成功")
 
@@ -122,7 +131,7 @@ def change_user_info():
     if not current_user.is_authenticated:
         return make_response_json(401, "该用户未通过验证")
     req = request.get_json()
-    print(req)
+    #print(req)
     try:
         tep = User.get(User.id == current_user.id)
     except:
@@ -148,6 +157,6 @@ def change_user_info():
             tep.major = req['major']
             tep.save()  #保存
         except Exception as e:
-            return make_response_json(500, "程序发生如下错误:{}".format(e))
+            return make_response_json(500, "程序发生如下错误:\n{}".format(e))
         else:
             return make_response_json(200, "操作成功")
