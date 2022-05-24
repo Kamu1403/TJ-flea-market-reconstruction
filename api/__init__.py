@@ -12,7 +12,6 @@ api_blue = Blueprint('api',
 from . import routes
 from . import item_routes
 from . import order_route_cs
-from . import admin_routes
+from . import admin_user_routes
 from . import order_routes
 from . import chat_routes
-
