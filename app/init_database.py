@@ -6,7 +6,7 @@ from user.models import User
 from admin.models import Feedback, User_Management
 from order.models import Contact, Review, Order, Order_State_Item, Order_Item
 from item.models import Item, History, Favor
-from chat.models import Room, Message, Recent_Chat_List,Meet_List
+from chat.models import Room, Message, Recent_Chat_List, Meet_List
 
 
 def drop_tables():
@@ -67,6 +67,7 @@ def create_tables():
     Message.create_table()
     Meet_List.create_table()
 
+
 from datetime import datetime
 from werkzeug.security import generate_password_hash
 
@@ -94,6 +95,15 @@ def fake_data():  #填一些假数据进去
         password_hash=generate_password_hash("1953493"),
         email=str(1953493) + "@tongji.edu.cn")
 
+    User.create(id=1952219,
+                username="彭斐然",
+                password_hash=generate_password_hash("1952219"),
+                email=str(1952219) + "@tongji.edu.cn")
+    User.create(id=1951859,
+                username="杨可盈",
+                password_hash=generate_password_hash("1951859"),
+                email=str(1951859) + "@tongji.edu.cn")
+
     #反馈
     Feedback.create(user_id=1951705, feedback_content="哈哈哈哈")
     Feedback.create(user_id=1953493,
@@ -106,7 +116,7 @@ def fake_data():  #填一些假数据进去
                            ban_reason="恶意利用网站bug",
                            ban_time=datetime(2022, 6, 1))
 
-    #商品、悬赏
+    #商品、悬赏  0是商品--123，1是悬赏--45
     Item.create(id=1, name="苹果", user_id=1951705, price=1.11, tag="食物", type=0)
     Item.create(id=2,
                 name="方便面",
@@ -174,44 +184,58 @@ def fake_data():  #填一些假数据进去
                    telephone="+86 11123111131",
                    full_address="kkzx",
                    default=True)
+    Contact.create(id=5,
+                   user_id=1952219,
+                   name="彭斐然",
+                   telephone="+86 11123111131",
+                   full_address="kkzx",
+                   default=True)
+    Contact.create(id=6,
+                   user_id=1951859,
+                   name="杨可盈",
+                   telephone="+86 11123111131",
+                   full_address="kkzx",
+                   default=True)
 
     Review.create(id=1, user_id=1951705, feedback_content="默认好评")
     Review.create(id=2, user_id=1950084, feedback_content="默认好评")
     Review.create(id=3, user_id=1953493, feedback_content="默认好评")
     Review.create(id=4, user_id=1951566, feedback_content="默认好评")
 
+    # 商品
     Order.create(id=1,
                  user_id=1951566,
-                 op_user_id=1951705,
+                 op_user_id=1950084,
                  contact_id=4,
                  op_contact_id=1,
                  payment=1.11,
-                 state=2,
+                 state=0,
                  end_time=datetime.now())
-    Order.create(id=2,
-                 user_id=1953493,
-                 op_user_id=1951705,
-                 contact_id=3,
-                 op_contact_id=1,
-                 payment=0.01,
-                 state=-1,
-                 close_time=datetime.now(),
-                 note="我来帮你写sj！")
+    Order.create(
+        id=2,  # 悬赏
+        user_id=1953493,
+        op_user_id=1951705,
+        contact_id=3,
+        op_contact_id=1,
+        payment=0.01,
+        state=1,
+        close_time=datetime.now(),
+        note="我来帮你写sj！")
     Order.create(id=3,
                  user_id=1951566,
                  op_user_id=1950084,
                  contact_id=4,
                  op_contact_id=2,
                  payment=9.99,
-                 state=0)  #3份方便面
+                 state=2)  #3份方便面
 
     Order.create(id=4,
-                user_id=1951566,
-                op_user_id=1950084,
-                contact_id=4,
-                op_contact_id=2,
-                payment=9.99,
-                state=1)  #3份方便面
+                 user_id=1951566,
+                 op_user_id=1950084,
+                 contact_id=4,
+                 op_contact_id=2,
+                 payment=9.99,
+                 state=3)  #3份方便面
 
     Order_State_Item.create(order_id=1, user_review_id=1, op_user_review_id=4)
     Order_State_Item.create(order_id=2,
@@ -219,18 +243,71 @@ def fake_data():  #填一些假数据进去
                             cancel_reason="沈坚作业不能作为悬赏！")
     Order_State_Item.create(order_id=3)
     Order_State_Item.create(order_id=4)
-
+    # 商品
     #订单4中包含 3份方便面
     Order_Item.create(order_id=4, quantity=3, item_id=2)  #方便面
 
     #订单3中包含 3份方便面
     Order_Item.create(order_id=3, quantity=3, item_id=2)  #方便面
 
-    #订单2中包含 1份沈坚作业
-    Order_Item.create(order_id=2, quantity=1, item_id=1)  #沈坚作业
+    #订单2中包含 1份苹果
+    Order_Item.create(order_id=2, quantity=1, item_id=1)  #苹果
 
-    #订单1中包含 1份苹果
+    #订单1中包含 1份苹果  商品
     Order_Item.create(order_id=1, quantity=1, item_id=1)  #苹果
+    #悬赏
+    Order.create(id=5,
+                 user_id=1951566,
+                 op_user_id=1950084,
+                 contact_id=4,
+                 op_contact_id=1,
+                 payment=1.11,
+                 state=0,
+                 end_time=datetime.now())
+    Order.create(
+        id=6,  # 悬赏
+        user_id=1953493,
+        op_user_id=1951705,
+        contact_id=3,
+        op_contact_id=1,
+        payment=0.01,
+        state=1,
+        close_time=datetime.now(),
+        note="我来帮你写sj！")
+    Order.create(id=7,
+                 user_id=1951566,
+                 op_user_id=1950084,
+                 contact_id=4,
+                 op_contact_id=2,
+                 payment=9.99,
+                 state=2)  #3份方便面
+
+    Order.create(id=8,
+                 user_id=1951566,
+                 op_user_id=1950084,
+                 contact_id=4,
+                 op_contact_id=2,
+                 payment=9.99,
+                 state=3)  #3份方便面
+
+    Order_State_Item.create(order_id=1, user_review_id=1, op_user_review_id=4)
+    Order_State_Item.create(order_id=2,
+                            cancel_user=1950084,
+                            cancel_reason="沈坚作业不能作为悬赏！")
+    Order_State_Item.create(order_id=3)
+    Order_State_Item.create(order_id=4)
+    # 悬赏
+    #订单4中包含 3
+    Order_Item.create(order_id=4, quantity=3, item_id=5)  #耳机
+
+    #订单3中包含 耳机
+    Order_Item.create(order_id=3, quantity=1, item_id=5)  #耳机
+
+    #订单2中包含 1份苹果
+    Order_Item.create(order_id=2, quantity=1, item_id=4)  #
+
+    #订单1中包含 1份作业
+    Order_Item.create(order_id=1, quantity=1, item_id=4)  #神剑作业
 
 
 def init_database(drop_database: bool):
