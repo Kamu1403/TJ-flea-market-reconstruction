@@ -86,7 +86,6 @@ def generate_order():
     data = request.get_json()
     if not current_user.is_authenticated:
         return make_response_json(401,"当前用户未登录")
-    print(data)
     if "item_id" not in data:
         return make_response_json(400,"请求格式不对")
     try:
@@ -219,7 +218,8 @@ def address():
                     old_default.save()
         for i in range(len(temp)):
             try:
-                update_data[i]=Contact(**data[i])
+                for j in data:
+                    eval(f"update_data[i].{j} = data[{j}]")
                 update_data[i].save()
             except Exception as e:
                 for t in range(i):
