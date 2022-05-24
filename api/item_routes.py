@@ -112,7 +112,7 @@ def get_search():
     else:
         orderWay = (Item.publish_time.desc(), )  # 改：默认其实为相似度
 
-    need = (Item.id, Item.name, Item.user_id, Item.publish_time, Item.price)
+    need = (Item.id, Item.name, Item.user_id, Item.publish_time, Item.price,Item.tag)
     select_need = [Item.name.contains(key_word), Item.type == search_type]
     try:
         start_time = request.form.get("start_time")
