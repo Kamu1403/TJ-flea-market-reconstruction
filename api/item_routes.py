@@ -68,6 +68,29 @@ def get_item_info():
         res["isPub"] = isPub
     return make_response(jsonify(res))
 
+@api_blue.route("/get_user_item",methods=["GET"])
+def get_user_item():
+    if not current_user.is_authenticated:
+        return make_response_json(401,"当前用户未登录")
+    data = request.get_json()
+    try:
+        kind = int(data["kind"])
+    except Exception as e:
+        return make_response_json(400,"请求格式不对")
+    if kind != Item_type.Goods.value and kind != Item_type.Want.value:
+        return make_response_json(400,"请求格式不对")
+    try:
+        item_list = Item.select().where(Item.user_id == current_user.id,Item.type == kind).execute()
+    except Exception as e:
+        return make_response_json(500,f"查询错误 {repr(e)}")
+    datas = list()
+    for i in item_list:
+        j = i.__data__
+        j.pop('type')
+        if current_user.state != User_state.Admin.value:
+            j.pop('locked_num')
+        datas.append(j)
+    return make_response_json(200,"查询成功",data=datas)
 
 @api_blue.route('/search', methods=['POST'])
 def get_search():
@@ -179,6 +202,47 @@ def change_item_num():
                     return make_response_json(401, "权限不足")
                 else:
                     item.shelved_num = data["num"]
+                    item.save()
+                    return make_response_json(200, "操作成功")
+
+@api_blue.route("/change_item_data", methods=["PUT"])
+def change_item_num():
+    if not current_user.is_authenticated:
+        return make_response_json(401, "当前用户未登录")
+    data = request.get_json()
+    try:
+        data["item_id"] = int(data["item_id"])
+        if "shelved_num" in data:
+            data["shelved_num"] = int(data["shelved_num"])
+        if "locked_num" in data:
+            data["locked_num"] = int(data["locked_num"])
+        if "price" in data:
+            data["price"] = float(data["price"])
+    except Exception as e:
+        return make_response_json(400, "请求格式不对")
+    try:
+        item = Item.get(Item.id == data["item_id"])
+    except Exception as e:
+        return make_response_json(404, "此商品不存在")
+    else:
+        if current_user.state == User_state.Admin.value:
+            for i in data:
+                if i in dir(item):
+                    eval(f"item.{i} = data[{i}]")
+            item.save()
+            return make_response_json(200, "操作成功")
+        elif current_user.state == User_state.Under_ban.value:
+            return make_response_json(401, "您当前已被封号,请联系管理员解封")
+        else:
+            if current_user.id != item.user_id_id:
+                return make_response_json(401, "不可改变其他人的商品状态")
+            else:
+                if data["state"] == Item_state.Freeze.value:
+                    return make_response_json(401, "权限不足")
+                else:
+                    for i in data:
+                        if i in dir(item):
+                            eval(f"item.{i} = data[{i}]")
                     item.save()
                     return make_response_json(200, "操作成功")
 

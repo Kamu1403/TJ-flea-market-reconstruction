@@ -228,7 +228,8 @@ def address():
         for i in range(len(temp)):
             try:
                 for j in data:
-                    eval(f"update_data[i].{j} = data[{j}]")
+                    if j in dir(update_data[i]):
+                        eval(f"update_data[i].{j} = data[{j}]")
                 update_data[i].save()
             except Exception as e:
                 for t in range(i):
