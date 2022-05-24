@@ -206,7 +206,7 @@ def change_item_num():
                     return make_response_json(200, "操作成功")
 
 @api_blue.route("/change_item_data", methods=["PUT"])
-def change_item_num():
+def change_item_data():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
     data = request.get_json()
