@@ -86,7 +86,6 @@ def generate_order():
     data = request.get_json()
     if not current_user.is_authenticated:
         return make_response_json(401,"当前用户未登录")
-    print(data)
     if "item_id" not in data:
         return make_response_json(400,"请求格式不对")
     try:
@@ -137,20 +136,29 @@ def order_post():
         order_data["payment"] = item.price*data["num"]
         od = Order.create(**order_data)
     except Exception as e:
-        return make_response_json(500,f"存储错误\n{repr(e)}")
+        return make_response_json(500,f"存储错误 {repr(e)}")
     else:
         try:
             od_it = Order_Item.create(order_id=od.id,quantity=data["num"],item_id=item.id)
         except Exception as e:
             od.delete_instance()
-            return make_response_json(500,f"存储错误\n{repr(e)}")
+            return make_response_json(500,f"存储错误 {repr(e)}")
         else:
             try:
-                Order_State_Item.create(order_id=od.id)
+                od_st_it = Order_State_Item.create(order_id=od.id)
             except Exception as e:
                 od_it.delete_instance()
                 od.delete_instance()
-                return make_response_json(500,f"存储错误\n{repr(e)}")
+                return make_response_json(500,f"存储错误 {repr(e)}")
+        try:
+            item.locked_num+=data["num"]
+            item.shelved_num-=data["num"]
+            item.save()
+        except Exception as e:
+            od_st_it.delete_instance()
+            od_it.delete_instance()
+            od.delete_instance()
+            return make_response_json(500,f"存储错误 {repr(e)}")
     return make_response_json(200, "订单生成成功，请等待商家确认",data=url_for("order.manage"))
 
 
@@ -219,7 +227,9 @@ def address():
                     old_default.save()
         for i in range(len(temp)):
             try:
-                update_data[i]=Contact(**data[i])
+                for j in data:
+                    if j in dir(update_data[i]):
+                        eval(f"update_data[i].{j} = data[{j}]")
                 update_data[i].save()
             except Exception as e:
                 for t in range(i):

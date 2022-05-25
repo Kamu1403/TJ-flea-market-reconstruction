@@ -4,8 +4,8 @@ from api.utils import *
 from api import api_blue
 from item.models import Item_type, Item_state
 from item import item_blue
-from admin.models import Feedback,Feedback_kind,Feedback_state
-from datetime import datetime,date,timedelta
+from admin.models import Feedback, Feedback_kind, Feedback_state
+from datetime import datetime, date, timedelta
 from hashlib import md5
 
 
@@ -69,6 +69,32 @@ def get_item_info():
     return make_response(jsonify(res))
 
 
+@api_blue.route("/get_user_item", methods=["GET"])
+def get_user_item():
+    if not current_user.is_authenticated:
+        return make_response_json(401, "当前用户未登录")
+    data = request.get_json()
+    try:
+        kind = int(data["kind"])
+    except Exception as e:
+        return make_response_json(400, "请求格式不对")
+    if kind != Item_type.Goods.value and kind != Item_type.Want.value:
+        return make_response_json(400, "请求格式不对")
+    try:
+        item_list = Item.select().where(Item.user_id == current_user.id,
+                                        Item.type == kind).execute()
+    except Exception as e:
+        return make_response_json(500, f"查询错误 {repr(e)}")
+    datas = list()
+    for i in item_list:
+        j = i.__data__
+        j.pop('type')
+        if current_user.state != User_state.Admin.value:
+            j.pop('locked_num')
+        datas.append(j)
+    return make_response_json(200, "查询成功", data=datas)
+
+
 @api_blue.route('/search', methods=['POST'])
 def get_search():
     try:
@@ -89,7 +115,7 @@ def get_search():
     else:
         orderWay = (Item.publish_time.desc(), )  # 改：默认其实为相似度
 
-    need = (Item.id, Item.name, Item.user_id, Item.publish_time, Item.price)
+    need = (Item.id, Item.name, Item.user_id, Item.publish_time, Item.price,Item.tag)
     select_need = [Item.name.contains(key_word), Item.type == search_type]
     try:
         start_time = request.form.get("start_time")
@@ -179,6 +205,48 @@ def change_item_num():
                     return make_response_json(401, "权限不足")
                 else:
                     item.shelved_num = data["num"]
+                    item.save()
+                    return make_response_json(200, "操作成功")
+
+
+@api_blue.route("/change_item_data", methods=["PUT"])
+def change_item_data():
+    if not current_user.is_authenticated:
+        return make_response_json(401, "当前用户未登录")
+    data = request.get_json()
+    try:
+        data["item_id"] = int(data["item_id"])
+        if "shelved_num" in data:
+            data["shelved_num"] = int(data["shelved_num"])
+        if "locked_num" in data:
+            data["locked_num"] = int(data["locked_num"])
+        if "price" in data:
+            data["price"] = float(data["price"])
+    except Exception as e:
+        return make_response_json(400, "请求格式不对")
+    try:
+        item = Item.get(Item.id == data["item_id"])
+    except Exception as e:
+        return make_response_json(404, "此商品不存在")
+    else:
+        if current_user.state == User_state.Admin.value:
+            for i in data:
+                if i in dir(item):
+                    eval(f"item.{i} = data[{i}]")
+            item.save()
+            return make_response_json(200, "操作成功")
+        elif current_user.state == User_state.Under_ban.value:
+            return make_response_json(401, "您当前已被封号,请联系管理员解封")
+        else:
+            if current_user.id != item.user_id_id:
+                return make_response_json(401, "不可改变其他人的商品状态")
+            else:
+                if data["state"] == Item_state.Freeze.value:
+                    return make_response_json(401, "权限不足")
+                else:
+                    for i in data:
+                        if i in dir(item):
+                            eval(f"item.{i} = data[{i}]")
                     item.save()
                     return make_response_json(200, "操作成功")
 
@@ -367,35 +435,41 @@ def get_history():
         data.append(res)
     return make_response_json(200, "操作成功", data)
 
-@api_blue.route("/report_item",methods=["POST"])
+
+@api_blue.route("/report_item", methods=["POST"])
 def report_item():
     if not current_user.is_authenticated:
-        return make_response_json(401,"当前用户还未登陆")
+        return make_response_json(401, "当前用户还未登陆")
     data = request.get_json()
     if "reason" not in data:
-        return make_response_json(400,"请求格式不对")
+        return make_response_json(400, "请求格式不对")
     try:
         item_id = int(data["item_id"])
     except Exception as e:
-        return make_response_json(400,"请求格式不对")
+        return make_response_json(400, "请求格式不对")
     try:
         item = Item.get(Item.id == item_id)
     except Exception as e:
-        return make_response_json(404,"不存在的物品")
-    data["reason"] = "物品id:{} 物品名称:{} ".format(item_id,item.name)+data["reason"]
+        return make_response_json(404, "不存在的物品")
+    data["reason"] = "物品id:{} 物品名称:{} ".format(item_id,
+                                               item.name) + data["reason"]
     try:
-        feedback_data = {"user_id":current_user.id,"publish_time":date.today(),"kind":Feedback_kind.Item.value}
-        feedback_data["reply_content"]=data["reason"]
+        feedback_data = {
+            "user_id": current_user.id,
+            "publish_time": date.today(),
+            "kind": Feedback_kind.Item.value
+        }
+        feedback_data["reply_content"] = data["reason"]
         feedback = Feedback.create(**feedback_data)
     except Exception as e:
-        return make_response_json(500,f"存储出现问题 {repr(e)}")
-    return make_response_json(200,"举报完成,请等待管理员处理...")
+        return make_response_json(500, f"存储出现问题 {repr(e)}")
+    return make_response_json(200, "举报完成,请等待管理员处理...")
 
 
-@api_blue.route("/item_to_show",methods=["GET"])
+@api_blue.route("/item_to_show", methods=["GET"])
 def item_to_show():
     if not current_user.is_authenticated:
-        return make_response_json(401,"当前用户未登录")
+        return make_response_json(401, "当前用户未登录")
     data = dict(request.args)
     need = list()
     ordered_num = None
@@ -403,32 +477,33 @@ def item_to_show():
         try:
             data["max_num"] = int(data["max_num"])
         except Exception as e:
-            return make_response_json(400,"请求格式错误")
+            return make_response_json(400, "请求格式错误")
         else:
             ordered_num = 0
     if "range" in data:
         try:
             data["range"] = int(data["range"])
         except Exception as e:
-            return make_response_json(400,"请求格式错误")
+            return make_response_json(400, "请求格式错误")
         else:
             td = timedelta(days=data["range"])
             last_time = date.today() - td
-            need.append(Item.publish_time>=last_time)
+            need.append(Item.publish_time >= last_time)
     try:
-        need_od = Item.select().where(*need).order_by(Item.publish_time.desc()).execute()
+        need_od = Item.select().where(*need).order_by(
+            Item.publish_time.desc()).execute()
     except Exception as e:
-        return make_response_json(500,f"查询发生错误 {repr(e)}")
+        return make_response_json(500, f"查询发生错误 {repr(e)}")
     else:
-        datas = {"show":list()}
+        datas = {"show": list()}
         for i in need_od:
             j = i.__data__
             if current_user.state != User_state.Admin.value:
                 j.pop("locaked_num")
             if ordered_num is not None:
-                if ordered_num<data["max_num"]:
+                if ordered_num < data["max_num"]:
                     datas["show"].append(j)
-                    ordered_num+=1
+                    ordered_num += 1
                 else:
                     break
-    return make_response_json(200,"返回订单",datas)
+    return make_response_json(200, "返回订单", datas)
