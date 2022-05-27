@@ -235,7 +235,7 @@ def fake_data():  #填一些假数据进去
                  contact_id=4,
                  op_contact_id=2,
                  payment=9.99,
-                 state=3)  #3份方便面
+                 state=2)  #3份方便面
 
     Order_State_Item.create(order_id=1, user_review_id=1, op_user_review_id=4)
     Order_State_Item.create(order_id=2,
@@ -288,7 +288,7 @@ def fake_data():  #填一些假数据进去
                  contact_id=4,
                  op_contact_id=2,
                  payment=9.99,
-                 state=3)  #3份方便面
+                 state=2)  #3份方便面
 
     Order_State_Item.create(order_id=1, user_review_id=1, op_user_review_id=4)
     Order_State_Item.create(order_id=2,

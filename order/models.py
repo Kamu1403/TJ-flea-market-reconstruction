@@ -70,10 +70,7 @@ class Order(BaseModel):
     op_user_id = pw.ForeignKeyField(User, verbose_name="对方用户的学号")
     contact_id = pw.ForeignKeyField(Contact, verbose_name="订单发起者信息id")
     op_contact_id = pw.ForeignKeyField(Contact, verbose_name="对方用户信息id")
-    payment = pw.DecimalField(verbose_name="总价",
-                              max_digits=20,
-                              decimal_places=2)
-
+    payment = pw.FloatField(verbose_name="总价", default=0, null=False)
     #订单状态-1-已关闭 0-未确认 1-已确认(双方) 2-已完成
     state = pw.IntegerField(verbose_name="订单状态",
                             null=False,
