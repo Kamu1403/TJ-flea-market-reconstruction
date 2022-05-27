@@ -2,7 +2,6 @@
 # -*- coding: UTF-8 -*-
 from api.utils import *
 from api import api_blue
-from item.models import Item_state
 
 MINUS_SCORE = 5  #取消一个已经确认了的订单，扣五分
 
@@ -105,3 +104,40 @@ def change_order_status():
             return make_response_json(200, "操作成功")
         else:
             return make_response_json(500, "req_state订单状态错误！")
+
+
+@api_blue.route("/get_item_id_by_order", methods=["GET"])
+def get_item_id_by_order():
+    if not current_user.is_authenticated:
+        return make_response_json(401, "当前用户未登录")
+    data = dict(request.args)
+    try:
+        order_id = int(data['order_id'])
+    except:
+        return make_response_json(400, "请求格式不对")
+
+    need = [Order.op_user_id, Order.user_id]
+    try:
+        datas = Order.select(*need).where(Order.id == order_id)
+    except Exception as e:
+        return make_response_json(500, f"发生如下错误\n{repr(e)}")
+    if datas.count() <= 0:
+        return make_response_json(404, "未找到该订单")
+    elif datas[0].op_user_id.id != current_user.id and datas[
+            0].user_id.id != current_user.id and current_user.state != User_state.Admin.value:
+        return make_response_json(401, "无此权限")
+    need = [Order_Item.quantity, Order_Item.item_id]
+    try:
+        datas = Order_Item.select(*need).where(
+            Order_Item.order_id == order_id).execute()
+    except Exception as e:
+        return make_response_json(500, f"发生如下错误\n{repr(e)}")
+    else:
+        res = list()
+        for i in datas:
+            tep = {"quantity": i.quantity, "item_id": i.item_id.id}
+            res.append(tep)
+        if len(res) == 0:
+            return make_response_json(404, "未找到该订单明细")
+        #print(res)
+        return make_response_json(200, "获取成功", res)
