@@ -455,8 +455,8 @@ def report_item():
         item = Item.get(Item.id == item_id)
     except Exception as e:
         return make_response_json(404, "不存在的物品")
-    data["reason"] = "物品id:{} 物品名称:{} ".format(item_id,
-                                               item.name) + data["reason"]
+    data["reason"] = "物品id:{} 物品名称:{} 举报理由：\n".format(
+        item_id, item.name) + data["reason"]
     try:
         feedback_data = {
             "user_id": current_user.id,
@@ -500,7 +500,7 @@ def item_to_show():
         datas = {"show": list()}
         for i in need_od:
             j = i.__data__
-            j.pop("locaked_num")
+            j.pop("locked_num")
             if ordered_num is not None:
                 if ordered_num < data["max_num"]:
                     datas["show"].append(j)
