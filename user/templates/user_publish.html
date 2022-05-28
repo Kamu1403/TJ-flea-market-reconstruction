@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="x-ua-compatible" content="ie=edge">
-        <title>tj-flea-market - 同济大学跳蚤市场（主页）</title>
+        <title>tj-flea-market - 我的发布</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -231,13 +231,13 @@
                                     <article class="side-menu side-menu-off">
                                         <dl class="side-menu-tree" style="padding-left: 50px;">
                                             <dt><img src="{{url_for('static', filename='img/左侧/首页.png')}}"  style="margin-right: 10px;margin-left: -20px;width: 15px;height: 15px"/><a href="personal-center.html">首页</a> </dt>
-                                            <dt><img src="{{url_for('static', filename='img/左侧/file.png')}}"  style="margin-right: 10px;margin-left: -20px; width: 13px;height: 13px;"/>订单管理</dt>
+                                            <dt><img src="{{url_for('static', filename='img/左侧/file.png')}}"  style="margin-right: 10px;margin-left: -20px; width: 13px;height: 13px;"/>发布管理</dt>
                                             <dd>
-                                                <a href="{{ url_for('user.order') }}">我的订单</a>
+                                                <a>我的订单</a>
             
                                             </dd>
                                             <dd>
-                                                <a href="{{ url_for('user.publish') }}">我的发布</a>
+                                                <a>我的发布</a>
             
                                             </dd>
                                             <dd>
@@ -357,38 +357,86 @@
                                 </div>
                                 <div class="m-logistics g-box-base g-mb-set">
                                     <div class="s-bar">
-                                        <img src="{{url_for('static', filename='img/icon/recentdeal.png')}}" style="width: 28px;height: 28px;">最近交易
+                                        <img src="{{url_for('static', filename='img/icon/recentdeal.png')}}" style="width: 28px;height: 28px;">我的发布
                                     </div>
-                                    <div class="s-content">
-                                        <ul class="lg-list">
-                                            <div style="padding: 20px 20px;border-bottom: 1px #F5F5F5 solid;height: 150px;">
-                                                <div style="float: left;margin-top: 10px;">
-                                                    <img src="{{url_for('static', filename='img/product/bdw_products02.png')}}" style="height:100px;width: 100px;"/>
-                                                </div>
-                                                <div style="float: left;margin-left:20px;margin-top: 20px;">
-                                                    <p>对方向你发起订单，待同意</p>
-                                                    <p>2022-04-19 12:20:30  <strong>查看订单详情</strong> </p>
-                                                </div>
-                                                <div style="float: right;margin-right: 20px;margin-top: 50px;">
-                                                    <button style="border: 1px #ccc solid;padding: 5px;background-color: #fff;">同意交易</button>
-                                                </div>
-                                                
-                                            </div>
-                                            <div style="padding: 20px 20px;border-bottom: 1px #F5F5F5 solid;height: 150px;">
-                                                <div style="float: left;margin-top: 10px;">
-                                                    <img src="{{url_for('static', filename='img/product/bdw_products01.png')}}" style="height:100px;width: 100px;"/>
-                                                </div>
-                                                <div style="float: left;margin-left:20px;margin-top: 20px;">
-                                                    <p>对方已确认订单完成，待你确认</p>
-                                                    <p>2022-04-10 12:20:30  <strong>查看订单详情</strong> </p>
-                                                </div>
-                                                <div style="float: right;margin-right: 20px;margin-top: 50px;">
-                                                    <button style="border: 1px #ccc solid;padding: 5px;background-color: #fff;">确认完成</button>
-                                                </div>
-                                                
-                                            </div>
-                                            <p style="text-align: center;margin-top: 30px;">展开全部信息</p>
-                                        </ul>
+                                    <div class="cart-wrapper">
+                                        <div class="table-responsive">
+                                            <table class="table mb-0">
+                                            <thead>
+                                                <tr>
+                                                <th class="product-thumbnail"></th>
+                                                <th class="product-name">发布详情</th>
+                                                <th class="product-price">单价</th>
+                                                <th class="product-quantity">数量</th>
+                                                <th class="product-subtotal">发布类型</th>
+                                                <th class="product-subtotal">发布状态</th>
+                                                <th class="product-delete"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                <td class="product-name"><span>2022-5-30</span></td>
+                                                <td class="product-name" colspan="2"><span></span></td>
+                                                <td class="product-name"></td>
+                                                <td class="product-name" colspan="3"><span></span></td>
+                                                </tr>
+                                                <tr>
+                                                <td class="product-thumbnail">
+                                                    <a href="shop-details.html"
+                                                    ><img
+                                                        src="{{url_for('static',filename='img/product/cart_img01.jpg')}}"
+                                                        alt=""
+                                                    /></a>
+                                                </td>
+                                                <td class="product-name">
+                                                    <h4>
+                                                    <a href="shop-details.html">圆圆的东西</a>
+                                                    </h4>
+                                                </td>
+                                                <td class="product-price">$ 27.00</td>
+                                                <td class="product-subtotal">
+                                                    <span>1</span>
+                                                </td>
+                                                <td class="product-subtotal"><span>悬赏</span></td>
+                                                <td class="product-subtotal"><span>待接取</span></td>
+                                                <td class="product-delete">
+                                                    <a href="#"><i class="far fa-trash-alt"></i></a>
+                                                </td>
+                                                </tr>
+                                            </tbody>
+                                            <tbody>
+                                                <tr>
+                                                <td class="product-name"><span>2022-5-30</span></td>
+                                                <td class="product-name" colspan="2"><span></span></td>
+                                                <td class="product-name"></td>
+                                                <td class="product-name" colspan="3"><span></span></td>
+                                                </tr>
+                                                <tr>
+                                                <td class="product-thumbnail">
+                                                    <a href="shop-details.html"
+                                                    ><img
+                                                        src="{{url_for('static',filename='img/product/cart_img01.jpg')}}"
+                                                        alt=""
+                                                    /></a>
+                                                </td>
+                                                <td class="product-name">
+                                                    <h4>
+                                                    <a href="shop-details.html">圆圆的东西</a>
+                                                    </h4>
+                                                </td>
+                                                <td class="product-price">$ 27.00</td>
+                                                <td class="product-subtotal">
+                                                    <span>1</span>
+                                                </td>
+                                                <td class="product-subtotal"><span>出售</span></td>
+                                                <td class="product-subtotal"><span>已下架</span></td>
+                                                <td class="product-delete">
+                                                    <a href="#"><i class="far fa-trash-alt"></i></a>
+                                                </td>
+                                                </tr>
+                                            </tbody>
+                                            </table>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
