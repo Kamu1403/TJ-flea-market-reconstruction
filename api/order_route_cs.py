@@ -186,9 +186,10 @@ def address():
     data = request.get_json()
     temp = [None for i in range(len(data))]
     if request.method == "DELETE":
+        data = set(data.values())
         for i, j in enumerate(data):
             try:
-                temp[i] = Contact.get(Contact.id == int(j["contact_id"]))
+                temp[i] = Contact.get(Contact.id == int(j))
             except Exception as e:
                 return make_response_json(401, "不存在的联络地址")
             else:
