@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html class="no-js" lang="">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    {% block title %}<title>tj-flea-market - 同济大学跳蚤市场（主页）</title>{% endblock %}
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link rel="shortcut icon" type="image/x-icon" href="{{url_for('static',filename='img/icon/favicon.png')}}" />
+
+    <!-- CSS here -->
+    {% block css %}
+    <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap.min.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/animate.min.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/magnific-popup.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/fontawesome-all.min.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/jquery-ui.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/flaticon.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/aos.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/slick.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/default.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/responsive.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/tab.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/dropdown.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/member-main.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/init.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/base.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/ms-style.min.css')}}">
+    {% endblock %}
+
+</head>
+
+<body>
+    <!-- header-area -->
+    {% block header %}
+    <header>
+        <!-- header-search-area -->
+        <div class="header-search-area">
+            <div class="container custom-container">
+                <div class="row align-items-center">
+                    <div class="col-xl-2 col-lg-3 d-none d-lg-block">
+                        <div class="logo">
+                            <a href="index.html"><img src="{{url_for('static',filename='img/logo/logo.png')}}"
+                                    alt="Logo" /></a>
+                        </div>
+                    </div>
+                    <div class="d-block d-sm-flex align-items-center justify-content-end">
+                        <div class="col-md-9">
+                            <div class="header-search-wrap">
+                                <form action="#">
+                                    <select class="custom-select">
+                                        <option selected="">所有种类</option>
+                                        <option>-- 学习用品</option>
+                                        <option>-- 生活用品</option>
+                                        <option>-- 其他（待添加）</option>
+                                        <option>-- 其他</option>
+                                    </select>
+                                    <input id="item_name" type="text" placeholder="搜索..." />
+                                    <button type="button" onclick="search_item()"><i class="flaticon-loupe-1"></i></button>
+                                </form>
+                            </div>
+                        </div>
+                        <!-- </div> -->
+                        <div class="col-lg-1">
+                            <div class="header-action">
+                                <ul>
+                                    <!-- 心表示收藏 -->
+                                    <li class="header-wishlist">
+                                        <a href="#"><i class="flaticon-heart-shape-outline"></i></a>
+                                        <span class="item-count">0</span>
+                                    </li>
+                                    <!-- 消息通知 -->
+                                    <li class="header-wishlist">
+                                        <a href="/chat/"><i class="flaticon-mail"></i></a>
+                                        <span class="item-count" id="message_cnt">0</span>
+                                    </li>
+
+                                    <li id="header_user">
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    {% endblock %}
+    <!-- header-area-end -->
+
+    <!-- main-area -->
+    {% block main %}
+    <main>
+    </main>
+    {% endblock %}
+    <!-- main-area-end -->
+
+    <!-- footer-area -->
+    {% block footer %}
+    <footer>
+        <div class="copyright-wrap">
+            <div class="container custom-container">
+                <div class="row align-items-center">
+                    <div class="col-md-7">
+                        <div class="header-top-left">
+                            <ul>
+                                <li>
+                                    <img src="{{url_for('static',filename='img/logo/logo.png')}}" height='30'></img>
+                                </li>
+                                <li>
+                                    <b>软件工程项目  啊不对不队</b>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="header-top-right">
+                            <ul>
+                                <li><a href="https://gitlab.com/tj-cs-swe/cs10102302-2022/Relativity/tj-flea-market">Gitlab</a></li>
+                                <li><a href="#">反馈</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    {% endblock %}
+    <!-- footer-area-end -->
+
+    <!-- JS here -->
+    {% block js %}
+    <script src="  {{url_for('static', filename='js/vendor/jquery-3.6.0.min.js')}}"></script>
+    <script src="  {{url_for('static', filename='js/bootstrap.min.js')}}"></script>
+    <script src="  {{url_for('static', filename='js/isotope.pkgd.min.js')}}"></script>
+    <script src="  {{url_for('static', filename='js/imagesloaded.pkgd.min.js')}}"></script>
+    <script src="  {{url_for('static', filename='js/jquery.magnific-popup.min.js')}}"></script>
+    <script src="  {{url_for('static', filename='js/jquery.countdown.min.js')}}"></script>
+    <script src="  {{url_for('static', filename='js/jquery-ui.min.js')}}"></script>
+    <script src="  {{url_for('static', filename='js/slick.min.js')}}"></script>
+    <script src="  {{url_for('static', filename='js/ajax-form.js')}}"></script>
+    <script src="  {{url_for('static', filename='js/wow.min.js')}}"></script>
+    <script src="  {{url_for('static', filename='js/aos.js')}}"></script>
+    <script src="  {{url_for('static', filename='js/plugins.js')}}"></script>
+    <script src="  {{url_for('static', filename='js/main.js')}}"></script>
+    <script src="  {{url_for('static', filename='js/dropdown.js')}}"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $.get("/api/get_message_cnt", function (ret) {
+                if (ret.statusCode == 401) {
+                    $(message_cnt).value=0;
+                } else {
+                    $(message_cnt).value=ret.data.unread;
+                    }
+                }
+            );
+            
+            $.get("/api/get_user_id", function (ret) {
+                let str=""
+                if (ret.statusCode == 401) {
+                    str='\
+                    <li class="header-user" id="user_offline">\
+                        <a href="{{ url_for("login") }}"><i class="flaticon-user"></i></a>\
+                    </li>';
+                } 
+                else {
+                    str='<li class="dropdown" id="user_online">\
+                        <span><img src="  {{url_for("static", filename="img/images/user1.png")}}" alt="" width="60" height="60" class="img-circle">\
+                        </span>\
+                        <div class="dropdown-content">\
+                            <a href="{{url_for("user.space",opt_userid=current_user.id)}}">个人中心</a>\
+                            <a href="cart.html">我的主页</a>\
+                            <a href="history.html">我的足迹</a>\
+                            <a href="{{url_for("logout")}}">退出登录</a>\
+                        </div>\
+                    </li>';
+                    }
+                $(header_user).append(str);
+                }
+            );
+
+        });
+        function search_item() {
+            var item=$('#item_name').val();
+            console.log(item)
+            window.location.href="/search/"+item;
+        }
+    </script>
+    {% endblock %}
+</body>
+
+</html>
