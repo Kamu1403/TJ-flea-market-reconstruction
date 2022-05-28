@@ -73,7 +73,7 @@ def get_item_info():
 def get_user_item():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
-    data = request.get_json()
+    data = dict(request.args)
     try:
         kind = int(data["kind"])
     except Exception as e:
