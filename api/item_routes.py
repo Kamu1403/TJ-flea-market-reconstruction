@@ -502,8 +502,7 @@ def item_to_show():
         datas = {"show": list()}
         for i in need_od:
             j = i.__data__
-            if current_user.state != User_state.Admin.value:
-                j.pop("locaked_num")
+            j.pop("locaked_num")
             if ordered_num is not None:
                 if ordered_num < data["max_num"]:
                     datas["show"].append(j)
