@@ -193,7 +193,7 @@
         <script type="text/javascript">
             $(document).ready(function () {
                 $.get("/api/get_user_id", function (ret) {
-                    console.log(ret)
+                    // console.log(ret);
                     if (ret.statusCode == 401) {
                         $(bar_icon_post).remove();
                         $(bar_icon_chatroom).remove();
@@ -225,7 +225,7 @@
             });
             function search_item() {
                 var item = $("#item_name").val();
-                console.log(item);
+                // console.log(item);
                 window.location.href = "/search/" + item;
             }
         </script>

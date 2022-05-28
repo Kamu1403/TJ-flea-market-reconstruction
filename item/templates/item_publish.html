@@ -70,7 +70,7 @@
     }
 
     $("#file").on("change", function () {
-        console.log("选择了图片：" + this.files[0].name);
+        // console.log("选择了图片：" + this.files[0].name);
         $("#show_file_name").val(this.files[0].name);
     });
 
@@ -82,11 +82,27 @@
         return url;
     }
 
+    function updatePage(objUrl, md5) {
+        var str = `<tr id="tr_${md5}">
+            <td class="product-thumbnail" id="product_thumbnail_${md5}"><img src=${objUrl} alt="" /></td>
+            <td class="product-name"> <h4>${md5}</h4></td>
+            <td class="product-quantity">
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="customCheck_${md5}"
+                        onclick="check_other_box(this)" />
+                    <label class="custom-control-label" for="customCheck_${md5}"></label>
+                </div>
+            </td>
+            <td class="product-delete"><a href="#" onclick="remove(this)"><i class="far fa-trash-alt"></i></a></td>
+        </tr>`;
+        $(auto_append).append(str);
+    }
+
     function uploadImg() {
         var file = $("#file")[0].files[0];
         objUrl = getObjectURL($("#file")[0].files[0]); // 展示用户选择的图片
         if (file && objUrl) {
-            console.log("开始上传图片：" + file.name);
+            // console.log("开始上传图片：" + file.name);
             var formData = new FormData();
             formData.append("file", file);
             var debug = 0;
@@ -97,42 +113,17 @@
                     data: formData,
                     contentType: false,
                     processData: false,
-
                     success: function (ret) {
-                        if (ret.statuCode == 200) {
+                        if (ret.statusCode == 200) {
                             console.log(ret.message);
                             md5 = ret.data;
-                            var str = `<tr id="tr_${md5}">
-                                <td class="product-thumbnail" id="product_thumbnail_${md5}"><img src=${objUrl} alt="" /></td>
-                                <td class="product-name"> <h4>${md5}</h4></td>
-                                <td class="product-quantity">
-                                    <div class="custom-control custom-checkbox">
-                                        <input type="checkbox" class="custom-control-input" id="customCheck_${md5}"
-                                            onclick="check_other_box(this)" />
-                                        <label class="custom-control-label" for="customCheck_${md5}"></label>
-                                    </div>
-                                </td>
-                                <td class="product-delete"><a href="#" onclick="remove(this)"><i class="far fa-trash-alt"></i></a></td>
-                            </tr>`;
-                            $(auto_append).append(str);
+                            updatePage(objUrl, md5);
                         } else alert(ret.message);
                     },
                 });
             } else {
                 md5 = Math.random().toString(36).substr(2);
-                var str = `<tr id="tr_${md5}">
-                    <td class="product-thumbnail" id="product_thumbnail_${md5}"><img src=${objUrl} alt="" /></td>
-                    <td class="product-name"> <h4>${md5}</h4></td>
-                    <td class="product-quantity">
-                        <div class="custom-control custom-checkbox">
-                            <input type="checkbox" class="custom-control-input" id="customCheck_${md5}"
-                                onclick="check_other_box(this)" />
-                            <label class="custom-control-label" for="customCheck_${md5}"></label>
-                        </div>
-                    </td>
-                    <td class="product-delete"><a href="#" onclick="remove(this)"><i class="far fa-trash-alt"></i></a></td>
-                </tr>`;
-                $(auto_append).append(str);
+                updatePage(objUrl, md5);
             }
         } else alert("未选择图片！");
     }
