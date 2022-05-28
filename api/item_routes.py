@@ -2,6 +2,7 @@
 # -*- coding: UTF-8 -*-
 import base64
 from io import BytesIO
+import shutil
 from api.utils import *
 from api import api_blue
 from item.models import Item_type, Item_state
@@ -309,13 +310,15 @@ def post_item_info():
             return make_response_json(400, "仅能选定一张头图")
         else:
             head_pic = head_pics[0]
-        with open(url_for('item.static', filename=f'resource/temp/{head_pic}'), "rb") as f:  # 改成剪切
-            with open(url_for('item.static', filename=f'resource/item_pic/{new.id}/head/{head_pic}'), "wb") as fp:
-                fp.write(f.read())
+        shutil.move(url_for('item.static', filename=f'resource/temp/{head_pic}'), url_for('item.static', filename=f'resource/item_pic/{new.id}/head/'))
+        #with open(url_for('item.static', filename=f'resource/temp/{head_pic}'), "rb") as f:
+        #    with open(url_for('item.static', filename=f'resource/item_pic/{new.id}/head/{head_pic}'), "wb") as fp:
+        #        fp.write(f.read())
         for i, j in enumerate(data["urls"]):
-            with open(url_for('item.static', filename=f'resource/temp/{j["MD5"]}'), "rb") as f:  # 改成剪切
-                with open(url_for('item.static', filename=f'resource/item_pic/{new.id}/pic/{j["MD5"]}'), "wb") as fp:
-                    fp.write(f.read())
+            shutil.move(url_for('item.static', filename=f'resource/temp/{j["MD5"]}'), url_for('item.static', filename=f'resource/item_pic/{new.id}/pic/'))
+            #with open(url_for('item.static', filename=f'resource/temp/{j["MD5"]}'), "rb") as f:
+            #    with open(url_for('item.static', filename=f'resource/item_pic/{new.id}/pic/{j["MD5"]}'), "wb") as fp:
+            #        fp.write(f.read())
         #将所有的图片转到用户对应文件夹
     return make_response_json(200, "上传成功")
 
@@ -336,9 +339,13 @@ def post_item_pic():
         data.save(path_name)
         img = Image.open(path_name)
         md5_str = md5(img.tobytes()).hexdigest()
-        img.save(os.path.join(curpath, f'{md5_str}'), 'WEBP')
+        os.remove(path_name)  # 不能提前，因为open是lazy的，提前删除了就读不到img了
+        path_name_new = os.path.join(curpath, f'{md5_str}')
+        if os.path.exists(path_name_new):
+            return make_response_json(400, f"上传图片失败：请勿重复上传图片")
+        img.save(path_name_new, 'WEBP')
     except Exception as e:
-        return make_response_json(400, f"上传图片失败：{repr(e)}")
+        return make_response_json(400, f"上传图片失败：文件格式错误或损坏")
     else:
         return make_response_json(200, "上传图片成功", md5_str)
 
