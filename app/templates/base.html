@@ -63,19 +63,27 @@
                                 </div>
                                 <div class="header-action">
                                     <ul>
+                                        <li class="header-wishlist">
+                                            <a href="#" title="发布悬赏或商品"><i class="fa fa-plus"></i></a>
+                                        </li>
+                                        <li class="header-cart-wrap">
+                                            <a href="#" title="聊天室"><i class="flaticon-mail"></i></a>
+                                            <span class="item-count">0</span>
+                                        </li>
                                         <li class="header-user">
-                                            <a href="#"><i class="flaticon-user"></i></a>
+                                            <a href="#" title="历史记录"><i class="flaticon-wall-clock"></i></a>
                                         </li>
                                         <li class="header-wishlist">
-                                            <a href="#"><i class="flaticon-heart-shape-outline"></i></a>
-                                            <span class="item-count">0</span>
+                                            <a href="#" title="我的收藏"><i class="flaticon-heart-shape-outline"></i></a>
+                                            
                                         </li>
                                         <li class="header-cart-action">
                                             <div class="header-cart-wrap">
-                                                <a href="cart.html"><i class="flaticon-shopping-basket"></i></a>
-                                                <span class="item-count">2</span>
-                                                <!--
-                                                <ul class="minicart">
+                                                <a href=""><i class="flaticon-user"></i></a>
+                                                <!--<span class="item-count">2</span>-->
+                                                
+                                                <ul class="minicart" id="menu">
+                                                    <!--
                                                     <li class="d-flex align-items-start">
                                                         <div class="cart-img">
                                                             <a href="shop-details.html"><img src="img/product/cart_p01.jpg" alt="" /></a>
@@ -112,13 +120,9 @@
                                                             <span class="f-right">$239.9</span>
                                                         </div>
                                                     </li>
-                                                    <li>
-                                                        <div class="checkout-link">
-                                                            <a href="cart.html">Shopping Cart</a>
-                                                            <a class="black-color" href="checkout.html">Checkout</a>
-                                                        </div>
-                                                    </li>
-                                                </ul>-->
+                                                    -->
+                                                    
+                                                </ul>
                                             </div>
                                             <!--<div class="cart-amount">$0.00</div>-->
                                         </li>
@@ -201,24 +205,21 @@
                 $.get("/api/get_user_id", function (ret) {
                     let str = "";
                     if (ret.statusCode == 401) {
-                        str = '\
-                    <li class="header-user" id="user_offline">\
-                        <a href="{{ url_for("login") }}"><i class="flaticon-user"></i></a>\
-                    </li>';
+                        str = `<li>
+                            <div class="checkout-link">
+                                <a class="black-color" href="{{ url_for("login") }}">登录</a>
+                            </div>
+                        </li>`;
+
                     } else {
-                        str =
-                            '<li class="dropdown" id="user_online">\
-                        <span><img src="  {{url_for("static", filename="img/images/user1.png")}}" alt="" width="60" height="60" class="img-circle">\
-                        </span>\
-                        <div class="dropdown-content">\
-                            <a href="{{url_for("user.space",opt_userid=current_user.id)}}">个人中心</a>\
-                            <a href="cart.html">我的主页</a>\
-                            <a href="history.html">我的足迹</a>\
-                            <a href="{{url_for("logout")}}">退出登录</a>\
-                        </div>\
-                    </li>';
+                        str = `<li>
+                            <div class="checkout-link">
+                                <a href="{{url_for("user.space",opt_userid=current_user.id)}}">个人中心</a>
+                                <a class="black-color" href="{{url_for("logout")}}">退出登录</a>
+                            </div>
+                        </li>`;
                     }
-                    $(header_user).append(str);
+                    $(menu).append(str);
                 });
             });
             function search_item() {
