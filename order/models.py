@@ -68,12 +68,7 @@ class Order(BaseModel):
     #id = pw.IntegerField(primary_key=True)  # 主键，不显式定义的话peewee默认定义一个自增的id
     user_id = pw.ForeignKeyField(User, verbose_name="订单发起者的学号")
     op_user_id = pw.ForeignKeyField(User, verbose_name="对方用户的学号")
-    contact_id = pw.ForeignKeyField(Contact,
-                                    verbose_name="订单发起者信息id",
-                                    null=True)
-    op_contact_id = pw.ForeignKeyField(Contact,
-                                       verbose_name="对方用户信息id",
-                                       null=True)
+
     payment = pw.FloatField(verbose_name="总价", default=0, null=False)
     #订单状态: -1-已关闭 0-未确认 1-已确认(双方) 2-已完成
     state = pw.IntegerField(verbose_name="订单状态",
@@ -127,6 +122,7 @@ class Order_Item(BaseModel):
     quantity = pw.IntegerField(verbose_name="购买数量")  #乘以单价再与订单中其他物品相加等于订单中的总价
     item_id = pw.ForeignKeyField(Item, verbose_name="item id", null=True)
 
+    #以下内容从提交订单者的Contact获取并保存
     name = pw.CharField(verbose_name="收件人用户名/姓名", max_length=32)
     telephone = pw.CharField(verbose_name="收件人电话号码", max_length=64)
     full_address = pw.CharField(verbose_name="详细收件地址", max_length=1024)
