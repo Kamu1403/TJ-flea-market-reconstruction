@@ -472,8 +472,6 @@ def report_item():
 
 @api_blue.route("/item_to_show", methods=["GET"])
 def item_to_show():
-    if not current_user.is_authenticated:
-        return make_response_json(401, "当前用户未登录")
     data = dict(request.args)
     need = list()
     ordered_num = None
