@@ -205,37 +205,19 @@ def fake_data():  #填一些假数据进去
     # 商品
     Order.create(id=1,
                  user_id=1951566,
-                 op_user_id=1950084,
-                 contact_id=4,
-                 op_contact_id=1,
                  payment=1.11,
                  state=0,
                  end_time=datetime.now())
     Order.create(
         id=2,  # 悬赏
         user_id=1953493,
-        op_user_id=1951705,
-        contact_id=3,
-        op_contact_id=1,
         payment=0.01,
         state=1,
         close_time=datetime.now(),
         note="我来帮你写sj！")
-    Order.create(id=3,
-                 user_id=1951566,
-                 op_user_id=1950084,
-                 contact_id=4,
-                 op_contact_id=2,
-                 payment=9.99,
-                 state=2)  #3份方便面
+    Order.create(id=3, user_id=1951566, payment=9.99, state=2)  #3份方便面
 
-    Order.create(id=4,
-                 user_id=1951566,
-                 op_user_id=1950084,
-                 contact_id=4,
-                 op_contact_id=2,
-                 payment=9.99,
-                 state=2)  #3份方便面
+    Order.create(id=4, user_id=1951566, payment=9.99, state=2)  #3份方便面
 
     Order_State_Item.create(order_id=1, user_review_id=1, op_user_review_id=4)
     Order_State_Item.create(order_id=2,
@@ -258,37 +240,19 @@ def fake_data():  #填一些假数据进去
     #悬赏
     Order.create(id=5,
                  user_id=1951566,
-                 op_user_id=1950084,
-                 contact_id=4,
-                 op_contact_id=1,
                  payment=1.11,
                  state=0,
                  end_time=datetime.now())
     Order.create(
         id=6,  # 悬赏
         user_id=1953493,
-        op_user_id=1951705,
-        contact_id=3,
-        op_contact_id=1,
         payment=0.01,
         state=1,
         close_time=datetime.now(),
         note="我来帮你写sj！")
-    Order.create(id=7,
-                 user_id=1951566,
-                 op_user_id=1950084,
-                 contact_id=4,
-                 op_contact_id=2,
-                 payment=9.99,
-                 state=2)  #3份方便面
+    Order.create(id=7, user_id=1951566, payment=9.99, state=2)  #3份方便面
 
-    Order.create(id=8,
-                 user_id=1951566,
-                 op_user_id=1950084,
-                 contact_id=4,
-                 op_contact_id=2,
-                 payment=9.99,
-                 state=2)  #3份方便面
+    Order.create(id=8, user_id=1951566, payment=9.99, state=2)  #3份方便面
 
     Order_State_Item.create(order_id=1, user_review_id=1, op_user_review_id=4)
     Order_State_Item.create(order_id=2,
