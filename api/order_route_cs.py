@@ -265,7 +265,7 @@ def address():
         has_default, num = False, 0
         old_default = None
         for i, j in enumerate(data):
-            j["id"] = current_user.id
+            j["user_id"] = current_user.id
             if "default" in j and j["default"]:
                 if not has_default:
                     has_default, num = True, i
