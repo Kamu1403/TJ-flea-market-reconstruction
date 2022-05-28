@@ -37,9 +37,13 @@ def get_order():
         return make_response_json(500, f"查询发生错误 {repr(e)}")
     else:
         datas = list()
+        num = 0
         for i in need_od:
             j = i.__data__
-            datas.append(j["id"])
+            if ordered_num:
+                if num < data["max_num"]:
+                    datas.append(j["id"])
+                    num+=1
     return make_response_json(200, "返回订单", datas)
 
 
@@ -215,7 +219,7 @@ def order_post():
         od_it_list.append(od_it)
     return make_response_json(201,
                               "订单生成成功，请等待商家确认",
-                              data=url_for("order.manage"))
+                              data={"url":url_for("order.manage")})
 
 
 @api_blue.route("/address", methods=["POST", "PUT", "DELETE"])
