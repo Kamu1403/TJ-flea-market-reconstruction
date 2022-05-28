@@ -117,6 +117,9 @@ def order_post():
         except Exception as e:
             call_back = (400,"请求格式不对")
             break
+        if num < 0:
+            call_back = (400,"请求格式不对")
+            break
         try:
             item = Item.get(Item.id == item_id)
         except Exception as e:
