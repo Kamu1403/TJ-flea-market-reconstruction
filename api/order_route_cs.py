@@ -46,6 +46,41 @@ def get_order():
                     num+=1
     return make_response_json(200, "返回订单", datas)
 
+@api_blue.route("/get_order_info",methods=['GET'])
+def get_order_info():
+    if not current_user.is_authenticated:
+        return make_response_json(401, "当前用户未登录")
+    data = dict(request.args)
+    try:
+        order_id = int(data["order_id"])
+    except Exception as e:
+        return make_response_json(400,"请求格式不对")
+    try:
+        temp:Order_Item = Order_Item.get(Order_Item.order_id == order_id)
+    except Exception as e:
+        return make_response_json(404,"不存在该订单")
+    if current_user.id != temp.item_id.user_id.id and current_user.id != temp.order_id.user_id.id and current_user.state != User_state.Admin.value:
+        return make_response_json(401,"当前用户无权访问该订单信息")
+    order_data = temp.order_id.__data__
+    order_data.pop("id")
+    for i in order_data:
+        if "time" in i:
+            order_data[i] = str(order_data[i])
+    order_data["item_info"] = list()
+    try:
+        item_infos = Order_Item.select().where(Order_Item.order_id == order_id).execute()
+    except Exception as e:
+        return make_response_json(500,f"查询订单明细时出现问题 {repr(e)}")
+    for i in item_infos:
+        j = i.__data__
+        j.pop("id")
+        j.pop("order_id")
+        order_data["item_info"].append(j)
+    return make_response_json(200,"请求成功",order_data)
+
+
+
+
 
 @api_blue.route("/get_address", methods=['GET'])
 def get_address():
@@ -157,16 +192,16 @@ def order_post():
         item_list.append(item)
     if call_back[0] != 200:
         for t in range(start_num):
-            item_list[t].shelved_num -= data["item_info"][t]["num"]
-            item_list[t].locked_num += data["item_info"][t]["num"]
+            item_list[t].shelved_num += data["item_info"][t]["num"]
+            item_list[t].locked_num -= data["item_info"][t]["num"]
             item_list[t].save()
         return make_response_json(call_back[0], call_back[1])
     try:
         contact = Contact.get(Contact.id == contact_id)
     except Exception as e:
         for t in range(len(data["item_info"])):
-            item_list[t].shelved_num -= data["item_info"][t]["num"]
-            item_list[t].locked_num += data["item_info"][t]["num"]
+            item_list[t].shelved_num += data["item_info"][t]["num"]
+            item_list[t].locked_num -= data["item_info"][t]["num"]
             item_list[t].save()
         return make_response_json(404, "不存在的地址信息")
     order_data = dict()
@@ -187,16 +222,16 @@ def order_post():
         od = Order.create(**order_data)
     except Exception as e:
         for t in range(len(data["item_info"])):
-            item_list[t].shelved_num -= data["item_info"][t]["num"]
-            item_list[t].locked_num += data["item_info"][t]["num"]
+            item_list[t].shelved_num += data["item_info"][t]["num"]
+            item_list[t].locked_num -= data["item_info"][t]["num"]
             item_list[t].save()
         return make_response_json(500, f"Order存储错误 {repr(e)}")
     try:
         od_st_it = Order_State_Item.create(order_id=od.id)
     except Exception as e:
         for t in range(len(data["item_info"])):
-            item_list[t].shelved_num -= data["item_info"][t]["num"]
-            item_list[t].locked_num += data["item_info"][t]["num"]
+            item_list[t].shelved_num += data["item_info"][t]["num"]
+            item_list[t].locked_num -= data["item_info"][t]["num"]
             item_list[t].save()
         od.delete_instance()
         return make_response_json(500, f"Order_State_Item 存储错误 {repr(e)}")
@@ -208,8 +243,8 @@ def order_post():
                                       item_id=item_list[i].id)
         except Exception as e:
             for t in range(len(data["item_info"])):
-                item_list[t].shelved_num -= data["item_info"][t]["num"]
-                item_list[t].locked_num += data["item_info"][t]["num"]
+                item_list[t].shelved_num += data["item_info"][t]["num"]
+                item_list[t].locked_num -= data["item_info"][t]["num"]
                 item_list[t].save()
             for j in od_it_list:
                 j.delete_instance()
@@ -375,6 +410,8 @@ def order_evaluate():
         return make_response_json(500, "订单存储时出现问题")
     order_state_item.save()
     return make_response_json(200, "评价完成", {"url": url_for('order.manage')})
+
+
 
 
 """
