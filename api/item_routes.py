@@ -440,33 +440,51 @@ def get_history():
     return make_response_json(200, "操作成功", data)
 
 
-@api_blue.route("/report_item", methods=["POST"])
-def report_item():
+@api_blue.route("/report", methods=["POST"])
+def report():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户还未登陆")
     data = request.get_json()
-    if "reason" not in data:
-        return make_response_json(400, "请求格式不对")
+    feed_data = dict()
+    feed_data["user_id"] = current_user.id
+    feed_data["publish_time"] = date.today()
+    feed_data["state"] = Feedback_state.Unread.value
     try:
-        item_id = int(data["item_id"])
+        kind = int(data['kind'])
     except Exception as e:
-        return make_response_json(400, "请求格式不对")
+        return make_response_json(400,"请求格式不对")
+    feed_data["kind"] = kind
+    if 'reason' in data:
+        reason = data["reason"]
+    else:
+        reason = ""
+    if kind == Feedback_kind.Item.value:
+        try:
+            item_id = int(data['item_id'])
+        except Exception as e:
+            return make_response_json(400,"请求格式不对")
+        try:
+            item = Item.get(Item.id == item_id)
+        except Exception as e:
+            return make_response_json(404,"待举报的物品不存在")
+        reason +="物品id:{} 物品名称:{} ".format(item.id,item.name)
+    elif kind == Feedback_kind.User.value:
+        try:
+            user_id = int(data["user_id"])
+        except Exception as e:
+            return make_response_json(400,"请求格式不对")
+        try:
+            user = User.get(User.id == user_id)
+        except Exception as e:
+            return make_response_json(404,"待举报的用户不存在")
+        reason +="用户id:{} 用户名称:{} ".format(user.id,user.name)
+    else:
+        pass
+    feed_data["feedback_content"] = reason
     try:
-        item = Item.get(Item.id == item_id)
+        Feedback.create(**feed_data)
     except Exception as e:
-        return make_response_json(404, "不存在的物品")
-    data["reason"] = "物品id:{} 物品名称:{} ".format(item_id,
-                                               item.name) + data["reason"]
-    try:
-        feedback_data = {
-            "user_id": current_user.id,
-            "publish_time": date.today(),
-            "kind": Feedback_kind.Item.value
-        }
-        feedback_data["reply_content"] = data["reason"]
-        feedback = Feedback.create(**feedback_data)
-    except Exception as e:
-        return make_response_json(500, f"存储出现问题 {repr(e)}")
+        return make_response_json(500,f"存储时发生错误 {repr(e)}")
     return make_response_json(200, "举报完成,请等待管理员处理...")
 
 
@@ -492,8 +510,12 @@ def item_to_show():
             last_time = date.today() - td
             need.append(Item.publish_time >= last_time)
     try:
-        need_od = Item.select().where(*need).order_by(
-            Item.publish_time.desc()).execute()
+        if len(need):
+            need_od = Item.select().where(*need).order_by(
+                Item.publish_time.desc()).execute()
+        else:
+            need_od = Item.select().where().order_by(
+                Item.publish_time.desc()).execute()
     except Exception as e:
         return make_response_json(500, f"查询发生错误 {repr(e)}")
     else:
@@ -501,6 +523,7 @@ def item_to_show():
         for i in need_od:
             j = i.__data__
             j.pop("locaked_num")
+            j["publish_time"] = str(j["publish_time"])
             if ordered_num is not None:
                 if ordered_num < data["max_num"]:
                     datas["show"].append(j)
