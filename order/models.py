@@ -126,3 +126,15 @@ class Order_Item(BaseModel):
     order_id = pw.ForeignKeyField(Order, verbose_name="订单id")
     quantity = pw.IntegerField(verbose_name="购买数量")  #乘以单价再与订单中其他物品相加等于订单中的总价
     item_id = pw.ForeignKeyField(Item, verbose_name="item id", null=True)
+
+    name = pw.CharField(verbose_name="收件人用户名/姓名", max_length=32)
+    telephone = pw.CharField(verbose_name="收件人电话号码", max_length=64)
+    full_address = pw.CharField(verbose_name="详细收件地址", max_length=1024)
+    campus_branch = pw.CharField(
+        verbose_name="所在校区",
+        max_length=32,
+        null=False,
+        default="四平路校区",
+        constraints=[
+            pw.Check("campus_branch in ('四平路校区','嘉定校区','沪西校区','沪北校区')")
+        ])
