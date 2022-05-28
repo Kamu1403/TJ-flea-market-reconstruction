@@ -239,7 +239,7 @@ def change_item_data():
         elif current_user.state == User_state.Under_ban.value:
             return make_response_json(401, "您当前已被封号,请联系管理员解封")
         else:
-            if current_user.id != item.user_id_id:
+            if current_user.id != item.user_id.id:
                 return make_response_json(401, "不可改变其他人的商品状态")
             else:
                 if data["state"] == Item_state.Freeze.value:
