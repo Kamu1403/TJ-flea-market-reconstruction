@@ -186,7 +186,7 @@ def address():
     data = request.get_json()
     temp = [None for i in range(len(data))]
     if request.method == "DELETE":
-        data = list(set(map(lambda x:x["concat_id"],data)))
+        data = list(set(map(lambda x:x["contact_id"],data)))
         for i, j in enumerate(data):
             try:
                 temp[i] = Contact.get(Contact.id == int(j))
