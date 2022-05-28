@@ -91,6 +91,7 @@ def get_user_item():
         j.pop('type')
         if current_user.state != User_state.Admin.value:
             j.pop('locked_num')
+        j["publish_time"] = str(j["publish_time"])
         datas.append(j)
     return make_response_json(200, "查询成功", data=datas)
 
