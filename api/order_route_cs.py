@@ -186,7 +186,7 @@ def address():
     data = request.get_json()
     temp = [None for i in range(len(data))]
     if request.method == "DELETE":
-        data = list(set(map(lambda x:x["contact_id"],data)))
+        data = list(set(map(lambda x: x["contact_id"], data)))
         for i, j in enumerate(data):
             try:
                 temp[i] = Contact.get(Contact.id == int(j))
@@ -198,7 +198,7 @@ def address():
         delete_default = False
         for i, j in enumerate(temp):
             try:
-                j.delete_istance()
+                j.delete_instance()
             except Exception as e:
                 for t in range(i):
                     temp[t].save()
@@ -285,7 +285,7 @@ def address():
                 temp[i] = Contact.create(**j)
             except Exception as e:
                 for t in range(i):
-                    temp[t].delete_istance()
+                    temp[t].delete_instance()
                 if old_default is not None:
                     old_default.default = True
                     old_default.save()
