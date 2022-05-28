@@ -114,15 +114,16 @@ def generate_order():
 
 @api_blue.route("/order_post", methods=["POST"])
 def order_post():
-    data = request.get_json()
-    try:
-        data["num"] = int(data["num"])
-    except Exception as e:
-        return make_response_json(400, "请指定物品个数")
+
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
     if current_user.state == User_state.Under_ban.value:
         return make_response_json(401, "当前用户被封禁中")
+    data = request.get_json()
+    if "item_info" not in data:
+        return make_response_json(400,"请求格式不对")
+    if not isinstance(data["item_info"],list):
+        return make_response_json(400,"请求格式不对")
     try:
         item = Item.get(Item.id == data["item_id"])
     except Exception as e:

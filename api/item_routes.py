@@ -341,7 +341,8 @@ def post_item_pic():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
     try:
-        data = request.files["file"]
+        #data = request.files["file"]
+        data = request.get_json["file"]
         file_byte = data.read()
         md5code = md5(file_byte).hexdigest()
         createPath(
