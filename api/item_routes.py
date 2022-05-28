@@ -72,14 +72,12 @@ def get_item_info():
 
 @api_blue.route("/get_user_item", methods=["GET"])
 def get_user_item():
-    # if not current_user.is_authenticated:
-    #     return make_response_json(401, "当前用户未登录")
+    if not current_user.is_authenticated:
+        return make_response_json(401, "当前用户未登录")
     data = dict(request.args)
     try:
         user_id = int(data["user_id"])
     except:
-        if not current_user.is_authenticated:
-            return make_response_json(401, "当前用户未登录")
         user_id = current_user.id
     else:
         try:
