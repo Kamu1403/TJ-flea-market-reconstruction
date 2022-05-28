@@ -43,7 +43,7 @@
                     <div class="row align-items-center">
                         <div class="col-xl-2 col-lg-3 d-none d-lg-block">
                             <div class="logo">
-                                <a href="index.html"><img src="{{url_for('static',filename='img/logo/logo.png')}}" alt="Logo" /></a>
+                                <a href="index.html"><img src="{{url_for('static',filename='img/logo/icon_new_small.png')}}" alt="Logo" /></a>
                             </div>
                         </div>
                         <div class="col-xl-10 col-lg-9">
@@ -63,17 +63,17 @@
                                 </div>
                                 <div class="header-action">
                                     <ul>
-                                        <li class="header-wishlist">
+                                        <li class="header-wishlist" id="bar_icon_post">
                                             <a href="#" title="发布悬赏或商品"><i class="fa fa-plus"></i></a>
                                         </li>
-                                        <li class="header-cart-wrap">
+                                        <li class="header-cart-wrap" id="bar_icon_chatroom">
                                             <a href="#" title="聊天室"><i class="flaticon-mail"></i></a>
                                             <span class="item-count">0</span>
                                         </li>
-                                        <li class="header-user">
+                                        <li class="header-user" id="bar_icon_history">
                                             <a href="#" title="历史记录"><i class="flaticon-wall-clock"></i></a>
                                         </li>
-                                        <li class="header-wishlist">
+                                        <li class="header-wishlist" id="bar_icon_favor">
                                             <a href="#" title="我的收藏"><i class="flaticon-heart-shape-outline"></i></a>
                                             
                                         </li>
@@ -81,7 +81,6 @@
                                             <div class="header-cart-wrap">
                                                 <a href=""><i class="flaticon-user"></i></a>
                                                 <!--<span class="item-count">2</span>-->
-                                                
                                                 <ul class="minicart" id="menu">
                                                     <!--
                                                     <li class="d-flex align-items-start">
@@ -121,7 +120,6 @@
                                                         </div>
                                                     </li>
                                                     -->
-                                                    
                                                 </ul>
                                             </div>
                                             <!--<div class="cart-amount">$0.00</div>-->
@@ -191,35 +189,38 @@
         <script src="  {{url_for('static', filename='js/aos.js')}}"></script>
         <script src="  {{url_for('static', filename='js/plugins.js')}}"></script>
         <script src="  {{url_for('static', filename='js/main.js')}}"></script>
-        <script src="  {{url_for('static', filename='js/dropdown.js')}}"></script>
+        <!--<script src="  {{url_for('static', filename='js/dropdown.js')}}"></script>-->
         <script type="text/javascript">
             $(document).ready(function () {
-                $.get("/api/get_message_cnt", function (ret) {
-                    if (ret.statusCode == 401) {
-                        $(message_cnt).value = 0;
-                    } else {
-                        $(message_cnt).value = ret.data.unread;
-                    }
-                });
-
                 $.get("/api/get_user_id", function (ret) {
-                    let str = "";
+                    console.log(ret)
                     if (ret.statusCode == 401) {
-                        str = `<li>
+                        $(bar_icon_post).remove();
+                        $(bar_icon_chatroom).remove();
+                        $(bar_icon_history).remove();
+                        $(bar_icon_favor).remove();
+                        $(menu).append(`<li>
                             <div class="checkout-link">
                                 <a class="black-color" href="{{ url_for("login") }}">登录</a>
                             </div>
-                        </li>`;
-
+                        </li>`);
                     } else {
-                        str = `<li>
+                        
+                        $(menu).append(`<li>
                             <div class="checkout-link">
                                 <a href="{{url_for("user.space",opt_userid=current_user.id)}}">个人中心</a>
                                 <a class="black-color" href="{{url_for("logout")}}">退出登录</a>
                             </div>
-                        </li>`;
+                        </li>`);
+                        $.get("/api/get_message_cnt", function (ret) {
+                            if (ret.statusCode == 401) {
+                                $(message_cnt).value = 0;
+                            } else {
+                                $(message_cnt).value = ret.data.unread;
+                            }
+                        });
                     }
-                    $(menu).append(str);
+                    
                 });
             });
             function search_item() {
