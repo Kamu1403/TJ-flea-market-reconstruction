@@ -234,6 +234,7 @@ def address():
                     has_default, num = True, i
                 else:
                     data[num]["default"] = False
+                    num = i
         old_default = None
         if has_default:
             try:
@@ -246,9 +247,11 @@ def address():
                     old_default.save()
         for i in range(len(temp)):
             try:
-                for j in data:
+                new_data = dict()
+                for j in data[i]:
                     if j in dir(update_data[i]):
-                        eval(f"update_data[i].{j} = data[{j}]")
+                        new_data[j] = data[i][j]
+                update_data[i] = Contact(**new_data)
                 update_data[i].save()
             except Exception as e:
                 for t in range(i):
@@ -266,6 +269,7 @@ def address():
                     has_default, num = True, i
                 else:
                     data[num]["default"] = False
+                    num = i
         if has_default:
             try:
                 old_default = Contact.get(Contact.default == True)

@@ -231,8 +231,9 @@ def change_item_data():
     else:
         if current_user.state == User_state.Admin.value:
             for i in data:
-                if i in dir(item):
-                    eval(f"item.{i} = data[{i}]")
+                if i not in dir(item):
+                    data.pop(i)
+            item = Item(**data)
             item.save()
             return make_response_json(200, "操作成功")
         elif current_user.state == User_state.Under_ban.value:
@@ -246,7 +247,8 @@ def change_item_data():
                 else:
                     for i in data:
                         if i in dir(item):
-                            eval(f"item.{i} = data[{i}]")
+                            data.pop(i)
+                    item = Item(**data)
                     item.save()
                     return make_response_json(200, "操作成功")
 
