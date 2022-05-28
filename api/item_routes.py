@@ -515,7 +515,7 @@ def item_to_show():
             need_od = Item.select().where(*need).order_by(
                 Item.publish_time.desc()).execute()
         else:
-            need_od = Item.select().where().order_by(
+            need_od = Item.select().order_by(
                 Item.publish_time.desc()).execute()
     except Exception as e:
         return make_response_json(500, f"查询发生错误 {repr(e)}")
@@ -523,7 +523,7 @@ def item_to_show():
         datas = {"show": list()}
         for i in need_od:
             j = i.__data__
-            j.pop("locaked_num")
+            j.pop("locked_num")
             j["publish_time"] = str(j["publish_time"])
             if ordered_num is not None:
                 if ordered_num < data["max_num"]:
@@ -531,4 +531,6 @@ def item_to_show():
                     ordered_num += 1
                 else:
                     break
+            else:
+                datas["show"].append(j)
     return make_response_json(200, "返回订单", datas)
