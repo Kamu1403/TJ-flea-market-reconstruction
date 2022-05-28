@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html class="no-js" lang="">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    {% block title %}<title>tj-flea-market - 同济大学跳蚤市场（主页）</title>{% endblock %}
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link rel="shortcut icon" type="image/x-icon" href="{{url_for('static',filename='img/icon/favicon.png')}}" />
+
+    <!-- CSS here -->
+    {% block css %}
+    <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap.min.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/animate.min.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/magnific-popup.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/fontawesome-all.min.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/jquery-ui.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/flaticon.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/aos.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/slick.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/default.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/responsive.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/tab.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/dropdown.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/member-main.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/init.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/base.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/ms-style.min.css')}}">
+    {% endblock %}
+
+</head>
+
+<body>
+    <!-- header-area -->
+    {% block header %}
+    <header>
+        <!-- header-top-start -->
+        <div class="header-top-wrap">
+            <div class="container custom-container">
+                <div class="row align-items-center">
+                    <div class="col-md-7">
+                        <div class="header-top-left">
+                            <ul>
+                                <li class="header-top-lang">
+                                    <div class="dropdown">
+                                        <button class="dropdown-toggle" type="button" id="dropdownMenuButton2"
+                                            data-toggle="dropdown" aria-haspopup="true"
+                                            aria-expanded="false">English</button>
+                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
+                                            <a class="dropdown-item" href="index.html">English</a>
+                                            <a class="dropdown-item" href="index.html">Chinese</a>
+                                            <a class="dropdown-item" href="index.html">German</a>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="header-top-right">
+                            <ul>                         
+                                <li><a href="contact.html">Contact</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- header-top-end -->
+
+        <!-- header-search-area -->
+        <div class="header-search-area">
+            <div class="container custom-container">
+                <div class="row align-items-center">
+                    <div class="col-xl-2 col-lg-3 d-none d-lg-block">
+                        <div class="logo">
+                            <a href="index.html"><img src="{{url_for('static',filename='img/logo/logo.png')}}"
+                                    alt="Logo" /></a>
+                        </div>
+                    </div>
+                    <div class="d-block d-sm-flex align-items-center justify-content-end">
+                        <div class="col-md-9">
+                            <div class="header-search-wrap">
+                                <form action="#">
+                                    <select class="custom-select">
+                                        <option selected="">所有种类</option>
+                                        <option>-- 学习用品</option>
+                                        <option>-- 生活用品</option>
+                                        <option>-- 其他（待添加）</option>
+                                        <option>-- 其他</option>
+                                    </select>
+                                    <input id="item_name" type="text" placeholder="搜索..." />
+                                    <button type="button" onclick="search_item()"><i class="flaticon-loupe-1"></i></button>
+                                </form>
+                            </div>
+                        </div>
+                        <!-- </div> -->
+                        <div class="col-lg-1">
+                            <div class="header-action">
+                                <ul>
+                                    <!-- 心表示收藏 -->
+                                    <li class="header-wishlist">
+                                        <a href="#"><i class="flaticon-heart-shape-outline"></i></a>
+                                        <span class="item-count">0</span>
+                                    </li>
+                                    <!-- 消息通知 -->
+                                    <li class="header-wishlist">
+                                        <a href="/chat/"><i class="flaticon-mail"></i></a>
+                                        <span class="item-count" id="message_cnt">0</span>
+                                    </li>
+
+                                    <li id="header_user">
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    {% endblock %}
+    <!-- header-area-end -->
+
+    <!-- main-area -->
+    {% block main %}
+    <main>
+    </main>
+    {% endblock %}
+    <!-- main-area-end -->
+
+    <!-- footer-area -->
+    {% block footer %}
+    <footer>
+        <div class="footer-area gray-bg pt-80 pb-30">
+            <div class="container">
+                <div class="row justify-content-between">
+                    <div class="col-xl-3 col-lg-4 col-md-6">
+                        <div class="footer-widget mb-50">
+                            <div class="footer-logo mb-25">
+                                <a href="index.html"><img src="{{url_for('static',filename='img/logo/logo.png')}}"
+                                        alt="" /></a>
+                            </div>
+                            <div class="footer-contact-list">
+                                <ul>
+                                    <li>
+                                        <div class="icon"><i class="flaticon-place"></i></div>
+                                        <p>PO Box W75 Street West New Queens, TX 16819</p>
+                                    </li>
+                                    <li>
+                                        <div class="icon">
+                                            <i class="flaticon-telephone-1"></i>
+                                        </div>
+                                        <h5 class="number">
+                                            <a href="tel:12027993245">+120 279 932 45</a>
+                                        </h5>
+                                    </li>
+                                    <li>
+                                        <div class="icon"><i class="flaticon-mail"></i></div>
+                                        <p>
+                                            <a href="/cdn-cgi/l/email-protection#86f5f3f6f6e9f4f2c6f0e3e1e3e8a8e5e9eb"><span
+                                                    class="__cf_email__"
+                                                    data-cfemail="02717772726d707642746765676c2c616d6f">[email&#160;protected]</span></a>
+                                        </p>
+                                    </li>
+                                    <li>
+                                        <div class="icon">
+                                            <i class="flaticon-wall-clock"></i>
+                                        </div>
+                                        <p>Week 7 days from 7:00 to 20:00</p>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="footer-social">
+                                <ul>
+                                    <li>
+                                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                                    </li>
+                                    <li>
+                                        <a href="#"><i class="fab fa-twitter"></i></a>
+                                    </li>
+                                    <li>
+                                        <a href="#"><i class="fab fa-youtube"></i></a>
+                                    </li>
+                                    <li>
+                                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6">
+                        <div class="footer-widget mb-50">
+                            <div class="fw-title">
+                                <h5 class="title">Customer Service</h5>
+                            </div>
+                            <div class="fw-link">
+                                <ul>
+                                    <li><a href="shop.html">Secure Shopping</a></li>
+                                    <li><a href="cart.html">Order Status</a></li>
+                                    <li><a href="shop.html">International Shipping</a></li>
+                                    <li><a href="checkout.html">Payment Method</a></li>
+                                    <li><a href="blog.html">Our Blog</a></li>
+                                    <li>
+                                        <a href="terms-conditios.html">Orders and Returns</a>
+                                    </li>
+                                    <li><a href="checkout.html">Track Your Orders</a></li>
+                                    <li><a href="index.html">Footer Links</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6">
+                        <div class="footer-widget mb-50">
+                            <div class="fw-title">
+                                <h5 class="title">Useful Links</h5>
+                            </div>
+                            <div class="fw-link">
+                                <ul>
+                                    <li><a href="checkout.html">Delivery</a></li>
+                                    <li><a href="terms-conditios.html">Legal Notice</a></li>
+                                    <li><a href="about-us.html">About us</a></li>
+                                    <li><a href="contact.html">Sitemap</a></li>
+                                    <li><a href="checkout.html">Track Your Orders</a></li>
+                                    <li><a href="index.html">Footer Links</a></li>
+                                    <li>
+                                        <a href="terms-conditios.html">Orders and Returns</a>
+                                    </li>
+                                    <li><a href="contact.html">Contact Us</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-4 col-lg-4 col-md-6">
+                        <div class="footer-widget footer-box-widget mb-50">
+                            <div class="f-download-wrap">
+                                <div class="fw-title">
+                                    <h5 class="title">Download App</h5>
+                                </div>
+                                <div class="download-btns">
+                                    <a href="index.html"><img src="{{url_for('static',filename='img/icon/g_play.png')}}"
+                                            alt="" /></a>
+                                    <a href="index.html"><img
+                                            src="{{url_for('static',filename='img/icon/app_store.png')}}" alt="" /></a>
+                                </div>
+                            </div>
+                            <div class="f-newsletter">
+                                <div class="fw-title">
+                                    <h5 class="title">Newsletter</h5>
+                                </div>
+                                <form action="#">
+                                    <input type="email" placeholder="Email Address" />
+                                    <button><i class="flaticon-send"></i></button>
+                                </form>
+                                <p>Do Not Show Your Mail</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="copyright-wrap">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <div class="copyright-text">
+                            <p>
+                                Copyright &copy; 2021 Ganic All Rights By
+                                <a href="http://www.bootstrapmb.com/">bootstrapmb</a>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="payment-accepted text-center text-md-right">
+                            <img src="{{url_for('static',filename='img/images/payment_card.png')}}" alt="" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    {% endblock %}
+    <!-- footer-area-end -->
+
+    <!-- JS here -->
+    {% block js %}
+    <script src="  {{url_for('static', filename='js/vendor/jquery-3.6.0.min.js')}}"></script>
+    <script src="  {{url_for('static', filename='js/bootstrap.min.js')}}"></script>
+    <script src="  {{url_for('static', filename='js/isotope.pkgd.min.js')}}"></script>
+    <script src="  {{url_for('static', filename='js/imagesloaded.pkgd.min.js')}}"></script>
+    <script src="  {{url_for('static', filename='js/jquery.magnific-popup.min.js')}}"></script>
+    <script src="  {{url_for('static', filename='js/jquery.countdown.min.js')}}"></script>
+    <script src="  {{url_for('static', filename='js/jquery-ui.min.js')}}"></script>
+    <script src="  {{url_for('static', filename='js/slick.min.js')}}"></script>
+    <script src="  {{url_for('static', filename='js/ajax-form.js')}}"></script>
+    <script src="  {{url_for('static', filename='js/wow.min.js')}}"></script>
+    <script src="  {{url_for('static', filename='js/aos.js')}}"></script>
+    <script src="  {{url_for('static', filename='js/plugins.js')}}"></script>
+    <script src="  {{url_for('static', filename='js/main.js')}}"></script>
+    <script src="  {{url_for('static', filename='js/dropdown.js')}}"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $.get("/api/get_message_cnt", function (ret) {
+                if (ret.statusCode == 401) {
+                    $(message_cnt).value=0;
+                } else {
+                    $(message_cnt).value=ret.data.unread;
+                    }
+                }
+            );
+            
+            $.get("/api/get_user_id", function (ret) {
+                let str=""
+                if (ret.statusCode == 401) {
+                    str='\
+                    <li class="header-user" id="user_offline">\
+                        <a href="{{ url_for("login") }}"><i class="flaticon-user"></i></a>\
+                    </li>';
+                } 
+                else {
+                    str=' <li class="dropdown" id="user_online">\
+                        <span><img src="  {{url_for("static", filename="img/images/user1.png")}}" alt="" width="60" height="60" class="img-circle">\
+                        </span>\
+                        <div class="dropdown-content">\
+                            <a href="{{url_for("user.space",opt_userid=current_user.id)}}">个人中心</a>\
+                            <a href="cart.html">我的主页</a>\
+                            <a href="history.html">我的足迹</a>\
+                            <a href="{{url_for("logout")}}">退出登录</a>\
+                        </div>\
+                    </li>';
+                    }
+                $(header_user).append(str);
+                }
+            );
+
+        });
+        function search_item() {
+            var item=$('#item_name').val();
+            console.log(item)
+            window.location.href="/search/"+item;
+        }
+    </script>
+    {% endblock %}
+</body>
+
+</html>

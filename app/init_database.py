@@ -214,17 +214,13 @@ def fake_data():  #填一些假数据进去
     Review.create(id=4, user_id=1951566, feedback_content="默认好评")
 
     # 商品
-    Order.create(id=1,
-                 user_id=1951566,
-                 payment=1.11,
-                 state=0,
-                 end_time=datetime.now())
+    Order.create(id=1, user_id=1951566, payment=1.11, state=0)
     Order.create(
         id=2,  # 悬赏
         user_id=1953493,
         payment=0.01,
         state=1,
-        close_time=datetime.now(),
+        confirm_time=datetime.now(),
         note="我来帮你写sj！")
     Order.create(id=3, user_id=1951566, payment=9.99, state=0)  #3份方便面
 
@@ -249,17 +245,13 @@ def fake_data():  #填一些假数据进去
     #订单1中包含 1份苹果  商品
     Order_Item.create(order_id=1, quantity=1, item_id=1)  #苹果
     #悬赏
-    Order.create(id=5,
-                 user_id=1951566,
-                 payment=1.11,
-                 state=0,
-                 end_time=datetime.now())
+    Order.create(id=5, user_id=1951566, payment=1.11, state=0)
     Order.create(
         id=6,  # 悬赏
         user_id=1953493,
         payment=300,
         state=1,
-        close_time=datetime.now(),
+        confirm_time=datetime.now(),
         note="我来帮你写sj！")
     Order.create(id=7, user_id=1951566, payment=9.99, state=2)  #3份方便面
 

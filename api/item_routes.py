@@ -76,20 +76,17 @@ def get_user_item():
         return make_response_json(401, "当前用户未登录")
     data = dict(request.args)
     try:
-        kind = int(data["kind"])
-    except Exception as e:
-        return make_response_json(400, "请求格式不对")
-    if kind != Item_type.Goods.value and kind != Item_type.Want.value:
-        return make_response_json(400, "请求格式不对")
+        user_id = int(data["user_id"])
+    except:
+        user_id = current_user.id
     try:
-        item_list = Item.select().where(Item.user_id == current_user.id,
-                                        Item.type == kind).execute()
+        item_list = Item.select().where(Item.user_id == user_id).execute()
     except Exception as e:
         return make_response_json(500, f"查询错误 {repr(e)}")
     datas = list()
     for i in item_list:
         j = i.__data__
-        j.pop('type')
+        #j.pop('type')
         if current_user.state != User_state.Admin.value:
             j.pop('locked_num')
         j["publish_time"] = str(j["publish_time"])
@@ -517,7 +514,7 @@ def item_to_show():
             need_od = Item.select().where(*need).order_by(
                 Item.publish_time.desc()).execute()
         else:
-            need_od = Item.select().where().order_by(
+            need_od = Item.select().order_by(
                 Item.publish_time.desc()).execute()
     except Exception as e:
         return make_response_json(500, f"查询发生错误 {repr(e)}")
@@ -525,7 +522,7 @@ def item_to_show():
         datas = {"show": list()}
         for i in need_od:
             j = i.__data__
-            j.pop("locaked_num")
+            j.pop("locked_num")
             j["publish_time"] = str(j["publish_time"])
             if ordered_num is not None:
                 if ordered_num < data["max_num"]:
@@ -533,4 +530,6 @@ def item_to_show():
                     ordered_num += 1
                 else:
                     break
+            else:
+                datas["show"].append(j)
     return make_response_json(200, "返回订单", datas)
