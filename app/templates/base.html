@@ -24,11 +24,11 @@
     <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
     <link rel="stylesheet" href="{{url_for('static', filename='css/responsive.css')}}">
     <link rel="stylesheet" href="{{url_for('static', filename='css/tab.css')}}">
+    
     <link rel="stylesheet" href="{{url_for('static', filename='css/dropdown.css')}}">
     <link rel="stylesheet" href="{{url_for('static', filename='css/member-main.css')}}">
     <link rel="stylesheet" href="{{url_for('static', filename='css/init.css')}}">
     <link rel="stylesheet" href="{{url_for('static', filename='css/base.css')}}">
-    <link rel="stylesheet" href="{{url_for('static', filename='css/ms-style.min.css')}}">
     {% endblock %}
 
 </head>
@@ -36,58 +36,49 @@
 <body>
     <!-- header-area -->
     {% block header %}
-    <header>
-        <!-- header-search-area -->
-        <div class="header-search-area">
-            <div class="container custom-container">
-                <div class="row align-items-center">
-                    <div class="col-xl-2 col-lg-3 d-none d-lg-block">
-                        <div class="logo">
-                            <a href="index.html"><img src="{{url_for('static',filename='img/logo/logo.png')}}"
-                                    alt="Logo" /></a>
-                        </div>
+    <div class="header-search-area">
+        <div class="container custom-container">
+            <div class="row align-items-center">
+                <div class="col-xl-2 col-lg-3 d-none d-lg-block">
+                    <div class="logo">
+                        <a href="index.html"><img src="{{url_for('static',filename='img/logo/logo.png')}}"
+                                alt="Logo" /></a>
                     </div>
+                </div>
+                <div class="col-xl-10 col-lg-9">
                     <div class="d-block d-sm-flex align-items-center justify-content-end">
-                        <div class="col-md-9">
-                            <div class="header-search-wrap">
-                                <form action="#">
-                                    <select class="custom-select">
-                                        <option selected="">所有种类</option>
-                                        <option>-- 学习用品</option>
-                                        <option>-- 生活用品</option>
-                                        <option>-- 其他（待添加）</option>
-                                        <option>-- 其他</option>
-                                    </select>
-                                    <input id="item_name" type="text" placeholder="搜索..." />
-                                    <button type="button" onclick="search_item()"><i class="flaticon-loupe-1"></i></button>
-                                </form>
-                            </div>
+                        <div class="header-search-wrap">
+                            <form action="#">
+                                <select class="custom-select">
+                                    <option selected="">所有种类</option>
+                                    <option>-- 学习用品</option>
+                                    <option>-- 生活用品</option>
+                                    <option>-- 其他（待添加）</option>
+                                    <option>-- 其他</option>
+                                </select>
+                                <input id="item_name" type="text" placeholder="搜索..." />
+                                <button type="button" onclick="search_item()"><i class="flaticon-loupe-1"></i></button>
+                            </form>
                         </div>
-                        <!-- </div> -->
-                        <div class="col-lg-1">
-                            <div class="header-action">
-                                <ul>
-                                    <!-- 心表示收藏 -->
-                                    <li class="header-wishlist">
-                                        <a href="#"><i class="flaticon-heart-shape-outline"></i></a>
-                                        <span class="item-count">0</span>
-                                    </li>
-                                    <!-- 消息通知 -->
-                                    <li class="header-wishlist">
-                                        <a href="/chat/"><i class="flaticon-mail"></i></a>
-                                        <span class="item-count" id="message_cnt">0</span>
-                                    </li>
-
-                                    <li id="header_user">
-                                    </li>
-                                </ul>
-                            </div>
+                        <div class="header-action">
+                            <ul>
+                                <li class="header-wishlist">
+                                    <a href="#"><i class="flaticon-heart-shape-outline"></i></a>
+                                    <span class="item-count">0</span>
+                                </li>
+                                <li class="header-wishlist">
+                                    <a href="/chat/"><i class="flaticon-mail"></i></a>
+                                    <span class="item-count" id="message_cnt">0</span>
+                                </li>
+                                <li id="header_user">
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </header>
+    </div>
     {% endblock %}
     <!-- header-area-end -->
 
@@ -146,7 +137,6 @@
     <script src="  {{url_for('static', filename='js/aos.js')}}"></script>
     <script src="  {{url_for('static', filename='js/plugins.js')}}"></script>
     <script src="  {{url_for('static', filename='js/main.js')}}"></script>
-    <script src="  {{url_for('static', filename='js/dropdown.js')}}"></script>
     <script type="text/javascript">
         $(document).ready(function () {
             $.get("/api/get_message_cnt", function (ret) {
