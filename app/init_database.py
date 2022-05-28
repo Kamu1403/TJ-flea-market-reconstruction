@@ -117,18 +117,27 @@ def fake_data():  #填一些假数据进去
                            ban_time=datetime(2022, 6, 1))
 
     #商品、悬赏  0是商品--123，1是悬赏--45
-    Item.create(id=1, name="苹果", user_id=1951705, price=1.11, tag="食物", type=0)
+    Item.create(id=1,
+                name="苹果",
+                user_id=1951705,
+                shelved_num=999,
+                locked_num=10,
+                price=1.11,
+                tag="食物",
+                type=0)
     Item.create(id=2,
                 name="方便面",
                 user_id=1950084,
                 price=3.33,
                 shelved_num=999,
+                locked_num=10,
                 type=0)
     Item.create(id=3,
                 name="肉",
                 user_id=1950084,
                 price=10,
                 shelved_num=999,
+                locked_num=10,
                 type=0)
     Item.create(id=4,
                 name="沈坚作业",
@@ -140,6 +149,8 @@ def fake_data():  #填一些假数据进去
     Item.create(id=5,
                 name="耳机",
                 user_id=1953493,
+                shelved_num=2,
+                locked_num=2,
                 price=300,
                 tag="电子用品",
                 description="求耳机一副",
@@ -215,7 +226,7 @@ def fake_data():  #填一些假数据进去
         state=1,
         close_time=datetime.now(),
         note="我来帮你写sj！")
-    Order.create(id=3, user_id=1951566, payment=9.99, state=2)  #3份方便面
+    Order.create(id=3, user_id=1951566, payment=9.99, state=0)  #3份方便面
 
     Order.create(id=4, user_id=1951566, payment=9.99, state=2)  #3份方便面
 
@@ -246,7 +257,7 @@ def fake_data():  #填一些假数据进去
     Order.create(
         id=6,  # 悬赏
         user_id=1953493,
-        payment=0.01,
+        payment=300,
         state=1,
         close_time=datetime.now(),
         note="我来帮你写sj！")
@@ -261,17 +272,11 @@ def fake_data():  #填一些假数据进去
     Order_State_Item.create(order_id=3)
     Order_State_Item.create(order_id=4)
     # 悬赏
-    #订单4中包含 3
-    Order_Item.create(order_id=4, quantity=3, item_id=5)  #耳机
+    #订单5中包含 3
+    Order_Item.create(order_id=5, quantity=3, item_id=5)  #耳机
 
-    #订单3中包含 耳机
-    Order_Item.create(order_id=3, quantity=1, item_id=5)  #耳机
-
-    #订单2中包含 1份苹果
-    Order_Item.create(order_id=2, quantity=1, item_id=4)  #
-
-    #订单1中包含 1份作业
-    Order_Item.create(order_id=1, quantity=1, item_id=4)  #神剑作业
+    #订单6中包含 1份作业
+    Order_Item.create(order_id=6, quantity=1, item_id=4)  #sj作业
 
 
 def init_database(drop_database: bool):

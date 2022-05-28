@@ -415,7 +415,7 @@ def item_delete_favor():
 def item_get_favor():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
-    tep = Favor.select().where(Favor.user_id == current_user.id).execute()
+    tep = Favor.select().where(Favor.user_id == current_user.id)
     data = []
     for i in tep:
         res = dict()
@@ -430,7 +430,7 @@ def item_get_favor():
 def get_history():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
-    tep = History.select().where(History.user_id == current_user.id).execute()
+    tep = History.select().where(History.user_id == current_user.id)
     data = []
     for i in tep:
         res = dict()
@@ -453,7 +453,7 @@ def report():
     try:
         kind = int(data['kind'])
     except Exception as e:
-        return make_response_json(400,"请求格式不对")
+        return make_response_json(400, "请求格式不对")
     feed_data["kind"] = kind
     if 'reason' in data:
         reason = data["reason"]
@@ -463,29 +463,29 @@ def report():
         try:
             item_id = int(data['item_id'])
         except Exception as e:
-            return make_response_json(400,"请求格式不对")
+            return make_response_json(400, "请求格式不对")
         try:
             item = Item.get(Item.id == item_id)
         except Exception as e:
-            return make_response_json(404,"待举报的物品不存在")
-        reason +="物品id:{} 物品名称:{} ".format(item.id,item.name)
+            return make_response_json(404, "待举报的物品不存在")
+        reason += "物品id:{} 物品名称:{} ".format(item.id, item.name)
     elif kind == Feedback_kind.User.value:
         try:
             user_id = int(data["user_id"])
         except Exception as e:
-            return make_response_json(400,"请求格式不对")
+            return make_response_json(400, "请求格式不对")
         try:
             user = User.get(User.id == user_id)
         except Exception as e:
-            return make_response_json(404,"待举报的用户不存在")
-        reason +="用户id:{} 用户名称:{} ".format(user.id,user.name)
+            return make_response_json(404, "待举报的用户不存在")
+        reason += "用户id:{} 用户名称:{} ".format(user.id, user.name)
     else:
         pass
     feed_data["feedback_content"] = reason
     try:
         Feedback.create(**feed_data)
     except Exception as e:
-        return make_response_json(500,f"存储时发生错误 {repr(e)}")
+        return make_response_json(500, f"存储时发生错误 {repr(e)}")
     return make_response_json(200, "举报完成,请等待管理员处理...")
 
 

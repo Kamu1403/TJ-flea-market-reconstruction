@@ -23,11 +23,23 @@ def change_order_status():
         order = Order.get(Order.id == req['order_id'])
     except Exception as e:
         return make_response_json(404, f"没有找到此订单")
+    try:
+        _order_item = Order_Item.get(
+            Order_Item.order_id == order)  #根据order找订单明细
+    except:
+        return make_response_json(404, "没有找到此订单明细")
 
     order_user_id = order.user_id.id
-    order_op_user_id = order.op_user_id.id
+    order_op_user_id = _order_item.item_id.user_id
     if current_user.state == User_state.Admin.value:  #管理员,无限权力
         order.state = req_state
+        if req_state == Order_state.Close.value:  #取消订单
+            _order_item.item_id.locked_num -= _order_item.quantity
+            _order_item.item_id.shelved_num += _order_item.quantity
+            _order_item.item_id.save()
+        if req_state == Order_state.End.value:  #完成订单
+            _order_item.item_id.locked_num -= _order_item.quantity
+            _order_item.item_id.save()
         order.save()
         return make_response_json(200, "操作成功")
     elif req_state == Order_state.Normal.value:  #非管理员不允许设为初始状态
@@ -42,12 +54,9 @@ def change_order_status():
     elif current_user.id == order_user_id:  #当前用户是订单发起者
         if req_state == Order_state.End.value:  #想完成订单
             if order.state == Order_state.Confirm.value:  #已确认、待完成
-                try:
-                    _order_item = Order_Item.get(
-                        Order_Item.order_id == order)  #根据order找订单明细
-                except:
-                    return make_response_json(404, "没有找到此订单明细")
                 if _order_item.item_id.type == Item_type.Goods.value:  #发起者只能完成商品订单
+                    _order_item.item_id.locked_num -= _order_item.quantity
+                    _order_item.item_id.save()
                     order.state = Order_state.End.value
                     order.save()
                     return make_response_json(200, "操作成功")
@@ -62,6 +71,9 @@ def change_order_status():
             if order.state == Order_state.Confirm.value:  #已经确认过的，要扣除信誉分 5 分
                 order.user_id.score -= MINUS_SCORE
                 order.user_id.save()
+            _order_item.item_id.locked_num -= _order_item.quantity
+            _order_item.item_id.shelved_num += _order_item.quantity
+            _order_item.item_id.save()
             order.state = Order_state.Close.value
             order.save()
             return make_response_json(200, "操作成功")
@@ -74,12 +86,9 @@ def change_order_status():
     elif current_user.id == order_op_user_id:  #当前用户是物品发布者（非订单发起者）
         if req_state == Order_state.End.value:  #想完成订单
             if order.state == Order_state.Confirm.value:  #已确认、待完成
-                try:
-                    _order_item = Order_Item.get(
-                        Order_Item.order_id == order)  #根据order找订单明细
-                except:
-                    return make_response_json(404, "没有找到此订单明细")
                 if _order_item.item_id.type == Item_type.Want.value:  #非订单发起者只能完成悬赏订单
+                    _order_item.item_id.locked_num -= _order_item.quantity
+                    _order_item.item_id.save()
                     order.state = Order_state.End.value
                     order.save()
                     return make_response_json(200, "操作成功")
@@ -92,8 +101,11 @@ def change_order_status():
 
         elif req_state == Order_state.Close.value:  #想取消订单
             if order.state == Order_state.Confirm.value:  #已经确认过的，要扣除信誉分 5 分
-                order.op_user_id.score -= MINUS_SCORE
-                order.op_user_id.save()
+                order_op_user_id.score -= MINUS_SCORE
+                order_op_user_id.save()
+            _order_item.item_id.locked_num -= _order_item.quantity
+            _order_item.item_id.shelved_num += _order_item.quantity
+            _order_item.item_id.save()
             order.state = Order_state.Close.value
             order.save()
             return make_response_json(200, "操作成功")
@@ -115,29 +127,22 @@ def get_item_id_by_order():
         order_id = int(data['order_id'])
     except:
         return make_response_json(400, "请求格式不对")
-
-    need = [Order.op_user_id, Order.user_id]
-    try:
-        datas = Order.select(*need).where(Order.id == order_id)
-    except Exception as e:
-        return make_response_json(500, f"发生如下错误\n{repr(e)}")
-    if datas.count() <= 0:
-        return make_response_json(404, "未找到该订单")
-    elif datas[0].op_user_id.id != current_user.id and datas[
-            0].user_id.id != current_user.id and current_user.state != User_state.Admin.value:
-        return make_response_json(401, "无此权限")
     need = [Order_Item.quantity, Order_Item.item_id]
     try:
-        datas = Order_Item.select(*need).where(
-            Order_Item.order_id == order_id).execute()
+        datas = Order_Item.select(*need).where(Order_Item.order_id == order_id)
+        order_user_id = Order.get(Order.id == order_id).user_id.id
     except Exception as e:
         return make_response_json(500, f"发生如下错误\n{repr(e)}")
     else:
+        if datas.count() <= 0:
+            return make_response_json(404, "未找到该订单明细")
+        if datas[0].item_id.user_id.id != current_user.id \
+           and order_user_id != current_user.id \
+           and current_user.state != User_state.Admin.value:
+            return make_response_json(401, "无此权限")
+
         res = list()
         for i in datas:
             tep = {"quantity": i.quantity, "item_id": i.item_id.id}
             res.append(tep)
-        if len(res) == 0:
-            return make_response_json(404, "未找到该订单明细")
-        #print(res)
         return make_response_json(200, "获取成功", res)
