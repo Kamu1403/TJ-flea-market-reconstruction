@@ -115,7 +115,8 @@ def get_search():
     else:
         orderWay = (Item.publish_time.desc(), )  # 改：默认其实为相似度
 
-    need = (Item.id, Item.name, Item.user_id, Item.publish_time, Item.price,Item.tag)
+    need = (Item.id, Item.name, Item.user_id, Item.publish_time, Item.price,
+            Item.tag)
     select_need = [Item.name.contains(key_word), Item.type == search_type]
     try:
         start_time = request.form.get("start_time")
@@ -215,7 +216,7 @@ def change_item_data():
         return make_response_json(401, "当前用户未登录")
     data = request.get_json()
     try:
-        data["item_id"] = int(data["item_id"])
+        data["id"] = int(data["id"])
         if "shelved_num" in data:
             data["shelved_num"] = int(data["shelved_num"])
         if "locked_num" in data:
@@ -225,7 +226,7 @@ def change_item_data():
     except Exception as e:
         return make_response_json(400, "请求格式不对")
     try:
-        item = Item.get(Item.id == data["item_id"])
+        item = Item.get(Item.id == data["id"])
     except Exception as e:
         return make_response_json(404, "此商品不存在")
     else:
