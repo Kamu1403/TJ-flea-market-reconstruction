@@ -75,20 +75,17 @@ def get_user_item():
         return make_response_json(401, "当前用户未登录")
     data = dict(request.args)
     try:
-        kind = int(data["kind"])
-    except Exception as e:
-        return make_response_json(400, "请求格式不对")
-    if kind != Item_type.Goods.value and kind != Item_type.Want.value:
-        return make_response_json(400, "请求格式不对")
+        user_id = int(data["user_id"])
+    except:
+        user_id = current_user.id
     try:
-        item_list = Item.select().where(Item.user_id == current_user.id,
-                                        Item.type == kind).execute()
+        item_list = Item.select().where(Item.user_id == user_id).execute()
     except Exception as e:
         return make_response_json(500, f"查询错误 {repr(e)}")
     datas = list()
     for i in item_list:
         j = i.__data__
-        j.pop('type')
+        #j.pop('type')
         if current_user.state != User_state.Admin.value:
             j.pop('locked_num')
         j["publish_time"] = str(j["publish_time"])
