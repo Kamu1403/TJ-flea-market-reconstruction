@@ -205,7 +205,7 @@ def order_post():
             od.delete_instance()
             return make_response_json(500,f"订单详情存储时出错 {repr(e)}")
         od_it_list.append(od_it)
-    return make_response_json(200,
+    return make_response_json(201,
                               "订单生成成功，请等待商家确认",
                               data=url_for("order.manage"))
 
