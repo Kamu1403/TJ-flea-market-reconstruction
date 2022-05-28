@@ -1,0 +1,40 @@
+<div class="cont-side">
+    <div class="side-neck" style="margin-left: 20px; margin-top: 20px;">
+        <i>        </i>
+    </div>
+    <div class="ms-side" style="margin-left: 20px;margin-top: 20px;">
+        <article class="side-menu side-menu-off">
+            <dl class="side-menu-tree" style="padding-left: 50px;">
+                <dt><img src="{{url_for('static', filename='img/左侧/file.png')}}"  style="margin-right: 10px;margin-left: -20px; width: 13px;height: 13px;"/>订单管理</dt>
+                <dd>
+                    <a id="order" href="{{ url_for('user.order') }}">我的订单</a>
+
+                </dd>
+                <dd>
+                    <a href="{{ url_for('user.publish') }}">我的发布</a>
+
+                </dd>
+                <dd>
+                    <a>我的收藏</a>
+
+                </dd>
+                <dd>
+                    <a >我的足迹</a>
+
+                </dd>
+                <dt><img src="{{url_for('static', filename='img/左侧/我的买啦.png')}}"  style="margin-right: 10px;margin-left: -20px;width: 13px;height: 13px"/>我的账户</dt>
+                
+                <dd>
+                    <a >个人资料</a>
+
+                </dd>
+                <dd>
+                    <a>地址管理</a>
+
+                </dd>
+            </dl>
+
+            <a ison="on" class="switch-side-menu icon-up-side"><i></i></a>
+        </article>
+    </div>
+</div>
