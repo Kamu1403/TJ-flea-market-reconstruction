@@ -7,6 +7,7 @@ from item import item_blue
 from admin.models import Feedback, Feedback_kind, Feedback_state
 from datetime import datetime, date, timedelta
 from hashlib import md5
+from difflib import SequenceMatcher
 
 
 def createPath(path: str) -> None:
@@ -109,12 +110,6 @@ def get_search():
     data = list()
 
     #get_data = Item.select().where().exectue()
-    if order_type == "time":
-        orderWay = (Item.publish_time.desc(), )
-    elif order_type == "price":
-        orderWay = (Item.price.asc(), )
-    else:
-        orderWay = (Item.publish_time.desc(), )  # 改：默认其实为相似度
 
     need = (Item.id, Item.name, Item.user_id, Item.publish_time, Item.price,
             Item.tag)
@@ -132,9 +127,16 @@ def get_search():
         print(e)
         return make_response_json(400, '时间格式错误,应为年-月-日格式')
     else:
-        get_data = Item.select(*need).where(*select_need).order_by(
-            *orderWay).execute()
-        for i in get_data:
+        get_data = Item.select(*need).where(*select_need).execute()
+        datas = [i.__data__ for i in get_data]
+        if order_type == "time":
+            datas.sort(key=lambda x:x["publish_time"],reverse=True)
+        elif order_type == "price":
+            datas.sort(key= lambda x:x["price"],reverse=False)
+        else:
+            #orderWay = (Item.publish_time.desc(), )  # 改：默认其实为相似度
+            datas.sort(key= lambda x:SequenceMatcher(a=key_word,b=x["name"]).ratio(),reverse=True)
+        for i in datas:
             j = i.__data__
             j['price'] = float(j['price'])
             j['publish_time'] = str(j['publish_time'])
