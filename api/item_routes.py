@@ -134,10 +134,9 @@ def get_search():
             #orderWay = (Item.publish_time.desc(), )  # 改：默认其实为相似度
             datas.sort(key= lambda x:SequenceMatcher(a=key_word,b=x["name"]).ratio(),reverse=True)
         for i in datas:
-            j = i.__data__
-            j['price'] = float(j['price'])
-            j['publish_time'] = str(j['publish_time'])
-            data.append(j)
+            i['price'] = float(i['price'])
+            i['publish_time'] = str(i['publish_time'])
+            data.append(i)
         return make_response_json(200, "搜索结果如下", data)
 
 
