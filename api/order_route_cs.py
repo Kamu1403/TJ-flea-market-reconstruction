@@ -390,24 +390,34 @@ def order_evaluate():
     if order.state != Order_state.End.value:
         return make_response_json(400, "不可评价未完成订单")
     try:
-        review = Review.create(user_id=current_user.id,
-                               publish_time=date.today(),
-                               feedback_content=data["feedback_content"])
-    except Exception as e:
-        return make_response_json(500, f"存储过程出现问题 {repr(e)}")
-    try:
         order_state_item = Order_State_Item.get(
             Order_State_Item.order_id == order_id)
     except Exception as e:
-        review.delete_instance()
         return make_response_json(500, f"查询过程出现问题 {repr(e)}")
     if order.user_id.id == current_user.id:
+        try:
+            review = Review.create(user_id=current_user.id,
+                               publish_time=date.today(),
+                               feedback_content=data["feedback_content"])
+        except Exception as e:
+            return make_response_json(500, f"存储过程出现问题 {repr(e)}")
         order_state_item.user_review_id = review
-    elif order_state_item.op_user_id.id == current_user.id:
-        order_state_item.op_user_review_id = review
     else:
-        review.delete_instance()
-        return make_response_json(500, "订单存储时出现问题")
+        try:
+            od_it = Order_Item.get(Order_Item.order_id == order_id)
+        except Exception as e:
+            review.delete_instance()
+            return make_response_json(500, f"查询过程出现问题 {repr(e)}")
+        if od_it.item_id.user_id.id == current_user.id:
+            try:
+                review = Review.create(user_id=current_user.id,
+                               publish_time=date.today(),
+                               feedback_content=data["feedback_content"])
+            except Exception as e:
+                return make_response_json(500, f"存储过程出现问题 {repr(e)}")
+            order_state_item.op_user_review_id = review
+        else:
+            return make_response_json(401,"无权评论此订单")
     order_state_item.save()
     return make_response_json(200, "评价完成", {"url": url_for('order.manage')})
 

@@ -72,14 +72,12 @@ def get_item_info():
 
 @api_blue.route("/get_user_item", methods=["GET"])
 def get_user_item():
-    # if not current_user.is_authenticated:
-    #     return make_response_json(401, "当前用户未登录")
+    if not current_user.is_authenticated:
+        return make_response_json(401, "当前用户未登录")
     data = dict(request.args)
     try:
         user_id = int(data["user_id"])
     except:
-        if not current_user.is_authenticated:
-            return make_response_json(401, "当前用户未登录")
         user_id = current_user.id
     else:
         try:
@@ -103,14 +101,21 @@ def get_user_item():
 
 @api_blue.route('/search', methods=['POST'])
 def get_search():
+    data = request.get_json()
     try:
-        search_type = int(request.form.get("search_type"))
+        search_type = int(data["search_type"])
     except Exception as e:
         return make_response_json(400, "请求格式错误")
     if search_type != Item_type.Goods.value and search_type != Item_type.Want.value:
         return make_response_json(400, "搜索类型仅能指定商品或悬赏")
-    key_word = request.form.get("key_word")
-    order_type = request.form.get("order_type")
+    if "key_word" in data:
+        key_word = data["key_word"]
+    else:
+        return make_response_json(400,"请输入关键词")
+    if "order_type" in data:
+        order_type = data["order_type"]
+    else:
+        order_type = "name"
     data = list()
 
     #get_data = Item.select().where().exectue()
@@ -119,14 +124,16 @@ def get_search():
             Item.tag)
     select_need = [Item.name.contains(key_word), Item.type == search_type]
     try:
-        start_time = request.form.get("start_time")
-        if start_time != "" and start_time is not None:
-            start_time = datetime.strptime(start_time, "%Y-%m-%d")
-            select_need.append(Item.publish_time >= start_time)
-        end_time = request.form.get("end_time")
-        if end_time != "" and end_time is not None:
-            end_time = datetime.strptime(end_time, "%Y-%m-%d")
-            select_need.append(Item.publish_time <= end_time)
+        if "start_time" in data:
+            start_time = data["start_time"]
+            if start_time != "" and start_time is not None:
+                start_time = datetime.strptime(start_time, "%Y-%m-%d")
+                select_need.append(Item.publish_time >= start_time)
+        if "end_time" in data:
+            end_time = data["end_time"]
+            if end_time != "" and end_time is not None:
+                end_time = datetime.strptime(end_time, "%Y-%m-%d")
+                select_need.append(Item.publish_time <= end_time)
     except Exception as e:
         print(e)
         return make_response_json(400, '时间格式错误,应为年-月-日格式')
