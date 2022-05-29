@@ -204,48 +204,48 @@
 
 {% endblock %} {% block footer %} {{ super() }} {% endblock %} {% block js %} {{ super() }}
 <script type="text/javascript" charset="utf-8">
-    var keyword = "{{ keyword|safe }}";
-    $(document).ready(function () {
-        $.ajax({
-            url: "/api/search",
-            type: "post",
-            data: JSON.stringify({ search_type: 0, start_time: "", end_time: "", order_type: "", key_word: keyword }),
-            contentType: "application/json;charset=utf-8",
-            processData: false,
-            success: function (ret) {
-                if (ret.statusCode == 400) {
-                    alert(ret.message);
-                } else {
-                    var items = ret.data;
-                    //console.log(items);
-                    for (let i = 0; i < items.length; i++) {
-                        var str =
+        var keyword = "{{ keyword|safe }}";
+        $(document).ready(function () {
+            $.ajax({
+                url: "/api/search",
+                type: "post",
+                data: JSON.stringify({search_type: 0, start_time: "", end_time: "", order_type: "", key_word: keyword}),
+                contentType: "application/json;charset=utf-8",
+                processData: false,
+                success: function (ret) {
+                    if (ret.statusCode == 400) {
+                        console.log(ret.message);
+                    } else {
+                        var items = ret.data;
+                        //console.log(items);
+                        for (let i = 0; i < items.length; i++) {
+                            var str=
                             '<div class="col-xl-3 col-md-4 col-sm-6">\
-                                        <div class="sp-product-item">\
-                                            <div class="sp-product-thumb">\
-                                                <span class="batch">New</span>\
-                                                <a href="/item/content/' +
-                            ret.data[i]["id"] +
-                            '"><img src="../static/img/product/sp_products09.png" alt=""></a>\
-                                            </div>\
-                                            <div class="sp-product-content">\
-                                                <h6 class="title"><a href="/item/content/' +
-                            ret.data[i]["id"] +
-                            '">' +
-                            ret.data[i]["name"] +
-                            "</a></h6>\
-                                                <p>单价:" +
-                            ret.data[i]["price"] +
-                            "</p>\
-                                            </div>\
-                                        </div>\
-                                    </div>";
-                        //console.log(str);
-                        $(display).append(str);
+                                <div class="sp-product-item">\
+                                    <div class="sp-product-thumb">\
+                                        <span class="batch">New</span>\
+                                        <a href="/item/content/' +
+                    ret.data[i]["id"] +
+                    '"><img src="../static/img/product/sp_products09.png" alt=""></a>\
+                                    </div>\
+                                    <div class="sp-product-content">\
+                                        <h6 class="title"><a href="/item/content/' +
+                    ret.data[i]["id"] +
+                    '">' +
+                    ret.data[i]["name"] +
+                    "</a></h6>\
+                                        <p>单价:" +
+                    ret.data[i]["price"] +
+                    "</p>\
+                                    </div>\
+                                </div>\
+                            </div>';
+                            //console.log(str);
+                            $(display).append(str);
+                        }
                     }
-                }
-            },
-        });
+                },
+            });
     });
 </script>
 {% endblock %}
