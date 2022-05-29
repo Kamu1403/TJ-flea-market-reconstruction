@@ -1,245 +1,251 @@
 {% extends "base.html" %} {% block title %}
 <title>同济大学跳蚤市场--搜索结果</title>
 {% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
-        <main>
-            <!-- breadcrumb-area -->
-            <div class="breadcrumb-area breadcrumb-bg-two">
-                <div class="container custom-container">
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="breadcrumb-content">
-                                <nav aria-label="breadcrumb">
-                                    <ol class="breadcrumb">
-                                        <li class="breadcrumb-item"><a href="index.html">Home</a></li>
-                                        <li class="breadcrumb-item"><a href="shop.html">Shop</a></li>
-                                        <li class="breadcrumb-item active" aria-current="page">Spices Food</li>
-                                    </ol>
-                                </nav>
-                            </div>
-                        </div>
+<main>
+    <!-- breadcrumb-area -->
+    <div class="breadcrumb-area breadcrumb-bg-two">
+        <div class="container custom-container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="breadcrumb-content">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                                <li class="breadcrumb-item"><a href="shop.html">Shop</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">Spices Food</li>
+                            </ol>
+                        </nav>
                     </div>
                 </div>
             </div>
-            <!-- breadcrumb-area-end -->
+        </div>
+    </div>
+    <!-- breadcrumb-area-end -->
 
-            <!-- shop-area -->
-            <section class="shop--area pt-90 pb-90">
-                <div class="container">
-                    <div class="row justify-content-center">
-                        <div class="col-3 order-2 order-lg-0">
-                            <aside class="shop-sidebar">
-                                <div class="widget shop-widget">
-                                    <div class="shop-widget-title">
-                                        <h6 class="title">Product Categories</h6>
-                                    </div>
-                                    <div class="shop-cat-list">
-                                        <ul>
-                                            <li>
-                                                <a href="shop.html">Accessories <span>+</span></a>
-                                            </li>
-                                            <li>
-                                                <a href="shop.html">Vegetables <span>+</span></a>
-                                            </li>
-                                            <li>
-                                                <a href="shop.html">Spices Food <span>+</span></a>
-                                            </li>
-                                            <li>
-                                                <a href="shop.html">Dairy <span>+</span></a>
-                                            </li>
-                                            <li>
-                                                <a href="shop.html">Baby Food <span>+</span></a>
-                                            </li>
-                                            <li>
-                                                <a href="shop.html">Kitchen Accessories <span>+</span></a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="widget shop-widget">
-                                    <div class="shop-widget-title">
-                                        <h6 class="title">Filter By Price</h6>
-                                    </div>
-                                    <div class="price_filter">
-                                        <div id="slider-range"></div>
-                                        <div class="price_slider_amount">
-                                            <span>Price :</span>
-                                            <input type="text" id="amount" name="price" placeholder="Add Your Price" />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="widget shop-widget">
-                                    <div class="shop-widget-title">
-                                        <h6 class="title">NEW PRODUCT</h6>
-                                    </div>
-                                    <div class="sidebar-product-list">
-                                        <ul>
-                                            <li>
-                                                <div class="sidebar-product-thumb">
-                                                    <a href="shop-details.html"><img src="../static/img/product/sidebar_product01.jpg" alt="" /></a>
-                                                </div>
-                                                <div class="sidebar-product-content">
-                                                    <div class="rating">
-                                                        <i class="fas fa-star"></i>
-                                                        <i class="fas fa-star"></i>
-                                                        <i class="fas fa-star"></i>
-                                                        <i class="fas fa-star"></i>
-                                                        <i class="fas fa-star"></i>
-                                                    </div>
-                                                    <h5><a href="shop-details.html">Uncle Bens Vanla</a></h5>
-                                                    <span>$39.00</span>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="sidebar-product-thumb">
-                                                    <a href="shop-details.html"><img src="../static/img/product/sidebar_product02.jpg" alt="" /></a>
-                                                </div>
-                                                <div class="sidebar-product-content">
-                                                    <div class="rating">
-                                                        <i class="fas fa-star"></i>
-                                                        <i class="fas fa-star"></i>
-                                                        <i class="fas fa-star"></i>
-                                                        <i class="fas fa-star"></i>
-                                                        <i class="fas fa-star"></i>
-                                                    </div>
-                                                    <h5><a href="shop-details.html">Dannon Max</a></h5>
-                                                    <span>$29.00</span>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="sidebar-product-thumb">
-                                                    <a href="shop-details.html"><img src="../static/img/product/sidebar_product03.jpg" alt="" /></a>
-                                                </div>
-                                                <div class="sidebar-product-content">
-                                                    <div class="rating">
-                                                        <i class="fas fa-star"></i>
-                                                        <i class="fas fa-star"></i>
-                                                        <i class="fas fa-star"></i>
-                                                        <i class="fas fa-star"></i>
-                                                        <i class="fas fa-star"></i>
-                                                    </div>
-                                                    <h5><a href="shop-details.html">Vanla Greek Pice</a></h5>
-                                                    <span>$35.00</span>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="widget shop-widget">
-                                    <div class="shop-widget-title">
-                                        <h6 class="title">BRANDS</h6>
-                                    </div>
-                                    <div class="shop-cat-list">
-                                        <ul>
-                                            <li>
-                                                <a href="shop.html">Adara <span>+</span></a>
-                                            </li>
-                                            <li>
-                                                <a href="shop.html">Carnation <span>+</span></a>
-                                            </li>
-                                            <li>
-                                                <a href="shop.html">We Beyond <span>+</span></a>
-                                            </li>
-                                            <li>
-                                                <a href="shop.html">Agrifram <span>+</span></a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="widget">
-                                    <div class="shop-widget-banner text-center">
-                                        <a href="shop.html"><img src="../static/img/product/sidebar_shop_ad.jpg" alt="" /></a>
-                                    </div>
-                                </div>
-                            </aside>
-                        </div>
-                        <div class="col-9">
-                            <div class="shop-top-meta mb-30">
-                                <div class="row">
-                                    <div class="col-md-6 col-sm-7">
-                                        <div class="shop-top-left">
-                                            <ul>
-                                                <li>
-                                                    <a href="#"><i class="fas fa-bars"></i> FILTER</a>
-                                                </li>
-                                                <li>Showing 1–9 of 80 results</li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6 col-sm-5">
-                                        <div class="shop-top-right">
-                                            <form action="#">
-                                                <select name="select">
-                                                    <option value="">Sort by newness</option>
-                                                    <option>Free Shipping</option>
-                                                    <option>Best Match</option>
-                                                    <option>Newest Item</option>
-                                                    <option>Size A - Z</option>
-                                                </select>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
+    <!-- shop-area -->
+    <section class="shop--area pt-90 pb-90">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-3 order-2 order-lg-0">
+                    <aside class="shop-sidebar">
+                        <div class="widget shop-widget">
+                            <div class="shop-widget-title">
+                                <h6 class="title">Product Categories</h6>
                             </div>
-                            <div class="shop-products-wrap">
-                                <div id="display" class="row justify-content-center"></div>
-                            </div>
-                            <div class="pagination-wrap">
+                            <div class="shop-cat-list">
                                 <ul>
-                                    <li class="prev"><a href="shop.html">Prev</a></li>
-                                    <li><a href="shop.html">1</a></li>
-                                    <li class="active"><a href="shop.html">2</a></li>
-                                    <li><a href="shop.html">3</a></li>
-                                    <li><a href="shop.html">4</a></li>
-                                    <li><a href="shop.html">...</a></li>
-                                    <li><a href="shop.html">10</a></li>
-                                    <li class="next"><a href="shop.html">Next</a></li>
+                                    <li>
+                                        <a href="shop.html">Accessories <span>+</span></a>
+                                    </li>
+                                    <li>
+                                        <a href="shop.html">Vegetables <span>+</span></a>
+                                    </li>
+                                    <li>
+                                        <a href="shop.html">Spices Food <span>+</span></a>
+                                    </li>
+                                    <li>
+                                        <a href="shop.html">Dairy <span>+</span></a>
+                                    </li>
+                                    <li>
+                                        <a href="shop.html">Baby Food <span>+</span></a>
+                                    </li>
+                                    <li>
+                                        <a href="shop.html">Kitchen Accessories <span>+</span></a>
+                                    </li>
                                 </ul>
                             </div>
                         </div>
+                        <div class="widget shop-widget">
+                            <div class="shop-widget-title">
+                                <h6 class="title">Filter By Price</h6>
+                            </div>
+                            <div class="price_filter">
+                                <div id="slider-range"></div>
+                                <div class="price_slider_amount">
+                                    <span>Price :</span>
+                                    <input type="text" id="amount" name="price" placeholder="Add Your Price" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="widget shop-widget">
+                            <div class="shop-widget-title">
+                                <h6 class="title">NEW PRODUCT</h6>
+                            </div>
+                            <div class="sidebar-product-list">
+                                <ul>
+                                    <li>
+                                        <div class="sidebar-product-thumb">
+                                            <a href="shop-details.html"><img src="../static/img/product/sidebar_product01.jpg" alt="" /></a>
+                                        </div>
+                                        <div class="sidebar-product-content">
+                                            <div class="rating">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                            </div>
+                                            <h5><a href="shop-details.html">Uncle Bens Vanla</a></h5>
+                                            <span>$39.00</span>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="sidebar-product-thumb">
+                                            <a href="shop-details.html"><img src="../static/img/product/sidebar_product02.jpg" alt="" /></a>
+                                        </div>
+                                        <div class="sidebar-product-content">
+                                            <div class="rating">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                            </div>
+                                            <h5><a href="shop-details.html">Dannon Max</a></h5>
+                                            <span>$29.00</span>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="sidebar-product-thumb">
+                                            <a href="shop-details.html"><img src="../static/img/product/sidebar_product03.jpg" alt="" /></a>
+                                        </div>
+                                        <div class="sidebar-product-content">
+                                            <div class="rating">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                            </div>
+                                            <h5><a href="shop-details.html">Vanla Greek Pice</a></h5>
+                                            <span>$35.00</span>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="widget shop-widget">
+                            <div class="shop-widget-title">
+                                <h6 class="title">BRANDS</h6>
+                            </div>
+                            <div class="shop-cat-list">
+                                <ul>
+                                    <li>
+                                        <a href="shop.html">Adara <span>+</span></a>
+                                    </li>
+                                    <li>
+                                        <a href="shop.html">Carnation <span>+</span></a>
+                                    </li>
+                                    <li>
+                                        <a href="shop.html">We Beyond <span>+</span></a>
+                                    </li>
+                                    <li>
+                                        <a href="shop.html">Agrifram <span>+</span></a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="widget">
+                            <div class="shop-widget-banner text-center">
+                                <a href="shop.html"><img src="../static/img/product/sidebar_shop_ad.jpg" alt="" /></a>
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+                <div class="col-9">
+                    <div class="shop-top-meta mb-30">
+                        <div class="row">
+                            <div class="col-md-6 col-sm-7">
+                                <div class="shop-top-left">
+                                    <ul>
+                                        <li>
+                                            <a href="#"><i class="fas fa-bars"></i> FILTER</a>
+                                        </li>
+                                        <li>Showing 1–9 of 80 results</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-sm-5">
+                                <div class="shop-top-right">
+                                    <form action="#">
+                                        <select name="select">
+                                            <option value="">Sort by newness</option>
+                                            <option>Free Shipping</option>
+                                            <option>Best Match</option>
+                                            <option>Newest Item</option>
+                                            <option>Size A - Z</option>
+                                        </select>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="shop-products-wrap">
+                        <div id="display" class="row justify-content-center"></div>
+                    </div>
+                    <div class="pagination-wrap">
+                        <ul>
+                            <li class="prev"><a href="shop.html">Prev</a></li>
+                            <li><a href="shop.html">1</a></li>
+                            <li class="active"><a href="shop.html">2</a></li>
+                            <li><a href="shop.html">3</a></li>
+                            <li><a href="shop.html">4</a></li>
+                            <li><a href="shop.html">...</a></li>
+                            <li><a href="shop.html">10</a></li>
+                            <li class="next"><a href="shop.html">Next</a></li>
+                        </ul>
                     </div>
                 </div>
-            </section>
-            <!-- shop-area-end -->
-        </main>
+            </div>
+        </div>
+    </section>
+    <!-- shop-area-end -->
+</main>
 
-        {% endblock %} {% block footer %} {{ super() }} {% endblock %}
-        {% block js %} 
-        {{ super() }}
-        <script type="text/javascript" charset="utf-8">
-                var keyword = "{{ keyword|safe }}";
-                $(document).ready(function () {
-                    $.ajax({
-                        url: "/api/search",
-                        type: "post",
-                        data: JSON.stringify({search_type: 0, start_time: "", end_time: "", order_type: "", key_word: keyword}),
-                        contentType: "application/json;charset=utf-8",
-                        processData: false,
-                        success: function (ret) {
-                            if (ret.statusCode == 400) {
-                                console.log(ret.message);
-                            } else {
-                                var items = ret.data;
-                                //console.log(items);
-                                for (let i = 0; i < items.length; i++) {
-                                    var str=
-                                    '<div class="col-xl-3 col-md-4 col-sm-6">\
-                                        <div class="sp-product-item">\
-                                            <div class="sp-product-thumb">\
-                                                <span class="batch">New</span>\
-                                                <a href="/item/content/'  + ret.data[i]['id'] + '"><img src="../static/img/product/sp_products09.png" alt=""></a>\
-                                            </div>\
-                                            <div class="sp-product-content">\
-                                                <h6 class="title"><a href="/item/content/'+ ret.data[i]['id'] + '">'+ret.data[i]['name']+'</a></h6>\
-                                                <p>单价:'+ret.data[i]['price']+'</p>\
-                                            </div>\
-                                        </div>\
-                                    </div>';
-                                    //console.log(str);
-                                    $(display).append(str);
-                                }
-                            }
-                        },
-                    });
+{% endblock %} {% block footer %} {{ super() }} {% endblock %} {% block js %} {{ super() }}
+<script type="text/javascript" charset="utf-8">
+        var keyword = "{{ keyword|safe }}";
+        $(document).ready(function () {
+            $.ajax({
+                url: "/api/search",
+                type: "post",
+                data: JSON.stringify({search_type: 0, start_time: "", end_time: "", order_type: "", key_word: keyword}),
+                contentType: "application/json;charset=utf-8",
+                processData: false,
+                success: function (ret) {
+                    if (ret.statusCode == 400) {
+                        console.log(ret.message);
+                    } else {
+                        var items = ret.data;
+                        //console.log(items);
+                        for (let i = 0; i < items.length; i++) {
+                            var str=
+                            '<div class="col-xl-3 col-md-4 col-sm-6">\
+                                <div class="sp-product-item">\
+                                    <div class="sp-product-thumb">\
+                                        <span class="batch">New</span>\
+                                        <a href="/item/content/' +
+                    ret.data[i]["id"] +
+                    '"><img src="../static/img/product/sp_products09.png" alt=""></a>\
+                                    </div>\
+                                    <div class="sp-product-content">\
+                                        <h6 class="title"><a href="/item/content/' +
+                    ret.data[i]["id"] +
+                    '">' +
+                    ret.data[i]["name"] +
+                    "</a></h6>\
+                                        <p>单价:" +
+                    ret.data[i]["price"] +
+                    "</p>\
+                                    </div>\
+                                </div>\
+                            </div>';
+                            //console.log(str);
+                            $(display).append(str);
+                        }
+                    }
+                },
             });
-        </script> 
+    });
+</script>
 {% endblock %}

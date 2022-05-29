@@ -2,13 +2,14 @@
 # -*- coding: UTF-8 -*-
 from item import item_blue
 from app import database
-from item.models import Item, History, Favor,Item_type
+from item.models import Item, History, Favor, Item_type
 from datetime import date, datetime
 from flask import make_response, jsonify, render_template, flash, redirect, url_for, request
 from flask_login import current_user
 
 from user.models import User_state
 import json
+
 
 @item_blue.before_request
 def before_request():
@@ -17,7 +18,7 @@ def before_request():
 
 
 @item_blue.teardown_request
-def teardown_request(exc):#exc必须写上
+def teardown_request(exc):  #exc必须写上
     if not database.is_closed():
         database.close()
 
@@ -33,17 +34,18 @@ def index():
 
 
 @item_blue.route('/content/<item_id>/', methods=['GET', 'POST'])
-def goods_content(item_id:int):#goods_id/want_id
+def goods_content(item_id: int):  #goods_id/want_id
     if current_user.is_authenticated:
         try:
             last = History.get(History.user_id == current_user.id, History.item_id == item_id)
-        except  Exception as e:
-            last = History(user_id=current_user.id,item_id=item_id,visit_time=datetime.now())
+        except Exception as e:
+            last = History(user_id=current_user.id, item_id=item_id, visit_time=datetime.now())
         else:
             last.visit_time = datetime.now()
         finally:
             last.save()
-    return render_template('item_content.html')
+    return render_template('item_content.html', item_id=item_id)
+
 
 @item_blue.route('/publish/', methods=['GET', 'POST'])
 def publish():

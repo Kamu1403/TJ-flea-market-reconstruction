@@ -19,10 +19,11 @@
                 </div>
                 <div class="col-lg-5">
                     <div class="shop-details-content">
-                        <h4 class="title">商品名</h4>
+                        <h4 class="title" id="item_name_">商品名</h4>
                         <div class="shop-details-meta">
                             <ul>
-                                <li>卖家 : <a href="#"><卖家名>[点击进入卖家个人空间]</a></li>
+                                <li>卖家 : <a href="#" id="user_name"><卖家名>[点击进入卖家个人空间]</a></li>
+                                <!--
                                 <li class="shop-details-review">
                                     <div class="rating">
                                         <i class="fas fa-star"></i>
@@ -33,33 +34,40 @@
                                     </div>
                                     <span><卖家用户分数></span>
                                 </li>
-                                <li>ID : <span><商品ID></span></li>
+                                -->
+                                <li>商品ID : <span id="item_id_"><商品ID></span></li>
                             </ul>
                         </div>
                         <div class="shop-details-price">
-                            <h2 class="price"><价格></h2>
-                            <h5 class="stock-status">- 剩余<>件</h5>
+                            <h2 class="price" id="price_"><价格></h2>
+                            <h5 class="stock-status" id="stock_">- 剩余<>件</h5>
                         </div>
-                        <p><商品详情描述></p>
+                        <p id="description_"><商品详情描述></p>
                         <div class="shop-details-list">
                             <ul>
-                                <li>商品类型 : <span>[悬赏/售卖]</span></li>
-                                <li>发布时间 : <span>[2022.05.29]</span></li>
+                                <li>商品类型 : <span id="item_type_">[悬赏/售卖]</span></li>
+                                <li>发布时间 : <span id="publish_time_">[2022.05.29]</span></li>
                             </ul>
                         </div>
-                        <div class="shop-perched-info">
-                            <div class="sd-cart-wrap" id="non_seller_visible" hidden>
+                        <div class="shop-perched-info" id="non_seller_visible" hidden>
+                            <div class="sd-cart-wrap">
                                 <form action="#">
                                     <div class="cart-plus-minus">
                                         <input type="text" value="1" />
                                     </div>
                                 </form>
                             </div>
-                            <a href="#" class="btn" id="non_seller_visible" hidden>生成订单</a>
-                            <a href="#" class="btn" id="non_seller_visible" hidden>联系卖家</a>
-                            <a href="#" class="btn" id="seller_visible" hidden>修改商品信息</a>
-                            <a href="#" class="btn" id="seller_visible" hidden>下架商品</a>
-                            <a href="#" class="btn" id="manager_visible" hidden>强制下架商品</a>
+                            <a href="#" class="btn">生成订单</a>
+                            <p>&nbsp;&nbsp;&nbsp;</p>
+                            <a href="#" class="btn">联系卖家</a>
+                        </div>
+                        <div class="shop-perched-info" id="seller_visible" hidden>
+                            <a href="#" class="btn">修改商品信息</a>
+                            <p>&nbsp;&nbsp;&nbsp;</p>
+                            <a href="#" class="btn">下架商品</a>
+                        </div>
+                        <div class="shop-perched-info" id="manager_visible" hidden>
+                            <a href="#" class="btn">强制下架商品</a>
                         </div>
                         <div class="shop-details-bottom">
                             <h5 class="title">
@@ -68,8 +76,7 @@
                             <ul>
                                 <li>
                                     <span>Tag : </span>
-                                    <a href="#">[商品标签1]</a>
-                                    <a href="#">[商品标签2]</a>
+                                    <a href="#" id="item_tag_">[商品标签]</a>
                                 </li>
                                 <!--
                                 <li>
@@ -90,4 +97,67 @@
     <!-- best-sellers-area-end -->
 </main>
 <!-- main-area-end -->
-{% endblock %} {% block footer %} {{ super() }} {% endblock %} {% block js %} {{ super() }} {% endblock %}
+{% endblock %} {% block footer %} {{ super() }} {% endblock %} {% block js %} {{ super() }}
+<script type="text/javascript" charset="utf-8">
+    var debug = 1;
+    var item_id = "{{ item_id|safe }}";
+    $("#item_id_").text(item_id);
+    function get_user_name(user_id) {
+        url = "/api/get_user_username";
+        if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
+        user_name = `#${user_id}`;
+        $.ajax({
+            url: url,
+            type: "get",
+            async: false,
+            data: JSON.stringify({ user_id: user_id }),
+            contentType: "application/json;charset=utf-8",
+            processData: false,
+            success: function (ret) {
+                console.log(ret.data.name);
+                if (debug) ret.statusCode = 200;
+                if (ret.statusCode == 200) user_name = ret.data.name;
+                else alert(ret.message);
+            },
+        });
+        return user_name;
+    }
+    $(document).ready(function () {
+        url = "/api/get_item_info";
+        if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
+        $.ajax({
+            url: url,
+            type: "get",
+            data: JSON.stringify({ item_id: item_id }),
+            contentType: "application/json;charset=utf-8",
+            processData: false,
+            success: function (ret) {
+                console.log(ret);
+                if (ret.isPub) $("[id=seller_visible]").removeAttr("hidden");
+                else $("[id=non_seller_visible]").removeAttr("hidden");
+                if (ret.isAdmin) $("[id=manager_visible]").removeAttr("hidden");
+                data = ret.data;
+                $("#item_name_").text(data.name);
+                $.ajax({
+                    url: url,
+                    type: "get",
+                    data: JSON.stringify({ item_id: item_id }),
+                    contentType: "application/json;charset=utf-8",
+                    processData: false,
+                    success: function (ret) {},
+                });
+                $("#user_name").text(get_user_name(data.user_id));
+
+                $("#price_").text(`￥${data.price}`);
+                $("#stock_").text(`- 剩余${data.shelved_num}件`);
+                $("#description_").text(data.description);
+                $("#description_").text(data.description);
+                $("#item_type_").text(data.type == 0 ? "出售中" : "悬赏中");
+                $("#publish_time_").text(data.publish_time);
+                $("#item_tag_").text(data.tag);
+            },
+        });
+    });
+</script>
+
+{% endblock %}
