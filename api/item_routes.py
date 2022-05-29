@@ -337,12 +337,14 @@ def post_item_info():
     createPath(os.path.join(item_blue.static_folder, f'resource/item_pic/{new.id}/head'))
     createPath(os.path.join(item_blue.static_folder, f'resource/item_pic/{new.id}/pic'))
     default_pic = os.path.join(item_blue.static_folder, 'resource/default_pic/test.jpg')
+    curpath = os.path.join(item_blue.static_folder, f'resource/item_pic/{new.id}/')
+    tempath = os.path.join(item_blue.static_folder, f'resource/temp/')
     if len(data["urls"]) == 0:
         #给一个默认图
         with open(default_pic, "rb") as f:
-            with open(url_for('item.static', filename=f'resource/item_pic/{new.id}/head/test.jpg'), "wb") as fp:
+            with open(os.path.join(curpath, 'head/test.jpg'), "wb") as fp:
                 fp.write(f.read())
-            with open(url_for('item.static', filename=f'resource/item_pic/{new.id}/pic/test.jpg'), "wb") as fp:
+            with open(os.path.join(curpath, 'pic/test.jpg'), "wb") as fp:
                 fp.write(f.read())
 
     else:
@@ -354,15 +356,9 @@ def post_item_info():
             return make_response_json(400, "仅能选定一张头图")
         else:
             head_pic = head_pics[0]
-        shutil.move(url_for('item.static', filename=f'resource/temp/{head_pic}'), url_for('item.static', filename=f'resource/item_pic/{new.id}/head/'))
-        #with open(url_for('item.static', filename=f'resource/temp/{head_pic}'), "rb") as f:
-        #    with open(url_for('item.static', filename=f'resource/item_pic/{new.id}/head/{head_pic}'), "wb") as fp:
-        #        fp.write(f.read())
-        for i, j in enumerate(data["urls"]):
-            shutil.move(url_for('item.static', filename=f'resource/temp/{j["MD5"]}'), url_for('item.static', filename=f'resource/item_pic/{new.id}/pic/'))
-            #with open(url_for('item.static', filename=f'resource/temp/{j["MD5"]}'), "rb") as f:
-            #    with open(url_for('item.static', filename=f'resource/item_pic/{new.id}/pic/{j["MD5"]}'), "wb") as fp:
-            #        fp.write(f.read())
+        shutil.copy(os.path.join(tempath, head_pic), os.path.join(curpath, 'head/'))
+        for j in data["urls"]:
+            shutil.move(os.path.join(tempath, j["MD5"]), os.path.join(curpath, 'pic/'))
         #将所有的图片转到用户对应文件夹
     return make_response_json(200, "上传成功")
 
