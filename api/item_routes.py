@@ -121,7 +121,7 @@ def get_search():
         order_type = data["order_type"]
     else:
         order_type = "name"
-    data = list()
+    new_data = list()
 
     #get_data = Item.select().where().exectue()
 
@@ -154,8 +154,8 @@ def get_search():
         for i in datas:
             i['price'] = float(i['price'])
             i['publish_time'] = str(i['publish_time'])
-            data.append(i)
-        return make_response_json(200, "搜索结果如下", data)
+            new_data.append(i)
+        return make_response_json(200, "搜索结果如下", new_data)
 
 
 @api_blue.route("/change_item_status", methods=["PUT"])
