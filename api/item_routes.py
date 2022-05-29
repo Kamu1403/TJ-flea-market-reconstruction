@@ -393,8 +393,8 @@ def get_pillow_img_form_data_stream(data):
         os.remove(path_name_new)
 
         path_name_new = os.path.join(curpath, f'{md5_str}')
-        if os.path.exists(path_name_new):
-            return make_response_json(400, f"上传图片失败：请勿重复上传图片")
+        #if os.path.exists(path_name_new):
+        #    return make_response_json(400, f"上传图片失败：请勿重复上传图片")
         img.save(path_name_new, 'WEBP')
     except Exception as e:
         print(e)
