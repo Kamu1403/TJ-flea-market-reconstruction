@@ -69,12 +69,12 @@ def register():
     # 判断当前用户是否验证，如果通过的话返回首页
     if current_user.is_authenticated:
         return redirect(url_for('user.index'))
-    return render_template('verify_login.html')
+    return render_template('login.html')
 
 
 @app.route('/forget', methods=['GET'])
 def forget():
-    return render_template('verify_login.html', forget=True)
+    return render_template('login.html', forget=True)
 
 
 @app.route('/login', methods=['GET'])
