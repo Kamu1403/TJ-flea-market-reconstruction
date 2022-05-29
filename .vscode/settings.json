@@ -1,4 +1,3 @@
 {
-  "python.formatting.provider": "yapf",
-  "html.format.enable": true
+  "python.formatting.provider": "yapf"
 }
