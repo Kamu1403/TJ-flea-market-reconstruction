@@ -118,6 +118,22 @@ def get_user_info():
         return make_response_json(200, "获取用户数据成功",
                                   GetUserDict(tep, current_user.id == user_id))
 
+#访问其它用户
+@api_blue.route('/get_user_name', methods=['GET'])
+def get_user_name():
+    data = dict(request.args)
+    try:
+        user_id = int(data['user_id'])
+    except:
+        return make_response_json(400, "请求格式错误")
+    #user_id = int(request.get_json()["user_id"])
+    try:
+        tep = User.get(User.id == user_id)
+    except:
+        return make_response_json(404, "未找到用户")
+    else:
+        return make_response_json(200, "获取用户数据姓名",{"name":tep.name})
+
 
 @api_blue.route('/get_user_id', methods=["GET"])
 def get_user_id():
