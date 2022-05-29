@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
 import base64
+from email.policy import default
 from io import BytesIO
 import shutil
 
@@ -26,7 +27,7 @@ def createPath(path: str) -> None:
 
 @api_blue.route("/get_item_pics", methods=['GET'])
 def get_item_pics():
-    data = request.get_json()
+    data = dict(request.args)
     try:
         item_id = int(data["item_id"])
     except Exception as e:
@@ -36,25 +37,26 @@ def get_item_pics():
     except Exception as e:
         return make_response_json(400, "此物品不存在")
     pic_path = os.path.join(item_blue.static_folder, f'resource/item_pic/{item_id}/pic')
+    default_pic = os.path.join(item_blue.static_folder, 'resource/default_pic/test.jpg')
     if not os.path.exists(pic_path):
         createPath(pic_path)
-        with open(url_for('item.static', filename=f'resource/default/test.jpg'), "rb") as f:
-            with open(url_for('item.static', filename=f'resource/item_pic/{item_id}/pic/test.jpg'), "wb") as fp:
+        with open(default_pic, "rb") as f:
+            with open(os.path.join(item_blue.static_folder, f'resource/item_pic/{item_id}/pic/test.jpg'), "wb") as fp:
                 fp.write(f.read())
     if len(os.listdir(pic_path)) == 0:
-        with open(url_for('item.static', filename=f'resource/default/test.jpg'), "rb") as f:
-            with open(url_for('item.static', filename=f'resource/item_pic/{item_id}/pic/test.jpg'), "wb") as fp:
+        with open(default_pic, "rb") as f:
+            with open(os.path.join(item_blue.static_folder, f'resource/item_pic/{item_id}/pic/test.jpg'), "wb") as fp:
                 fp.write(f.read())
     pic_list = os.listdir(pic_path)
     pics = list()
-    for pic_name in pic_path:
-        pic_list.append(url_for('item.static', filename=f'resource/item_pic/{item_id}/pic/{pic_name}'))
+    for pic_name in pic_list:
+        pics.append(url_for('item.static', filename=f'resource/item_pic/{item_id}/pic/{pic_name}'))
     return make_response_json(200, "图片查找成功", data={"url": pics})
 
 
 @api_blue.route("/get_item_head_pic", methods=['GET'])
 def get_item_head_pic():
-    data = request.get_json()
+    data = dict(request.args)
     try:
         item_id = int(data["item_id"])
     except Exception as e:
@@ -64,14 +66,15 @@ def get_item_head_pic():
     except Exception as e:
         return make_response_json(400, "此物品不存在")
     pic_path = os.path.join(item_blue.static_folder, f'resource/item_pic/{item_id}/head')
+    default_pic = os.path.join(item_blue.static_folder, 'resource/default_pic/test.jpg')
     if not os.path.exists(pic_path):
         createPath(pic_path)
-        with open(url_for('item.static', filename=f'resource/default/test.jpg'), "rb") as f:
-            with open(url_for('item.static', filename=f'resource/item_pic/{item_id}/head/test.jpg'), "wb") as fp:
+        with open(default_pic, "rb") as f:
+            with open(os.path.join(item_blue.static_folder, f'resource/item_pic/{item_id}/head/test.jpg'), "wb") as fp:
                 fp.write(f.read())
     if len(os.listdir(pic_path)) == 0:
-        with open(url_for('item.static', filename=f'resource/default/test.jpg'), "rb") as f:
-            with open(url_for('item.static', filename=f'resource/item_pic/{item_id}/head/test.jpg'), "wb") as fp:
+        with open(default_pic, "rb") as f:
+            with open(os.path.join(item_blue.static_folder, f'resource/item_pic/{item_id}/head/test.jpg'), "wb") as fp:
                 fp.write(f.read())
     pic_list = os.listdir(pic_path)
     pic = url_for('item.static', filename=f'resource/item_pic/{item_id}/head/{pic_list[0]}')
@@ -332,9 +335,10 @@ def post_item_info():
         return make_response_json(500, f"上传失败\n{str(e)}:{repr(e)}")
     createPath(os.path.join(item_blue.static_folder, f'resource/item_pic/{new.id}/head'))
     createPath(os.path.join(item_blue.static_folder, f'resource/item_pic/{new.id}/pic'))
+    default_pic = os.path.join(item_blue.static_folder, 'resource/default_pic/test.jpg')
     if len(data["urls"]) == 0:
         #给一个默认图
-        with open(url_for('item.static', filename=f'resource/default/test.jpg'), "rb") as f:
+        with open(default_pic, "rb") as f:
             with open(url_for('item.static', filename=f'resource/item_pic/{new.id}/head/test.jpg'), "wb") as fp:
                 fp.write(f.read())
             with open(url_for('item.static', filename=f'resource/item_pic/{new.id}/pic/test.jpg'), "wb") as fp:
