@@ -3,6 +3,8 @@
 import base64
 from io import BytesIO
 import shutil
+
+import werkzeug
 from api.utils import *
 from api import api_blue
 from item.models import Item_type, Item_state
@@ -121,8 +123,6 @@ def get_search():
         order_type = data["order_type"]
     else:
         order_type = "name"
-    new_data = list()
-
     #get_data = Item.select().where().exectue()
 
     need = (Item.id, Item.name, Item.user_id, Item.publish_time, Item.price, Item.tag)
@@ -144,6 +144,7 @@ def get_search():
     else:
         get_data = Item.select(*need).where(*select_need).execute()
         datas = [i.__data__ for i in get_data]
+        new_data = list()
         if order_type == "time":
             datas.sort(key=lambda x: x["publish_time"], reverse=True)
         elif order_type == "price":
@@ -323,32 +324,48 @@ def post_item_info():
     return make_response_json(200, "上传成功")
 
 
-@api_blue.route("/post_item_pic", methods=["POST"])
-def post_item_pic():
-    if not current_user.is_authenticated:
-        return make_response_json(401, "当前用户未登录")
+def get_pillow_img_form_data_stream(data):
+    '''
+    传入request.files.get('something') (data类型为werkzeug.filestorage)
+    将图片读取后按WEBP转换，保存入临时图床文件夹
+    最后返回{400，失败}或{200，成功，md5(str)}
+    '''
     try:
-        data = request.files.get('file')
-
         #os.path.join(item_blue.static_folder, f'resource/temp')
         #或
         #url_for('item.static', filename=f'resource/item_pic/{item_id}/[head|pic]')
-
         curpath = os.path.join(item_blue.static_folder, f'resource/temp')
+        createPath(curpath)
+
         path_name = os.path.join(curpath, data.filename)
         createPath(curpath)
         data.save(path_name)
         img = Image.open(path_name)
         md5_str = md5(img.tobytes()).hexdigest()
-        os.remove(path_name)  # 不能提前，因为open是lazy的，提前删除了就读不到img了
+        os.remove(path_name)
+
+        path_name_new = os.path.join(curpath, f'{md5_str}')
+        img.save(path_name_new, 'WEBP')
+        img = Image.open(path_name_new)
+        md5_str = md5(img.tobytes()).hexdigest()
+        os.remove(path_name_new)
+
         path_name_new = os.path.join(curpath, f'{md5_str}')
         if os.path.exists(path_name_new):
             return make_response_json(400, f"上传图片失败：请勿重复上传图片")
         img.save(path_name_new, 'WEBP')
     except Exception as e:
+        print(e)
         return make_response_json(400, f"上传图片失败：文件格式错误或损坏")
     else:
         return make_response_json(200, "上传图片成功", md5_str)
+
+
+@api_blue.route("/post_item_pic", methods=["POST"])
+def post_item_pic():
+    if not current_user.is_authenticated:
+        return make_response_json(401, "当前用户未登录")
+    return get_pillow_img_form_data_stream(request.files.get('file'))
 
 
 @api_blue.route("/add_favor", methods=["POST"])
