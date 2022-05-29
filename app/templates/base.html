@@ -57,8 +57,8 @@
                                             <option>-- 其他（待添加）</option>
                                             <option>-- 其他</option>
                                         </select>
-                                        <input type="text" placeholder="搜索商品或悬赏..." />
-                                        <button><i class="flaticon-loupe-1"></i></button>
+                                        <input id="item_name" type="text" placeholder="搜索..." />
+                                        <button type="button" onclick="search_item()"><i class="flaticon-loupe-1"></i></button>
                                     </form>
                                 </div>
                                 <div class="header-action">
@@ -68,7 +68,7 @@
                                         </li>
                                         <li class="header-cart-wrap" id="bar_icon_chatroom">
                                             <a href="#" title="聊天室"><i class="flaticon-mail"></i></a>
-                                            <span class="item-count">0</span>
+                                            <span class="item-count" id="message_cnt">0</span>
                                         </li>
                                         <li class="header-user" id="bar_icon_history">
                                             <a href="#" title="历史记录"><i class="flaticon-wall-clock"></i></a>
@@ -205,7 +205,6 @@
                             </div>
                         </li>`);
                     } else {
-                        
                         $(menu).append(`<li>
                             <div class="checkout-link">
                                 <a href="{{url_for("user.space",opt_userid=current_user.id)}}">个人中心</a>
