@@ -142,7 +142,7 @@
         //var url="/api/get_user_item";
         $.get(url, function (ret) {
                 if (ret.statusCode == 401||ret.statusCode==404) {
-                    alert(ret.message);
+                    console.log(ret.message);
                 } else {
                     console.log(ret)
                     var items = ret.data;
@@ -156,11 +156,10 @@
                                 <h6 class="media-heading">'+ items[i].name+'\
                                 </h6>\
                                 <p>'+items[i].publish_time+'</p>\
-                                <a href="shop-details.html"><strong>查看详情</strong> </a>\
+                                <a href="/item/content/'+items[i]['id']+'"><strong>查看详情</strong> </a>\
                             </div>\
                             </div>\
                         </div>';
-                        console.log(items[i].type)
                         if (items[i].type==0)
                             $("#goods").append(str);
                         else
