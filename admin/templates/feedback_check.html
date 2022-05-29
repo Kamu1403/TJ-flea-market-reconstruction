@@ -13,7 +13,7 @@
     var debug = 1;
 
     function my_func() {
-        var a = 1;
+        let a = 1;
         url = "/api/something1";
         if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
         $.ajax({
@@ -31,7 +31,7 @@
     }
 
     $(document).ready(function () {
-        url = "/api/something2";
+        let url = "/api/something2";
         if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
         $.ajax({
             url: url,
