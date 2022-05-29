@@ -132,7 +132,7 @@ def get_user_name():
     except:
         return make_response_json(404, "未找到用户")
     else:
-        return make_response_json(200, "获取用户数据姓名",{"name":tep.name})
+        return make_response_json(200, "获取用户数据姓名",{"name":tep.username})
 
 
 @api_blue.route('/get_user_id', methods=["GET"])
