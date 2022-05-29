@@ -119,8 +119,8 @@ def get_user_info():
                                   GetUserDict(tep, current_user.id == user_id))
 
 #访问其它用户
-@api_blue.route('/get_user_name', methods=['GET'])
-def get_user_name():
+@api_blue.route('/get_user_username', methods=['GET'])
+def get_user_username():
     data = dict(request.args)
     try:
         user_id = int(data['user_id'])
