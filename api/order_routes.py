@@ -30,8 +30,10 @@ def change_order_status():
         return make_response_json(404, "没有找到此订单明细")
 
     order_user_id = order.user_id.id
-    order_op_user_id = _order_item.item_id.user_id
-    if current_user.state == User_state.Admin.value:  #管理员,无限权力
+    order_op_user_id = _order_item.item_id.user_id    
+    if req_state == order.state:  #要修改的状态和数据库内订单状态重复了，改不改都一样，直接返回成功
+        return make_response_json(400, "操作过于频繁")
+    elif current_user.state == User_state.Admin.value:  #管理员,无限权力
         order.state = req_state
         if req_state == Order_state.Close.value:  #取消订单
             _order_item.item_id.locked_num -= _order_item.quantity
@@ -46,8 +48,7 @@ def change_order_status():
         return make_response_json(400, "请求格式不对")
     elif current_user.id != order_user_id and current_user.id != order_op_user_id:  #不是订单双方
         return make_response_json(401, "当前用户不是订单双方之一，未授权")
-    elif req_state == order.state:  #要修改的状态和数据库内订单状态重复了，改不改都一样，直接返回成功
-        return make_response_json(400, "操作过于频繁")
+
     elif order.state == Order_state.End.value or order.state == Order_state.Close.value:  #订单处于完成或关闭的状态
         return make_response_json(401, "当前订单已完成或取消，操作失败，当前用户未授权")
 
