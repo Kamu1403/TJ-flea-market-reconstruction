@@ -121,8 +121,6 @@ def get_search():
         order_type = data["order_type"]
     else:
         order_type = "name"
-    new_data = list()
-
     #get_data = Item.select().where().exectue()
 
     need = (Item.id, Item.name, Item.user_id, Item.publish_time, Item.price, Item.tag)
@@ -144,6 +142,7 @@ def get_search():
     else:
         get_data = Item.select(*need).where(*select_need).execute()
         datas = [i.__data__ for i in get_data]
+        new_data = list()
         if order_type == "time":
             datas.sort(key=lambda x: x["publish_time"], reverse=True)
         elif order_type == "price":
