@@ -99,20 +99,18 @@
 <!-- main-area-end -->
 {% endblock %} {% block footer %} {{ super() }} {% endblock %} {% block js %} {{ super() }}
 <script type="text/javascript" charset="utf-8">
-    var debug = 1;
-    var item_id = "{{ item_id|safe }}";
+    var debug = 0;
+    var item_id = parseInt("{{ item_id|safe }}");
     $("#item_id_").text(item_id);
     function get_user_name(user_id) {
-        url = "/api/get_user_username";
+        let url = "/api/get_user_username";
         if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
         user_name = `#${user_id}`;
         $.ajax({
             url: url,
             type: "get",
             async: false,
-            data: JSON.stringify({ user_id: user_id }),
-            contentType: "application/json;charset=utf-8",
-            processData: false,
+            data: { user_id: user_id },
             success: function (ret) {
                 console.log(ret.data.name);
                 if (debug) ret.statusCode = 200;
@@ -123,29 +121,19 @@
         return user_name;
     }
     $(document).ready(function () {
-        url = "/api/get_item_info";
+        let url = "/api/get_item_info";
         if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
         $.ajax({
             url: url,
             type: "get",
-            data: JSON.stringify({ item_id: item_id }),
-            contentType: "application/json;charset=utf-8",
-            processData: false,
+            data: { item_id: item_id },
             success: function (ret) {
                 console.log(ret);
                 if (ret.isPub) $("[id=seller_visible]").removeAttr("hidden");
                 else $("[id=non_seller_visible]").removeAttr("hidden");
                 if (ret.isAdmin) $("[id=manager_visible]").removeAttr("hidden");
-                data = ret.data;
+                let data = ret.data;
                 $("#item_name_").text(data.name);
-                $.ajax({
-                    url: url,
-                    type: "get",
-                    data: JSON.stringify({ item_id: item_id }),
-                    contentType: "application/json;charset=utf-8",
-                    processData: false,
-                    success: function (ret) {},
-                });
                 $("#user_name").text(get_user_name(data.user_id));
 
                 $("#price_").text(`￥${data.price}`);
