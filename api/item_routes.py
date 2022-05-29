@@ -323,6 +323,7 @@ def post_item_info():
         return make_response_json(400, "请求格式不对")
     if price <= 0:
         return make_response_json(400, "请求格式不对")
+    print(item_type)
     if item_type != Item_type.Goods.value and item_type != Item_type.Want.value:
         return make_response_json(400, "仅能上传物品")
     if shelved_num <= 0:

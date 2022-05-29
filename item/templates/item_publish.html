@@ -137,7 +137,7 @@
             urls.push(obj1);
         });
         let formData=JSON.stringify(
-            {name: name, price: parseFloat(price), tag:tag, type: parseInt(price), shelved_num:parseInt(price),descrition:message,urls:urls});
+            {name: name, price: parseFloat(price), tag:tag, type: parseInt(type), shelved_num:parseInt(quantity),descrition:message,urls:urls});
         console.log(formData);
         $.ajax({
             url: "/api/post_item_info",
