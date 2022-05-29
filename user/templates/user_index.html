@@ -138,11 +138,14 @@
 {{ super() }}
 <script type="text/javascript">
     $(document).ready(function () {
+        var debug=1;
         var url="http://127.0.0.1:4523/mock/927026/api/get_user_item";
         //var url="/api/get_user_item";
-        $.get(url, function (ret) {
-                if (ret.statusCode == 401||ret.statusCode==404) {
-                    alert(ret.message);
+        $.get(url, function (ret) {  
+            if (debug==1)
+                ret.statusCode=200;
+            if (ret.statusCode == 401||ret.statusCode==404) {
+                    console.log(ret.message);
                 } else {
                     console.log(ret)
                     var items = ret.data;
@@ -156,11 +159,10 @@
                                 <h6 class="media-heading">'+ items[i].name+'\
                                 </h6>\
                                 <p>'+items[i].publish_time+'</p>\
-                                <a href="shop-details.html"><strong>查看详情</strong> </a>\
+                                <a href="/item/content/'+items[i]['id']+'"><strong>查看详情</strong> </a>\
                             </div>\
                             </div>\
                         </div>';
-                        console.log(items[i].type)
                         if (items[i].type==0)
                             $("#goods").append(str);
                         else

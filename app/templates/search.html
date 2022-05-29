@@ -216,7 +216,7 @@
                         processData: false,
                         success: function (ret) {
                             if (ret.statusCode == 400) {
-                                alert(ret.message);
+                                console.log(ret.message);
                             } else {
                                 var items = ret.data;
                                 //console.log(items);
@@ -242,6 +242,4 @@
                     });
             });
         </script> 
-        {% endblock %}
-    </body>
-</html>
+{% endblock %}
