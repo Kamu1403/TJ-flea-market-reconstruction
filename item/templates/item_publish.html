@@ -30,35 +30,34 @@
                     <div class="checkout-form-wrap">
                         <form action="file:///C:/OneDrive%20-%20%E5%90%8C%E6%B5%8E%E5%A4%A7%E5%AD%A6/%E8%BD%AF%E5%B7%A5%E5%B0%8F%E7%BB%84/%E4%B9%99%E6%96%B9/Ganic/checkout.html#">
                             <div class="checkout-form-top">
-                                <h5 class="title">商品详情</h5>
+                                <h5 class="title">发布新物品</h5>
                             </div>
 
                             <div class="building-info-wrap">
-                                <input type="text" placeholder="name" />
-                                <input type="text" placeholder="price" />
+                                <input type="text" placeholder="物品名称" id="name"/>
+                                <input type="text" placeholder="价格" id="price"/>
 
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <input type="text" placeholder="tag" />
+                                        <input type="text" placeholder="标签" id="tag"/>
                                     </div>
                                     <div class="col-md-6">
-                                        <input type="text" placeholder="shelved_num" />
+                                        <input type="text" placeholder="数量" id="quantity"/>
                                     </div>
-                                    <div class="col-md-6"></div>
-                                    <div class="col-md-6"></div>
                                 </div>
                                 <div class="different-address-wrap">
-                                    <div class="custom-control custom-checkbox">
-                                        <input type="checkbox" class="custom-control-input" id="sda" />
-                                        <label class="custom-control-label" for="sda">我要出售</label>
-                                    </div>
-
-                                    <div class="custom-control custom-checkbox">
-                                        <input type="checkbox" class="custom-control-input" id="sda" />
-                                        <label class="custom-control-label" for="sda">我要悬赏</label>
+                                    <div class="header-super-store d-none d-xl-block d-lg-none d-md-block">
+                                        <div class="dropdown">
+                                            <button class="dropdown-toggle" type="button" id="choice" data-toggle="dropdown" aria-haspopup="true"
+                                                aria-expanded="false">请选择发布类型</button>
+                                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton4">
+                                                <a class="dropdown-item" onclick="change_choice(0)">发布商品</a>
+                                                <a class="dropdown-item" onclick="change_choice(1)">发布悬赏</a>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <textarea name="message" id="message" placeholder="discription"></textarea>
+                                <textarea name="message" id="message" placeholder="详细描述..."></textarea>
                             </div>
                         </form>
                     </div>
@@ -90,21 +89,33 @@
             <div class="row justify-content-center">
                 <div class="col-lg-7">
                     <div class="shop-cart-bottom">
-                        <div class="cart-coupon">
+                        <div class="cart-coupon ">
                             <form action="javascript:void(0)">
                                 <input type="file" id="file" style="display: none" />
                                 <input type="text" id="show_file_name" placeholder="" readonly="readonly" disabled="disabled" />
                                 <button href="javascript:void(0)" onclick="selectImg()" class="btn">选择图片</button>
                             </form>
                         </div>
-                        <div class="continue-shopping">
+                        <div class="continue-shopping ">
                             <a href="javascript:void(0)" onclick="uploadImg()" class="btn">上传图片</a>
                         </div>
                     </div>
                 </div>
             </div>
-            </div>
         </div>
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-7">
+                    <div class="shop-cart-total" style="background-color:rgba(255,255,255,0.5);border:none;">
+                        <div class="shop-cart-widget" >
+                                <a class="btn" onclick="submit()">提交发布</a>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+        </div>
+    </div>
+
             <!-- cart-area-end -->
         <!-- checkout-area-end -->
 </main>
@@ -112,6 +123,22 @@
 {% endblock %} {% block footer %} {{ super() }} {% endblock %} {% block js %} {{ super() }}
 
 <script>
+    function submit(){
+        let name=$("#name").val();
+        
+    } 
+
+    function change_choice(type){
+        if (type==0){
+            $(choice).text("发布商品");
+            $(choice).val(0);
+        }
+        else{
+            $(choice).text("发布悬赏");
+            $(choice).val(1);
+        }
+    }
+
     function check_other_box(robj) {
         if (robj.checked == true)
             $("[id^=customCheck]").each(function (index, obj) {
@@ -152,7 +179,7 @@
     function updatePage(objUrl, md5) {
         var str = `<tr id="tr_${md5}">
             <td class="product-thumbnail" id="product_thumbnail_${md5}"><img src=${objUrl} alt="" /></td>
-            <td class="product-name"> <h4>${md5}</h4></td>
+            <td class="product-name"> <h4 id="project_name_${md5}">${md5}</h4></td>
             <td class="product-quantity">
                 <div class="custom-control custom-checkbox">
                     <input type="checkbox" class="custom-control-input" id="customCheck_${md5}"
