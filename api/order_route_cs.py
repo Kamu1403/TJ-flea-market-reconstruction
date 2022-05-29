@@ -44,6 +44,8 @@ def get_order():
                 if num < data["max_num"]:
                     datas.append(j["id"])
                     num += 1
+            else:
+                datas.append(j["id"])
     return make_response_json(200, "返回订单", datas)
 
 
