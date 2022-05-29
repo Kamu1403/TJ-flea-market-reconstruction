@@ -279,19 +279,24 @@ def post_item_info():
     if current_user.state == User_state.Under_ban.value:
         return make_response_json(401, "当前用户已被封号")
     data = request.get_json()
-    print(data)
-    if data["price"] <= 0:
-        return make_response_json(400, "物品不存在负价格")
-    if data["type"] != Item_type.Goods.value and data["type"] != Item_type.Want.value:
+    try:
+        price = float(data["price"])
+        item_type = int(data["type"])
+        shelved_num = int(data["shelved_num"])
+    except Exception as e:
+        return make_response_json(400,"请求格式不对")
+    if price <= 0:
+        return make_response_json(400, "请求格式不对")
+    if item_type != Item_type.Goods.value and item_type != Item_type.Want.value:
         return make_response_json(400, "仅能上传物品")
-    if data["shelved_num"] <= 0:
+    if shelved_num <= 0:
         return make_response_json(400, "不允许发布负数个物品")
     data["user_id"] = current_user.id
     data["publish_time"] = datetime.now()
     try:
         new = Item.create(**data)
     except Exception as e:
-        return make_response_json(400, f"上传失败\n{str(e)}:{repr(e)}")
+        return make_response_json(500, f"上传失败\n{str(e)}:{repr(e)}")
     createPath(os.path.join(item_blue.static_folder, f'resource/item_pic/{new.id}/head'))
     createPath(os.path.join(item_blue.static_folder, f'resource/item_pic/{new.id}/pic'))
     if len(data["urls"]) == 0:

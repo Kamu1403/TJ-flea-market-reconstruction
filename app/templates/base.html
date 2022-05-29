@@ -213,9 +213,9 @@
                         </li>`);
                         $.get("/api/get_message_cnt", function (ret) {
                             if (ret.statusCode == 401) {
-                                $(message_cnt).value = 0;
+                                $("#message_cnt").text(0);
                             } else {
-                                $(message_cnt).value = ret.data.unread;
+                                $("#message_cnt").text(ret.data.unread);
                             }
                         });
                     }
