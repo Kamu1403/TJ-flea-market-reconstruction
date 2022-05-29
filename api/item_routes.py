@@ -341,11 +341,8 @@ def post_item_info():
     tempath = os.path.join(item_blue.static_folder, f'resource/temp/')
     if len(data["urls"]) == 0:
         #给一个默认图
-        with open(default_pic, "rb") as f:
-            with open(os.path.join(curpath, 'head/test.jpg'), "wb") as fp:
-                fp.write(f.read())
-            with open(os.path.join(curpath, 'pic/test.jpg'), "wb") as fp:
-                fp.write(f.read())
+        shutil.copy(default_pic, os.path.join(curpath, 'head/'))
+        shutil.copy(default_pic, os.path.join(curpath, 'pic/'))
 
     else:
         head_pics = [i["MD5"] for i in data["urls"] if i["is_cover_pic"]]
