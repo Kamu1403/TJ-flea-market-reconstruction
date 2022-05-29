@@ -26,7 +26,7 @@ def createPath(path: str) -> None:
 
 @api_blue.route("/get_item_pics", methods=['GET'])
 def get_item_pics():
-    data = request.get_json()
+    data = dict(request.args)
     try:
         item_id = int(data["item_id"])
     except Exception as e:
@@ -47,14 +47,14 @@ def get_item_pics():
                 fp.write(f.read())
     pic_list = os.listdir(pic_path)
     pics = list()
-    for pic_name in pic_path:
-        pic_list.append(url_for('item.static', filename=f'resource/item_pic/{item_id}/pic/{pic_name}'))
+    for pic_name in pic_list:
+        pics.append(url_for('item.static', filename=f'resource/item_pic/{item_id}/pic/{pic_name}'))
     return make_response_json(200, "图片查找成功", data={"url": pics})
 
 
 @api_blue.route("/get_item_head_pic", methods=['GET'])
 def get_item_head_pic():
-    data = request.get_json()
+    data = dict(request.args)
     try:
         item_id = int(data["item_id"])
     except Exception as e:
