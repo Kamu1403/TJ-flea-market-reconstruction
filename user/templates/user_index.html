@@ -176,22 +176,15 @@
 {{ super() }}
 <script type="text/javascript">
     $(document).ready(function () {
-        var debug =1;
-        if (debug==1){
-            $.get("http://127.0.0.1:4523/mock/927026/api/get_user_item", function (ret) {
-                console.log(ret);
-                
-            });
-        }
-        else{
-            $.get("/api/get_user_item", function (ret) {
-                // console.log(ret);
-                if (ret.statusCode == 401||404) {
+        var url="http://127.0.0.1:4523/mock/927026/api/get_user_item";
+        //var url="/api/get_user_item";
+        $.get(url, function (ret) {
+                if (ret.statusCode == 401||ret.statusCode==404) {
+                    alert(ret.message);
                 } else {
                     console.log(ret);
                 }
                 });
-        }
-    });
+        });
 </script> 
 {% endblock %}
