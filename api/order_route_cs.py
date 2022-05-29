@@ -43,10 +43,11 @@ def get_order():
             if ordered_num:
                 if num < data["max_num"]:
                     datas.append(j["id"])
-                    num+=1
+                    num += 1
     return make_response_json(200, "返回订单", datas)
 
-@api_blue.route("/get_order_info",methods=['GET'])
+
+@api_blue.route("/get_order_info", methods=['GET'])
 def get_order_info():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
@@ -54,13 +55,13 @@ def get_order_info():
     try:
         order_id = int(data["order_id"])
     except Exception as e:
-        return make_response_json(400,"请求格式不对")
+        return make_response_json(400, "请求格式不对")
     try:
-        temp:Order_Item = Order_Item.get(Order_Item.order_id == order_id)
+        temp: Order_Item = Order_Item.get(Order_Item.order_id == order_id)
     except Exception as e:
-        return make_response_json(404,"不存在该订单")
+        return make_response_json(404, "不存在该订单")
     if current_user.id != temp.item_id.user_id.id and current_user.id != temp.order_id.user_id.id and current_user.state != User_state.Admin.value:
-        return make_response_json(401,"当前用户无权访问该订单信息")
+        return make_response_json(401, "当前用户无权访问该订单信息")
     order_data = temp.order_id.__data__
     order_data.pop("id")
     for i in order_data:
@@ -68,18 +69,16 @@ def get_order_info():
             order_data[i] = str(order_data[i])
     order_data["item_info"] = list()
     try:
-        item_infos = Order_Item.select().where(Order_Item.order_id == order_id).execute()
+        item_infos = Order_Item.select().where(
+            Order_Item.order_id == order_id).execute()
     except Exception as e:
-        return make_response_json(500,f"查询订单明细时出现问题 {repr(e)}")
+        return make_response_json(500, f"查询订单明细时出现问题 {repr(e)}")
     for i in item_infos:
         j = i.__data__
         j.pop("id")
         j.pop("order_id")
         order_data["item_info"].append(j)
-    return make_response_json(200,"请求成功",order_data)
-
-
-
+    return make_response_json(200, "请求成功", order_data)
 
 
 @api_blue.route("/get_address", methods=['GET'])
@@ -159,7 +158,7 @@ def order_post():
             call_back = (400, "请求格式不对")
             break
         if num < 0:
-            call_back = (400,"请求格式不对")
+            call_back = (400, "请求格式不对")
             break
         try:
             item = Item.get(Item.id == item_id)
@@ -169,8 +168,8 @@ def order_post():
         if item.shelved_num < num:
             call_back = (404, f"请求的{item.name}库存不足")
             break
-        if current_user.id == item.user_id:
-            call_back = (400, "不可与自己做生意")
+        if current_user.id == item.user_id.id:
+            call_back = (401, "不可与自己做生意")
             break
         if op is None:
             op = item.user_id.id
@@ -254,7 +253,7 @@ def order_post():
         od_it_list.append(od_it)
     return make_response_json(201,
                               "订单生成成功，请等待商家确认",
-                              data={"url":url_for("order.manage")})
+                              data={"url": url_for("order.manage")})
 
 
 @api_blue.route("/address", methods=["POST", "PUT", "DELETE"])
@@ -397,8 +396,8 @@ def order_evaluate():
     if order.user_id.id == current_user.id:
         try:
             review = Review.create(user_id=current_user.id,
-                               publish_time=date.today(),
-                               feedback_content=data["feedback_content"])
+                                   publish_time=date.today(),
+                                   feedback_content=data["feedback_content"])
         except Exception as e:
             return make_response_json(500, f"存储过程出现问题 {repr(e)}")
         order_state_item.user_review_id = review
@@ -410,18 +409,17 @@ def order_evaluate():
             return make_response_json(500, f"查询过程出现问题 {repr(e)}")
         if od_it.item_id.user_id.id == current_user.id:
             try:
-                review = Review.create(user_id=current_user.id,
-                               publish_time=date.today(),
-                               feedback_content=data["feedback_content"])
+                review = Review.create(
+                    user_id=current_user.id,
+                    publish_time=date.today(),
+                    feedback_content=data["feedback_content"])
             except Exception as e:
                 return make_response_json(500, f"存储过程出现问题 {repr(e)}")
             order_state_item.op_user_review_id = review
         else:
-            return make_response_json(401,"无权评论此订单")
+            return make_response_json(401, "无权评论此订单")
     order_state_item.save()
     return make_response_json(200, "评价完成", {"url": url_for('order.manage')})
-
-
 
 
 """
