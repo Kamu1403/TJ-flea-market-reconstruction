@@ -40,13 +40,8 @@ def get_item_pics():
     default_pic = os.path.join(item_blue.static_folder, 'resource/default_pic/test.jpg')
     if not os.path.exists(pic_path):
         createPath(pic_path)
-        with open(default_pic, "rb") as f:
-            with open(os.path.join(item_blue.static_folder, f'resource/item_pic/{item_id}/pic/test.jpg'), "wb") as fp:
-                fp.write(f.read())
     if len(os.listdir(pic_path)) == 0:
-        with open(default_pic, "rb") as f:
-            with open(os.path.join(item_blue.static_folder, f'resource/item_pic/{item_id}/pic/test.jpg'), "wb") as fp:
-                fp.write(f.read())
+        shutil.copy(default_pic, pic_path)
     pic_list = os.listdir(pic_path)
     pics = list()
     for pic_name in pic_list:
@@ -69,13 +64,8 @@ def get_item_head_pic():
     default_pic = os.path.join(item_blue.static_folder, 'resource/default_pic/test.jpg')
     if not os.path.exists(pic_path):
         createPath(pic_path)
-        with open(default_pic, "rb") as f:
-            with open(os.path.join(item_blue.static_folder, f'resource/item_pic/{item_id}/head/test.jpg'), "wb") as fp:
-                fp.write(f.read())
     if len(os.listdir(pic_path)) == 0:
-        with open(default_pic, "rb") as f:
-            with open(os.path.join(item_blue.static_folder, f'resource/item_pic/{item_id}/head/test.jpg'), "wb") as fp:
-                fp.write(f.read())
+        shutil.copy(default_pic, pic_path)
     pic_list = os.listdir(pic_path)
     pic = url_for('item.static', filename=f'resource/item_pic/{item_id}/head/{pic_list[0]}')
     return make_response_json(200, "图片查找成功", data={"url": pic})

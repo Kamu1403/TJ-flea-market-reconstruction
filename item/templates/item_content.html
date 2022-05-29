@@ -112,7 +112,6 @@
             async: false,
             data: { user_id: user_id },
             success: function (ret) {
-                console.log(ret.data.name);
                 if (debug) ret.statusCode = 200;
                 if (ret.statusCode == 200) user_name = ret.data.name;
                 else alert(ret.message);
@@ -128,7 +127,6 @@
             type: "get",
             data: { item_id: item_id },
             success: function (ret) {
-                console.log(ret);
                 if (ret.isPub) $("[id=seller_visible]").removeAttr("hidden");
                 else $("[id=non_seller_visible]").removeAttr("hidden");
                 if (ret.isAdmin) $("[id=manager_visible]").removeAttr("hidden");
@@ -143,6 +141,62 @@
                 $("#item_type_").text(data.type == 0 ? "出售中" : "悬赏中");
                 $("#publish_time_").text(data.publish_time);
                 $("#item_tag_").text(data.tag);
+            },
+        });
+
+        url = "/api/get_item_head_pic";
+        if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
+        let pic_name = null;
+        $.ajax({
+            url: url,
+            type: "get",
+            data: { item_id: item_id },
+            async: false, // 不加的话，头图会出现两次哦
+            success: function (ret) {
+                if (ret.statusCode == 200) {
+                    let pic_url = ret.data.url;
+                    pic_name = pic_url.split("/");
+                    pic_name = pic_name[pic_name.length - 1];
+                    let md5 = 0;
+                    $(myTab).append(`<li class="nav-item" role="presentation">
+                        <a class="nav-link active" id="item-${md5}-tab" data-toggle="tab" href="#item-${md5}" role="tab" aria-controls="item-${md5}" aria-selected="true">
+                            <img src="${pic_url}" alt="" />
+                        </a>
+                    </li>`);
+                    $(myTabContent).append(`<div class="tab-pane fade show active" id="item-${md5}" role="tabpanel" aria-labelledby="item-${md5}-tab">
+                        <div class="shop-details-img">
+                            <img src="${pic_url}" alt="" />
+                        </div>
+                    </div>`);
+                } else alert("获取商品头图失败\n" + ret.message);
+            },
+        });
+        url = "/api/get_item_pics";
+        if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
+        $.ajax({
+            url: url,
+            type: "get",
+            data: { item_id: item_id },
+            success: function (ret) {
+                if (ret.statusCode == 200) {
+                    let md5 = 0;
+                    for (pic_url_ of ret.data.url) {
+                        pic_name_ = pic_url_.split("/");
+                        pic_name_ = pic_name_[pic_name_.length - 1];
+                        if (pic_name_ == pic_name) continue;
+                        md5 += 1;
+                        $(myTab).append(`<li class="nav-item" role="presentation">
+                            <a class="nav-link" id="item-${md5}-tab" data-toggle="tab" href="#item-${md5}" role="tab" aria-controls="item-${md5}" aria-selected="false">
+                                <img src="${pic_url_}" alt="" />
+                            </a>
+                        </li>`);
+                        $(myTabContent).append(`<div class="tab-pane fade" id="item-${md5}" role="tabpanel" aria-labelledby="item-${md5}-tab">
+                            <div class="shop-details-img">
+                                <img src="${pic_url_}" alt="" />
+                            </div>
+                        </div>`);
+                    }
+                } else alert("获取商品图片失败\n" + ret.message);
             },
         });
     });
