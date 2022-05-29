@@ -1,0 +1,105 @@
+<html>
+
+<head>
+    <script src="  {{url_for('static', filename='js/vendor/jquery-3.6.0.min.js')}}"></script>
+    </script>
+    <script>
+        var str = window.location.href;
+        var temp = str.split("/")
+        var data = { "item_id": temp[temp.length - 2] };
+        console.log(data);
+        $.ajax(
+            {
+                type: "GET",
+                dataType: "JSON",
+                data: data,
+                url: "/api/get_item_info",
+                success: function show(result) {
+                    for (i in result['data']) {
+                        var j = document.getElementById(i);
+                        if (j) {
+                            j.innerHTML = result['data'][i];
+                        }
+                    }
+
+                    if (!result['isPub']) {
+                        $('#button1').append("<a href='/chat/" + result['data']['publisher_id'] + "'>和对方聊天</a>");
+                        $('#button2').append("生成订单");
+                        $('#button2').click(function () {
+                            $.ajax({
+                                type: "PUT",
+                                dataType: "JSON",
+                                data: data,
+                                url: "/api/get_item_info",
+                                success: function (result) {
+                                    var order_id = result.data.id;
+                                    window.location.href = "/order/generate/" + order_id + "/";
+                                }
+                            })
+                        })
+                        if (result['isAdmin']) {
+                            $("#test").append("<button>修改上架信息</button><button>下架</button>");
+                        }
+                    }
+                    else {
+                        $('#button1').append("修改上架信息");
+                        if (result['isAdmin']) {
+                            $('#button2').append("下架");
+                        }
+                    }
+
+                }
+            }
+        )
+        function jump() {
+            var str = window.location.href;
+            var temp = str.split("/")
+            var data = { "type": temp[temp.length - 3], "id": temp[temp.length - 2] };
+            window.open('/order/generate/' + data["type"] + "/" + data["id"]);
+        }
+    </script>
+</head>
+
+<body>
+    <a href="{{ url_for('item.index')}}">返回主页</a>
+    <div>
+        <table>
+            <tbody id="show">
+                <tr>
+                    <td>名称</td>
+                    <td id="name"></td>
+                </tr>
+                <tr>
+                    <td>单价</td>
+                    <td id="price"></td>
+                </tr>
+                <tr>
+                    <td>上架学生学号</td>
+                    <td id="publisher_id"></td>
+                </tr>
+                <tr>
+                    <td>上架时间</td>
+                    <td id="publish_time"></td>
+                </tr>
+                <tr>
+                    <td>上架数量</td>
+                    <td id="shelved_num"></td>
+                </tr>
+                <tr>
+                    <td>标签</td>
+                    <td id="tag"></td>
+                </tr>
+                <tr>
+                    <td>描述</td>
+                    <td id="description"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div id="test">
+        <button id="button1"></button>
+        <button id="button2"></button>
+    </div>
+</body>
+
+</html>

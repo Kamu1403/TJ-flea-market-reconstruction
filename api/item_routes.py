@@ -32,17 +32,50 @@ def get_item_pics():
     except Exception as e:
         return make_response_json(400, f"请求格式错误 {repr(e)}")
     try:
-        pic_path = os.listdir(os.path.join(item_blue.static_folder, f'resource/item_pic/{item_id}/pic'))
-    except:
+        item = Item.get(Item.id == item_id)
+    except Exception as e:
         return make_response_json(400, "此物品不存在")
-    else:
-        if len(pic_path):
-            pic_list = []
-            for pic_md5 in pic_path:
-                pic_list.append(url_for('item.static', filename=f'resource/item_pic/{item_id}/pic/{pic_md5}'))
-            return make_response_json(200, "图片查找成功", data={"url": pic_list})
-        else:
-            return make_response_json(400, "此物品不存在")
+    pic_path = os.path.join(item_blue.static_folder, f'resource/item_pic/{item_id}/pic')
+    if not os.path.exists(pic_path):
+        createPath(pic_path)
+        with open(url_for('item.static', filename=f'resource/default_pic/test.jpg'), "rb") as f:
+            with open(url_for('item.static', filename=f'resource/item_pic/{item_id}/pic/test.jpg'), "wb") as fp:
+                fp.write(f.read())
+    if len(os.listdir(pic_path)) == 0:
+        with open(url_for('item.static', filename=f'resource/default_pic/test.jpg'), "rb") as f:
+            with open(url_for('item.static', filename=f'resource/item_pic/{item_id}/pic/test.jpg'), "wb") as fp:
+                fp.write(f.read())
+    pic_list = os.listdir(pic_path)
+    pics = list()
+    for pic_name in pic_path:
+        pic_list.append(url_for('item.static', filename=f'resource/item_pic/{item_id}/pic/{pic_name}'))
+    return make_response_json(200, "图片查找成功", data={"url": pics})
+
+
+@api_blue.route("/get_item_head_pic", methods=['GET'])
+def get_item_head_pic():
+    data = request.get_json()
+    try:
+        item_id = int(data["item_id"])
+    except Exception as e:
+        return make_response_json(400, f"请求格式错误 {repr(e)}")
+    try:
+        item = Item.get(Item.id == item_id)
+    except Exception as e:
+        return make_response_json(400, "此物品不存在")
+    pic_path = os.path.join(item_blue.static_folder, f'resource/item_pic/{item_id}/head')
+    if not os.path.exists(pic_path):
+        createPath(pic_path)
+        with open(url_for('item.static', filename=f'resource/default_pic/test.jpg'), "rb") as f:
+            with open(url_for('item.static', filename=f'resource/item_pic/{item_id}/head/test.jpg'), "wb") as fp:
+                fp.write(f.read())
+    if len(os.listdir(pic_path)) == 0:
+        with open(url_for('item.static', filename=f'resource/default_pic/test.jpg'), "rb") as f:
+            with open(url_for('item.static', filename=f'resource/item_pic/{item_id}/head/test.jpg'), "wb") as fp:
+                fp.write(f.read())
+    pic_list = os.listdir(pic_path)
+    pic = url_for('item.static', filename=f'resource/item_pic/{item_id}/head/{pic_list[0]}')
+    return make_response_json(200, "图片查找成功", data={"url": pic})
 
 
 @api_blue.route('/get_item_info', methods=['GET'])
@@ -301,7 +334,7 @@ def post_item_info():
     createPath(os.path.join(item_blue.static_folder, f'resource/item_pic/{new.id}/pic'))
     if len(data["urls"]) == 0:
         #给一个默认图
-        with open(url_for('item.static', filename=f'resource/default/test.jpg'), "rb") as f:
+        with open(url_for('item.static', filename=f'resource/default_pic/test.jpg'), "rb") as f:
             with open(url_for('item.static', filename=f'resource/item_pic/{new.id}/head/test.jpg'), "wb") as fp:
                 fp.write(f.read())
             with open(url_for('item.static', filename=f'resource/item_pic/{new.id}/pic/test.jpg'), "wb") as fp:

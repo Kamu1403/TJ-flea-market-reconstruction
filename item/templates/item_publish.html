@@ -3,82 +3,69 @@
 {% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
 <!-- main-area -->
 <main>
-
-    <main>
-        <!-- checkout-area -->
-        <div class="checkout-area pt-90 pb-90">
-            <div class="container">
-                <div class="row justify-content-center">
-                    <div class="col-lg-7">
-                        <div class="checkout-progress-wrap">
-                            <div class="progress">
-                                <div class="progress-bar" role="progressbar" style="width: 50%;" aria-valuenow="50"
-                                    aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                            <div class="checkout-progress-step">
-                                <ul>
-                                    <li class="active">
-                                        <div class="icon"><i class="fas fa-check"></i></div>
-                                        <span>填写信息</span>
-                                    </li>
-                                    <li>
-                                        <div class="icon">2</div>
-                                        <span>发布成功</span>
-                                    </li>
-                                </ul>
-                            </div>
+    <!-- cart-area -->
+    <div class="cart-area pt-90 pb-90">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-7">
+                    <div class="checkout-progress-wrap">
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
                         </div>
-                        <div class="checkout-form-wrap">
-                            <form
-                                action="file:///C:/OneDrive%20-%20%E5%90%8C%E6%B5%8E%E5%A4%A7%E5%AD%A6/%E8%BD%AF%E5%B7%A5%E5%B0%8F%E7%BB%84/%E4%B9%99%E6%96%B9/Ganic/checkout.html#">
-                                <div class="checkout-form-top">
-                                    <h5 class="title">商品详情</h5>
-
-                                </div>
-
-                                <div class="building-info-wrap">
-
-                                    <input type="text" placeholder="name">
-                                    <input type="text" placeholder="price">
-
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <input type="text" placeholder="tag">
-                                        </div>
-                                        <div class="col-md-6">
-                                            <input type="text" placeholder="shelved_num">
-                                        </div>
-                                        <div class="col-md-6">
-
-                                        </div>
-                                        <div class="col-md-6">
-
-                                        </div>
-                                    </div>
-                                    <div class="different-address-wrap">
-                                        <div class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input" id="sda">
-                                            <label class="custom-control-label" for="sda">我要出售</label>
-                                        </div>
-
-                                        <div class="custom-control custom-checkbox">
-                                            <input type="checkbox" class="custom-control-input" id="sda">
-                                            <label class="custom-control-label" for="sda">我要悬赏</label>
-                                        </div>
-                                    </div>
-                                    <textarea name="message" id="message" placeholder="discription"></textarea>
-                                </div>
-                            </form>
+                        <div class="checkout-progress-step">
+                            <ul>
+                                <li class="active">
+                                    <div class="icon"><i class="fas fa-check"></i></div>
+                                    <span>填写信息</span>
+                                </li>
+                                <li>
+                                    <div class="icon">2</div>
+                                    <span>发布成功</span>
+                                </li>
+                            </ul>
                         </div>
                     </div>
+                    <div class="checkout-form-wrap">
+                        <form action="file:///C:/OneDrive%20-%20%E5%90%8C%E6%B5%8E%E5%A4%A7%E5%AD%A6/%E8%BD%AF%E5%B7%A5%E5%B0%8F%E7%BB%84/%E4%B9%99%E6%96%B9/Ganic/checkout.html#">
+                            <div class="checkout-form-top">
+                                <h5 class="title">商品详情</h5>
+                            </div>
 
+                            <div class="building-info-wrap">
+                                <input type="text" placeholder="name" />
+                                <input type="text" placeholder="price" />
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <input type="text" placeholder="tag" />
+                                    </div>
+                                    <div class="col-md-6">
+                                        <input type="text" placeholder="shelved_num" />
+                                    </div>
+                                    <div class="col-md-6"></div>
+                                    <div class="col-md-6"></div>
+                                </div>
+                                <div class="different-address-wrap">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" id="sda" />
+                                        <label class="custom-control-label" for="sda">我要出售</label>
+                                    </div>
+
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="custom-control-input" id="sda" />
+                                        <label class="custom-control-label" for="sda">我要悬赏</label>
+                                    </div>
+                                </div>
+                                <textarea name="message" id="message" placeholder="discription"></textarea>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
-            
-            <!-- cart-area -->
-            <div class="container">
-                <div class="row justify-content-center">
-                    <div class="col-lg-7">
+        </div>
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-7">
                     <div class="cart-wrapper">
                         <div class="table-responsive">
                             <table class="table mb-0">
@@ -96,6 +83,10 @@
                             </table>
                         </div>
                     </div>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-lg-7">
                     <div class="shop-cart-bottom">
                         <div class="cart-coupon">
                             <form action="javascript:void(0)">
@@ -108,7 +99,10 @@
                             <a href="javascript:void(0)" onclick="uploadImg()" class="btn">上传图片</a>
                         </div>
                     </div>
+<<<<<<< HEAD
                     <!-- </div> -->
+=======
+>>>>>>> develop
                 </div>
             </div>
             </div>
