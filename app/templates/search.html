@@ -206,7 +206,7 @@
         {% block js %} 
         {{ super() }}
         <script type="text/javascript" charset="utf-8">
-            var debug=1;
+            var debug=0;
             var keyword = "{{ keyword|safe }}";
             if (debug==1)
             {
@@ -236,11 +236,10 @@
                             
                         }
                     }
-                });
-            });
+                });            });
             }
             else{
-            $(document).ready(function () {
+                $(document).ready(function () {
                 $.post("/api/search", { search_type: 0, start_time: "", end_time: "", order_type: "", key_word: keyword }, function (ret) {
                     if (ret.statusCode == 400) {
                         alert(ret.message);
@@ -263,7 +262,6 @@
                             </div>';
                             console.log(str);
                             $(display).append(str);
-                            
                         }
                     }
                 });
