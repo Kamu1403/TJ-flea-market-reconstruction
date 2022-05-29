@@ -24,7 +24,6 @@
                                     <div class="tab-content" id="myTabContentTwo">
                                         <div class="tab-pane fade show active" id="details" role="tabpanel" aria-labelledby="details-tab">
                                             <div class="product-desc-content">
-                                                
                                                 <div class="row">
                                                     <div class="media" style="margin-top: 15px;">
                                                         <a href="shop-details.html"><img src="  {{url_for('static', filename='img/product/bdw_products01.png')}}" class="align-self-start mr-2" style="width:64px;height:64px">
@@ -36,7 +35,20 @@
                                                         <p>2022-04-10 12:20:30  </p>
                                                         <a href="shop-details.html"><strong>查看详情</strong> </a>
                                                     </div>
+                                                    </div>
                                                 </div>
+                                                <div class="row">
+                                                    <div class="media" style="margin-top: 15px;">
+                                                        <a href="shop-details.html"><img src="  {{url_for('static', filename='img/product/bdw_products01.png')}}" class="align-self-start mr-2" style="width:64px;height:64px">
+                                                        </a>
+                                                    <div class="media-body" style="margin-left: 8px;">
+                                                        <h6 class="media-heading">新鲜美味大橘子汁……
+                                                        </h6>
+    
+                                                        <p>2022-04-10 12:20:30  </p>
+                                                        <a href="shop-details.html"><strong>查看详情</strong> </a>
+                                                    </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -158,4 +170,28 @@
             <!-- special-products-area-end -->
 
         </main>
-        {% endblock %} {% block footer %} {{ super() }} {% endblock %} {% block js %} {{ super() }} {% endblock %}
+
+{% endblock %} {% block footer %} {{ super() }} {% endblock %} 
+{% block js %} 
+{{ super() }}
+<script type="text/javascript">
+    $(document).ready(function () {
+        var debug =1;
+        if (debug==1){
+            $.get("http://127.0.0.1:4523/mock/927026/api/get_user_item", function (ret) {
+                console.log(ret);
+                
+            });
+        }
+        else{
+            $.get("/api/get_user_item", function (ret) {
+                // console.log(ret);
+                if (ret.statusCode == 401||404) {
+                } else {
+                    console.log(ret);
+                }
+                });
+        }
+    });
+</script> 
+{% endblock %}
