@@ -1,105 +1,93 @@
-<html>
-
-<head>
-    <script src="  {{url_for('static', filename='js/vendor/jquery-3.6.0.min.js')}}"></script>
-    </script>
-    <script>
-        var str = window.location.href;
-        var temp = str.split("/")
-        var data = { "item_id": temp[temp.length - 2] };
-        console.log(data);
-        $.ajax(
-            {
-                type: "GET",
-                dataType: "JSON",
-                data: data,
-                url: "/api/get_item_info",
-                success: function show(result) {
-                    for (i in result['data']) {
-                        var j = document.getElementById(i);
-                        if (j) {
-                            j.innerHTML = result['data'][i];
-                        }
-                    }
-
-                    if (!result['isPub']) {
-                        $('#button1').append("<a href='/chat/" + result['data']['publisher_id'] + "'>和对方聊天</a>");
-                        $('#button2').append("生成订单");
-                        $('#button2').click(function () {
-                            $.ajax({
-                                type: "PUT",
-                                dataType: "JSON",
-                                data: data,
-                                url: "/api/get_item_info",
-                                success: function (result) {
-                                    var order_id = result.data.id;
-                                    window.location.href = "/order/generate/" + order_id + "/";
-                                }
-                            })
-                        })
-                        if (result['isAdmin']) {
-                            $("#test").append("<button>修改上架信息</button><button>下架</button>");
-                        }
-                    }
-                    else {
-                        $('#button1').append("修改上架信息");
-                        if (result['isAdmin']) {
-                            $('#button2').append("下架");
-                        }
-                    }
-
-                }
-            }
-        )
-        function jump() {
-            var str = window.location.href;
-            var temp = str.split("/")
-            var data = { "type": temp[temp.length - 3], "id": temp[temp.length - 2] };
-            window.open('/order/generate/' + data["type"] + "/" + data["id"]);
-        }
-    </script>
-</head>
-
-<body>
-    <a href="{{ url_for('item.index')}}">返回主页</a>
-    <div>
-        <table>
-            <tbody id="show">
-                <tr>
-                    <td>名称</td>
-                    <td id="name"></td>
-                </tr>
-                <tr>
-                    <td>单价</td>
-                    <td id="price"></td>
-                </tr>
-                <tr>
-                    <td>上架学生学号</td>
-                    <td id="publisher_id"></td>
-                </tr>
-                <tr>
-                    <td>上架时间</td>
-                    <td id="publish_time"></td>
-                </tr>
-                <tr>
-                    <td>上架数量</td>
-                    <td id="shelved_num"></td>
-                </tr>
-                <tr>
-                    <td>标签</td>
-                    <td id="tag"></td>
-                </tr>
-                <tr>
-                    <td>描述</td>
-                    <td id="description"></td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-    <div id="test">
-        <button id="button1"></button>
-        <button id="button2"></button>
-    </div>
-</body>
-
-</html>
+{% extends "base.html" %} {% block title %}
+<title>同济大学跳蚤市场--商品详情</title>
+{% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
+<!-- main-area -->
+<main>
+    <!-- shop-details-area -->
+    <section class="shop-details-area pt-90 pb-90">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-7">
+                    <div class="shop-details-flex-wrap">
+                        <div class="shop-details-nav-wrap">
+                            <ul class="nav nav-tabs" id="myTab" role="tablist"></ul>
+                        </div>
+                        <div class="shop-details-img-wrap">
+                            <div class="tab-content" id="myTabContent"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-5">
+                    <div class="shop-details-content">
+                        <h4 class="title">商品名</h4>
+                        <div class="shop-details-meta">
+                            <ul>
+                                <li>卖家 : <a href="#"><卖家名>[点击进入卖家个人空间]</a></li>
+                                <li class="shop-details-review">
+                                    <div class="rating">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                    <span><卖家用户分数></span>
+                                </li>
+                                <li>ID : <span><商品ID></span></li>
+                            </ul>
+                        </div>
+                        <div class="shop-details-price">
+                            <h2 class="price"><价格></h2>
+                            <h5 class="stock-status">- 剩余<>件</h5>
+                        </div>
+                        <p><商品详情描述></p>
+                        <div class="shop-details-list">
+                            <ul>
+                                <li>商品类型 : <span>[悬赏/售卖]</span></li>
+                                <li>发布时间 : <span>[2022.05.29]</span></li>
+                            </ul>
+                        </div>
+                        <div class="shop-perched-info">
+                            <div class="sd-cart-wrap" id="non_seller_visible" hidden>
+                                <form action="#">
+                                    <div class="cart-plus-minus">
+                                        <input type="text" value="1" />
+                                    </div>
+                                </form>
+                            </div>
+                            <a href="#" class="btn" id="non_seller_visible" hidden>生成订单</a>
+                            <a href="#" class="btn" id="non_seller_visible" hidden>联系卖家</a>
+                            <a href="#" class="btn" id="seller_visible" hidden>修改商品信息</a>
+                            <a href="#" class="btn" id="seller_visible" hidden>下架商品</a>
+                            <a href="#" class="btn" id="manager_visible" hidden>强制下架商品</a>
+                        </div>
+                        <div class="shop-details-bottom">
+                            <h5 class="title">
+                                <a href="#"><i class="far fa-heart"></i> 加入收藏</a>
+                            </h5>
+                            <ul>
+                                <li>
+                                    <span>Tag : </span>
+                                    <a href="#">[商品标签1]</a>
+                                    <a href="#">[商品标签2]</a>
+                                </li>
+                                <!--
+                                <li>
+                                    <span>CATEGORIES :</span>
+                                    <a href="#">women's,</a>
+                                    <a href="#">bikini,</a>
+                                    <a href="#">tops for,</a>
+                                    <a href="#">large bust</a>
+                                </li>
+                                -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- best-sellers-area-end -->
+</main>
+<!-- main-area-end -->
+{% endblock %} {% block footer %} {{ super() }} {% endblock %} {% block js %} {{ super() }} {% endblock %}
