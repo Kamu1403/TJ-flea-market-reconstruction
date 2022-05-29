@@ -336,6 +336,7 @@ def post_item_pic():
 
         curpath = os.path.join(item_blue.static_folder, f'resource/temp')
         path_name = os.path.join(curpath, data.filename)
+        createPath(curpath)
         data.save(path_name)
         img = Image.open(path_name)
         md5_str = md5(img.tobytes()).hexdigest()
