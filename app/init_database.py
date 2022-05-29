@@ -156,6 +156,14 @@ def fake_data():  #填一些假数据进去
                 description="求耳机一副",
                 type=1)
 
+    Item.create(id=6,
+                name="方便面",
+                user_id=1951566,
+                price=3.33,
+                shelved_num=999,
+                locked_num=10,
+                type=0)
+
     #浏览 收藏
     History.create(user_id=1951705, item_id=2, visit_time=datetime(2022, 4, 1))
     History.create(user_id=1951566, item_id=2)
