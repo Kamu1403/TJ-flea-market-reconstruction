@@ -38,11 +38,11 @@ def get_item_pics():
     pic_path = os.path.join(item_blue.static_folder, f'resource/item_pic/{item_id}/pic')
     if not os.path.exists(pic_path):
         createPath(pic_path)
-        with open(url_for('item.static', filename=f'resource/default/test.jpg'), "rb") as f:
+        with open(url_for('item.static', filename=f'resource/default_pic/test.jpg'), "rb") as f:
             with open(url_for('item.static', filename=f'resource/item_pic/{item_id}/pic/test.jpg'), "wb") as fp:
                 fp.write(f.read())
     if len(os.listdir(pic_path)) == 0:
-        with open(url_for('item.static', filename=f'resource/default/test.jpg'), "rb") as f:
+        with open(url_for('item.static', filename=f'resource/default_pic/test.jpg'), "rb") as f:
             with open(url_for('item.static', filename=f'resource/item_pic/{item_id}/pic/test.jpg'), "wb") as fp:
                 fp.write(f.read())
     pic_list = os.listdir(pic_path)
@@ -66,11 +66,11 @@ def get_item_head_pic():
     pic_path = os.path.join(item_blue.static_folder, f'resource/item_pic/{item_id}/head')
     if not os.path.exists(pic_path):
         createPath(pic_path)
-        with open(url_for('item.static', filename=f'resource/default/test.jpg'), "rb") as f:
+        with open(url_for('item.static', filename=f'resource/default_pic/test.jpg'), "rb") as f:
             with open(url_for('item.static', filename=f'resource/item_pic/{item_id}/head/test.jpg'), "wb") as fp:
                 fp.write(f.read())
     if len(os.listdir(pic_path)) == 0:
-        with open(url_for('item.static', filename=f'resource/default/test.jpg'), "rb") as f:
+        with open(url_for('item.static', filename=f'resource/default_pic/test.jpg'), "rb") as f:
             with open(url_for('item.static', filename=f'resource/item_pic/{item_id}/head/test.jpg'), "wb") as fp:
                 fp.write(f.read())
     pic_list = os.listdir(pic_path)
@@ -334,7 +334,7 @@ def post_item_info():
     createPath(os.path.join(item_blue.static_folder, f'resource/item_pic/{new.id}/pic'))
     if len(data["urls"]) == 0:
         #给一个默认图
-        with open(url_for('item.static', filename=f'resource/default/test.jpg'), "rb") as f:
+        with open(url_for('item.static', filename=f'resource/default_pic/test.jpg'), "rb") as f:
             with open(url_for('item.static', filename=f'resource/item_pic/{new.id}/head/test.jpg'), "wb") as fp:
                 fp.write(f.read())
             with open(url_for('item.static', filename=f'resource/item_pic/{new.id}/pic/test.jpg'), "wb") as fp:
