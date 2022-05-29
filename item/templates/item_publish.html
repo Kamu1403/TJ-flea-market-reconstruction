@@ -125,7 +125,33 @@
 <script>
     function submit(){
         let name=$("#name").val();
-        
+        let price=$("#price").val();
+        let tag=$("#tag").val();
+        let quantity=$("#quantity").val(); 
+        let type=$("#choice").val(); 
+        let message=$("#message").val(); 
+        let urls = new Array();
+        $("[id^=project_name]").each(function (index, obj) {
+            let cc="#customCheck_"+$(this).text();
+            let obj1={MD5:$(this).text(),is_cover_pic:$(cc)[0].checked};
+            urls.push(obj1);
+        });
+        let formData=JSON.stringify(
+            {name: name, price: parseFloat(price), tag:tag, type: parseInt(price), shelved_num:parseInt(price),descrition:message,urls:urls});
+        console.log(formData);
+        $.ajax({
+            url: "/api/post_item_info",
+            type: "post",
+            data: formData,
+            contentType: "application/json;charset=utf-8",
+            processData: false,
+            success: function (ret) {
+                if (ret.statusCode == 200) {
+                    console.log(ret)
+                } else alert(ret.message);
+            },
+        });
+
     } 
 
     function change_choice(type){
