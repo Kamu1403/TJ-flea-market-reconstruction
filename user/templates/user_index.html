@@ -13,61 +13,23 @@
                                 <div class="product-desc-wrap">
                                     <ul class="nav nav-tabs" id="myTabTwo" role="tablist">
                                         <li class="nav-item">
-                                            <a class="nav-link active" id="details-tab" data-toggle="tab" href="#details" role="tab"
-                                                aria-controls="details" aria-selected="true">我的悬赏</a>
+                                            <a class="nav-link active" id="wants-tab" data-toggle="tab" href="#wants" role="tab"
+                                                aria-controls="wants" aria-selected="true">我的悬赏</a>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link" id="val-tab" data-toggle="tab" href="#val" role="tab" aria-controls="val"
+                                            <a class="nav-link" id="goods-tab" data-toggle="tab" href="#goods" role="tab" aria-controls="goods"
                                                 aria-selected="false">我的待售</a>
                                         </li>
                                     </ul>
                                     <div class="tab-content" id="myTabContentTwo">
-                                        <div class="tab-pane fade show active" id="details" role="tabpanel" aria-labelledby="details-tab">
-                                            <div class="product-desc-content">
-                                                <div class="row">
-                                                    <div class="media" style="margin-top: 15px;">
-                                                        <a href="shop-details.html"><img src="  {{url_for('static', filename='img/product/bdw_products01.png')}}" class="align-self-start mr-2" style="width:64px;height:64px">
-                                                        </a>
-                                                    <div class="media-body" style="margin-left: 8px;">
-                                                        <h6 class="media-heading">新鲜美味大橘子汁……
-                                                        </h6>
-    
-                                                        <p>2022-04-10 12:20:30  </p>
-                                                        <a href="shop-details.html"><strong>查看详情</strong> </a>
-                                                    </div>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="media" style="margin-top: 15px;">
-                                                        <a href="shop-details.html"><img src="  {{url_for('static', filename='img/product/bdw_products01.png')}}" class="align-self-start mr-2" style="width:64px;height:64px">
-                                                        </a>
-                                                    <div class="media-body" style="margin-left: 8px;">
-                                                        <h6 class="media-heading">新鲜美味大橘子汁……
-                                                        </h6>
-    
-                                                        <p>2022-04-10 12:20:30  </p>
-                                                        <a href="shop-details.html"><strong>查看详情</strong> </a>
-                                                    </div>
-                                                    </div>
-                                                </div>
+                                        <div class="tab-pane fade show active" role="tabpanel" id="wants" aria-labelledby="details-tab">
+                                            <div class="product-desc-content" >
+
                                             </div>
                                         </div>
-                                        <div class="tab-pane fade" id="val" role="tabpanel" aria-labelledby="val-tab">
+                                        <div class="tab-pane fade" role="tabpanel" id="goods" aria-labelledby="val-tab">
                                             <div class="product-desc-content">
                                                 
-                                                <div class="row">
-                                                    <div class="media" style="margin-top: 15px;">
-                                                        <a href="shop-details.html"><img src="  {{url_for('static', filename='img/product/bdw_products01.png')}}" class="align-self-start mr-2" style="width:64px;height:64px">
-                                                        </a>
-                                                    <div class="media-body" style="margin-left: 8px;">
-                                                        <h6 class="media-heading">干净又卫生小橘子汁……
-                                                        </h6>
-    
-                                                        <p>2022-05-10 12:20:30  </p>
-                                                        <a href="shop-details.html"><strong>查看详情</strong> </a>
-                                                    </div>
-                                                </div>
-                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -176,22 +138,37 @@
 {{ super() }}
 <script type="text/javascript">
     $(document).ready(function () {
-        var debug =1;
-        if (debug==1){
-            $.get("http://127.0.0.1:4523/mock/927026/api/get_user_item", function (ret) {
-                console.log(ret);
-                
-            });
-        }
-        else{
-            $.get("/api/get_user_item", function (ret) {
-                // console.log(ret);
-                if (ret.statusCode == 401||404) {
+        var url="http://127.0.0.1:4523/mock/927026/api/get_user_item";
+        //var url="/api/get_user_item";
+        $.get(url, function (ret) {
+                if (ret.statusCode == 401||ret.statusCode==404) {
+                    alert(ret.message);
                 } else {
-                    console.log(ret);
+                    console.log(ret)
+                    var items = ret.data;
+                    for (let i = 0; i < items.length; i++)
+                    {
+                        var str='<div class="row">\
+                            <div class="media" style="margin-top: 15px;">\
+                                <a href="shop-details.html"><img src="  {{url_for("static", filename="img/product/bdw_products01.png")}}" class="align-self-start mr-2" style="width:64px;height:64px">\
+                                </a>\
+                            <div class="media-body" style="margin-left: 8px;">\
+                                <h6 class="media-heading">'+ items[i].name+'\
+                                </h6>\
+                                <p>'+items[i].publish_time+'</p>\
+                                <a href="shop-details.html"><strong>查看详情</strong> </a>\
+                            </div>\
+                            </div>\
+                        </div>';
+                        console.log(items[i].type)
+                        if (items[i].type==0)
+                            $("#goods").append(str);
+                        else
+                            $("#wants").append(str);
+                    }
+
                 }
                 });
-        }
-    });
+        });
 </script> 
 {% endblock %}
