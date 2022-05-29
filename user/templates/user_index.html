@@ -10,48 +10,55 @@
                     <div class="special-products-wrap">
                         <div class="row">
                             <div class="col-3 d-none d-lg-block">
-                                <div class="tabs">
-
-                                    <input checked id="one" name="tabs" type="radio" style="opacity:0;">
-                                    <label for="one">我的待售</label>
-                            
-                                    <input id="two" name="tabs" type="radio" value="Two" style="opacity:0;">
-                                    <label for="two">我的悬赏</label>
-                            
-                                    <div class="panels">
-                                        <div class="panel"> 
-
-                                            <div class="media" style="margin-top: 15px;">
-                                                    <a href="shop-details.html"><img src="  {{url_for('static', filename='img/product/bdw_products01.png')}}" class="align-self-start mr-2" style="width:64px;height:64px">
-                                                    </a>
-                                                <div class="media-body" style="margin-left: 8px;">
-                                                    <h6 class="media-heading">新鲜美味可口大橘子汁……
-                                                    </h6>
-
-                                                    <p>2022-04-10 12:20:30  </p>
-                                                    <a href="shop-details.html"><strong>查看详情</strong> </a>
+                                <div class="product-desc-wrap">
+                                    <ul class="nav nav-tabs" id="myTabTwo" role="tablist">
+                                        <li class="nav-item">
+                                            <a class="nav-link active" id="details-tab" data-toggle="tab" href="#details" role="tab"
+                                                aria-controls="details" aria-selected="true">我的悬赏</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" id="val-tab" data-toggle="tab" href="#val" role="tab" aria-controls="val"
+                                                aria-selected="false">我的待售</a>
+                                        </li>
+                                    </ul>
+                                    <div class="tab-content" id="myTabContentTwo">
+                                        <div class="tab-pane fade show active" id="details" role="tabpanel" aria-labelledby="details-tab">
+                                            <div class="product-desc-content">
+                                                
+                                                <div class="row">
+                                                    <div class="media" style="margin-top: 15px;">
+                                                        <a href="shop-details.html"><img src="  {{url_for('static', filename='img/product/bdw_products01.png')}}" class="align-self-start mr-2" style="width:64px;height:64px">
+                                                        </a>
+                                                    <div class="media-body" style="margin-left: 8px;">
+                                                        <h6 class="media-heading">新鲜美味大橘子汁……
+                                                        </h6>
+    
+                                                        <p>2022-04-10 12:20:30  </p>
+                                                        <a href="shop-details.html"><strong>查看详情</strong> </a>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="media" style="margin-top: 15px;">
-                                                <a href="shop-details.html"><img src="  {{url_for('static', filename='img/product/bdw_products01.png')}}" class="align-self-start mr-2" style="width:64px;height:64px">
-                                                </a>
-                                                <div class="media-body" style="margin-left: 8px;">
-                                                    <h6 class="media-heading">新鲜美味可口大橘子汁……
-                                                    </h6>
-
-                                                    <p>2022-04-10 12:20:30  </p>
-                                                    <a href="shop-details.html"><strong>查看详情</strong> </a>
                                                 </div>
                                             </div>
                                         </div>
-                            
-                                        <div class="panel">
-                                            <h2>This is Panel Two</h2>
-                                            <p>Aliquam</p>
+                                        <div class="tab-pane fade" id="val" role="tabpanel" aria-labelledby="val-tab">
+                                            <div class="product-desc-content">
+                                                
+                                                <div class="row">
+                                                    <div class="media" style="margin-top: 15px;">
+                                                        <a href="shop-details.html"><img src="  {{url_for('static', filename='img/product/bdw_products01.png')}}" class="align-self-start mr-2" style="width:64px;height:64px">
+                                                        </a>
+                                                    <div class="media-body" style="margin-left: 8px;">
+                                                        <h6 class="media-heading">干净又卫生小橘子汁……
+                                                        </h6>
+    
+                                                        <p>2022-05-10 12:20:30  </p>
+                                                        <a href="shop-details.html"><strong>查看详情</strong> </a>
+                                                    </div>
+                                                </div>
+                                                </div>
+                                            </div>
                                         </div>
-                            
                                     </div>
-                            
                                 </div>
                             </div>
                             <div class="col-9">
