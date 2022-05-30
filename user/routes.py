@@ -46,31 +46,42 @@ def publish():
 #个人中心
 @user_blue.route('/<opt_userid>/space', methods=['GET', 'POST'])
 def space(opt_userid: int):  #opt_userid为目标用户ID
-    print(opt_userid)
+
     return render_template('user_space.html')
 
 
 #个人信息管理
 @user_blue.route('/<opt_userid>/user_info', methods=['GET', 'POST'])
 def user_info(opt_userid: int):  #opt_userid为目标用户ID
-    print(opt_userid)
-    return render_template('user_info.html',current_user=current_user,opt_userid=opt_userid)
+    if current_user.is_authenticated:
+        return render_template('user_info.html',
+                               current_user=current_user,
+                               opt_userid=opt_userid)
+    else:
+        return redirect(url_for('index'))  # 重定向到/index
 
 
 #历史
 @user_blue.route('/<opt_userid>/history', methods=['GET', 'POST'])
 def history(opt_userid: int):  #opt_userid为目标用户ID
-    print(opt_userid)
-    return render_template('user_history.html')
+    if current_user.is_authenticated:
+        return render_template('user_history.html')
+    else:
+        return redirect(url_for('index'))  # 重定向到/index
 
 
 #收藏
 @user_blue.route('/<opt_userid>/favor', methods=['GET', 'POST'])
 def favor(opt_userid: int):  #opt_userid为目标用户ID
-    print(opt_userid)
-    return render_template('user_favor.html')
+    if current_user.is_authenticated:
+        return render_template('user_favor.html')
+    else:
+        return redirect(url_for('index'))  # 重定向到/index
 
 
 @user_blue.route('/address', methods=['GET', 'POST'])
 def address():
-    return render_template('user_address.html')
+    if current_user.is_authenticated:
+        return render_template('user_address.html')
+    else:
+        return redirect(url_for('index'))  # 重定向到/index

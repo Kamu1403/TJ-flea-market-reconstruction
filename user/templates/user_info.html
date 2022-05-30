@@ -8,7 +8,7 @@
 
 <script type="text/javascript" charset="utf-8">
     //var opt_userid = "{{ opt_userid|safe }}"; // 如果有python传过来的
-    var opt_userid = {{ opt_userid }}; // 如果有python传过来的
+    var opt_userid = {{ opt_userid }};
     console.log(opt_userid);
     console.log({{current_user.id}});
     var debug = 0;
@@ -44,7 +44,20 @@
                 $("#item_tag_").text(ret.something);
             },
         });
-    });*/
+    });
+    */
+    $(document).ready(function () {
+        let url = "/api/get_user_info";
+        if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
+        $.ajax({
+            url: url,
+            type: "get",
+            data:{user_id:opt_userid},
+            success: function (ret) {
+                console.log(ret);
+            },
+        });
+    });
 </script>
 
 {% endblock %}
