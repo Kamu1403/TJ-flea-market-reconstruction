@@ -421,6 +421,7 @@ def add_favor():
 def item_delete_favor():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
+    print(request.get_json())
     req = request.get_json()["item_id_list"]
 
     #tep = Item.select().where(Item.id << req)  #在一个列表中查询

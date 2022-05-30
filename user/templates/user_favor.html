@@ -3,6 +3,11 @@
 {% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block
 main %}
 <main>
+  <div>
+    <span>test</span>
+    <span>清空已失效商品</span>
+    <span>一键清空</span>
+  </div>
   <table>
     <tbody id="my_favor"></tbody>
   </table>
@@ -11,6 +16,25 @@ main %}
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/5.5.2/bootbox.min.js"></script>
 <script type="text/javascript" charset="utf-8">
   var debug = 0;
+  function deletd_favor(list) {
+    let url = "/api/delete_favor";
+    if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
+    let data = JSON.stringify({ item_id_list: list });
+    console.log(data);
+    $.ajax(
+      {
+        url: url,
+        type: "delete",
+        data: data,
+        contentType: "application/json;charset=utf-8",
+        processData: false,
+        success: function (ret) {
+          window.alert(ret.message);
+          window.location.reload();
+        }
+      }
+    )
+  }
   $(document).ready(function () {
 
     let url = "/api/get_favor";
@@ -18,7 +42,7 @@ main %}
     $.ajax(
       {
         url: url,
-        type: "GET",
+        type: "get",
         success: function (ret) {
           if (ret.statusCode != 200) {
             window.alert(ret.message);
@@ -31,7 +55,7 @@ main %}
               let p_tr = $(`#my_favor${ret.data[i].id}`)
               p_tr.append(`<td id="favor_item_pic${ret.data[i].item_id}"></td>`);
               p_tr.append(`<td id="favor_item_data${ret.data[i].item_id}"></td>`);
-              p_tr.append(`<td><button>取消收藏</button></td>`);
+              p_tr.append(`<td><button onclick="deletd_favor([${ret.data[i].item_id}])">取消收藏</button></td>`);
               let pic_url = "/api/get_item_head_pic";
               if (debug) pic_url = `http://127.0.0.1:4523/mock/927026${pic_url}`;
               $.ajax(
