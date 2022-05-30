@@ -13,8 +13,8 @@
                             <tr>
                                 <td>收件人姓名</td>
                                 <td>电话</td>
-                                <td>所在校区</td>
                                 <td>详细地址</td>
+                                <td>所在校区</td>
                                 <td>是否为默认地址</td>
                                 <td>删除</td>
                                 <td>修改</td>
@@ -59,12 +59,12 @@
                     let campus_branch_select_text = get_branch_select_text(contact_id, ret.data[i].campus_branch);
                     let default_button_text = get_default_button_text(contact_id, ret.data[i].default);
                     //console.log(campus_branch_select_text);
-                    tab.append(`<td class='edit_text' id='name${contact_id}'>  ${ret.data[i].name} </td>`);
-                    tab.append(`<td class='edit_text' id='telephone${contact_id}'> ${ret.data[i].telephone} </td>`);
-                    tab.append(`<td class='edit_text' id='full_address${contact_id}'> ${ret.data[i].full_address} </td>`);
-                    tab.append(`<td id='campus_branch${contact_id}'> ${campus_branch_select_text} </td>`);
-                    tab.append(`<td> ${default_button_text} </td>`);
-                    tab.append(`<td><input type='button' id='delete_contact_id${contact_id}' onclick='delete_contact(this,${contact_id})' value='删除地址'</td>`);
+                    tab.append(`<td class='edit_text' id='name${contact_id}'>${ret.data[i].name}</td>`);
+                    tab.append(`<td class='edit_text' id='telephone${contact_id}'>${ret.data[i].telephone}</td>`);
+                    tab.append(`<td class='edit_text' id='full_address${contact_id}'>${ret.data[i].full_address}</td>`);
+                    tab.append(`<td id='campus_branch${contact_id}'>${campus_branch_select_text}</td>`);
+                    tab.append(`<td>${default_button_text}</td>`);
+                    tab.append(`<td><input type='button' id='delete_contact_id${contact_id}' onclick='delete_by_id(${contact_id})' value='删除地址'</td>`);
                     tab.append(`<td><input type='button' id='update_contact_id${contact_id}' onclick='update_contact(${contact_id})' value='保存修改'</td>`);
                 }
 
@@ -112,15 +112,11 @@
             //async: false, // 当需要将值传给函数外部时需要强制同步
             success: function (ret) {
                 if (ret.statusCode == 200) {
-                    bootbox.alert("删除成功");
+                    alert("删除成功");
                     window.location.reload();
-                } else bootbox.alert(ret.statusCode + ret.message);
+                } else bootbox.alert(ret.message);
             },
         });
-    }
-    function delete_contact(s, id) {
-        s.parentNode.parentNode.remove();
-        delete_by_id(id);
     }
 
     function update_contact(id) {
@@ -142,10 +138,10 @@
             //async: false, // 当需要将值传给函数外部时需要强制同步
             success: function (ret) {
                 if (ret.statusCode == 200) {
-                    bootbox.alert("修改成功");
+                    alert("修改成功");
                     window.location.reload();
                 } else {
-                    alert(ret.statusCode + ret.message);
+                    alert(ret.message);
                     window.location.reload();
                 }
             },
@@ -164,9 +160,9 @@
             //async: false, // 当需要将值传给函数外部时需要强制同步
             success: function (ret) {
                 if (ret.statusCode == 200) {
-                    bootbox.alert("添加成功，请修改相关信息");
+                    alert("添加成功，请修改相关信息");
                     window.location.reload();
-                } else bootbox.alert(ret.statusCode + ret.message);
+                } else bootbox.alert(ret.message);
             },
         });
     }
