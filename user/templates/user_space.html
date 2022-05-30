@@ -27,13 +27,13 @@
                                 </div>
                                 <ul class="s-my-stuffs">
                                     <li>
-                                        <a href="404.html" class="J_DropTrigger i-trigger">我的地址</a>
+                                        <a href="{{url_for('user.address')}}" class="J_DropTrigger i-trigger">我的地址</a>
                                     </li>
                                     <li>
                                         <a href="404.html" class="J_DropTrigger i-trigger">隐私管理</a>
                                     </li>
                                     <li>
-                                        <a href="404.html" class="J_DropTrigger i-trigger"> <em>我的信誉</em> ({{current_user.score}}分)</a>
+                                        <a href="#" class="J_DropTrigger i-trigger"> <em>我的信誉</em> ({{current_user.score}}分)</a>
                                     </li>
                                 </ul>
                             </div>

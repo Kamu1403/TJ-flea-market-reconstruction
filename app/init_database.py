@@ -178,12 +178,17 @@ def fake_data():  #填一些假数据进去
     Favor.create(user_id=1951705, item_id=5)
     Favor.create(user_id=1951566, item_id=5)
     Favor.create(user_id=1950084, item_id=4)
-
+    Contact.create(id=10,
+                   user_id=1951705,
+                   name="高曾谊",
+                   telephone="+86 11111uoiujoij",
+                   full_address="address2",
+                   default=False)
     Contact.create(id=1,
                    user_id=1951705,
                    name="高曾谊",
-                   telephone="+86 111111111",
-                   full_address="xxx",
+                   telephone="+86 111dfasfs11",
+                   full_address="address1",
                    default=True)
     Contact.create(id=2,
                    user_id=1950084,

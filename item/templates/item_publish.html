@@ -28,28 +28,27 @@
                     </div>
                     -->
                     <div class="checkout-form-wrap">
-                        <form action="file:///C:/OneDrive%20-%20%E5%90%8C%E6%B5%8E%E5%A4%A7%E5%AD%A6/%E8%BD%AF%E5%B7%A5%E5%B0%8F%E7%BB%84/%E4%B9%99%E6%96%B9/Ganic/checkout.html#">
+                        <form action="javascript:void(0)">
                             <div class="checkout-form-top">
                                 <h5 class="title">发布新物品</h5>
                             </div>
 
                             <div class="building-info-wrap">
-                                <input type="text" placeholder="物品名称" id="name"/>
-                                <input type="text" placeholder="价格" id="price"/>
+                                <input type="text" placeholder="物品名称" id="name" />
+                                <input type="text" placeholder="价格" id="price" />
 
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <input type="text" placeholder="标签" id="tag"/>
+                                        <input type="text" placeholder="标签" id="tag" />
                                     </div>
                                     <div class="col-md-6">
-                                        <input type="text" placeholder="数量" id="quantity"/>
+                                        <input type="text" placeholder="数量" id="quantity" />
                                     </div>
                                 </div>
                                 <div class="different-address-wrap">
                                     <div class="header-super-store d-none d-xl-block d-lg-none d-md-block">
                                         <div class="dropdown">
-                                            <button class="dropdown-toggle" type="button" id="choice" data-toggle="dropdown" aria-haspopup="true"
-                                                aria-expanded="false">请选择发布类型</button>
+                                            <button class="dropdown-toggle" type="button" id="choice" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">请选择发布类型</button>
                                             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton4">
                                                 <a class="dropdown-item" onclick="change_choice(0)">发布商品</a>
                                                 <a class="dropdown-item" onclick="change_choice(1)">发布悬赏</a>
@@ -89,14 +88,14 @@
             <div class="row justify-content-center">
                 <div class="col-lg-7">
                     <div class="shop-cart-bottom">
-                        <div class="cart-coupon ">
+                        <div class="cart-coupon">
                             <form action="javascript:void(0)">
                                 <input type="file" id="file" style="display: none" />
                                 <input type="text" id="show_file_name" placeholder="" readonly="readonly" disabled="disabled" />
                                 <button href="javascript:void(0)" onclick="selectImg()" class="btn">选择图片</button>
                             </form>
                         </div>
-                        <div class="continue-shopping ">
+                        <div class="continue-shopping">
                             <a href="javascript:void(0)" onclick="uploadImg()" class="btn">上传图片</a>
                         </div>
                     </div>
@@ -106,38 +105,37 @@
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-lg-7">
-                    <div class="shop-cart-total" style="background-color:rgba(255,255,255,0.5);border:none;">
-                        <div class="shop-cart-widget" >
-                                <a class="btn" onclick="submit()">提交发布</a>
+                    <div class="shop-cart-total" style="background-color: rgba(255, 255, 255, 0.5); border: none">
+                        <div class="shop-cart-widget">
+                            <a class="btn" onclick="submit()">提交发布</a>
                         </div>
                     </div>
-                    </div>
                 </div>
+            </div>
         </div>
     </div>
 
-            <!-- cart-area-end -->
-        <!-- checkout-area-end -->
+    <!-- cart-area-end -->
+    <!-- checkout-area-end -->
 </main>
 <!-- main-area-end -->
 {% endblock %} {% block footer %} {{ super() }} {% endblock %} {% block js %} {{ super() }}
 
 <script>
-    function submit(){
-        let name=$("#name").val();
-        let price=$("#price").val();
-        let tag=$("#tag").val();
-        let quantity=$("#quantity").val(); 
-        let type=$("#choice").val(); 
-        let message=$("#message").val(); 
+    function submit() {
+        let name = $("#name").val();
+        let price = $("#price").val();
+        let tag = $("#tag").val();
+        let quantity = $("#quantity").val();
+        let type = $("#choice").val();
+        let message = $("#message").val();
         let urls = new Array();
         $("[id^=project_name]").each(function (index, obj) {
-            let cc="#customCheck_"+$(this).text();
-            let obj1={MD5:$(this).text(),is_cover_pic:$(cc)[0].checked};
+            let cc = "#customCheck_" + $(this).text();
+            let obj1 = { MD5: $(this).text(), is_cover_pic: $(cc)[0].checked };
             urls.push(obj1);
         });
-        let formData=JSON.stringify(
-            {name: name, price: parseFloat(price), tag:tag, type: parseInt(type), shelved_num:parseInt(quantity),description:message,urls:urls});
+        let formData = JSON.stringify({ name: name, price: parseFloat(price), tag: tag, type: parseInt(type), shelved_num: parseInt(quantity), description: message, urls: urls });
         console.log(formData);
         $.ajax({
             url: "/api/post_item_info",
@@ -147,19 +145,17 @@
             processData: false,
             success: function (ret) {
                 if (ret.statusCode == 200) {
-                    console.log(ret)
+                    console.log(ret);
                 } else alert(ret.message);
             },
         });
+    }
 
-    } 
-
-    function change_choice(type){
-        if (type==0){
+    function change_choice(type) {
+        if (type == 0) {
             $(choice).text("发布商品");
             $(choice).val(0);
-        }
-        else{
+        } else {
             $(choice).text("发布悬赏");
             $(choice).val(1);
         }

@@ -1,49 +1,129 @@
 {% extends "base.html" %} {% block title %}
-<title>ͬ�ô�ѧ�����г�</title>
+<title>编辑地址</title>
 {% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
 <main>
-    <a href="#" id="item_tag_">[��Ʒ��ǩ]</a>
-    <button onclick="my_func()"></button>
-    <img src="{{url_for('item.static', filename='resource/item_pic/{item_id}/head/{pic_list[0]}')}}" />
+    <div class="cart-area pt-90 pb-90">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-7">
+                    <table id="tab" width="100%" border="0" cellspacing="0" cellpadding="0" class="mytable" style="table-layout: fixed">
+                        <tbody id="ta">
+                            <tr>
+                                <td>收件人姓名</td>
+                                <td>电话</td>
+                                <td>所在校区</td>
+                                <td>详细地址</td>
+                                <td>是否为默认地址</td>
+                                <td>删除</td>
+                                <td>修改</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 </main>
 {% endblock %} {% block footer %} {{ super() }} {% endblock %} {% block js %} {{ super() }}
-
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/5.5.2/bootbox.min.js"></script>
 <script type="text/javascript" charset="utf-8">
-    var keyword = "{{ keyword|safe }}"; // �����python��������
-    var debug = 1;
+    var debug = 0;
 
-    function my_func() {
-        let a = 1;
-        url = "/api/something1";
+    function delete_by_id(id) {
+        let url = "/api/address";
         if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
         $.ajax({
-            // query��ʽ
             url: url,
-            type: "get",
-            data: { key: value },
-            async: false, // ����Ҫ��ֵ���������ⲿʱ��Ҫǿ��ͬ��
+            type: "delete",
+            data: JSON.stringify([{ contact_id: id }]),
+            contentType: "application/json;charset=utf-8",
+            processData: false,
+            //async: false, // 当需要将值传给函数外部时需要强制同步
             success: function (ret) {
-                a = 2;
+                if (ret.statusCode == 200) {
+                    bootbox.alert("删除成功");
+                    window.location.reload();
+                }
             },
         });
-        return a;
     }
 
     $(document).ready(function () {
-        let url = "/api/something2";
+        let url = "/api/get_address";
         if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
         $.ajax({
-            // json��ʽ
             url: url,
-            type: "post",
-            data: JSON.stringify({ key: value }),
-            contentType: "application/json;charset=utf-8",
-            processData: false,
+            type: "get",
             success: function (ret) {
-                $("#item_tag_").text(ret.something);
+                //bootbox.alert(ret.message);
+                //console.log(ret);
+                let ta_tab = $("#ta");
+                for (let i = 0; i < ret.data.length; i++) {
+                    ta_tab.append(`<tr id="tr${i}"></tr>`); //添加一列
+                    let tab = $(`#tr${i}`); //把这一列的内容添加上
+                    let contact_id = ret.data[i].id;
+                    tab.append(`<td class='edit_text' id='name${contact_id}'>` + ret.data[i].name + "</td>");
+                    tab.append(`<td class='edit_text' id='telephone${contact_id}'>` + ret.data[i].telephone + "</td>");
+                    tab.append(`<td class='edit_text' id='campus_branch${contact_id}'>` + ret.data[i].campus_branch + "</td>");
+                    tab.append(`<td class='edit_text' id='full_address${contact_id}'>` + ret.data[i].full_address + "</td>");
+                    tab.append(`<td class='edit_text' id='is_default${contact_id}'>` + ret.data[i].default + "</td>");
+                    tab.append(`<td><input type='button' id='delete_contact_id${contact_id}' onclick='delete_contact(this,${contact_id})' value='删除地址'</td>`);
+                    tab.append(`<td><input type='button' id='update_contact_id${contact_id}' onclick='update_contact(${contact_id})' value='保存修改'</td>`);
+                }
+
+                /* 给表格里面每一个带有edit_text的td添加一个dblclick事件 */
+                $(".edit_text").dblclick(function () {
+                    /* 1.先拿到这个td原来的值，然后将这个td变成一个input:text,并且原来的值不动 */
+                    let tdVal = $(this).text();
+                    let oInput = $("<input type='text' value='" + tdVal + "'/>");
+                    $(this).html(oInput);
+                    oInput.focus();
+
+                    /* 2.失去焦点，这个td变为原来的text，value为修改过后的value */
+                    oInput.blur(function () {
+                        oInput.parent().html(oInput.val());
+                    });
+                });
             },
         });
     });
-</script>
 
+    function delete_contact(s, id) {
+        s.parentNode.parentNode.remove();
+        delete_by_id(id);
+    }
+
+    function update_contact(id) {
+        let url = "/api/address";
+        let name = $(`#name${id}`).text();
+        let telephone = $(`#telephone${id}`).text();
+        let campus_branch = $(`#campus_branch${id}`).text();
+        let is_default = $(`default${id}`).text();
+        let full_address = $(`full_address${id}`).text();
+
+        if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
+        $.ajax({
+            url: url,
+            type: "put",
+            data: JSON.stringify([{ contact_id: id, name: name, telephone: telephone, campus_branch: campus_branch, default: is_default, full_address: full_address }]),
+            contentType: "application/json;charset=utf-8",
+            processData: false,
+            //async: false, // 当需要将值传给函数外部时需要强制同步
+            success: function (ret) {
+                bootbox.alert(ret.statusCode + ret.message);
+                if (ret.statusCode == 200) {
+                    bootbox.alert("修改成功");
+                    window.location.reload();
+                }
+            },
+        });
+    }
+</script>
+<style>
+    /*蓝色边框，不过并不好看
+    .mytable tr td {
+        border: 1px solid blue;
+        padding: 3px;
+    }*/
+</style>
 {% endblock %}
