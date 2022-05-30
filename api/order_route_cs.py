@@ -90,6 +90,7 @@ def get_address():
     elif current_user.state == User_state.Under_ban.value:
         return make_response_json(401, "当前用户已被封禁")
     need = [
+        Contact.id,
         Contact.name, Contact.telephone, Contact.full_address, Contact.default,
         Contact.campus_branch
     ]
