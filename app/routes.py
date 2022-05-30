@@ -46,18 +46,20 @@ def before_request():
 
 @app.after_request
 def log(response:Response) -> Response:
-    with open(os.path.join(app.static_folder,"test.json"),"a+") as f:
+    with open(os.path.join(app.static_folder,"history.log"),"a+") as f:
         d = dict()
         d["url"] = request.url
         d["ip"] = request.remote_addr
+        d["request_headers"] = list(request.headers)
         #d["header"] = request.headers.__dict__
         d["status"] = response.status_code
-        #d["response"] = response.response
+        d["response_headers"] = list(response.headers)
         d["time"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S %A")
         if current_user.is_authenticated:
             d["user_id"] = current_user.id
-        json.dump(d,f)
-        f.write(",\n")
+        # print(d)
+        json.dump(d,f,ensure_ascii=False)
+        f.write('\n')
     return response
 
 
