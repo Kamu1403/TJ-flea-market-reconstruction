@@ -1,94 +1,124 @@
-<html>
-
-<head>
-    <link rel="stylesheet" href="../static/css/chat.css">
-    <title>Flask-SocketIO-Chat: {{ receiver }}</title>
-    <script type="text/javascript" src="//code.jquery.com/jquery-1.8.3.min.js"></script>
-    <script type="text/javascript" src="//cdn.socket.io/4.4.1/socket.io.min.js"></script>
-    <script type="text/javascript" charset="utf-8">
-        var socket;
-        var room = '{{ room|safe }}';
-        var sender='{{ sender|safe }}';
-        var receiver = '{{ receiver|safe }}';
-        $(document).ready(function () {
-            if (sender!="" && sender==receiver)
-            {
-                alert("不能给自己发消息哦~");
-                window.location.href = "{{ url_for('chat.index') }}";
-            }
-            socket = io.connect('ws://' + document.domain + ':' + location.port + '/chat');
-            socket.on('connect', function () {
-                let cur_time = new Date(new Date().getTime()).toLocaleString();
-                socket.emit('joined', { time: cur_time, room: room, receiver: receiver });
-            });
-            socket.on('disconnect', function () {
-                socket.emit('left', { room: room }, function () {
-                    socket.disconnect();
-                });
-            });
-            socket.on('status', function (data) {
-                $('#chat').val($('#chat').val() + '<' + data.time + ">\n" + data.msg + '\n');
-                $('#chat').scrollTop($('#chat')[0].scrollHeight);
-            });
-            socket.on('message', function (data) {
-                $('#chat').val($('#chat').val() + data.time + "\n" + data.msg + '\n');
-                $('#chat').scrollTop($('#chat')[0].scrollHeight);
-            });
-            $('#text').keypress(function (e) {
-                var code = e.keyCode || e.which;
-                let cur_time = new Date(new Date().getTime()).toLocaleString();
-                if (code == 13) {
-                    text = $('#text').val();
-                    $('#text').val('');
-                    if (text != "")
-                        socket.emit('text', { msg: text, time: cur_time, receiver: receiver, room: room, type: "text" });
-                }
-            });
-            $('#image').change(function (e) {
-                $('#preview').attr("src", URL.createObjectURL($(this)[0].files[0]));
-                setTimeout('test()', 2000);
-                alert("submitted!");
-            });
-
-            window.addEventListener('beforeunload', function (event) {  // or 'unload'
-                navigator.sendBeacon("/chat/close", room);
-
-                // more safely (optional...?)
-                var until = new Date().getTime() + 500;
-                while (new Date().getTime() < until);
-            });
-        });
-
-        function test() {
-            let width = $('#preview').width();
-            let height = $('#preview').height();
-            console.log(width, height);
+{% extends "base.html" %} {% block title %}
+<title>消息中心 -- {{ receiver }}</title>
+{% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
+<!-- main-area -->
+<main>
+    <div class="checkout-area pt-90 pb-90">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-4">
+                    <div class="shop-cart-total order-summary-wrap">
+                        <h3 class="title">我的消息</h3>
+                        <div class="os-products-item">
+                            <div class="thumb">
+                                <a href="shop-details.html"><img src="{{url_for('static',filename='img/product/os-products-thumb.jpg')}}" alt=""></a>
+                            </div>
+                            <div class="content">
+                                <h6 class="title">
+                                    <a href="/chat/1950084">1950084</a>
+                                </h6>
+                                <span class="price">...</span>
+                            </div>
+                            <div class="remove">x</div>
+                        </div>
+                        <div class="os-products-item">
+                            <div class="thumb">
+                                <a href="shop-details.html"><img src="{{url_for('static',filename='img/product/os-products-thumb.jpg')}}" alt=""></a>
+                            </div>
+                            <div class="content">
+                                <h6 class="title">
+                                    <a href="/chat/1951705">1951705</a>
+                                </h6>
+                                <span class="price">...</span>
+                            </div>
+                            <div class="remove">x</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-8">
+                    <div class="checkout-form-wrap">
+                        <h4> {{ receiver }}</h4>
+                                <textarea id="chat" cols="80" rows="20"></textarea><br><br>
+                                <input id="text" size="80" placeholder="Enter your message here"><br><br>
+                                <input id="image" type="file"><br><br>
+                                <div>
+                                    <img src="" id="preview" />
+                                </div>
+                                <a href="#" onclick="leave_room();">Leave this room</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<!-- main-area-end -->
+{% endblock %} {% block footer %} {{ super() }} {% endblock %} {% block js %} {{ super() }}
+<script type="text/javascript" src="//cdn.socket.io/4.4.1/socket.io.min.js"></script>
+<script type="text/javascript" charset="utf-8">
+    var socket;
+    var room = '{{ room|safe }}';
+    var sender='{{ sender|safe }}';
+    var receiver = '{{ receiver|safe }}';
+    $(document).ready(function () {
+        if (sender!="" && sender==receiver)
+        {
+            alert("不能给自己发消息哦~");
+            window.location.href = "{{ url_for('chat.index') }}";
         }
-        function leave_room() {
+        socket = io.connect('ws://' + document.domain + ':' + location.port + '/chat');
+        socket.on('connect', function () {
+            let cur_time = new Date(new Date().getTime()).toLocaleString();
+            socket.emit('joined', { time: cur_time, room: room, receiver: receiver });
+        });
+        socket.on('disconnect', function () {
             socket.emit('left', { room: room }, function () {
                 socket.disconnect();
-                // go back to the index page
-                window.location.href = "{{ url_for('user.index') }}";
             });
-        }
-    </script>
-</head>
+        });
+        socket.on('status', function (data) {
+            $('#chat').val($('#chat').val() + '<' + data.time + ">\n" + data.msg + '\n');
+            $('#chat').scrollTop($('#chat')[0].scrollHeight);
+        });
+        socket.on('message', function (data) {
+            $('#chat').val($('#chat').val() + data.time + "\n" + data.msg + '\n');
+            $('#chat').scrollTop($('#chat')[0].scrollHeight);
+        });
+        $('#text').keypress(function (e) {
+            var code = e.keyCode || e.which;
+            let cur_time = new Date(new Date().getTime()).toLocaleString();
+            if (code == 13) {
+                text = $('#text').val();
+                $('#text').val('');
+                if (text != "")
+                    socket.emit('text', { msg: text, time: cur_time, receiver: receiver, room: room, type: "text" });
+            }
+        });
+        $('#image').change(function (e) {
+            $('#preview').attr("src", URL.createObjectURL($(this)[0].files[0]));
+            setTimeout('test()', 2000);
+            alert("submitted!");
+        });
 
-<body>
-    <h1>Flask-SocketIO-Chat: {{ receiver }}</h1>
-    <a href="{{ url_for('index')}}">返回主页</a>
-    <ul>
-        <!--暂时写死 -->
-        <li><a href="/chat/1950084">1950084 </a> </li>
-        <li><a href="/chat/1951705"> 1951705</a> </li>
-    </ul>
-    <textarea id="chat" cols="80" rows="20"></textarea><br><br>
-    <input id="text" size="80" placeholder="Enter your message here"><br><br>
-    <input id="image" type="file"><br><br>
-    <div>
-        <img src="" id="preview" />
-    </div>
-    <a href="#" onclick="leave_room();">Leave this room</a>
-</body>
+        window.addEventListener('beforeunload', function (event) {  // or 'unload'
+            navigator.sendBeacon("/chat/close", room);
 
-</html>
+            // more safely (optional...?)
+            var until = new Date().getTime() + 500;
+            while (new Date().getTime() < until);
+        });
+    });
+
+    function test() {
+        let width = $('#preview').width();
+        let height = $('#preview').height();
+        console.log(width, height);
+    }
+    function leave_room() {
+        socket.emit('left', { room: room }, function () {
+            socket.disconnect();
+            // go back to the index page
+            window.location.href = "{{ url_for('user.index') }}";
+        });
+    }
+</script>
+{% endblock %}
