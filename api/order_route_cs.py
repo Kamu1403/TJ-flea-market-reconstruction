@@ -337,6 +337,9 @@ def address():
                 if old_default not in temp:
                     old_default.default = False
                     old_default.save()
+            else:
+                if old_default in temp:
+                    return make_response_json(400, "至少要保留一个默认地址")
         for i in range(len(temp)):
             try:
                 new_data = dict()
