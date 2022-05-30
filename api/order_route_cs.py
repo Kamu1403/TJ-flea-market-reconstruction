@@ -90,8 +90,8 @@ def get_address():
     elif current_user.state == User_state.Under_ban.value:
         return make_response_json(401, "当前用户已被封禁")
     need = [
-        Contact.id, Contact.name, Contact.telephone, Contact.full_address,
-        Contact.default, Contact.campus_branch
+        Contact.name, Contact.telephone, Contact.full_address, Contact.default,
+        Contact.campus_branch
     ]
     try:
         datas = Contact.select(*need).where(
@@ -299,8 +299,10 @@ def address():
                     p.save()
     elif request.method == "PUT":
         for i, j in enumerate(data):
+            # j["id"] = j["contact_id"]
+            # j.pop("contact_id")
             try:
-                temp[i] = Contact.get(Contact.id == int(j["contact_id"]))
+                temp[i] = Contact.get(Contact.id == int(j["id"]))
             except Exception as e:
                 return make_response_json(401, "不存在的联络地址")
             else:
@@ -327,14 +329,11 @@ def address():
                     old_default.save()
         for i in range(len(temp)):
             try:
+                new_data = dict()
                 for j in data[i]:
-                    if j in dir(update_data[i]):
-                        exec(f"""
-                        if update_data[{i}].{j} != data[{i}][{j}]:
-                            update_data[{i}].{j} = data[{i}][{j}]
-                        """)
-                        #new_data[j] = data[i][j]
-                #update_data[i] = Contact(**new_data)
+                    if j in dir(temp[i]):
+                        new_data[j] = data[i][j]
+                update_data[i] = Contact(**new_data)
                 update_data[i].save()
             except Exception as e:
                 for t in range(i):
