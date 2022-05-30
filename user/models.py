@@ -25,6 +25,12 @@ class User_state(Enum):
     999 系统管理员
     '''
 
+@unique
+class User_Campus_state(Enum):
+    SiPing = "四平路校区"
+    JiaDing = "嘉定校区"
+    HuXi = "沪西校区"
+    HuBei = "沪北校区"
 
 class User(UserMixin, BaseModel):
     """
@@ -82,7 +88,7 @@ class User(UserMixin, BaseModel):
         verbose_name="所在校区",
         max_length=32,
         null=False,
-        default="四平路校区",
+        default=User_Campus_state.SiPing.value,
         constraints=[
             pw.Check("campus_branch in ('四平路校区','嘉定校区','沪西校区','沪北校区')")
         ])

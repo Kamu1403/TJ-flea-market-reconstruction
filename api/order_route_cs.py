@@ -2,10 +2,12 @@
 # -*- coding: UTF-8 -*-
 from api.utils import *
 from api import api_blue
+from user.models import User_Campus_state
 from item.models import Item_type, Item_state
 from order.models import Contact
 from datetime import date, timedelta
 
+Campus_List = [eval(f"User_Campus_state.{i}.value") for i in User_Campus_state.__members__]
 
 @api_blue.route("/get_order", methods=["GET"])
 def get_order():
@@ -301,6 +303,9 @@ def address():
         for i, j in enumerate(data):
             # j["id"] = j["contact_id"]
             # j.pop("contact_id")
+            if "campus_branch" in j:
+                if j["campus_branch"] not in Campus_List:
+                    return make_response_json(400,"校区填写错误")
             try:
                 # j["id"] = j["contact_id"]
                 # j.pop("contact_id")
@@ -354,6 +359,9 @@ def address():
         has_default, num = False, 0
         old_default = None
         for i, j in enumerate(data):
+            if "campus_branch" in j:
+                if j["campus_branch"] not in Campus_List:
+                    return make_response_json(400,"校区填写错误")
             j["user_id"] = current_user.id
             if "default" in j and j["default"]:
                 if not has_default:

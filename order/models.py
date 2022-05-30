@@ -5,7 +5,7 @@ from tabnanny import verbose
 from app import BaseModel
 import peewee as pw
 from datetime import datetime
-from user.models import User
+from user.models import User,User_Campus_state
 from item.models import Item
 
 
@@ -28,7 +28,7 @@ class Contact(BaseModel):
         verbose_name="所在校区",
         max_length=32,
         null=False,
-        default="四平路校区",
+        default=User_Campus_state.SiPing.value,
         constraints=[
             pw.Check("campus_branch in ('四平路校区','嘉定校区','沪西校区','沪北校区')")
         ])
@@ -76,7 +76,7 @@ class Order(BaseModel):
         verbose_name="所在校区",
         max_length=32,
         null=False,
-        default="四平路校区",
+        default=User_Campus_state.SiPing.value,
         constraints=[
             pw.Check("campus_branch in ('四平路校区','嘉定校区','沪西校区','沪北校区')")
         ])
