@@ -46,8 +46,10 @@ def publish():
 #个人中心
 @user_blue.route('/<opt_userid>/space', methods=['GET', 'POST'])
 def space(opt_userid: int):  #opt_userid为目标用户ID
-
-    return render_template('user_space.html')
+    if current_user.is_authenticated:
+        return render_template('user_space.html')
+    else:
+        return redirect(url_for('index'))  # 重定向到/index
 
 
 #个人信息管理
@@ -62,8 +64,8 @@ def user_info(opt_userid: int):  #opt_userid为目标用户ID
 
 
 #历史
-@user_blue.route('/<opt_userid>/history', methods=['GET', 'POST'])
-def history(opt_userid: int):  #opt_userid为目标用户ID
+@user_blue.route('/history', methods=['GET', 'POST'])
+def history():
     if current_user.is_authenticated:
         return render_template('user_history.html')
     else:
@@ -71,8 +73,8 @@ def history(opt_userid: int):  #opt_userid为目标用户ID
 
 
 #收藏
-@user_blue.route('/<opt_userid>/favor', methods=['GET', 'POST'])
-def favor(opt_userid: int):  #opt_userid为目标用户ID
+@user_blue.route('/favor', methods=['GET', 'POST'])
+def favor():
     if current_user.is_authenticated:
         return render_template('user_favor.html')
     else:

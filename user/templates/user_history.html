@@ -1,5 +1,5 @@
 {% extends "base.html" %} {% block title %}
-<title>我的收藏</title>
+<title>我的历史</title>
 {% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block
 main %}
 <main>
@@ -31,7 +31,7 @@ main %}
               let p_tr = $(`#my_history${ret.data[i].id}`)
               p_tr.append(`<td id="history_item_pic${ret.data[i].item_id}"></td>`);
               p_tr.append(`<td id="history_item_data${ret.data[i].item_id}"></td>`);
-              p_tr.append(`<td><button>取消收藏</button></td>`);
+              //p_tr.append(`<td><button>取消历史</button></td>`);
               let pic_url = "/api/get_item_head_pic";
               if (debug) pic_url = `http://127.0.0.1:4523/mock/927026${pic_url}`;
               $.ajax(
