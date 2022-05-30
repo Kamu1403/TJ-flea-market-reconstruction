@@ -57,12 +57,13 @@
                     let tab = $(`#tr${i}`); //把这一列的内容添加上
                     let contact_id = ret.data[i].id;
                     let campus_branch_select_text = get_branch_select_text(contact_id, ret.data[i].campus_branch);
+                    let default_button_text = get_default_button_text(contact_id, ret.data[i].default);
                     //console.log(campus_branch_select_text);
-                    tab.append(`<td class='edit_text' id='name${contact_id}'>` + ret.data[i].name + "</td>");
-                    tab.append(`<td class='edit_text' id='telephone${contact_id}'>` + ret.data[i].telephone + "</td>");
+                    tab.append(`<td class='edit_text' id='name${contact_id}'>  ${ret.data[i].name} </td>`);
+                    tab.append(`<td class='edit_text' id='telephone${contact_id}'> ${ret.data[i].telephone} </td>`);
+                    tab.append(`<td class='edit_text' id='full_address${contact_id}'> ${ret.data[i].full_address} </td>`);
                     tab.append(`<td id='campus_branch${contact_id}'> ${campus_branch_select_text} </td>`);
-                    tab.append(`<td class='edit_text' id='full_address${contact_id}'>` + ret.data[i].full_address + "</td>");
-                    tab.append(`<td class='edit_text' id='is_default${contact_id}'>` + ret.data[i].default + "</td>");
+                    tab.append(`<td> ${default_button_text} </td>`);
                     tab.append(`<td><input type='button' id='delete_contact_id${contact_id}' onclick='delete_contact(this,${contact_id})' value='删除地址'</td>`);
                     tab.append(`<td><input type='button' id='update_contact_id${contact_id}' onclick='update_contact(${contact_id})' value='保存修改'</td>`);
                 }
@@ -90,6 +91,13 @@
             if (campus_branch == branchs[i]) res += `<option value='select${i}' selected>${branchs[i]}</option>`;
             else res += `<option value='select${i}'>${branchs[i]}</option>`;
         }
+        return res;
+    }
+    function get_default_button_text(contact_id, is_default) {
+        let res;
+        if (is_default) res = `<input type="checkbox" checked="checked" id='is_default${contact_id}'/>`;
+        else res = `<input type="checkbox" id='is_default${contact_id}'/>`;
+        console.log(res);
         return res;
     }
     function delete_by_id(id) {
@@ -120,11 +128,9 @@
         let name = $(`#name${id}`).text();
         let telephone = $(`#telephone${id}`).text();
         let campus_branch = $(`#select_campus_branch${id} option:selected`).text();
-        let is_default = $(`#is_default${id}`).text();
+        let is_default = $(`#is_default${id}`).get(0).checked;
         let full_address = $(`#full_address${id}`).text();
-        if (is_default == "true") is_default = true;
-        else is_default = false;
-        console.log(campus_branch);
+        //console.log(campus_branch);
         console.log(is_default);
         if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
         $.ajax({
@@ -137,10 +143,10 @@
             success: function (ret) {
                 if (ret.statusCode == 200) {
                     bootbox.alert("修改成功");
+                    window.location.reload();
                 } else {
-                    bootbox.alert(ret.statusCode + ret.message, function () {
-                        window.location.reload();
-                    });
+                    alert(ret.statusCode + ret.message);
+                    window.location.reload();
                 }
             },
         });
