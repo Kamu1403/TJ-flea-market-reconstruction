@@ -322,16 +322,16 @@ def address():
                     num = i
         old_default = None
         try:
-            old_default = Contact.get(Contact.default == True,Contact.user_id == current_user.id)
+            old_default = Contact.get(Contact.default == True,
+                                      Contact.user_id == current_user.id)
         except Exception as e:
             if not has_default:
-                temp[-1].default = True
+                return make_response_json(400, "至少要保留一个默认地址")
         else:
-            if not has_default:
-                return make_response_json(400,"至少要保留一个默认地址")
-            if old_default not in temp:
-                old_default.default = False
-                old_default.save()
+            if has_default:
+                if old_default not in temp:
+                    old_default.default = False
+                    old_default.save()
         for i in range(len(temp)):
             try:
                 new_data = dict()
