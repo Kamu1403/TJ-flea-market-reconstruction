@@ -36,8 +36,10 @@ def get_item_pics():
         item = Item.get(Item.id == item_id)
     except Exception as e:
         return make_response_json(400, "此物品不存在")
-    pic_path = os.path.join(item_blue.static_folder, f'resource/item_pic/{item_id}/pic')
-    default_pic = os.path.join(item_blue.static_folder, 'resource/default_pic/test.jpg')
+    pic_path = os.path.join(item_blue.static_folder,
+                            f'resource/item_pic/{item_id}/pic')
+    default_pic = os.path.join(item_blue.static_folder,
+                               'resource/default_pic/test.jpg')
     if not os.path.exists(pic_path):
         createPath(pic_path)
     if len(os.listdir(pic_path)) == 0:
@@ -45,7 +47,9 @@ def get_item_pics():
     pic_list = os.listdir(pic_path)
     pics = list()
     for pic_name in pic_list:
-        pics.append(url_for('item.static', filename=f'resource/item_pic/{item_id}/pic/{pic_name}'))
+        pics.append(
+            url_for('item.static',
+                    filename=f'resource/item_pic/{item_id}/pic/{pic_name}'))
     return make_response_json(200, "图片查找成功", data={"url": pics})
 
 
@@ -60,14 +64,17 @@ def get_item_head_pic():
         item = Item.get(Item.id == item_id)
     except Exception as e:
         return make_response_json(400, "此物品不存在")
-    pic_path = os.path.join(item_blue.static_folder, f'resource/item_pic/{item_id}/head')
-    default_pic = os.path.join(item_blue.static_folder, 'resource/default_pic/test.jpg')
+    pic_path = os.path.join(item_blue.static_folder,
+                            f'resource/item_pic/{item_id}/head')
+    default_pic = os.path.join(item_blue.static_folder,
+                               'resource/default_pic/test.jpg')
     if not os.path.exists(pic_path):
         createPath(pic_path)
     if len(os.listdir(pic_path)) == 0:
         shutil.copy(default_pic, pic_path)
     pic_list = os.listdir(pic_path)
-    pic = url_for('item.static', filename=f'resource/item_pic/{item_id}/head/{pic_list[0]}')
+    pic = url_for('item.static',
+                  filename=f'resource/item_pic/{item_id}/head/{pic_list[0]}')
     return make_response_json(200, "图片查找成功", data={"url": pic})
 
 
@@ -151,7 +158,8 @@ def get_search():
         order_type = "name"
     #get_data = Item.select().where().exectue()
 
-    need = (Item.id, Item.name, Item.user_id, Item.publish_time, Item.price, Item.tag)
+    need = (Item.id, Item.name, Item.user_id, Item.publish_time, Item.price,
+            Item.tag)
     select_need = [Item.name.contains(key_word), Item.type == search_type]
     try:
         if "start_time" in data:
@@ -177,7 +185,9 @@ def get_search():
             datas.sort(key=lambda x: x["price"], reverse=False)
         else:
             #orderWay = (Item.publish_time.desc(), )  # 改：默认其实为相似度
-            datas.sort(key=lambda x: SequenceMatcher(a=key_word, b=x["name"]).ratio(), reverse=True)
+            datas.sort(
+                key=lambda x: SequenceMatcher(a=key_word, b=x["name"]).ratio(),
+                reverse=True)
         for i in datas:
             i['price'] = float(i['price'])
             i['publish_time'] = str(i['publish_time'])
@@ -323,10 +333,16 @@ def post_item_info():
         new = Item.create(**data)
     except Exception as e:
         return make_response_json(500, f"上传失败\n{str(e)}:{repr(e)}")
-    createPath(os.path.join(item_blue.static_folder, f'resource/item_pic/{new.id}/head'))
-    createPath(os.path.join(item_blue.static_folder, f'resource/item_pic/{new.id}/pic'))
-    default_pic = os.path.join(item_blue.static_folder, 'resource/default_pic/test.jpg')
-    curpath = os.path.join(item_blue.static_folder, f'resource/item_pic/{new.id}/')
+    createPath(
+        os.path.join(item_blue.static_folder,
+                     f'resource/item_pic/{new.id}/head'))
+    createPath(
+        os.path.join(item_blue.static_folder,
+                     f'resource/item_pic/{new.id}/pic'))
+    default_pic = os.path.join(item_blue.static_folder,
+                               'resource/default_pic/test.jpg')
+    curpath = os.path.join(item_blue.static_folder,
+                           f'resource/item_pic/{new.id}/')
     tempath = os.path.join(item_blue.static_folder, f'resource/temp/')
     if len(data["urls"]) == 0:
         #给一个默认图
@@ -342,9 +358,11 @@ def post_item_info():
             return make_response_json(400, "仅能选定一张头图")
         else:
             head_pic = head_pics[0]
-        shutil.copy(os.path.join(tempath, head_pic), os.path.join(curpath, 'head/'))
+        shutil.copy(os.path.join(tempath, head_pic),
+                    os.path.join(curpath, 'head/'))
         for j in data["urls"]:
-            shutil.move(os.path.join(tempath, j["MD5"]), os.path.join(curpath, 'pic/'))
+            shutil.move(os.path.join(tempath, j["MD5"]),
+                        os.path.join(curpath, 'pic/'))
         #将所有的图片转到用户对应文件夹
     return make_response_json(200, "上传成功")
 
@@ -405,7 +423,8 @@ def add_favor():
     try:
         repeat = False
         for i in req:
-            tep = Favor.select().where((Favor.user_id == current_user.id) & (Favor.item_id == i))
+            tep = Favor.select().where((Favor.user_id == current_user.id)
+                                       & (Favor.item_id == i))
             if tep.count() > 0:
                 repeat = True
             else:
@@ -430,12 +449,14 @@ def item_delete_favor():
     try:
         NotFound = False
         for i in req:
-            tep = Favor.select().where((Favor.user_id == current_user.id) & (Favor.item_id == i))
+            tep = Favor.select().where((Favor.user_id == current_user.id)
+                                       & (Favor.item_id == i))
 
             if tep.count() <= 0:
                 NotFound = True
             else:
-                Favor.delete().where((Favor.user_id == current_user.id) & (Favor.item_id == i)).execute()
+                Favor.delete().where((Favor.user_id == current_user.id)
+                                     & (Favor.item_id == i)).execute()
         if NotFound == True:
             return make_response_json(404, "不存在对应的收藏")
         return make_response_json(200, "删除成功")
@@ -471,6 +492,34 @@ def get_history():
         res['visit_time'] = str(i.visit_time)
         data.append(res)
     return make_response_json(200, "操作成功", data)
+
+
+@api_blue.route("/delete_history", methods=["DELETE"])
+def item_delete_history():
+    if not current_user.is_authenticated:
+        return make_response_json(401, "当前用户未登录")
+    print(request.get_json())
+    req = request.get_json()["item_id_list"]
+
+    #tep = Item.select().where(Item.id << req)  #在一个列表中查询
+    #if tep.count() != len(req):  #长度对不上
+    #    return make_response_json(404, "不存在对应物品")
+    try:
+        NotFound = False
+        for i in req:
+            tep = History.select().where((History.user_id == current_user.id)
+                                         & (History.item_id == i))
+
+            if tep.count() <= 0:
+                NotFound = True
+            else:
+                History.delete().where((History.user_id == current_user.id)
+                                       & (History.item_id == i)).execute()
+        if NotFound == True:
+            return make_response_json(404, "不存在对应的历史")
+        return make_response_json(200, "删除成功")
+    except Exception as e:
+        return make_response_json(500, f"发生错误 {repr(e)}")
 
 
 @api_blue.route("/report", methods=["POST"])
@@ -544,9 +593,11 @@ def item_to_show():
             need.append(Item.publish_time >= last_time)
     try:
         if len(need):
-            need_od = Item.select().where(*need).order_by(Item.publish_time.desc()).execute()
+            need_od = Item.select().where(*need).order_by(
+                Item.publish_time.desc()).execute()
         else:
-            need_od = Item.select().order_by(Item.publish_time.desc()).execute()
+            need_od = Item.select().order_by(
+                Item.publish_time.desc()).execute()
     except Exception as e:
         return make_response_json(500, f"查询发生错误 {repr(e)}")
     else:
