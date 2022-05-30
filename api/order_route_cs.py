@@ -90,8 +90,8 @@ def get_address():
     elif current_user.state == User_state.Under_ban.value:
         return make_response_json(401, "当前用户已被封禁")
     need = [
-        Contact.id, Contact.name, Contact.telephone, Contact.full_address,
-        Contact.default, Contact.campus_branch
+        Contact.name, Contact.telephone, Contact.full_address, Contact.default,
+        Contact.campus_branch
     ]
     try:
         datas = Contact.select(*need).where(
@@ -299,6 +299,8 @@ def address():
                     p.save()
     elif request.method == "PUT":
         for i, j in enumerate(data):
+            # j["id"] = j["contact_id"]
+            # j.pop("contact_id")
             try:
                 j["id"] = j["contact_id"]
                 j.pop("contact_id")
@@ -330,6 +332,7 @@ def address():
                     old_default.save()
         for i in range(len(temp)):
             try:
+                new_data = dict()
                 for j in data[i]:
                     if j in dir(update_data[i]):
                         exec(f"""if update_data[{i}].{j} != data[{i}]["{j}"]:
