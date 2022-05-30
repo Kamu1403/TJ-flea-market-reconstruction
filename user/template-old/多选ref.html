@@ -1,0 +1,83 @@
+{% extends "base.html" %} {% block title %}
+<title>编辑地址</title>
+<style>
+    .tt {
+        background-color: yellow;
+        color: red;
+        text-align: center;
+    }
+</style>
+{% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block
+main %}
+<main>
+    用户名：<input type="text" id="name" /> 密码：
+    <input type="password" id="pwd" /> 邮箱：
+    <input type="email" id="email" />
+    <input type="button" id="add" value="添加" />
+    <input type="button" id="deleteall" value="批量删除" />
+
+
+    <table border="1" cellspacing="0" width="500px" height="30px" id="ta">
+        <tr class="tt">
+            <td><input type="button" id="qx" value="全选/全不选" /></td>
+            <td>用户名</td>
+            <td>密码</td>
+            <td>邮箱</td>
+            <td>操作</td>
+        </tr>
+    </table>
+
+
+</main>
+{% endblock %} {% block footer %} {{ super() }} {% endblock %} {% block js %} {{ super() }}
+
+<script type="text/javascript">
+    $("#add").click(function () {
+        var name = $("#name").val();
+        var pwd = $("#pwd").val();
+        var ema = $("email").val();
+
+
+        var tab = $("#ta");
+        tab.append("<tr><td><input type='checkbox' id='cbx'></td><td>" + name + "</td><td>" + pwd + "</td><td>" + ema + "</td><td><input type='button' id='shan' οnclick='shan(this)' value='删除'></td></tr>")
+
+
+    })
+
+    //删除一行
+    function shan(s) {
+        s.parentNode.parentNode.remove();
+    }
+
+    //批量删除
+    $("#deleteall").click(function () {
+        //获取标签
+        var ck = $("input[type=checkbox]:checked");
+        if (ck.length == 0) {
+            alert("至少选择一条");
+            return
+        }
+
+        for (var i = 0; i < ck.length; i++) {
+            var ckk = ck[i];
+            ckk.parentNode.parentNode.remove();
+        }
+    })
+
+
+    //全选-全不选
+    var flag = true;
+    $("#qx").click(function () {
+        var cb = $("input[type=checkbox]")
+        for (var i = 0; i < cb.length; i++) {
+            cb[i].checked = flag;
+        }
+        flag = !flag
+    })
+</script>
+{% endblock %}
+
+<!--
+————————————————
+版权声明：本文为CSDN博主「来日未必方长」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/mayn666/article/details/78718139-->
