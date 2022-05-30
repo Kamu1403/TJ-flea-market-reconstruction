@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
+from http.client import responses
+from urllib import response
 from item import item_blue
 from app import database
 from item.models import Item, History, Favor, Item_type
@@ -21,16 +23,6 @@ def before_request():
 def teardown_request(exc):  #exc必须写上
     if not database.is_closed():
         database.close()
-
-
-@item_blue.route("/", methods=['GET', 'POST'])
-def root_index():
-    return redirect(url_for('item.index'))  # 重定向到/index
-
-
-@item_blue.route('/index', methods=['GET', 'POST'])
-def index():
-    return render_template('item_index.html')
 
 
 @item_blue.route('/content/<item_id>/', methods=['GET', 'POST'])
