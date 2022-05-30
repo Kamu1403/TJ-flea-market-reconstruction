@@ -110,10 +110,12 @@
         let name = $(`#name${id}`).text();
         let telephone = $(`#telephone${id}`).text();
         let campus_branch = $(`#campus_branch${id}`).text();
-        let is_default = $(`default${id}`).text();
-        let full_address = $(`full_address${id}`).text();
-        console.log(full_address);
-        console.log(is_default);
+        let is_default = $(`#is_default${id}`).text();
+        let full_address = $(`#full_address${id}`).text();
+        if (is_default == "true") is_default = true;
+        else is_default = false;
+        //console.log(full_address);
+        //console.log(is_default);
         if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
         $.ajax({
             url: url,
@@ -137,7 +139,7 @@
         $.ajax({
             url: url,
             type: "post",
-            data: JSON.stringify([{ name: "你的姓名", telephone: "你的电话", campus_branch: "四平路校区", default: false, full_address: "四平路校区" }]),
+            data: JSON.stringify([{ name: "你的姓名", telephone: "你的电话", campus_branch: "四平路校区", default: true, full_address: "四平路校区" }]),
             contentType: "application/json;charset=utf-8",
             processData: false,
             //async: false, // 当需要将值传给函数外部时需要强制同步

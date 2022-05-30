@@ -300,13 +300,16 @@ def address():
     elif request.method == "PUT":
         for i, j in enumerate(data):
             try:
-                temp[i] = Contact.get(Contact.id == int(j["contact_id"]))
+                j["id"] = j["contact_id"]
+                j.pop("contact_id")
+                temp[i] = Contact.get(Contact.id == int(j["id"]))
             except Exception as e:
                 return make_response_json(401, "不存在的联络地址")
             else:
                 if temp[i].user_id.id != current_user.id:
                     return make_response_json(401, "不可修改其他用户的联络地址")
-        update_data = list(range(len(data)))
+        #update_data = list(range(len(data)))
+        update_data = copy.deepcopy(temp)
         has_default, num = False, 0
         for i, j in enumerate(data):
             if "default" in j and j["default"]:
@@ -329,9 +332,8 @@ def address():
             try:
                 for j in data[i]:
                     if j in dir(update_data[i]):
-                        exec(f"""
-                        if update_data[{i}].{j} != data[{i}][{j}]:
-                            update_data[{i}].{j} = data[{i}][{j}]
+                        exec(f"""if update_data[{i}].{j} != data[{i}]["{j}"]:
+    update_data[{i}].{j} = data[{i}]["{j}"]
                         """)
                         #new_data[j] = data[i][j]
                 #update_data[i] = Contact(**new_data)
