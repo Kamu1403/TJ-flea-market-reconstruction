@@ -10,8 +10,8 @@ user = config.user
 
 #用pymysql创建数据库
 from . import create_database
-
-create_database.create_database(database_name, password, user)
+if config.drop_database == True:
+    create_database.create_database(database_name, password, user)
 
 #创建app
 from flask import Flask
