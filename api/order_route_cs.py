@@ -90,9 +90,8 @@ def get_address():
     elif current_user.state == User_state.Under_ban.value:
         return make_response_json(401, "当前用户已被封禁")
     need = [
-        Contact.id,
-        Contact.name, Contact.telephone, Contact.full_address, Contact.default,
-        Contact.campus_branch
+        Contact.id, Contact.name, Contact.telephone, Contact.full_address,
+        Contact.default, Contact.campus_branch
     ]
     try:
         datas = Contact.select(*need).where(
@@ -361,7 +360,8 @@ def address():
                     data[num]["default"] = False
                     num = i
         try:
-            old_default = Contact.get(Contact.default == True)
+            old_default = Contact.get(Contact.default == True,
+                                      Contact.user_id == current_user.id)
         except Exception as e:
             if not has_default:
                 data[-1]["default"] = True

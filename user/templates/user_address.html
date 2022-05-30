@@ -95,7 +95,7 @@
             success: function (ret) {
                 if (ret.statusCode == 200) {
                     bootbox.alert("删除成功");
-                    //window.location.reload();
+                    window.location.reload();
                 } else bootbox.alert(ret.statusCode + ret.message);
             },
         });
@@ -120,7 +120,7 @@
         $.ajax({
             url: url,
             type: "put",
-            data: JSON.stringify([{ contact_id: id, name: name, telephone: telephone, campus_branch: campus_branch, default: is_default, full_address: full_address }]),
+            data: JSON.stringify([{ id: id, name: name, telephone: telephone, campus_branch: campus_branch, default: is_default, full_address: full_address }]),
             contentType: "application/json;charset=utf-8",
             processData: false,
             //async: false, // 当需要将值传给函数外部时需要强制同步
@@ -139,7 +139,7 @@
         $.ajax({
             url: url,
             type: "post",
-            data: JSON.stringify([{ name: "你的姓名", telephone: "你的电话", campus_branch: "四平路校区", default: true, full_address: "四平路校区" }]),
+            data: JSON.stringify([{ name: "你的姓名", telephone: "你的电话", campus_branch: "四平路校区", default: false, full_address: "四平路校区" }]),
             contentType: "application/json;charset=utf-8",
             processData: false,
             //async: false, // 当需要将值传给函数外部时需要强制同步
