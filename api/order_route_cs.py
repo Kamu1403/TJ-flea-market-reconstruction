@@ -296,9 +296,8 @@ def address():
                 print(repr(e))
             else:
                 if len(datas) > 0:
-                    p = Contact.get(Contact.id == datas[0].id)
-                    p.default = True
-                    p.save()
+                    datas[0].default = True
+                    datas[0].save()
     elif request.method == "PUT":
         for i, j in enumerate(data):
             # j["id"] = j["contact_id"]
