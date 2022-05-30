@@ -360,12 +360,13 @@ def address():
                 else:
                     data[num]["default"] = False
                     num = i
-        if has_default:
-            try:
-                old_default = Contact.get(Contact.default == True)
-            except Exception as e:
-                pass
-            else:
+        try:
+            old_default = Contact.get(Contact.default == True)
+        except Exception as e:
+            if not has_default:
+                data[-1]["default"] = True
+        else:
+            if has_default:
                 old_default.default = False
                 old_default.save()
         for i, j in enumerate(data):
