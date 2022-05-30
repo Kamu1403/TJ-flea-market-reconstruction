@@ -331,7 +331,7 @@ def address():
                                       Contact.user_id == current_user.id)
         except Exception as e:
             if not has_default:
-                return make_response_json(400, "至少要保留一个默认地址")
+                temp[-1].default = True
         else:
             if has_default:
                 if old_default not in temp:
