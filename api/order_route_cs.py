@@ -327,11 +327,14 @@ def address():
                     old_default.save()
         for i in range(len(temp)):
             try:
-                new_data = dict()
                 for j in data[i]:
                     if j in dir(update_data[i]):
-                        new_data[j] = data[i][j]
-                update_data[i] = Contact(**new_data)
+                        exec(f"""
+                        if update_data[{i}].{j} != data[{i}][{j}]:
+                            update_data[{i}].{j} = data[{i}][{j}]
+                        """)
+                        #new_data[j] = data[i][j]
+                #update_data[i] = Contact(**new_data)
                 update_data[i].save()
             except Exception as e:
                 for t in range(i):
