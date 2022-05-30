@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
 ###主要是注册登录管理
+
+import os
+import json
+from datetime import datetime
 from app import app, database
-from flask import render_template, flash, redirect, url_for, request
+from flask import render_template, flash, redirect, url_for, request,Response
 from flask_login import current_user, login_user, logout_user, login_required
 from user.models import User  #模型
 from werkzeug.security import generate_password_hash
-
 from flask_socketio import SocketIO, emit
-
 from user.models import User_state  #枚举
-
 from flask_login import LoginManager
 
 login_manager = LoginManager(app)
@@ -29,6 +30,35 @@ def load_user(id):  #login时传入
 def before_request():
     if database.is_closed():
         database.connect()
+
+# @app.before_request
+# def request_log():
+#     with open(os.path.join(app.static_folder,"test.json"),"a+") as f:
+#         d = dict()
+#         #d["header"] = request.headers.__dict__
+#         d["ip"] = request.remote_addr
+#         d["url"] = request.url
+#         d["time"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S %A")
+#         if current_user.is_authenticated:
+#             d["user_id"] = current_user.id
+#         json.dump(d,f)
+#         f.write(",\n")
+
+@app.after_request
+def log(response:Response) -> Response:
+    with open(os.path.join(app.static_folder,"test.json"),"a+") as f:
+        d = dict()
+        d["url"] = request.url
+        d["ip"] = request.remote_addr
+        #d["header"] = request.headers.__dict__
+        d["status"] = response.status_code
+        #d["response"] = response.response
+        d["time"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S %A")
+        if current_user.is_authenticated:
+            d["user_id"] = current_user.id
+        json.dump(d,f)
+        f.write(",\n")
+    return response
 
 
 @app.teardown_request
