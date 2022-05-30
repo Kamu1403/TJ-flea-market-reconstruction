@@ -54,7 +54,6 @@ main %}
                   type: "Get",
                   data: { item_id: ret.data[i].item_id },
                   success: function (item_ret) {
-                    console.log(item_ret);
                     if (item_ret.statusCode == 200) {
                       let desc = $(`#favor_item_data${ret.data[i].item_id}`);
                       desc.append(`<a href = /item/content/${ret.data[i].item_id} >${item_ret.data.name}</a>`);
