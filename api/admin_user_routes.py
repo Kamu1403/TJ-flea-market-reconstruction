@@ -154,23 +154,40 @@ def change_user_info():
         return make_response_json(404, "未找到用户")
     else:
         try:
-            tep.username = req['username']
-            tep.gender = req['gender']
-            tep.user_no_is_published = req['user_no_is_published']
-            tep.telephone_is_published = req['telephone_is_published']
-            tep.telephone = req['telephone']
-            tep.wechat_is_published = req['wechat_is_published']
-            tep.wechat = req['wechat']
-            tep.qq_is_published = req['qq_is_published']
-            tep.qq_number = req['qq_number']
-            tep.campus_is_published = req['campus_is_published']
-            tep.campus_branch = req['campus_branch']
-            tep.dormitory_is_published = req['dormitory_is_published']
-            tep.dormitory = req['dormitory']
-            tep.name_is_published = req['name_is_published']
-            tep.name = req['name']
-            tep.major_is_published = req['major_is_published']
-            tep.major = req['major']
+            if 'username' in req:
+                tep.username = req['username']
+            if 'gender' in req:
+                tep.gender = req['gender']
+            if 'user_no_is_published' in req:
+                tep.user_no_is_published = req['user_no_is_published']
+            if 'telephone_is_published' in req:
+                tep.telephone_is_published = req['telephone_is_published']
+            if 'telephone' in req:
+                tep.telephone = req['telephone']
+            if 'wechat_is_published' in req:
+                tep.wechat_is_published = req['wechat_is_published']
+            if 'wechat' in req:
+                tep.wechat = req['wechat']
+            if 'qq_is_published' in req:
+                tep.qq_is_published = req['qq_is_published']
+            if 'qq_number' in req:
+                tep.qq_number = req['qq_number']
+            if 'campus_is_published' in req:
+                tep.campus_is_published = req['campus_is_published']
+            if 'campus_branch' in req:
+                tep.campus_branch = req['campus_branch']
+            if 'dormitory_is_published' in req:
+                tep.dormitory_is_published = req['dormitory_is_published']
+            if 'dormitory' in req:
+                tep.dormitory = req['dormitory']
+            if 'name_is_published' in req:
+                tep.name_is_published = req['name_is_published']
+            if 'name' in req:
+                tep.name = req['name']
+            if 'major_is_published' in req:
+                tep.major_is_published = req['major_is_published']
+            if 'major' in req:
+                tep.major = req['major']
             tep.save()  #保存
         except Exception as e:
             return make_response_json(500, "程序发生如下错误:\n{}".format(e))

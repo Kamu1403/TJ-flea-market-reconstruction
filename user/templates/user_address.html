@@ -1,5 +1,7 @@
 {% extends "base.html" %} {% block title %}
 <title>编辑地址</title>
+<link rel="stylesheet" type="text/css" href="{{url_for('user.static',filename='css/Switch.css')}}" />
+
 {% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
 <main>
     <div class="cart-area pt-90 pb-90">
@@ -85,18 +87,19 @@
         });
     });
     function get_branch_select_text(id, campus_branch) {
-        let res = `<select id=select_campus_branch${id}>`;
+        let res = `<select  class="custom-select" id=select_campus_branch${id}>`;
         let branchs = ["四平路校区", "嘉定校区", "沪西校区", "沪北校区"];
         for (let i = 0; i < branchs.length; i++) {
             if (campus_branch == branchs[i]) res += `<option value='select${i}' selected>${branchs[i]}</option>`;
             else res += `<option value='select${i}'>${branchs[i]}</option>`;
         }
+        res += "</select>";
         return res;
     }
     function get_default_button_text(contact_id, is_default) {
         let res;
-        if (is_default) res = `<input type="checkbox" checked="checked" id='is_default${contact_id}'/>`;
-        else res = `<input type="checkbox" id='is_default${contact_id}'/>`;
+        if (is_default) res = `<input type="checkbox" class="switch" checked="checked" id='is_default${contact_id}'/>`;
+        else res = `<input class="switch" type="checkbox" id='is_default${contact_id}'/>`;
         console.log(res);
         return res;
     }
@@ -154,7 +157,7 @@
         $.ajax({
             url: url,
             type: "post",
-            data: JSON.stringify([{ name: "你的姓名", telephone: "你的电话", campus_branch: "四平路校区", default: false, full_address: "你的详细地址" }]),
+            data: JSON.stringify([{ name: "你的姓名", telephone: "你的电话", campus_branch: "嘉定校区", default: false, full_address: "你的详细地址" }]),
             contentType: "application/json;charset=utf-8",
             processData: false,
             //async: false, // 当需要将值传给函数外部时需要强制同步

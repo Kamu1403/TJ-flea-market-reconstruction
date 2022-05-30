@@ -1,51 +1,140 @@
 {% extends "base.html" %} {% block title %}
 <title>用户个人信息</title>
+<link rel="stylesheet" type="text/css" href="{{url_for('user.static',filename='css/Switch.css')}}" />
+
 {% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
 <main>
-    <a href="#" id="item_tag_">[商品标签]</a>
+    <div class="cart-area pt-90 pb-90">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-7">
+                    <div class="checkout-form-wrap">
+                        <form action="javascript:void(0)">
+                            <div class="checkout-form-top">
+                                <h5 class="title">个人信息</h5>
+                                <p>{{opt_userid}}</p>
+                                <p>{{current_user.id}}</p>
+                            </div>
+
+                            <div class="building-info-wrap">
+                                用户名
+                                <input type="text" value="用户名" id="username" />
+                                信誉分
+                                <input type="text" value="100" disabled="disabled" id="score" />
+                                邮箱
+                                <input type="text" value="test@test" disabled="disabled" id="email" />
+
+                                {% if opt_userid == current_user.id %}
+                                学号
+                                <div class="row">
+                                    <div class="col-md-9">
+                                        <input type="text" value="" disabled="disabled" id="user_no" />
+                                    </div>
+                                    <div class="col-md-1">
+                                        <input type="checkbox" class="switch" checked="checked" id="user_no_is_published"/>
+                                    </div>                                    
+                                    <div class="col-md-2">
+                                        <p id="check_"> &nbsp公开</p>
+                                    </div>
+                                </div>
+
+                                性别
+                                <select id="gender" class="custom-select">
+                                    <option value='保密'>保密</option>
+                                    <option value='男'>男</option>
+                                    <option value='女' selected="selected">女</option>
+                                </select>
+                                
+                                姓名
+                                <div class="row">
+                                    <div class="col-md-9">
+                                        <input type="text" placeholder="请填写你的姓名" value="" id="name" />
+                                    </div>
+                                    <div class="col-md-1">
+                                        <input type="checkbox" class="switch" checked="checked" id="name_is_published"/>
+                                    </div>                                    
+                                    <div class="col-md-2">
+                                        <p id="check_"> &nbsp公开</p>
+                                    </div>
+                                </div>
+
+                                校区
+                                <div class="row">
+                                    <div class="col-md-9">
+                                        <select id="campus_branch" class="custom-select">
+                                            <option value='四平路校区'>四平路校区</option>
+                                            <option value='嘉定校区'>嘉定校区</option>
+                                            <option value='沪西校区'>沪西校区</option>
+                                            <option value='沪北校区' selected="selected">沪北校区</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-1">
+                                        <input type="checkbox" class="switch" checked="checked" id="campus_is_published"/>
+                                    </div>                                    
+                                    <div class="col-md-2">
+                                        <p id="check_"> &nbsp公开</p>
+                                    </div>
+                                </div>
+                                {% endif %}
+
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-7">
+                        <div class="shop-cart-total" style="background-color: rgba(255, 255, 255, 0.5); border: none">
+                            <div class="shop-cart-widget">
+                                <a class="btn" onclick="submit()">提交修改</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 </main>
 {% endblock %} {% block footer %} {{ super() }} {% endblock %} {% block js %} {{ super() }}
-
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/5.5.2/bootbox.min.js"></script>
 <script type="text/javascript" charset="utf-8">
     //var opt_userid = "{{ opt_userid|safe }}"; // 如果有python传过来的
     var opt_userid = {{ opt_userid }};
-    console.log(opt_userid);
-    console.log({{current_user.id}});
+    var current_user_id={{current_user.id}};
     var debug = 0;
-    /*
-    function my_func() {
-        let a = 1;
+    
+    function submit() {
         url = "/api/change_user_info";
         if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
+
+        let username=$("#username").val();
+        let user_no_is_published=$("#user_no_is_published").get(0).checked;
+        let gender=$("#gender option:selected").text();
+        let name=$("#name").val();
+        let name_is_published=$("#name_is_published").get(0).checked;
+        let campus_branch=$("#campus_branch").val();
+        let campus_is_published=$("#campus_is_published").get(0).checked;
         $.ajax({
             // query形式
             url: url,
-            type: "get",
-            data: { key: value },
-            async: false, // 当需要将值传给函数外部时需要强制同步
-            success: function (ret) {
-                a = 2;
-            },
-        });
-        return a;
-    }
-
-    $(document).ready(function () {
-        let url = "/api/get_user_info";
-        if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
-        $.ajax({
-            // json形式
-            url: url,
-            type: "post",
-            data: JSON.stringify({ key: value }),
+            type: "put",
             contentType: "application/json;charset=utf-8",
             processData: false,
+            data: JSON.stringify({ 
+                username: username,
+                user_no_is_published:user_no_is_published,
+                gender:gender,name:name,
+                name_is_published:name_is_published,
+                campus_branch:campus_branch,
+                campus_is_published:campus_is_published 
+            }),
+            async: false, // 当需要将值传给函数外部时需要强制同步
             success: function (ret) {
-                $("#item_tag_").text(ret.something);
+                bootbox.alert(ret.message);
             },
         });
-    });
-    */
+    }
+
     $(document).ready(function () {
         let url = "/api/get_user_info";
         if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
@@ -55,6 +144,19 @@
             data:{user_id:opt_userid},
             success: function (ret) {
                 console.log(ret);
+                if(opt_userid!=current_user_id){
+                    $("#username").attr('disabled',"disabled");
+                }
+                $("#username").val(ret.data.username);
+                $("#score").val(ret.data.score);
+                $("#email").val(ret.data.email);
+                $("#user_no").val(ret.data.user_no);
+                $("#user_no_is_published").attr('checked',ret.data.user_no_is_published);
+                $("#gender").val(ret.data.gender);
+                $("#name").val(ret.data.name);
+                $("#name_is_published").attr('checked',ret.data.name_is_published);
+                $("#campus_branch").val(ret.data.campus_branch);
+                $("#campus_is_published").attr('checked',ret.data.campus_is_published);
             },
         });
     });

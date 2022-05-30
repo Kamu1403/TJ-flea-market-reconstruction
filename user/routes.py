@@ -58,7 +58,7 @@ def user_info(opt_userid: int):  #opt_userid为目标用户ID
     if current_user.is_authenticated:
         return render_template('user_info.html',
                                current_user=current_user,
-                               opt_userid=opt_userid)
+                               opt_userid=int(opt_userid))
     else:
         return redirect(url_for('index'))  # 重定向到/index
 
