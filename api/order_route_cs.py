@@ -303,8 +303,8 @@ def address():
             # j["id"] = j["contact_id"]
             # j.pop("contact_id")
             try:
-                j["id"] = j["contact_id"]
-                j.pop("contact_id")
+                # j["id"] = j["contact_id"]
+                # j.pop("contact_id")
                 temp[i] = Contact.get(Contact.id == int(j["id"]))
             except Exception as e:
                 return make_response_json(401, "不存在的联络地址")
