@@ -7,18 +7,17 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-2 d-lg-block">{% include "cont_side.html" %}</div>
-
                 <div class="col-10 d-lg-block">
                     <div class="member_main">
                         <div class="m-userinfo" style="border-radius: 15px">
                             <div class="s-userbar s-bar" style="border-radius: 5px; padding-top: 20px">
                                 <div class="s-baseinfo" style="border-radius: 5px">
                                     <a href="404.html" class="s-avatar">
-                                        <span class="s-edit-mask">编辑资料</span>
+                                        <span class="s-edit-mask">修改头像</span>
                                         <img src="{{url_for('static', filename='img/images/user1.png')}}" />
                                     </a>
                                     <div class="s-name">
-                                        <a href="404.html">
+                                        <a href="#">
                                             <em>{{current_user.username}}</em>
                                             ({{current_user.id}})
                                         </a>
@@ -30,7 +29,7 @@
                                         <a href="{{url_for('user.address')}}" class="J_DropTrigger i-trigger">我的地址</a>
                                     </li>
                                     <li>
-                                        <a href="404.html" class="J_DropTrigger i-trigger">隐私管理</a>
+                                        <a href="{{url_for('user.user_info',opt_userid=current_user.id)}}" class="J_DropTrigger i-trigger">我的信息</a>
                                     </li>
                                     <li>
                                         <a href="#" class="J_DropTrigger i-trigger"> <em>我的信誉</em> ({{current_user.score}}分)</a>

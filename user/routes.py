@@ -50,6 +50,13 @@ def space(opt_userid: int):  #opt_userid为目标用户ID
     return render_template('user_space.html')
 
 
+#个人信息管理
+@user_blue.route('/<opt_userid>/user_info', methods=['GET', 'POST'])
+def user_info(opt_userid: int):  #opt_userid为目标用户ID
+    print(opt_userid)
+    return render_template('user_info.html',current_user=current_user,opt_userid=opt_userid)
+
+
 #历史
 @user_blue.route('/<opt_userid>/history', methods=['GET', 'POST'])
 def history(opt_userid: int):  #opt_userid为目标用户ID
