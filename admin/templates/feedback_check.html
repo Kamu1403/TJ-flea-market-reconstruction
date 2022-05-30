@@ -17,12 +17,11 @@
         url = "/api/something1";
         if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
         $.ajax({
+            // query形式
             url: url,
-            type: "post",
-            data: JSON.stringify({ key: value }),
-            async: false, // important
-            contentType: "application/json;charset=utf-8",
-            processData: false,
+            type: "get",
+            data: { key: value },
+            async: false, // 当需要将值传给函数外部时需要强制同步
             success: function (ret) {
                 a = 2;
             },
@@ -34,6 +33,7 @@
         let url = "/api/something2";
         if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
         $.ajax({
+            // json形式
             url: url,
             type: "post",
             data: JSON.stringify({ key: value }),

@@ -40,13 +40,8 @@ def get_item_pics():
     default_pic = os.path.join(item_blue.static_folder, 'resource/default_pic/test.jpg')
     if not os.path.exists(pic_path):
         createPath(pic_path)
-        with open(default_pic, "rb") as f:
-            with open(os.path.join(item_blue.static_folder, f'resource/item_pic/{item_id}/pic/test.jpg'), "wb") as fp:
-                fp.write(f.read())
     if len(os.listdir(pic_path)) == 0:
-        with open(default_pic, "rb") as f:
-            with open(os.path.join(item_blue.static_folder, f'resource/item_pic/{item_id}/pic/test.jpg'), "wb") as fp:
-                fp.write(f.read())
+        shutil.copy(default_pic, pic_path)
     pic_list = os.listdir(pic_path)
     pics = list()
     for pic_name in pic_list:
@@ -69,13 +64,8 @@ def get_item_head_pic():
     default_pic = os.path.join(item_blue.static_folder, 'resource/default_pic/test.jpg')
     if not os.path.exists(pic_path):
         createPath(pic_path)
-        with open(default_pic, "rb") as f:
-            with open(os.path.join(item_blue.static_folder, f'resource/item_pic/{item_id}/head/test.jpg'), "wb") as fp:
-                fp.write(f.read())
     if len(os.listdir(pic_path)) == 0:
-        with open(default_pic, "rb") as f:
-            with open(os.path.join(item_blue.static_folder, f'resource/item_pic/{item_id}/head/test.jpg'), "wb") as fp:
-                fp.write(f.read())
+        shutil.copy(default_pic, pic_path)
     pic_list = os.listdir(pic_path)
     pic = url_for('item.static', filename=f'resource/item_pic/{item_id}/head/{pic_list[0]}')
     return make_response_json(200, "图片查找成功", data={"url": pic})
@@ -336,13 +326,12 @@ def post_item_info():
     createPath(os.path.join(item_blue.static_folder, f'resource/item_pic/{new.id}/head'))
     createPath(os.path.join(item_blue.static_folder, f'resource/item_pic/{new.id}/pic'))
     default_pic = os.path.join(item_blue.static_folder, 'resource/default_pic/test.jpg')
+    curpath = os.path.join(item_blue.static_folder, f'resource/item_pic/{new.id}/')
+    tempath = os.path.join(item_blue.static_folder, f'resource/temp/')
     if len(data["urls"]) == 0:
         #给一个默认图
-        with open(default_pic, "rb") as f:
-            with open(url_for('item.static', filename=f'resource/item_pic/{new.id}/head/test.jpg'), "wb") as fp:
-                fp.write(f.read())
-            with open(url_for('item.static', filename=f'resource/item_pic/{new.id}/pic/test.jpg'), "wb") as fp:
-                fp.write(f.read())
+        shutil.copy(default_pic, os.path.join(curpath, 'head/'))
+        shutil.copy(default_pic, os.path.join(curpath, 'pic/'))
 
     else:
         head_pics = [i["MD5"] for i in data["urls"] if i["is_cover_pic"]]
@@ -353,15 +342,9 @@ def post_item_info():
             return make_response_json(400, "仅能选定一张头图")
         else:
             head_pic = head_pics[0]
-        shutil.move(url_for('item.static', filename=f'resource/temp/{head_pic}'), url_for('item.static', filename=f'resource/item_pic/{new.id}/head/'))
-        #with open(url_for('item.static', filename=f'resource/temp/{head_pic}'), "rb") as f:
-        #    with open(url_for('item.static', filename=f'resource/item_pic/{new.id}/head/{head_pic}'), "wb") as fp:
-        #        fp.write(f.read())
-        for i, j in enumerate(data["urls"]):
-            shutil.move(url_for('item.static', filename=f'resource/temp/{j["MD5"]}'), url_for('item.static', filename=f'resource/item_pic/{new.id}/pic/'))
-            #with open(url_for('item.static', filename=f'resource/temp/{j["MD5"]}'), "rb") as f:
-            #    with open(url_for('item.static', filename=f'resource/item_pic/{new.id}/pic/{j["MD5"]}'), "wb") as fp:
-            #        fp.write(f.read())
+        shutil.copy(os.path.join(tempath, head_pic), os.path.join(curpath, 'head/'))
+        for j in data["urls"]:
+            shutil.move(os.path.join(tempath, j["MD5"]), os.path.join(curpath, 'pic/'))
         #将所有的图片转到用户对应文件夹
     return make_response_json(200, "上传成功")
 
@@ -393,8 +376,8 @@ def get_pillow_img_form_data_stream(data):
         os.remove(path_name_new)
 
         path_name_new = os.path.join(curpath, f'{md5_str}')
-        if os.path.exists(path_name_new):
-            return make_response_json(400, f"上传图片失败：请勿重复上传图片")
+        #if os.path.exists(path_name_new):
+        #    return make_response_json(400, f"上传图片失败：请勿重复上传图片")
         img.save(path_name_new, 'WEBP')
     except Exception as e:
         print(e)
