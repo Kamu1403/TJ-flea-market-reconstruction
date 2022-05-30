@@ -1,27 +1,28 @@
 {% extends "base.html" %} {% block title %}
-<title>Í¬¼Ã´óÑ§ÌøÔéÊĞ³¡</title>
+<title>ç”¨æˆ·ä¸ªäººä¿¡æ¯</title>
 {% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
 <main>
-    <a href="#" id="item_tag_">[ÉÌÆ·±êÇ©]</a>
-    <button onclick="my_func()"></button>
-    <img src="{{url_for('item.static', filename='resource/item_pic/{item_id}/head/{pic_list[0]}')}}" />
+    <a href="#" id="item_tag_">[å•†å“æ ‡ç­¾]</a>
 </main>
 {% endblock %} {% block footer %} {{ super() }} {% endblock %} {% block js %} {{ super() }}
 
 <script type="text/javascript" charset="utf-8">
-    var keyword = "{{ keyword|safe }}"; // Èç¹ûÓĞpython´«¹ıÀ´µÄ
-    var debug = 1;
-
+    //var opt_userid = "{{ opt_userid|safe }}"; // å¦‚æœæœ‰pythonä¼ è¿‡æ¥çš„
+    var opt_userid = {{ opt_userid }}; // å¦‚æœæœ‰pythonä¼ è¿‡æ¥çš„
+    console.log(opt_userid);
+    console.log({{current_user.id}});
+    var debug = 0;
+    /*
     function my_func() {
         let a = 1;
-        url = "/api/something1";
+        url = "/api/change_user_info";
         if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
         $.ajax({
-            // queryĞÎÊ½
+            // queryå½¢å¼
             url: url,
             type: "get",
             data: { key: value },
-            async: false, // µ±ĞèÒª½«Öµ´«¸øº¯ÊıÍâ²¿Ê±ĞèÒªÇ¿ÖÆÍ¬²½
+            async: false, // å½“éœ€è¦å°†å€¼ä¼ ç»™å‡½æ•°å¤–éƒ¨æ—¶éœ€è¦å¼ºåˆ¶åŒæ­¥
             success: function (ret) {
                 a = 2;
             },
@@ -30,10 +31,10 @@
     }
 
     $(document).ready(function () {
-        let url = "/api/something2";
+        let url = "/api/get_user_info";
         if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
         $.ajax({
-            // jsonĞÎÊ½
+            // jsonå½¢å¼
             url: url,
             type: "post",
             data: JSON.stringify({ key: value }),
@@ -43,7 +44,7 @@
                 $("#item_tag_").text(ret.something);
             },
         });
-    });
+    });*/
 </script>
 
 {% endblock %}

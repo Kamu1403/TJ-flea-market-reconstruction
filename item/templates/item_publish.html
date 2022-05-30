@@ -130,6 +130,21 @@
         let type = $("#choice").val();
         let message = $("#message").val();
         let urls = new Array();
+
+        if(isNaN(price)){
+            alert("价格格式有误!");
+            return;
+        }
+        if(isNaN(quantity)){
+            alert("数量格式有误!");
+            return;
+        }
+        if(type==''){
+            alert("未选择发布类型!");
+            return;
+        }
+
+
         $("[id^=project_name]").each(function (index, obj) {
             let cc = "#customCheck_" + $(this).text();
             let obj1 = { MD5: $(this).text(), is_cover_pic: $(cc)[0].checked };
