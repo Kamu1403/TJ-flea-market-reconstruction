@@ -26,7 +26,7 @@ def teardown_request(exc):  #exc必须写上
 
 
 @item_blue.route('/content/<item_id>/', methods=['GET', 'POST'])
-def goods_content(item_id: int):  #goods_id/want_id
+def content(item_id: int):  #goods_id/want_id
     if current_user.is_authenticated:
         try:
             last = History.get(History.user_id == current_user.id, History.item_id == item_id)
