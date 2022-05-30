@@ -49,7 +49,7 @@
                         <div class="col-xl-10 col-lg-9">
                             <div class="d-block d-sm-flex align-items-center justify-content-end">
                                 <div class="header-search-wrap">
-                                    <form action="#">
+                                    <form onsubmit="return false;">
                                         <select class="custom-select">
                                             <option selected="">所有种类</option>
                                             <option>-- 学习用品</option>
@@ -58,7 +58,7 @@
                                             <option>-- 其他</option>
                                         </select>
                                         <input id="item_name" type="text" placeholder="搜索..." />
-                                        <button type="button" onclick="search_item()"><i class="flaticon-loupe-1"></i></button>
+                                        <button id="search" type="button" onclick="search_item()"><i class="flaticon-loupe-1"></i></button>
                                     </form>
                                 </div>
                                 <div class="header-action">
@@ -222,10 +222,19 @@
                     
                 });
             });
+            
+            $("#item_name").keyup(function(event){
+                if (event.keyCode==13){
+                    $("#search").trigger("click");
+                    return false; 
+                }
+            });
             function search_item() {
                 var item = $("#item_name").val();
-                // console.log(item);
-                window.location.href = "/search/" + item;
+                if (item=="")
+                    location.reload(true);
+                else
+                    window.location.href = "/search/" + item;
             }
         </script>
         {% endblock %}
