@@ -27,7 +27,8 @@ def root_index():
 @user_blue.route('/index', methods=['GET', 'POST'])
 def index():
     if current_user.is_authenticated:
-        return render_template("user_index.html", current_user=current_user)  #html的名字不能相同
+        return render_template("user_index.html",
+                               current_user=current_user)  #html的名字不能相同
     else:
         return render_template('404.html', message="请先登录")
 
@@ -41,14 +42,10 @@ def publish():
 
 
 #个人中心
-@user_blue.route('/<opt_userid>/space', methods=['GET', 'POST'])
-def space(opt_userid: int):  #opt_userid为目标用户ID
+@user_blue.route('/space', methods=['GET', 'POST'])
+def space():
     if current_user.is_authenticated:
-        try:
-            user = User.get(User.id == opt_userid)
-        except:
-            return render_template('404.html', message="找不到该用户")
-        return render_template('user_space.html', current_user=current_user, opt_user=user)
+        return render_template('user_space.html', current_user=current_user)
     else:
         return render_template('404.html', message="请先登录")
 
@@ -61,7 +58,9 @@ def user_info(opt_userid: int):  #opt_userid为目标用户ID
             user = User.get(User.id == opt_userid)
         except:
             return render_template('404.html', message="找不到该用户")
-        return render_template('user_info.html', current_user=current_user, opt_userid=int(opt_userid))
+        return render_template('user_info.html',
+                               current_user=current_user,
+                               opt_userid=int(opt_userid))
     else:
         return render_template('404.html', error_code=401, message="请先登录")
 
