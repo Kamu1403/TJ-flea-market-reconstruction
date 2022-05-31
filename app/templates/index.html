@@ -1,5 +1,94 @@
 ﻿{% extends "base.html" %} {% block title %}
 <title>同济大学跳蚤市场</title>
 {% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
-<main></main>
-{% endblock %} {% block footer %} {{ super() }} {% endblock %} {% block js %} {{ super() }} {% endblock %}
+<main>
+
+</section>
+<section class="special-products-area gray-bg pt-20 pb-20">
+    <div class="container">
+        <div class="special-products-wrap">
+            <div class="row justify-content-center">
+                <div class="col-9">
+                    <div class="row align-items-end mb-20">
+                        <div class="col-md-8 col-sm-9">
+                            <div class="section-title mt-20">
+                                <h2 class="title" style="margin-left:20px;">推荐</h2>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-sm-3">
+                            <div class="section-btn text-left text-md-right">
+                                <a href="shop.html" class="btn">View All</a>
+                            </div>
+                        </div>
+                        
+                    <!-- category-area -->
+                    <div class="container custom-container">
+                        <div class="slider-category-wrap">
+                            <div id="publish" class="row">
+                            </div>
+                        </div>
+                    </div>
+                    <!-- category-area-end -->
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- special-products-area-end -->
+
+</main>
+
+{% endblock %} {% block footer %} {{ super() }} {% endblock %} 
+{% block js %} {{ super() }} 
+<script type="text/javascript" charset="utf-8">
+    var debug = 0;
+    $(document).ready(function () {
+        let url = "/api/item_to_show";
+        if (debug) url = `	http://127.0.0.1:4523/mock/927026/${url}`;
+        $.ajax({
+            url: url,
+            type: "get",
+            success: function (ret) {
+                for (let i=0;i<ret.data.show.length;i++)
+                {
+
+                    let item=ret.data.show[i];
+                    let id=item.id;
+                    let name=item.name;
+                    let price=item.price;
+                    let time=item.publish_time;
+                    var purl=""
+                    $.ajax({
+                        url: "/api/get_item_head_pic",
+                        async: false,
+                        data:{item_id:id},
+                        type: "get",
+                        success: function (ret) {
+                            purl=ret.data.url;
+                        }
+                    });
+                    console.log('purl')
+                    let str=`                                
+                        <div class="col-xl-3 col-md-4 col-sm-6 grid-item grid-sizer cat-two">
+                            <div class="sp--product--item mb-50">
+                                <div class="sp--product--thumb">
+                                    <a href="cart.html" class="wishlist"><i class="flaticon-heart-shape-outline"></i></a>
+                                    <a href="/item/content/${id}"><img height="200px" width="200px" src="${purl}" alt=""></a>
+                                </div>
+                                <div class="sp--product--content">
+                                    <h6 class="title"><a href="/item/content/${id}">${name}</a></h6>
+                                    <div class="rating">${time}</div>
+                                    <div class="price">￥${price}</div>
+                                </div>
+                            </div>
+                        </div>`;
+                    $("#publish").append(str);
+                }
+            }
+        });
+    });
+
+</script>
+
+{% endblock %}

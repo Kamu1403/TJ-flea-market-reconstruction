@@ -41,7 +41,7 @@ class Review(BaseModel):
     """
     #id = pw.IntegerField(primary_key=True)  # 主键，不显式定义的话peewee默认定义一个自增的id
     user_id = pw.ForeignKeyField(User, verbose_name="发布者的学号")
-    publish_time = pw.DateField(verbose_name="发布时间",
+    publish_time = pw.DateTimeField(verbose_name="发布时间",
                                 null=False,
                                 default=datetime.now())
     feedback_content = pw.CharField(verbose_name="详细反馈", max_length=1024)
@@ -88,12 +88,12 @@ class Order(BaseModel):
                             default=Order_state.Normal.value,
                             constraints=[pw.Check("state >=-1")])
 
-    create_time = pw.DateField(verbose_name="发布时间",
+    create_time = pw.DateTimeField(verbose_name="发布时间",
                                null=False,
                                default=datetime.now())
-    confirm_time = pw.DateField(verbose_name="双方确认时间")  #双方都确认，才填入此项
-    end_time = pw.DateField(verbose_name="完成时间")  #正常完成
-    close_time = pw.DateField(verbose_name="关闭时间")  #被一方取消
+    confirm_time = pw.DateTimeField(verbose_name="双方确认时间")  #双方都确认，才填入此项
+    end_time = pw.DateTimeField(verbose_name="完成时间")  #正常完成
+    close_time = pw.DateTimeField(verbose_name="关闭时间")  #被一方取消
     note = pw.CharField(verbose_name="备注", max_length=1024)
 
 

@@ -5,7 +5,7 @@ from api import api_blue
 from user.models import User_Campus_state
 from item.models import Item_type, Item_state
 from order.models import Contact
-from datetime import date, timedelta
+from datetime import datetime, timedelta
 
 Campus_List = [
     eval(f"User_Campus_state.{i}.value") for i in User_Campus_state.__members__
@@ -33,7 +33,7 @@ def get_order():
             return make_response_json(400, "请求格式错误")
         else:
             td = timedelta(days=data["range"])
-            last_time = date.today() - td
+            last_time = datetime.now() - td
             need.append(Order.create_time >= last_time)
     try:
         need_od = Order.select().where(*need).order_by(
@@ -222,7 +222,7 @@ def order_post():
     order_data["campus_branch"] = contact.campus_branch
     order_data["state"] = Order_state.Normal.value
     order_data["note"] = data["note"]
-    order_data["create_time"] = date.today()
+    order_data["create_time"] = datetime.now()
     order_data["payment"] = 0
     for i in range(len(item_list)):
         order_data[
@@ -427,7 +427,7 @@ def order_evaluate():
     if order.user_id.id == current_user.id:
         try:
             review = Review.create(user_id=current_user.id,
-                                   publish_time=date.today(),
+                                   publish_time=datetime.now(),
                                    feedback_content=data["feedback_content"])
         except Exception as e:
             return make_response_json(500, f"存储过程出现问题 {repr(e)}")
@@ -442,7 +442,7 @@ def order_evaluate():
             try:
                 review = Review.create(
                     user_id=current_user.id,
-                    publish_time=date.today(),
+                    publish_time=datetime.now(),
                     feedback_content=data["feedback_content"])
             except Exception as e:
                 return make_response_json(500, f"存储过程出现问题 {repr(e)}")

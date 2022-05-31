@@ -40,7 +40,7 @@
                         </div>
                         <div class="shop-details-price">
                             <h2 class="price" id="price_"><价格></h2>
-                            <h5 class="stock-status" id="stock_">- 剩余<>件</h5>
+                            <h5 class="stock-status" id="stock_"></h5>
                         </div>
                         <p id="description_"><商品详情描述></p>
                         <div class="shop-details-list">
@@ -50,21 +50,16 @@
                             </ul>
                         </div>
                         <div class="shop-perched-info" id="non_seller_visible" hidden>
-                            <div class="sd-cart-wrap">
-                                <form action="javascript:void(0)">
-                                    <div class="cart-plus-minus">
-                                        <input type="text" value="1" onblur="check_buy_num()" id="buy_num"/>
-                                    </div>
-                                </form>
-                            </div>
-                            <a href="{{url_for('order.generate',item_id=item_id)}}" class="btn">生成订单</a>
+                            <a href="{{url_for('order.generate',item_id=item_id)}}" class="btn" id="detail_fillin_"></a>
                             <p>&nbsp;&nbsp;&nbsp;</p>
                             <a href="#" class="btn" id="contact_publisher_">联系卖家</a>
                         </div>
                         <div class="shop-perched-info" id="seller_visible" hidden>
                             <a href="#" class="btn">修改商品信息</a>
                             <p>&nbsp;&nbsp;&nbsp;</p>
-                            <a href="#" class="btn" id="item_down_shelf_">下架商品</a>
+                            <div id="item_down_shelf_">
+                            
+                            </div>
                         </div>
                         <div class="shop-perched-info" id="manager_visible" hidden>
                         </div>
@@ -119,14 +114,7 @@
         return user_name;
     }
 
-    function check_buy_num() {
-        if (!$.isNumeric($('#buy_num')[0].value)) $('#buy_num')[0].value = 1;
-        if ($('#buy_num')[0].value < 1) $('#buy_num')[0].value = 1;
-        if ($('#buy_num')[0].value > shelved_num) $('#buy_num')[0].value = shelved_num;
-    }
-    $('.qtybutton').on('click', function() {
-        check_buy_num();
-    });
+    
 
     function add_favor() {
         let url = "/api/add_favor";
@@ -179,26 +167,24 @@
                 console.log(ret);
                 if (state == -1) {
                     if (ret.statusCode == 200) {
-                        $('#manager_visible').empty();
-                        $('#manager_visible').append('<a href="#" class="btn" onclick="change_item_state(0)">恢复商品上架（管理员）</a>');
-                        $("#item_state_").text('被管理员强制下架');
                         alert("强制下架商品成功")
+                        location.reload();
                     }
                     else
                         alert('强制下架失败：' + ret.message);
                 }
                 if (state == 0) {
                     if (ret.statusCode == 200) {
-                        $('#manager_visible').empty();
-                        $('#manager_visible').append('<a href="#" class="btn" onclick="change_item_state(-1)">强制下架商品</a>');
-                        alert("恢复商品上架成功")
+                        alert("恢复商品上架成功");
+                        location.reload();
                     }
                     else
                         alert('恢复商品上架失败：' + ret.message);
                 }
                 if (state == 1) {
                     if (ret.statusCode == 200) {
-                        alert("下架商品成功")
+                        alert("下架商品成功");
+                        location.reload();
                     }
                     else 
                         alert('下架商品失败：' + ret.message);
@@ -217,7 +203,7 @@
                 if ("{{current_user}}".indexOf("Anonymous") == -1) { // 用户已登录
                     
                     if (ret.isPub) $("[id=seller_visible]").removeAttr("hidden");
-                    else $("[id=non_seller_visible]").removeAttr("hidden");
+                    else if (ret.data.state == 0) $("[id=non_seller_visible]").removeAttr("hidden");
                     if (ret.isAdmin) $("[id=manager_visible]").removeAttr("hidden");
                 } else {
                     $("[id=visitor_visible]").removeAttr("hidden");
@@ -226,12 +212,15 @@
                 shelved_num = data.shelved_num;
                 $("#item_name_").text(data.name);
                 $("#user_name").text(get_user_name(data.user_id));
+                let url=`/user/${data.user_id}/user_info`;
+                $("#user_name").attr('href',url);
 
                 $("#price_").text(`￥${data.price}`);
-                $("#stock_").text(`- 剩余${data.shelved_num}件`);
+                $("#stock_").text(`- ` + data.type == 0 ? "剩余" : "需要" + `${data.shelved_num}件`);
                 $("#description_").text(data.description);
                 $("#description_").text(data.description);
                 $("#item_type_").text(data.type == 0 ? "售卖" : "悬赏");
+                $("#detail_fillin_").text(data.type == 0 ? "我要购买" : "我要应征");
                 $("#publish_time_").text(data.publish_time);
                 $("#item_tag_").text(data.tag);
                 $("#contact_publisher_").attr("href", `/chat/${data.user_id}`);
@@ -240,14 +229,17 @@
                 switch (data.state) {
                     case 0:
                         state_str = "正常发布";
+                        $('#item_down_shelf_').append('<a href="#" class="btn" onclick="change_item_state(1)">下架商品</a>');
                         $('#manager_visible').append('<a href="#" class="btn" onclick="change_item_state(-1)">强制下架商品</a>');
                         break;
                     case -1:
                         state_str = "被管理员强制下架";
+                        $('#item_down_shelf_').append('<a href="#" class="btn" onclick="{{url_for("admin.feedback_check",item_id=item_id, state=0)}}" >申请恢复商品上架</a>');
                         $('#manager_visible').append('<a href="#" class="btn" onclick="change_item_state(0)">恢复商品上架（管理员）</a>');
                         break;
                     case 1:
                         state_str = "被发布方下架";
+                        $('#item_down_shelf_').append('<a href="#" class="btn" onclick="change_item_state(0)">重新上架商品</a>');
                         $('#manager_visible').append('<a href="#" class="btn" onclick="change_item_state(-1)">强制下架商品</a>');
                         break;
                 }

@@ -16,17 +16,37 @@
     </ul>
     <select id="address" class="custom-select"></select>
 
-    <a href="{{url_for('item.content',item_id=item.id)}}">商品ID:{{item.id}}, 单价:{{item.price}}元</a>
+    <a href="{{url_for('item.content',item_id=item.id)}}">商品ID:{{item.id}}, 单价:{{item.price}}元，库存/需求：{{item.shelved_num}}</a>
     <div class="building-info-wrap">
         请输入购买数量
+
         <input type="text" value="1" placeholder="1" id="number" />
         请输入备注
         <input type="text" value="" placeholder="请输入你的备注..." id="order_note" />
         <a class="btn" onclick="submit_order()">提交</a>
     </div>
+    <section class="shop-details-area pt-90 pb-90">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-5">
+                    <div class="shop-details-content">
+                        <div class="shop-perched-info" id="non_seller_visible">
+                            <div class="sd-cart-wrap">
+                                <form action="javascript:void(0)">
+                                    <div class="cart-plus-minus">
+                                        <input type="text" value="1" onblur="check_buy_num()" id="buy_num" />
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </main>
 {% endblock %} {% block footer %} {{ super() }} {% endblock %} {% block js %} {{ super() }}
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/5.5.2/bootbox.min.js"></script>
+
 <script type="text/javascript" charset="utf-8">
     var debug = 0;
     var item_id={{item.id}};
@@ -79,5 +99,15 @@
             },
         });
     }
+</script>
+<script type="text/javascript" charset="utf-8">
+    function check_buy_num() {
+        if (!$.isNumeric($("#buy_num")[0].value)) $("#buy_num")[0].value = 1;
+        if ($("#buy_num")[0].value < 1) $("#buy_num")[0].value = 1;
+        if ($("#buy_num")[0].value > parseInt({{item.shelved_num}})) $("#buy_num")[0].value = parseInt({{item.shelved_num}});
+    }
+    $(".qtybutton").on("click", function () {
+        check_buy_num();
+    });
 </script>
 {% endblock %}
