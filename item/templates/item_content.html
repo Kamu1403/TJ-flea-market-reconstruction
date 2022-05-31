@@ -53,7 +53,7 @@
                             <div class="sd-cart-wrap">
                                 <form action="javascript:void(0)">
                                     <div class="cart-plus-minus">
-                                        <input type="text" value="1" id="cart_buy_num"/>
+                                        <input type="text" value="1" onblur="check_buy_num()" id="buy_num"/>
                                     </div>
                                 </form>
                             </div>
@@ -74,7 +74,7 @@
                         </div>
                         <div class="shop-details-bottom">
                             <h5 class="title">
-                                <a href="javascript:void(0)" onclick="add_favor()"><i class="far fa-heart"></i> 加入收藏</a>
+                                <a href="javascript:void(0)" onclick="add_favor()" id="item_favor_"><i class="far fa-heart"></i> 加入收藏</a>
                             </h5>
                             <ul>
                                 <li>
@@ -100,6 +100,7 @@
 <script type="text/javascript" charset="utf-8">
     var debug = 0;
     var item_id = parseInt("{{ item_id|safe }}");
+    var shelved_num = 0;
     $("#item_id_").text(item_id);
     function get_user_name(user_id) {
         let url = "/api/get_user_username";
@@ -118,7 +119,16 @@
         });
         return user_name;
     }
-    $(cart_buy_num).onChange(function(){});
+
+    function check_buy_num() {
+        if (!$.isNumeric($('#buy_num')[0].value)) $('#buy_num')[0].value = 1;
+        if ($('#buy_num')[0].value < 1) $('#buy_num')[0].value = 1;
+        if ($('#buy_num')[0].value > shelved_num) $('#buy_num')[0].value = shelved_num;
+    }
+    $('.qtybutton').on('click', function() {
+        check_buy_num();
+    });
+
     function add_favor() {
         let url = "/api/add_favor";
         if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
@@ -152,6 +162,7 @@
                     $("[id=visitor_visible]").removeAttr("hidden");
                 }
                 let data = ret.data;
+                shelved_num = data.shelved_num;
                 $("#item_name_").text(data.name);
                 $("#user_name").text(get_user_name(data.user_id));
 
@@ -179,6 +190,21 @@
                 $("#item_state_").text(state_str);
             },
         });
+
+        url = "/api/get_item_favor";
+        if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
+        $.ajax({
+            url: url,
+            type: "get",
+            data: {item_id: item_id},
+            success: function (ret) {
+                console.log(ret);
+                if (ret.statusCode == 200) {
+
+                }
+                else $("[id=item_favor_]").prop("hidden", "hidden");
+            }
+        })
 
         url = "/api/get_item_head_pic";
         if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
