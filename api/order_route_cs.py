@@ -7,7 +7,10 @@ from item.models import Item_type, Item_state
 from order.models import Contact
 from datetime import date, timedelta
 
-Campus_List = [eval(f"User_Campus_state.{i}.value") for i in User_Campus_state.__members__]
+Campus_List = [
+    eval(f"User_Campus_state.{i}.value") for i in User_Campus_state.__members__
+]
+
 
 @api_blue.route("/get_order", methods=["GET"])
 def get_order():
@@ -156,8 +159,11 @@ def order_post():
             call_back = (400, "请求格式不对")
             break
         try:
-            item_id, num = int(data["item_info"][i]["item_id"]), int(
-                data["item_info"][i]["num"])
+            data["item_info"][i]["item_id"] = int(
+                data["item_info"][i]["item_id"])
+            data["item_info"][i]["num"] = int(data["item_info"][i]["num"])
+            item_id = data["item_info"][i]["item_id"]
+            num = data["item_info"][i]["num"]
         except Exception as e:
             call_back = (400, "请求格式不对")
             break
@@ -243,7 +249,7 @@ def order_post():
         try:
             od_it = Order_Item.create(order_id=od.id,
                                       quantity=num,
-                                      price = item_list[i].price,
+                                      price=item_list[i].price,
                                       item_id=item_list[i].id)
         except Exception as e:
             for t in range(len(data["item_info"])):
@@ -305,7 +311,7 @@ def address():
             # j.pop("contact_id")
             if "campus_branch" in j:
                 if j["campus_branch"] not in Campus_List:
-                    return make_response_json(400,"校区填写错误")
+                    return make_response_json(400, "校区填写错误")
             try:
                 # j["id"] = j["contact_id"]
                 # j.pop("contact_id")
@@ -364,7 +370,7 @@ def address():
         for i, j in enumerate(data):
             if "campus_branch" in j:
                 if j["campus_branch"] not in Campus_List:
-                    return make_response_json(400,"校区填写错误")
+                    return make_response_json(400, "校区填写错误")
             j["user_id"] = current_user.id
             if "default" in j and j["default"]:
                 if not has_default:
