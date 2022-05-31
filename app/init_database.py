@@ -246,7 +246,7 @@ def fake_data():  #填一些假数据进去
     Review.create(id=4, user_id=1951566, feedback_content="默认好评")
 
     # 商品
-    Order.create(id=1, user_id=1951566, payment=2, state=0,create_time=datetime.now()-timedelta(days=20))
+    Order.create(id=1, user_id=1951566, payment=2, state=2,create_time=datetime.now()-timedelta(days=20))
     Order.create(
         id=2,  # 悬赏
         user_id=1953493,
@@ -258,6 +258,7 @@ def fake_data():  #填一些假数据进去
 
     Order.create(id=4, user_id=1951566, payment=10.5, state=1)  #3份方便面
 
+    # 订单状态明细
     Order_State_Item.create(order_id=1, user_review_id=1, op_user_review_id=4)
     Order_State_Item.create(order_id=2,
                             cancel_user=1950084,
@@ -286,7 +287,6 @@ def fake_data():  #填一些假数据进去
         confirm_time=datetime.now(),
         note="我来帮你写sj！")
     Order.create(id=7, user_id=1951566, payment=9.99, state=2)  #3份方便面
-
     Order.create(id=8, user_id=1951566, payment=9.99, state=2)  #3份方便面
 
     Order_State_Item.create(order_id=5)
@@ -296,12 +296,13 @@ def fake_data():  #填一些假数据进去
 
 
     # 悬赏
-    #订单5中包含 3
+    #订单5中包含 3份耳机
     Order_Item.create(order_id=5, quantity=3, price=200, item_id=5)  #耳机
 
     #订单6中包含 1份作业
     Order_Item.create(order_id=6, quantity=1, price=5, item_id=4)  #sj作业
 
+    # 商品
     Order_Item.create(order_id=7, quantity=3, price=3.33, item_id=2)  #方便面
 
     Order_Item.create(order_id=7, quantity=3, price=3.33, item_id=2)  #方便面
