@@ -6,8 +6,8 @@ from api import api_blue
 MINUS_SCORE = 5  #取消一个已经确认了的订单，扣五分
 
 
-@api_blue.route("/change_order_status", methods=["PUT"])
-def change_order_status():
+@api_blue.route("/change_order_state", methods=["PUT"])
+def change_order_state():
     req = request.get_json()
 
     req_state = int(req['state'])
@@ -30,7 +30,7 @@ def change_order_status():
         return make_response_json(404, "没有找到此订单明细")
 
     order_user_id = order.user_id.id
-    order_op_user_id = _order_item.item_id.user_id    
+    order_op_user_id = _order_item.item_id.user_id
     if req_state == order.state:  #要修改的状态和数据库内订单状态重复了，改不改都一样，直接返回成功
         return make_response_json(400, "操作过于频繁")
     elif current_user.state == User_state.Admin.value:  #管理员,无限权力
