@@ -13,21 +13,21 @@
                                 <div class="product-desc-wrap" style="padding-top:15px">
                                     <ul class="nav nav-tabs" id="myTabTwo" role="tablist">
                                         <li class="nav-item">
-                                            <a class="nav-link active" id="wants-tab" data-toggle="tab" href="#wants" role="tab"
-                                                aria-controls="wants" aria-selected="true">我的悬赏</a>
+                                            <a class="nav-link active" id="mywants-tab" data-toggle="tab" href="#mywants" role="tab"
+                                                aria-controls="mywants" aria-selected="true">我的悬赏</a>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link" id="goods-tab" data-toggle="tab" href="#goods" role="tab" aria-controls="goods"
+                                            <a class="nav-link" id="mygoods-tab" data-toggle="tab" href="#mygoods" role="tab" aria-controls="mygoods"
                                                 aria-selected="false">我的待售</a>
                                         </li>
                                     </ul>
-                                    <div class="tab-content" id="myTabContentTwo">
-                                        <div class="tab-pane fade show active" role="tabpanel" id="wants" aria-labelledby="details-tab">
+                                    <div class="tab-content">
+                                        <div class="tab-pane fade show active" role="tabpanel" id="mywants" aria-labelledby="details-tab">
                                             <div class="product-desc-content" >
 
                                             </div>
                                         </div>
-                                        <div class="tab-pane fade" role="tabpanel" id="goods" aria-labelledby="val-tab">
+                                        <div class="tab-pane fade" role="tabpanel" id="mygoods" aria-labelledby="val-tab">
                                             <div class="product-desc-content">
                                                 
                                             </div>
@@ -49,9 +49,40 @@
                                     </div>
                                     
                                 <!-- category-area -->
+
+                                
+
+
+
                                 <div class="container custom-container">
                                     <div class="slider-category-wrap">
-                                        <div id="publish" class="row">
+                                        <div class="product-desc-wrap" style="padding-top:15px">
+                                            <ul class="nav nav-tabs" id="myTabTwo" role="tablist">
+                                                <li class="nav-item">
+                                                    <a class="nav-link active" id="wants-tab" data-toggle="tab" href="#wants" role="tab"
+                                                        aria-controls="wants" aria-selected="true">悬赏</a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link" id="goods-tab" data-toggle="tab" href="#goods" role="tab" aria-controls="goods"
+                                                        aria-selected="false">商品</a>
+                                                </li>
+                                            </ul>
+                                            <div class="tab-content" id="myTabContentTwo">
+                                                <div class="tab-pane fade show active" id="wants" role="tabpanel" aria-labelledby="details-tab">
+                                                    <div class="product-desc-content" >
+                                                        <div class="row" id="swants" >
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row fade show active" id="goods" role="tabpanel" aria-labelledby="details-tab">
+                                                    <div class="product-desc-content">
+                                                        <div class="row" id="sgoods">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -129,6 +160,7 @@
                     let name=item.name;
                     let price=item.price;
                     let time=item.publish_time;
+                    let type=item.type
                     let purl=""
                     $.ajax({
                         url: "/api/get_item_head_pic",
@@ -176,7 +208,10 @@
                     let style=style_sheet[value];
                     let app=`<a id="item_${id}" value=${value} style=${style} onclick="add_favor(this)" class="wishlist"><i class="flaticon-heart-shape-outline"></i></a>
                     <a href="/item/content/${id}"><img height="200px" width="200px" src="${purl}" alt=""></a>`
-                    $("#publish").append(str);
+                    if (type==0)
+                            $("#sgoods").append(str);
+                        else
+                            $("#swants").append(str);
                     $(`#pre_item_${id}`).append(app);
                 }
             }
@@ -220,9 +255,9 @@
                             </div>
                         </div>`;
                         if (type==0)
-                            $("#goods").append(str);
+                            $("#mygoods").append(str);
                         else
-                            $("#wants").append(str);
+                            $("#mywants").append(str);
                     }
                 }
                 });
