@@ -218,29 +218,27 @@
                 } else {
                     var items = ret.data;
                     for (let i = 0; i < items.length; i++) {
-
-                        let item=items[i];
-                        let id=item.id;
-                        let name=item.name;
-                        let price=item.price;
-                        let time=item.publish_time;
-                        let purl=""
+                        let item = items[i];
+                        let id = item.id;
+                        let name = item.name;
+                        let price = item.price;
+                        let time = item.publish_time;
+                        let purl = "";
                         $.ajax({
                             url: "/api/get_item_head_pic",
                             async: false,
-                            data:{item_id:id},
+                            data: { item_id: id },
                             type: "get",
                             success: function (ret) {
-                                purl=ret.data.url;
-                            }
+                                purl = ret.data.url;
+                            },
                         });
-                        let str =
-                            `<div class="col-xl-3 col-md-4 col-sm-6">
+                        let str = `<div class="col-xl-3 col-md-4 col-sm-6">
                                 <div class="sp-product-item">
                                     <div class="sp-product-thumb">
                                         <span class="batch">New</span>
                                         <a href="/item/content/${id}">
-                                            <img style="width:200px;height:200px" src="${purl}" alt=""></a>
+                                            <img src="${purl}" alt=""></a>
                                     </div>
                                     <div class="sp-product-content">
                                         <h6 class="title">

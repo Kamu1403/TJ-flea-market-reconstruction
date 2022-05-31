@@ -394,6 +394,9 @@ def get_pillow_img_form_data_stream(data):
         ratio = max(w, h) / 1920
         if ratio > 1:
             img = img.resize((int(w / ratio), int(h / ratio)))
+        ratio = 250 / min(w, h)
+        if ratio > 1:
+            img = img.resize((int(w * ratio), int(h * ratio)))
         md5_str = md5(img.tobytes()).hexdigest()
         os.remove(path_name)
 
