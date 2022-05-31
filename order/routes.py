@@ -41,6 +41,6 @@ def generate(item_id: int):
     except:
         return redirect(url_for('index'))
     if item.state == 0 and item.shelved_num > 0 and item.user_id.id != current_user.id:  #正常在售且有存量且发布者不是当前用户
-        return render_template('order_generate.html')
+        return render_template('order_generate.html', item_id=int(item_id))
     else:
         return redirect(url_for('index'))
