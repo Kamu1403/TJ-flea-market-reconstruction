@@ -36,7 +36,7 @@ class Item(BaseModel):
                         index=True,
                         null=False)
     user_id = pw.ForeignKeyField(User, verbose_name="发布者的id")
-    publish_time = pw.DateField(verbose_name="发布时间",
+    publish_time = pw.DateTimeField(verbose_name="发布时间",
                                 null=False,
                                 default=datetime.now())
     price = pw.FloatField(verbose_name="单价", default=0, null=False)
@@ -67,7 +67,7 @@ class History(BaseModel):
     #id = pw.IntegerField(primary_key=True)  # 主键，不显式定义的话peewee默认定义一个自增的id
     user_id = pw.ForeignKeyField(User, verbose_name="访问者的id")
     item_id = pw.ForeignKeyField(Item, verbose_name="item ID")
-    visit_time = pw.DateField(verbose_name="访问时间", default=datetime.now())
+    visit_time = pw.DateTimeField(verbose_name="访问时间", default=datetime.now())
 
 
 class Favor(BaseModel):
@@ -78,4 +78,4 @@ class Favor(BaseModel):
     #id = pw.IntegerField(primary_key=True)  # 主键，不显式定义的话peewee默认定义一个自增的id
     user_id = pw.ForeignKeyField(User, verbose_name="收藏者的id")
     item_id = pw.ForeignKeyField(Item, verbose_name="item ID")
-    collect_time = pw.DateField(verbose_name="收藏时间", default=datetime.now())
+    collect_time = pw.DateTimeField(verbose_name="收藏时间", default=datetime.now())
