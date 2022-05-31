@@ -34,14 +34,17 @@ def change_order_state():
     if req_state == order.state:  #要修改的状态和数据库内订单状态重复了，改不改都一样，直接返回成功
         return make_response_json(400, "操作过于频繁")
     elif current_user.state == User_state.Admin.value:  #管理员,无限权力
-        order.state = req_state
         if req_state == Order_state.Close.value:  #取消订单
+            if order.state == Order_state.Confirm.value:  #已经确认过的，要扣除信誉分 5 分
+                current_user.score -= MINUS_SCORE
+                current_user.save()
             _order_item.item_id.locked_num -= _order_item.quantity
             _order_item.item_id.shelved_num += _order_item.quantity
             _order_item.item_id.save()
         if req_state == Order_state.End.value:  #完成订单
             _order_item.item_id.locked_num -= _order_item.quantity
             _order_item.item_id.save()
+        order.state = req_state
         order.save()
         return make_response_json(200, "操作成功")
     elif req_state == Order_state.Normal.value:  #非管理员不允许设为初始状态
