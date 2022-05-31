@@ -42,7 +42,8 @@ def get_order():
                 order_set[j.order_id.id] = len(datas)
                 datas.append({"order_id":j.order_id.id,"user_id":j.order_id.user_id.id\
                     ,"op_user_id":j.item_id.user_id.id,"item_id_list":list()})
-            datas[order_set[j.order_id.id]]["item_id_list"].append(j.item_id.id)
+            if j.item_id.id not in datas[order_set[j.order_id.id]]["item_id_list"]:
+                datas[order_set[j.order_id.id]]["item_id_list"].append(j.item_id.id)
     return make_response_json(200, "返回订单", datas)
 
 
