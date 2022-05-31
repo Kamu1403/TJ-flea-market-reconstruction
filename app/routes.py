@@ -2,6 +2,8 @@
 # -*- coding: UTF-8 -*-
 ###主要是注册登录管理
 
+from ast import keyword
+from distutils.log import error
 from email import message
 import os
 import json
@@ -94,9 +96,14 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/search/<keyword>', methods=['GET', 'POST'])
-def search(keyword: str):  #keyword为你搜索的东西
-    return render_template('search.html', keyword=keyword)
+@app.route('/search', methods=['GET', 'POST'])
+def search():  #keyword为你搜索的东西
+    try:
+        keyword = request.args["keyword"]
+        type = request.args["type"]
+    except:
+        return render_template('404.html', message="格式错误", error_code=400)
+    return render_template('search.html', keyword=keyword, type=type)
 
 
 @app.route('/register', methods=['GET'])
