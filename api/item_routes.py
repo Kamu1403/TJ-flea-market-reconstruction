@@ -437,7 +437,7 @@ def add_favor():
 
 
 @api_blue.route("/delete_favor", methods=["DELETE"])
-def item_delete_favor():
+def delete_favor():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
     print(request.get_json())
@@ -465,7 +465,7 @@ def item_delete_favor():
 
 
 @api_blue.route("/get_favor", methods=["GET"])
-def item_get_favor():
+def get_favor():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
     tep = Favor.select().where(Favor.user_id == current_user.id)
@@ -477,6 +477,23 @@ def item_get_favor():
         res['collect_time'] = str(i.collect_time)
         data.append(res)
     return make_response_json(200, "操作成功", data)
+
+
+@api_blue.route("/get_item_favor", methods=["GET"])
+def get_item_favor():
+    if not current_user.is_authenticated:
+        return make_response_json(401, "当前用户未登录")
+    try:
+        item_id = int(request.args["item_id"])
+    except:
+        return make_response_json(400, "格式错误")
+    try:
+        tep = Favor.get(Favor.user_id == current_user.id,
+                        Favor.item_id == item_id)
+    except:
+        return make_response_json(200, "操作成功", False)
+    else:
+        return make_response_json(200, "操作成功", True)
 
 
 @api_blue.route("/get_history", methods=["GET"])
