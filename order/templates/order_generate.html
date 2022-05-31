@@ -95,7 +95,8 @@
             }),
             async: false, // 当需要将值传给函数外部时需要强制同步
             success: function (ret) {
-                bootbox.alert(ret.message);
+                //alert(ret.message);
+                window.location.href=`/order/${ret.data.order_id}`;
             },
         });
     }
