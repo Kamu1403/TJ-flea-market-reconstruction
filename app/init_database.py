@@ -73,6 +73,11 @@ from werkzeug.security import generate_password_hash
 
 
 def fake_data():  #填一些假数据进去
+    User.create(id=80000000,
+                username="系统管理员",
+                state=1,
+                password_hash=generate_password_hash("admin"),
+                email="admin@admin.cn")
     User.create(
         id=1951705,
         username="高曾谊",
