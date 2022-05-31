@@ -363,7 +363,7 @@ def post_item_info():
             shutil.move(os.path.join(tempath, j["MD5"]),
                         os.path.join(curpath, 'pic/'))
         #将所有的图片转到用户对应文件夹
-    return make_response_json(200, "上传成功")
+    return make_response_json(200, "上传成功",{"url":url_for('item.content',item_id=new.id)})
 
 
 def get_pillow_img_form_data_stream(data):
