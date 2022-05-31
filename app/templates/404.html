@@ -1,11 +1,32 @@
-<html>
-    Error! {{message}}
-    <a href="{{url_for('index')}}">返回主页</a>
-    <script>
-        function GoPreUrl() {
-            //返回上一页
-            console.log(document.referer);
-            window.location.href = document.referer;
-        }
-    </script>
-</html>
+{% extends "base.html" %} {% block title %}
+<title>发布悬赏或商品</title>
+{% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
+<!-- main-area -->
+<main>
+    <!-- 404-area -->
+    <section class="error-area pt-100 pb-100">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-6 col-md-10">
+                    <div class="error-content text-center">
+                        <div class="error_txt">404</div>
+                        <h5>oops! The page you requested was not found!</h5>
+                        <p id="error_text">The page you are looking for was moved, removed, renamed or might never existed.</p>
+                        <a href="{{url_for('index')}}" class="btn rounded-btn">Back To Home</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- 404-area-end -->
+</main>
+<!-- main-area-end -->
+
+{% endblock %} {% block footer %} {{ super() }} {% endblock %} {% block js %} {{ super() }}
+<script>
+    $(document).ready(function () {
+        error_text = "{{message|safe}}";
+        if (error_text != "") $("#error_text").text(error_text);
+    });
+</script>
+{% endblock %}

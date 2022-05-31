@@ -51,9 +51,9 @@
                         </div>
                         <div class="shop-perched-info" id="non_seller_visible" hidden>
                             <div class="sd-cart-wrap">
-                                <form action="#">
+                                <form action="javascript:void(0)">
                                     <div class="cart-plus-minus">
-                                        <input type="text" value="1" />
+                                        <input type="text" value="1" id="cart_buy_num"/>
                                     </div>
                                 </form>
                             </div>
@@ -118,6 +118,7 @@
         });
         return user_name;
     }
+    $(cart_buy_num).onChange(function(){});
     function add_favor() {
         let url = "/api/add_favor";
         if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
@@ -143,7 +144,7 @@
             type: "get",
             data: { item_id: item_id },
             success: function (ret) {
-                if ("{{current_user.id|safe}}" != "") {
+                if ("{{current_user}}".indexOf("Anonymous") == -1) { // 用户已登录
                     if (ret.isPub) $("[id=seller_visible]").removeAttr("hidden");
                     else $("[id=non_seller_visible]").removeAttr("hidden");
                     if (ret.isAdmin) $("[id=manager_visible]").removeAttr("hidden");
