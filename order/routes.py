@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
 from flask_login import current_user
+from importlib_metadata import method_cache
 from order import order_blue
 from app import database
 from flask import render_template, flash, redirect, url_for, request
@@ -20,6 +21,11 @@ def before_request():
 def teardown_request(exc):  #exc必须写上
     if not database.is_closed():
         database.close()
+
+
+@order_blue.route("/<int:order_id>/",methods = ["GET","POST"])
+def order_view(order_id:int):
+    return render_template("order_view.html",order_id=order_id)
 
 
 @order_blue.route('/review/<order_id>/', methods=['GET', 'POST'])
