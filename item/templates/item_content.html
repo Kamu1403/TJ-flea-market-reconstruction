@@ -64,10 +64,9 @@
                         <div class="shop-perched-info" id="seller_visible" hidden>
                             <a href="#" class="btn">修改商品信息</a>
                             <p>&nbsp;&nbsp;&nbsp;</p>
-                            <a href="#" class="btn">下架商品</a>
+                            <a href="#" class="btn" id="item_down_shelf_">下架商品</a>
                         </div>
                         <div class="shop-perched-info" id="manager_visible" hidden>
-                            <a href="#" class="btn">强制下架商品</a>
                         </div>
                         <div class="shop-perched-info" id="visitor_visible" hidden>
                             <a href="{{ url_for("login") }}" class="btn">请先登录</a>
@@ -139,7 +138,6 @@
             contentType: "application/json;charset=utf-8",
             processData: false,
             success: function (ret) {
-                console.log(ret);
                 if (ret.statusCode == 201) {
                     $("[id=item_favor_]").empty();
                     $("[id=item_favor_]").append('<a href="javascript:void(0)" onclick="delete_favor()"  style="color:#C00000"><i class="fa fa-heart"></i> 取消收藏</a>');
@@ -168,10 +166,47 @@
             },
         });
     }
+    function change_item_state(state) {
+        let url = "/api/change_item_state";
+        if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
+        $.ajax({
+            url: url,
+            type: "put",
+            data: JSON.stringify({ item_id: item_id, state: state}),
+            contentType: "application/json;charset=utf-8",
+            processData: false,
+            success: function (ret) {
+                console.log(ret);
+                if (state == -1) {
+                    if (ret.statusCode == 200) {
+                        $('#manager_visible').empty();
+                        $('#manager_visible').append('<a href="#" class="btn" onclick="change_item_state(0)">恢复商品上架（管理员）</a>');
+                        $("#item_state_").text('被管理员强制下架');
+                        alert("强制下架商品成功")
+                    }
+                    else
+                        alert('强制下架失败：' + ret.message);
+                }
+                if (state == 0) {
+                    if (ret.statusCode == 200) {
+                        $('#manager_visible').empty();
+                        $('#manager_visible').append('<a href="#" class="btn" onclick="change_item_state(-1)">强制下架商品</a>');
+                        alert("恢复商品上架成功")
+                    }
+                    else
+                        alert('恢复商品上架失败：' + ret.message);
+                }
+                if (state == 1) {
+                    if (ret.statusCode == 200) {
+                        alert("下架商品成功")
+                    }
+                    else 
+                        alert('下架商品失败：' + ret.message);
+                }
+            },
+        });
+    }
     $(document).ready(function () {
-        console.log("{{current_user.id|safe}}");
-        console.log();
-
         let url = "/api/get_item_info";
         if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
         $.ajax({
@@ -180,6 +215,7 @@
             data: { item_id: item_id },
             success: function (ret) {
                 if ("{{current_user}}".indexOf("Anonymous") == -1) { // 用户已登录
+                    
                     if (ret.isPub) $("[id=seller_visible]").removeAttr("hidden");
                     else $("[id=non_seller_visible]").removeAttr("hidden");
                     if (ret.isAdmin) $("[id=manager_visible]").removeAttr("hidden");
@@ -204,12 +240,15 @@
                 switch (data.state) {
                     case 0:
                         state_str = "正常发布";
+                        $('#manager_visible').append('<a href="#" class="btn" onclick="change_item_state(-1)">强制下架商品</a>');
                         break;
                     case -1:
                         state_str = "被管理员强制下架";
+                        $('#manager_visible').append('<a href="#" class="btn" onclick="change_item_state(0)">恢复商品上架（管理员）</a>');
                         break;
                     case 1:
                         state_str = "被发布方下架";
+                        $('#manager_visible').append('<a href="#" class="btn" onclick="change_item_state(-1)">强制下架商品</a>');
                         break;
                 }
                 $("#item_state_").text(state_str);
@@ -223,7 +262,6 @@
             type: "get",
             data: {item_id: item_id},
             success: function (ret) {
-                console.log(ret);
                 if (ret.statusCode == 200) {
                     if (ret.data == false)
                         $("[id=item_favor_]").append('<a href="javascript:void(0)" onclick="add_favor()"><i class="far fa-heart"></i> 加入收藏</a>');
