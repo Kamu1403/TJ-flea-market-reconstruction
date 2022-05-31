@@ -26,28 +26,26 @@ def root_index():
 
 @user_blue.route('/index', methods=['GET', 'POST'])
 def index():
-    return render_template("user_index.html",
-                           current_user=current_user)  #html的名字不能相同
-
-
-@user_blue.route('/order', methods=['GET', 'POST'])
-def order():
-    return render_template("user_order.html", current_user=current_user)
-
-
-#个人认为，“我的订单”页面不应该被别人看见
+    if current_user.is_authenticated:
+        return render_template("user_index.html",
+                               current_user=current_user)  #html的名字不能相同
+    else:
+        return redirect(url_for('index'))  # 重定向到/index
 
 
 @user_blue.route('/publish', methods=['GET', 'POST'])
 def publish():
-    return render_template("user_publish.html", current_user=current_user)
+    if current_user.is_authenticated:
+        return render_template("user_publish.html", current_user=current_user)
+    else:
+        return redirect(url_for('index'))  # 重定向到/index
 
 
 #个人中心
 @user_blue.route('/<opt_userid>/space', methods=['GET', 'POST'])
 def space(opt_userid: int):  #opt_userid为目标用户ID
     if current_user.is_authenticated:
-        return render_template('user_space.html')
+        return render_template('user_space.html', current_user=current_user)
     else:
         return redirect(url_for('index'))  # 重定向到/index
 
@@ -61,6 +59,12 @@ def user_info(opt_userid: int):  #opt_userid为目标用户ID
                                opt_userid=int(opt_userid))
     else:
         return redirect(url_for('index'))  # 重定向到/index
+@user_blue.route('/order', methods=['GET', 'POST'])
+def order():
+    return render_template("user_order.html", current_user=current_user)
+
+
+#个人认为，“我的订单”页面不应该被别人看见
 
 
 #历史
