@@ -132,4 +132,5 @@ class Order_Item(BaseModel):
     #id = pw.IntegerField(primary_key=True)  # 主键，不显式定义的话peewee默认定义一个自增的id
     order_id = pw.ForeignKeyField(Order, verbose_name="订单id")
     quantity = pw.IntegerField(verbose_name="购买数量")  #乘以单价再与订单中其他物品相加等于订单中的总价
+    price = pw.FloatField(verbose_name="购买时单价")
     item_id = pw.ForeignKeyField(Item, verbose_name="item id", null=True)
