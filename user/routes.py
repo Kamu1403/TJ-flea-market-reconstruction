@@ -30,7 +30,7 @@ def index():
         return render_template("user_index.html",
                                current_user=current_user)  #html的名字不能相同
     else:
-        return redirect(url_for('index'))  # 重定向到/index
+        return render_template('404.html', message="请先登录")
 
 
 @user_blue.route('/publish', methods=['GET', 'POST'])
@@ -38,37 +38,37 @@ def publish():
     if current_user.is_authenticated:
         return render_template("user_publish.html", current_user=current_user)
     else:
-        return redirect(url_for('index'))  # 重定向到/index
+        return render_template('404.html', message="请先登录")
 
 
 #个人中心
 @user_blue.route('/<opt_userid>/space', methods=['GET', 'POST'])
 def space(opt_userid: int):  #opt_userid为目标用户ID
-    try:
-        user = User.get(User.id == opt_userid)
-    except:
-        return redirect(url_for('index'))
     if current_user.is_authenticated:
+        try:
+            user = User.get(User.id == opt_userid)
+        except:
+            return render_template('404.html', message="找不到该用户")
         return render_template('user_space.html',
                                current_user=current_user,
                                opt_user=user)
     else:
-        return redirect(url_for('index'))  # 重定向到/index
+        return render_template('404.html', message="请先登录")
 
 
 #个人信息管理
 @user_blue.route('/<opt_userid>/user_info', methods=['GET', 'POST'])
 def user_info(opt_userid: int):  #opt_userid为目标用户ID
-    try:
-        user = User.get(User.id == opt_userid)
-    except:
-        return redirect(url_for('index'))
     if current_user.is_authenticated:
+        try:
+            user = User.get(User.id == opt_userid)
+        except:
+            return render_template('404.html', message="找不到该用户")
         return render_template('user_info.html',
                                current_user=current_user,
                                opt_userid=int(opt_userid))
     else:
-        return redirect(url_for('index'))  # 重定向到/index
+        return render_template('404.html', message="请先登录")
 
 
 @user_blue.route('/order', methods=['GET', 'POST'])
@@ -85,7 +85,7 @@ def history():
     if current_user.is_authenticated:
         return render_template('user_history.html')
     else:
-        return redirect(url_for('index'))  # 重定向到/index
+        return render_template('404.html', message="请先登录")
 
 
 #收藏
@@ -94,7 +94,7 @@ def favor():
     if current_user.is_authenticated:
         return render_template('user_favor.html')
     else:
-        return redirect(url_for('index'))  # 重定向到/index
+        return render_template('404.html', message="请先登录")
 
 
 @user_blue.route('/address', methods=['GET', 'POST'])
@@ -102,4 +102,4 @@ def address():
     if current_user.is_authenticated:
         return render_template('user_address.html')
     else:
-        return redirect(url_for('index'))  # 重定向到/index
+        return render_template('404.html', message="请先登录")
