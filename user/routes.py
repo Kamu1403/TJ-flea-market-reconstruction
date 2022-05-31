@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
-from redis import RedisCluster
 from user import user_blue
 from flask import render_template, flash, redirect, url_for, request
 from user.models import User
