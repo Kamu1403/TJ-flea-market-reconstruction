@@ -14,22 +14,37 @@
                 <div class="col-lg-7">
                     <div class="checkout-form-wrap">
                         <form action="javascript:void(0)">
+                            {% if opt_userid == current_user.id %}
                             <div class="checkout-form-top">
                                 <h5 class="title">个人信息</h5>
-                                <p>{{opt_userid}}</p>
-                                <p>{{current_user.id}}</p>
                             </div>
+                            {% else %}
+                            <div class="checkout-form-top">
+                                <h5 class="title">{{ opt_userid }}的个人信息</h5>
+                            </div>
+                            {% endif %}
+                            
 
                             <div class="building-info-wrap">
-                                用户名
+                                <div>
+                                <span>用户名</span>
                                 <input type="text" value="用户名" id="username" />
-                                信誉分
+                                </div>
+
+                                <div>
+                                <span>信誉分</span>
                                 <input type="text" value="100" disabled="disabled" id="score" />
-                                邮箱
+                                </div>
+                                
+                                <div>
+                                <span>邮箱</span>
                                 <input type="text" value="test@test" disabled="disabled" id="email" />
+                                </div>
 
                                 {% if opt_userid == current_user.id %}
-                                学号
+                                
+                                <div>
+                                <span>学号</span>
                                 <div class="row">
                                     <div class="col-md-9">
                                         <input type="text" value="" disabled="disabled" id="user_no" />
@@ -43,8 +58,10 @@
                                         <p id="check_user_no_is_published">公开</p>
                                     </div>
                                 </div>
+                                </div>
 
-                                性别
+                                <div>
+                                <span>性别</span>
                                 <div class="row">
                                     <div class="col-md-2">
                                     <select id="gender" class="custom-select">
@@ -55,8 +72,10 @@
                                     </div>
                                 </br></br></br>
                                 </div>
-                                
-                                姓名
+                                </div>
+
+                                <div>
+                                <span>姓名</span>
                                 <div class="row">
                                     <div class="col-md-9">
                                         <input type="text" placeholder="请填写你的姓名" value="" id="name" />
@@ -69,8 +88,10 @@
                                         <p id="check_name_is_published">公开</p>
                                     </div>
                                 </div>
+                                </div>
 
-                                校区
+                                <div>
+                                <span>校区</span>
                                 <div class="row">
                                     <div class="col-md-9">
                                         <select id="campus_branch" class="custom-select">
@@ -88,6 +109,8 @@
                                         <p id="check_campus_is_published">公开</p>
                                     </div>
                                 </div>
+                                </div>
+
                                 {% endif %}
 
                             </div>
@@ -95,6 +118,7 @@
                     </div>
                 </div>
             </div>
+            {% if opt_userid == current_user.id %}
             <div class="container">
                 <div class="row justify-content-center">
                     <div class="col-lg-7">
@@ -106,6 +130,7 @@
                     </div>
                 </div>
             </div>
+            {% endif %}
         </div>
 </main>
 {% endblock %} {% block footer %} {{ super() }} {% endblock %} {% block js %} {{ super() }}
@@ -117,13 +142,9 @@
     var debug = 0;
     function checkboxOnclick(checkbox){
         if (checkbox.checked==false)
-        {
             $("#check_"+checkbox.id).text("不公开");
-        }
         else
-        {
             $("#check_"+checkbox.id).text("公开");
-        }
     }
     function submit() {
         url = "/api/change_user_info";
@@ -167,9 +188,36 @@
             data:{user_id:opt_userid},
             success: function (ret) {
                 console.log(ret);
-                if(opt_userid!=current_user_id){
+                if (opt_userid!=current_user_id)
+                {
                     $("#username").attr('disabled',"disabled");
+                    if (ret.data.user_no_is_published)
+                    {
+                        let str=`<div>
+                            <span>学号</span>
+                            <input type="text" value="用户名" id="user_no" disabled="disabled"/>
+                            </div>`;
+                        $(".building-info-wrap").append(str);
+                    }
+                    if (ret.data.name_is_published)
+                    {
+                        let str=`<div>
+                            <span>姓名</span>
+                            <input type="text" value="姓名" id="name" disabled="disabled"/>
+                            </div>`;
+                        $(".building-info-wrap").append(str);
+                    }
+                    if (ret.data.campus_is_published)
+                    {
+                        let str=`<div>
+                            <span>校区</span>
+                            <input type="text" value="校区" id="campus_branch" disabled="disabled"/>
+                            </div>`;
+                        $(".building-info-wrap").append(str);
+                    }
                 }
+
+
                 $("#username").val(ret.data.username);
                 $("#score").val(ret.data.score);
                 $("#email").val(ret.data.email);

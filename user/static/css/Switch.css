@@ -47,8 +47,8 @@
     }
 
     .switch:checked {
-        background: #00d287;
-        border: solid 1px #00d287;
+        background: #4eb92d;
+        border: solid 1px #4eb92d;
     }
 
     .switch:checked:before {
