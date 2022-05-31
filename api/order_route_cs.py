@@ -29,7 +29,7 @@ def get_order():
             my_order.append(Order_Item.order_id.create_time >= last_time)
     try:
         my_od_item = Order_Item.select(Order_Item.order_id,Order_Item.item_id)\
-            .join(Order,on=(Order.id==Order_Item.order_id)).join(Item,on=(Item.id==Order_Item.item_id))\
+        .join(Order,on=(Order.id==Order_Item.order_id)).join(Item,on=(Item.id==Order_Item.item_id))\
         .where(*my_order).order_by(
             Order_Item.order_id.create_time.desc())
     except Exception as e:
