@@ -232,7 +232,7 @@ def fake_data():  #填一些假数据进去
     Review.create(id=4, user_id=1951566, feedback_content="默认好评")
 
     # 商品
-    Order.create(id=1, user_id=1951566, payment=1.11, state=0)
+    Order.create(id=1, user_id=1951566, payment=1, state=0)
     Order.create(
         id=2,  # 悬赏
         user_id=1953493,
@@ -240,9 +240,9 @@ def fake_data():  #填一些假数据进去
         state=1,
         confirm_time=datetime.now(),
         note="我来帮你写sj！")
-    Order.create(id=3, user_id=1951566, payment=9.99, state=0)  #3份方便面
+    Order.create(id=3, user_id=1951566, payment=12, state=0)  #3份方便面
 
-    Order.create(id=4, user_id=1951566, payment=9.99, state=2)  #3份方便面
+    Order.create(id=4, user_id=1951566, payment=10.5, state=2)  #3份方便面
 
     Order_State_Item.create(order_id=1, user_review_id=1, op_user_review_id=4)
     Order_State_Item.create(order_id=2,
