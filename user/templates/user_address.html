@@ -21,8 +21,7 @@
                                 <th>删除</th>
                             </tr>
                         </thead>
-                        <tbody id="ta">
-                        </tbody>
+                        <tbody id="ta"></tbody>
                     </table>
                 </div>
             </div>
@@ -39,54 +38,48 @@
                     <div class="modal fade" id="address" tabindex="-1" role="dialog" aria-hidden="true">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLabel">添加新地址</h5>
-                            </div>
-                            <div class="modal-body">
-                                <form action="javascript:void(0);">
-                                <div class="form-group">
-                                    <label class="col-form-label">收件人姓名:</label>
-                                    <input type="text" class="form-control" id="rname">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">添加新地址</h5>
                                 </div>
-                                <div class="form-group">
-                                    <label class="col-form-label">电话:</label>
-                                    <input type="text" class="form-control" id="rtel">
+                                <div class="modal-body">
+                                    <form action="javascript:void(0);">
+                                        <div class="form-group">
+                                            <label class="col-form-label">收件人姓名:</label>
+                                            <input type="text" class="form-control" id="rname" />
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-form-label">电话:</label>
+                                            <input type="text" class="form-control" id="rtel" />
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-form-label">详细地址:</label>
+                                            <input type="text" class="form-control" id="raddress" />
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-form-label">所在校区:</label>
+                                            <select class="custom-select" id="rcampus">
+                                                <option>四平路校区</option>
+                                                <option>嘉定校区</option>
+                                                <option>沪西校区</option>
+                                                <option>沪北校区</option>
+                                            </select>
+                                        </div>
+                                    </form>
                                 </div>
-                                <div class="form-group">
-                                    <label  class="col-form-label">详细地址:</label>
-                                    <input type="text" class="form-control" id="raddress">
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                                    <button type="button" class="btn" onclick="add_address()">提交</button>
                                 </div>
-                                <div class="form-group">
-                                    <label  class="col-form-label">所在校区:</label>
-                                    <select class="custom-select" id="rcampus">
-                                        <option>四平路校区
-                                        </option>
-                                        <option>嘉定校区
-                                        </option>
-                                        <option>沪西校区
-                                        </option>
-                                        <option>沪北校区
-                                        </option>
-                                    </select>
-                                </div>
-                                </form>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
-                                <button type="button" class="btn" onclick="add_address()">提交</button>
-                            </div>
                             </div>
                         </div>
-                        </div>
-    
-
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </main>
 {% endblock %} {% block footer %} {{ super() }} {% endblock %} {% block js %} {{ super() }}
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/5.5.2/bootbox.min.js"></script>
+
 <script type="text/javascript" charset="utf-8">
     var debug = 0;
 
@@ -121,7 +114,7 @@
                     let oInput = $("<input type='text' value='" + tdVal + "'/>");
                     $(this).html(oInput);
                     oInput.focus();
-                    
+
                     /* 2.失去焦点，这个td变为原来的text，value为修改过后的value */
                     oInput.blur(function () {
                         oInput.parent().html(oInput.val());
@@ -143,14 +136,14 @@
         update_contact(id);
     }
 
-    function checkboxOnclick(checkbox)
-    {
-        if (checkbox.checked==true){
-            $(".switch").each(function(index,obj){obj.checked=false;});
-            $("#"+checkbox.id)[0].checked=true;
-        }
-        else{
-            $("#"+checkbox.id)[0].checked=false;
+    function checkboxOnclick(checkbox) {
+        if (checkbox.checked == true) {
+            $(".switch").each(function (index, obj) {
+                obj.checked = false;
+            });
+            $("#" + checkbox.id)[0].checked = true;
+        } else {
+            $("#" + checkbox.id)[0].checked = false;
         }
     }
     function get_branch_select_text(id, campus_branch) {
@@ -166,7 +159,8 @@
     function get_default_button_text(contact_id, is_default) {
         let res;
         if (is_default) res = `<input type="checkbox" class="switch" checked="checked" id='is_default${contact_id}' onclick="checkboxOnclick(this)" onblur="checkboxOnblur(this)"/>`;
-        else res = `<input class="switch" type="checkbox" id='is_default${contact_id}' 
+        else
+            res = `<input class="switch" type="checkbox" id='is_default${contact_id}' 
         onclick="checkboxOnclick(this)" onblur="checkboxOnblur(this)"/>`;
         return res;
     }
@@ -222,16 +216,16 @@
         let url = "/api/address";
         if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
 
-        let name=$("#rname").val();
-        let tel=$("#rtel").val();
-        let address=$("#raddress").val();
-        let campus=$("#rcampus").val();
+        let name = $("#rname").val();
+        let tel = $("#rtel").val();
+        let address = $("#raddress").val();
+        let campus = $("#rcampus").val();
 
-        $(".modal-input").val("");  //清空所有input的数据
+        $(".modal-input").val(""); //清空所有input的数据
         $.ajax({
             url: url,
             type: "post",
-            data: JSON.stringify([{ name: name, telephone: tel, campus_branch: campus, default: false, full_address:address }]),
+            data: JSON.stringify([{ name: name, telephone: tel, campus_branch: campus, default: false, full_address: address }]),
             contentType: "application/json;charset=utf-8",
             processData: false,
             //async: false, // 当需要将值传给函数外部时需要强制同步
@@ -242,8 +236,6 @@
                 } else bootbox.alert(ret.message);
             },
         });
-
-
     }
 </script>
 {% endblock %}
