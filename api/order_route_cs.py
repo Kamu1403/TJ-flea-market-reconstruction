@@ -243,6 +243,7 @@ def order_post():
         try:
             od_it = Order_Item.create(order_id=od.id,
                                       quantity=num,
+                                      price = item_list[i].price,
                                       item_id=item_list[i].id)
         except Exception as e:
             for t in range(len(data["item_info"])):
