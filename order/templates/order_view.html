@@ -16,13 +16,18 @@
         <tfoot></tfoot>
     </table>
     <div id="state"></div>
+    <button id="confirm" onclick="change_state({{order_id}},1)">确认订单</button>
+    <button id="complete" onclick="change_state({{order_id}},2)">完成订单</button>
+    <button id="cancel" onclick="change_state({{order_id}},-1)">取消订单</button>
 </main>
 {% endblock %} {% block footer %} {{ super() }} {% endblock %} {% block js %} {{ super() }}
 
 <script type="text/javascript" charset="utf-8">
     var debug = 0;
+    var current_user_state={{current_user.state}};
+    var current_user_id={{current_user.id}};
+    var order_id = "{{order_id|safe}}";
     $(document).ready(function () {
-        let order_id = "{{order_id|safe}}";
         let url = "/api/get_order_info";
         if (debug) url = `http://127.0.0.1:4523mock/927026${url}`;
         $.ajax({
@@ -36,10 +41,9 @@
                 } else {
                     let data = ret.data;
                     console.log(data);
-                    $("#state").append(`<span><p>订单状态:${data.state}</p></span>`);
-                    if (data.state > -1) {
+                    /*if (data.state > -1) {
                         $("#state").append(`<span><p>商家是否确认:${data.state > 0}</p></span>`);
-                    }
+                    }*/
                     $("thead").append(`<tr>\
                             <td>\
                                 <span>\
@@ -106,6 +110,33 @@
                                     </tr>`);
                                         has_op = false;
                                     }
+
+
+                                    //订单状态逻辑
+                                    let state_message;
+                                    if (data.state == 0) {
+                                        state_message = "等待商家确认";
+                                        if(current_user_id!=item_ret.data.user_id)//当前用户不是卖家
+                                            $("#confirm").attr("disabled","disabled");
+                                        $("#complete").attr("disabled", "disabled");
+                                    } else if (data.state == 1) {
+                                        state_message = "等待收货方完成";
+                                        if((current_user_id==item_ret.data.user_id&&item_ret.data.type==0)||(current_user_id==data.user_id&&item_ret.data.type==1))//当前用户不是收货方
+                                            $("#complete").attr("disabled", "disabled");
+                                        $("#confirm").attr("disabled", "disabled");
+                                    } else if (data.state == -1) {
+                                        state_message = "已被取消";
+                                        $("#cancel").attr("disabled", "disabled");
+                                        $("#complete").attr("disabled", "disabled");
+                                        $("#confirm").attr("disabled", "disabled");
+                                    } else {
+                                        state_message = "已完成";
+                                        $("#cancel").attr("disabled", "disabled");
+                                        $("#complete").attr("disabled", "disabled");
+                                        $("#confirm").attr("disabled", "disabled");
+                                    }
+                                    $("#state").append(`<span><p>订单状态:${state_message}</p></span>`);
+
                                 }
                             },
                         });
@@ -128,6 +159,24 @@
             },
         });
     });
+
+    function change_state(order_id, state) {//修改订单状态
+        $.ajax({
+            url: "/api/change_order_state",
+            type: "put",
+            data: JSON.stringify({ order_id: order_id, state: state }),
+            contentType: "application/json;charset=utf-8",
+            processData: false,
+            success: function (ret) {
+                if (ret.statusCode == 200) {
+                    alert(ret.message);
+                    window.location.reload();
+                } else {
+                    alert(ret.message);
+                }
+            },
+        });
+    }
 </script>
 
 {% endblock %}
