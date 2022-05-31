@@ -140,8 +140,6 @@ def get_search():
         search_type = int(data["search_type"])
     except Exception as e:
         return make_response_json(400, "请求格式错误")
-    if search_type != Item_type.Goods.value and search_type != Item_type.Want.value:
-        return make_response_json(400, "搜索类型仅能指定商品或悬赏")
     if "key_word" in data:
         key_word = data["key_word"]
     else:
@@ -153,7 +151,9 @@ def get_search():
     #get_data = Item.select().where().exectue()
 
     need = (Item.id, Item.name, Item.user_id, Item.publish_time, Item.price, Item.tag)
-    select_need = [Item.name.contains(key_word), Item.type == search_type]
+    select_need = [Item.name.contains(key_word)]
+    if search_type in [eval(f"Item_type.{i}.value") for i in Item_type.__members__]:
+        select_need.append(Item.type == search_type)
     try:
         if "start_time" in data:
             start_time = data["start_time"]
