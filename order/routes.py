@@ -22,9 +22,9 @@ def teardown_request(exc):  #exc必须写上
         database.close()
 
 
-@order_blue.route("/<int:order_id>/",methods = ["GET","POST"])
-def order_view(order_id:int):
-    return render_template("order_view.html",order_id=order_id)
+@order_blue.route("/<int:order_id>/", methods=["GET", "POST"])
+def order_view(order_id: int):
+    return render_template("order_view.html", order_id=order_id)
 
 
 @order_blue.route('/review/<order_id>/', methods=['GET', 'POST'])

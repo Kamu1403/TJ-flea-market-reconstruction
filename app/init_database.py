@@ -80,31 +80,37 @@ def fake_data():  #填一些假数据进去
                 email="admin@admin.cn")
     User.create(
         id=1951705,
+        user_no="1951705",
         username="高曾谊",
         state=1,  #管理员
         password_hash=generate_password_hash("1951705"),
         email=str(1951705) + "@tongji.edu.cn")
     User.create(id=1950084,
+                user_no="1950084",
                 username="陈泓仰",
                 state=1,
                 password_hash=generate_password_hash("1950084"),
                 email=str(1950084) + "@tongji.edu.cn")
     User.create(id=1951566,
+                user_no="1951566",
                 username="贾仁军",
                 password_hash=generate_password_hash("1951566"),
                 email=str(1951566) + "@tongji.edu.cn")
     User.create(
         id=1953493,
+        user_no="1953493",
         username="程森",
         state=-1,  #被封号
         password_hash=generate_password_hash("1953493"),
         email=str(1953493) + "@tongji.edu.cn")
 
     User.create(id=1952219,
+                user_no="1952219",
                 username="彭斐然",
                 password_hash=generate_password_hash("1952219"),
                 email=str(1952219) + "@tongji.edu.cn")
     User.create(id=1951859,
+                user_no="1951859",
                 username="杨可盈",
                 password_hash=generate_password_hash("1951859"),
                 email=str(1951859) + "@tongji.edu.cn")
@@ -252,16 +258,16 @@ def fake_data():  #填一些假数据进去
     Order_State_Item.create(order_id=4)
     # 商品
     #订单4中包含 3份方便面
-    Order_Item.create(order_id=4, quantity=3,price=3.5, item_id=2)  #方便面
+    Order_Item.create(order_id=4, quantity=3, price=3.5, item_id=2)  #方便面
 
     #订单3中包含 3份方便面
-    Order_Item.create(order_id=3, quantity=3,price=4, item_id=2)  #方便面
+    Order_Item.create(order_id=3, quantity=3, price=4, item_id=2)  #方便面
 
     #订单2中包含 1份苹果
-    Order_Item.create(order_id=2, quantity=1,price=1.5, item_id=1)  #苹果
+    Order_Item.create(order_id=2, quantity=1, price=1.5, item_id=1)  #苹果
 
     #订单1中包含 1份苹果  商品
-    Order_Item.create(order_id=1, quantity=1,price=1, item_id=1)  #苹果
+    Order_Item.create(order_id=1, quantity=1, price=1, item_id=1)  #苹果
     #悬赏
     Order.create(id=5, user_id=1951566, payment=1.11, state=0)
     Order.create(
@@ -283,10 +289,10 @@ def fake_data():  #填一些假数据进去
     Order_State_Item.create(order_id=4)
     # 悬赏
     #订单5中包含 3
-    Order_Item.create(order_id=5, quantity=3,price=200, item_id=5)  #耳机
+    Order_Item.create(order_id=5, quantity=3, price=200, item_id=5)  #耳机
 
     #订单6中包含 1份作业
-    Order_Item.create(order_id=6, quantity=1,price=5, item_id=4)  #sj作业
+    Order_Item.create(order_id=6, quantity=1, price=5, item_id=4)  #sj作业
 
 
 def init_database(drop_database: bool):

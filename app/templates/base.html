@@ -194,7 +194,7 @@
             $(document).ready(function () {
                 //$.get("/api/get_user_id", function (ret) {
                     // console.log(ret);
-                    if ("{{current_user.id|safe}}" == "") {
+                    if ("{{current_user}}".indexOf("Anonymous") != -1) { // 未登录true 登录false
                         $(bar_icon_post).remove();
                         $(bar_icon_chatroom).remove();
                         $(bar_icon_history).remove();
