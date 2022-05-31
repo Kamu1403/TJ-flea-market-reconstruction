@@ -118,7 +118,6 @@
                     /* 1.先拿到这个td原来的值，然后将这个td变成一个input:text,并且原来的值不动 */
                     let tdVal = $(this).text();
                     let id=parseInt($(this).attr('id').replace(/[^\d]/g,' '));
-                    console.log(id);
                     let oInput = $("<input type='text' value='" + tdVal + "'/>");
                     $(this).html(oInput);
                     oInput.focus();
@@ -136,13 +135,11 @@
     function checkboxOnblur(checkbox)
     {
         let id=parseInt(checkbox.id.replace(/[^\d]/g,' '));
-        console.log(id);
         update_contact(id);
     }
     function selectOnblur(select)
     {
         let id=parseInt(select.id.replace(/[^\d]/g,' '));
-        console.log(id);
         update_contact(id);
     }
 
