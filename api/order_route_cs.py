@@ -257,7 +257,7 @@ def order_post():
         od_it_list.append(od_it)
     return make_response_json(201,
                               "订单生成成功，请等待商家确认",
-                              data={"url": url_for("order.manage")})
+                              data={"order_id": od.id})
 
 
 @api_blue.route("/address", methods=["POST", "PUT", "DELETE"])
