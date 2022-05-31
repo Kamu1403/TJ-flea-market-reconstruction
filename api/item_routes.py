@@ -472,7 +472,7 @@ def delete_favor():
 def get_favor():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
-    tep = Favor.select().where(Favor.user_id == current_user.id).order_by(Favor.collect_time)
+    tep = Favor.select().where(Favor.user_id == current_user.id).order_by(Favor.collect_time.desc())
     data = []
     for i in tep:
         res = dict()
@@ -504,7 +504,7 @@ def get_item_favor():
 def get_history():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
-    tep = History.select().where(History.user_id == current_user.id).order_by(History.visit_time)
+    tep = History.select().where(History.user_id == current_user.id).order_by(History.visit_time.desc())
     data = []
     for i in tep:
         res = dict()
