@@ -45,7 +45,7 @@
                         <p id="description_"><商品详情描述></p>
                         <div class="shop-details-list">
                             <ul>
-                                <li>商品类型 : <span id="item_type_">[悬赏/售卖]</span></li>
+                                <li>发布类型 : <span id="item_type_">[悬赏/售卖]</span></li>
                                 <li>发布时间 : <span id="publish_time_">[2022.05.29]</span></li>
                             </ul>
                         </div>
@@ -59,7 +59,7 @@
                             </div>
                             <a href="{{url_for('order.generate',item_id=item_id)}}" class="btn">生成订单</a>
                             <p>&nbsp;&nbsp;&nbsp;</p>
-                            <a href="#" class="btn">联系卖家</a>
+                            <a href="#" class="btn" id="contact_publisher_">联系卖家</a>
                         </div>
                         <div class="shop-perched-info" id="seller_visible" hidden>
                             <a href="#" class="btn">修改商品信息</a>
@@ -69,24 +69,23 @@
                         <div class="shop-perched-info" id="manager_visible" hidden>
                             <a href="#" class="btn">强制下架商品</a>
                         </div>
+                        <div class="shop-perched-info" id="visitor_visible" hidden>
+                            <a href="{{ url_for("login") }}" class="btn">请先登录</a>
+                        </div>
                         <div class="shop-details-bottom">
                             <h5 class="title">
-                                <a href="#"><i class="far fa-heart"></i> 加入收藏</a>
+                                <a href="javascript:void(0)" onclick="add_favor()"><i class="far fa-heart"></i> 加入收藏</a>
                             </h5>
                             <ul>
                                 <li>
                                     <span>Tag : </span>
                                     <a href="#" id="item_tag_">[商品标签]</a>
                                 </li>
-                                <!--
                                 <li>
-                                    <span>CATEGORIES :</span>
-                                    <a href="#">women's,</a>
-                                    <a href="#">bikini,</a>
-                                    <a href="#">tops for,</a>
-                                    <a href="#">large bust</a>
+                                    <span>商品状态 :</span>
+                                    <a href="#" id="item_state_">[商品状态]</a>
+                                    <!-- <a href="#">tops for,</a> -->
                                 </li>
-                                -->
                             </ul>
                         </div>
                     </div>
@@ -119,7 +118,24 @@
         });
         return user_name;
     }
+    function add_favor() {
+        let url = "/api/add_favor";
+        if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
+        $.ajax({
+            url: url,
+            type: "post",
+            data: JSON.stringify({ item_id_list: [item_id] }),
+            contentType: "application/json;charset=utf-8",
+            processData: false,
+            success: function (ret) {
+                console.log(ret);
+            },
+        });
+    }
     $(document).ready(function () {
+        console.log("{{current_user.id|safe}}");
+        console.log();
+
         let url = "/api/get_item_info";
         if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
         $.ajax({
@@ -127,9 +143,13 @@
             type: "get",
             data: { item_id: item_id },
             success: function (ret) {
-                if (ret.isPub) $("[id=seller_visible]").removeAttr("hidden");
-                else $("[id=non_seller_visible]").removeAttr("hidden");
-                if (ret.isAdmin) $("[id=manager_visible]").removeAttr("hidden");
+                if ("{{current_user.id|safe}}" != "") {
+                    if (ret.isPub) $("[id=seller_visible]").removeAttr("hidden");
+                    else $("[id=non_seller_visible]").removeAttr("hidden");
+                    if (ret.isAdmin) $("[id=manager_visible]").removeAttr("hidden");
+                } else {
+                    $("[id=visitor_visible]").removeAttr("hidden");
+                }
                 let data = ret.data;
                 $("#item_name_").text(data.name);
                 $("#user_name").text(get_user_name(data.user_id));
@@ -141,6 +161,21 @@
                 $("#item_type_").text(data.type == 0 ? "售卖" : "悬赏");
                 $("#publish_time_").text(data.publish_time);
                 $("#item_tag_").text(data.tag);
+                $("#contact_publisher_").attr("href", `/chat/${data.user_id}`);
+
+                state_str = data.state;
+                switch (data.state) {
+                    case 0:
+                        state_str = "正常发布";
+                        break;
+                    case -1:
+                        state_str = "被管理员强制下架";
+                        break;
+                    case 1:
+                        state_str = "被发布方下架";
+                        break;
+                }
+                $("#item_state_").text(state_str);
             },
         });
 

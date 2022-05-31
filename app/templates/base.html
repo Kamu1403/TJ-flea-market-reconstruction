@@ -192,9 +192,9 @@
         <!--<script src="  {{url_for('static', filename='js/dropdown.js')}}"></script>-->
         <script type="text/javascript">
             $(document).ready(function () {
-                $.get("/api/get_user_id", function (ret) {
+                //$.get("/api/get_user_id", function (ret) {
                     // console.log(ret);
-                    if (ret.statusCode == 401) {
+                    if ("{{current_user.id|safe}}" == "") {
                         $(bar_icon_post).remove();
                         $(bar_icon_chatroom).remove();
                         $(bar_icon_history).remove();
@@ -220,7 +220,7 @@
                         });
                     }
                     
-                });
+                //});
             });
             
             $("#item_name").keyup(function(event){
