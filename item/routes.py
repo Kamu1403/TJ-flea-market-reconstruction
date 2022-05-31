@@ -53,4 +53,6 @@ def content(item_id: int):  #goods_id/want_id
 
 @item_blue.route('/publish/', methods=['GET', 'POST'])
 def publish():
+    if not current_user.is_authenticated:
+        return render_template('404.html', message="请先登录")
     return render_template('item_publish.html')
