@@ -131,19 +131,18 @@
         let message = $("#message").val();
         let urls = new Array();
 
-        if(isNaN(price)){
+        if (isNaN(price)) {
             alert("价格格式有误!");
             return;
         }
-        if(isNaN(quantity)){
+        if (isNaN(quantity)) {
             alert("数量格式有误!");
             return;
         }
-        if(type==''){
+        if (type == "") {
             alert("未选择发布类型!");
             return;
         }
-
 
         $("[id^=project_name]").each(function (index, obj) {
             let cc = "#customCheck_" + $(this).text();
@@ -214,7 +213,17 @@
     }
 
     function updatePage(objUrl, md5) {
-        var str = `<tr id="tr_${md5}">
+        let f_repeat = false;
+        $("[id^=project_name]").each(function (index, obj) {
+            console.log($(this).text());
+            if ($(this).text() == md5) {
+                alert("请勿重复上传图片！");
+                f_repeat = true;
+                return;
+            }
+        });
+        if (!f_repeat) {
+            var str = `<tr id="tr_${md5}">
             <td class="product-thumbnail" id="product_thumbnail_${md5}"><img src=${objUrl} alt="" /></td>
             <td class="product-name"> <h4 id="project_name_${md5}">${md5}</h4></td>
             <td class="product-quantity">
@@ -226,7 +235,8 @@
             </td>
             <td class="product-delete"><a href="#" onclick="remove(this)"><i class="far fa-trash-alt"></i></a></td>
         </tr>`;
-        $(auto_append).append(str);
+            $(auto_append).append(str);
+        }
     }
 
     function uploadImg() {

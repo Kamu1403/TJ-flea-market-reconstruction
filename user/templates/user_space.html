@@ -18,8 +18,8 @@
                                     </a>
                                     <div class="s-name">
                                         <a href="#">
-                                            <em>{{current_user.username}}</em>
-                                            ({{current_user.id}})
+                                            <em>{{opt_user.username}}</em>
+                                            ({{opt_user.id}})
                                         </a>
                                     </div>
                                     <div class="s-prestige" style="margin-left: 80px"></div>
@@ -29,10 +29,10 @@
                                         <a href="{{url_for('user.address')}}" class="J_DropTrigger i-trigger">我的地址</a>
                                     </li>
                                     <li>
-                                        <a href="{{url_for('user.user_info',opt_userid=current_user.id)}}" class="J_DropTrigger i-trigger">我的信息</a>
+                                        <a href="{{url_for('user.user_info',opt_userid=opt_user.id)}}" class="J_DropTrigger i-trigger">我的信息</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="J_DropTrigger i-trigger"> <em>我的信誉</em> ({{current_user.score}}分)</a>
+                                        <a href="#" class="J_DropTrigger i-trigger"> <em>我的信誉</em> ({{opt_user.score}}分)</a>
                                     </li>
                                 </ul>
                             </div>
