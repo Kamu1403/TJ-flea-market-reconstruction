@@ -1,0 +1,11 @@
+<html>
+    Error! {{message}}
+    <a href="{{url_for('index')}}">返回主页</a>
+    <script>
+        function GoPreUrl() {
+            //返回上一页
+            console.log(document.referer);
+            window.location.href = document.referer;
+        }
+    </script>
+</html>
