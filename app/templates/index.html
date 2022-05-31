@@ -1,5 +1,291 @@
 ﻿{% extends "base.html" %} {% block title %}
 <title>同济大学跳蚤市场</title>
 {% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
-<main></main>
-{% endblock %} {% block footer %} {{ super() }} {% endblock %} {% block js %} {{ super() }} {% endblock %}
+<main>
+
+</section>
+<section class="special-products-area gray-bg pt-20 pb-20">
+    <div class="container">
+        <div class="special-products-wrap">
+            <div class="row justify-content-center">
+                <div class="col-9">
+                    <div class="row align-items-end mb-20">
+                        <div class="col-md-8 col-sm-9">
+                            <div class="section-title mt-20">
+                                <h2 class="title" style="margin-left:20px;">推荐</h2>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-sm-3">
+                            <div class="section-btn text-left text-md-right">
+                                <a href="shop.html" class="btn">View All</a>
+                            </div>
+                        </div>
+                        
+                    <!-- category-area -->
+                    <div class="container custom-container">
+                        <div class="slider-category-wrap">
+                            <!-- <div class="row category-active">
+                                <div class="col-lg-2">
+                                    <div class="category-item active">
+                                        <a href="shop.html" class="category-link"></a>
+                                        <div class="category-thumb">
+                                            <img src="  {{url_for('static', filename='img/product/category_img01.png')}}" alt="">
+                                        </div>
+                                        <div class="category-content">
+                                            <h6 class="title">奶茶 & 饮料</h6>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2">
+                                    <div class="category-item">
+                                        <a href="shop.html" class="category-link"></a>
+                                        <div class="category-thumb">
+                                            <img src="  {{url_for('static', filename='img/product/category_img02.png')}}" alt="">
+                                        </div>
+                                        <div class="category-content">
+                                            <h6 class="title">水果蔬菜</h6>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2">
+                                    <div class="category-item">
+                                        <a href="shop.html" class="category-link"></a>
+                                        <div class="category-thumb">
+                                            <img src="  {{url_for('static', filename='img/product/category_img03.png')}}" alt="">
+                                        </div>
+                                        <div class="category-content">
+                                            <h6 class="title">零食</h6>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2">
+                                    <div class="category-item">
+                                        <a href="shop.html" class="category-link"></a>
+                                        <div class="category-thumb">
+                                            <img src="  {{url_for('static', filename='img/product/category_img04.png')}}" alt="">
+                                        </div>
+                                        <div class="category-content">
+                                            <h6 class="title">洗护产品</h6>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2">
+                                    <div class="category-item">
+                                        <a href="shop.html" class="category-link"></a>
+                                        <div class="category-thumb">
+                                            <img src="  {{url_for('static', filename='img/product/category_img05.png')}}" alt="">
+                                        </div>
+                                        <div class="category-content">
+                                            <h6 class="title">学习用品</h6>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2">
+                                    <div class="category-item">
+                                        <a href="shop.html" class="category-link"></a>
+                                        <div class="category-thumb">
+                                            <img src="  {{url_for('static', filename='img/product/category_img06.png')}}" alt="">
+                                        </div>
+                                        <div class="category-content">
+                                            <h6 class="title">日用百货</h6>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> -->
+                            <div class="row special--product-active">
+                                <div class="col-xl-3 col-md-4 col-sm-6 grid-item grid-sizer cat-two">
+                                    <div class="sp--product--item mb-50">
+                                        <div class="sp--product--thumb">
+                                            <span class="batch">-20 %</span>
+                                            <a href="cart.html" class="wishlist"><i class="flaticon-heart-shape-outline"></i></a>
+                                            <a href="shop-details.html"><img src="{{url_for('static', filename='img/product/sp__products01.png')}}" alt=""></a>
+                                        </div>
+                                        <div class="sp--product--content">
+                                            <h6 class="title"><a href="shop-details.html">Watermelon</a></h6>
+                                            <div class="rating">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                            </div>
+                                            <div class="price">$12.00/kg</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xl-3 col-md-4 col-sm-6 grid-item grid-sizer cat-one">
+                                    <div class="sp--product--item mb-50">
+                                        <div class="sp--product--thumb">
+                                            <a href="cart.html" class="wishlist"><i class="flaticon-heart-shape-outline"></i></a>
+                                            <a href="shop-details.html"><img src="{{url_for('static', filename='img/product/sp__products02.png')}}" alt=""></a>
+                                        </div>
+                                        <div class="sp--product--content">
+                                            <h6 class="title"><a href="shop-details.html">Walnuts Max</a></h6>
+                                            <div class="rating">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                            </div>
+                                            <div class="price">$09.99/kg</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xl-3 col-md-4 col-sm-6 grid-item grid-sizer cat-two">
+                                    <div class="sp--product--item mb-50">
+                                        <div class="sp--product--thumb">
+                                            <a href="cart.html" class="wishlist"><i class="flaticon-heart-shape-outline"></i></a>
+                                            <a href="shop-details.html"><img src="{{url_for('static', filename='img/product/sp__products03.png')}}" alt=""></a>
+                                        </div>
+                                        <div class="sp--product--content">
+                                            <h6 class="title"><a href="shop-details.html">Black Grapes</a></h6>
+                                            <div class="rating">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                            </div>
+                                            <div class="price">$05.99/kg</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xl-3 col-md-4 col-sm-6 grid-item grid-sizer cat-one">
+                                    <div class="sp--product--item mb-50">
+                                        <div class="sp--product--thumb">
+                                            <span class="batch new">New</span>
+                                            <a href="cart.html" class="wishlist"><i class="flaticon-heart-shape-outline"></i></a>
+                                            <a href="shop-details.html"><img src="{{url_for('static', filename='img/product/sp__products04.png')}}" alt=""></a>
+                                        </div>
+                                        <div class="sp--product--content">
+                                            <h6 class="title"><a href="shop-details.html">Grassland Dairy</a></h6>
+                                            <div class="rating">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                            </div>
+                                            <div class="price">$1.99/kg</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xl-3 col-md-4 col-sm-6 grid-item grid-sizer cat-one cat-two">
+                                    <div class="sp--product--item mb-50">
+                                        <div class="sp--product--thumb">
+                                            <a href="cart.html" class="wishlist"><i class="flaticon-heart-shape-outline"></i></a>
+                                            <a href="shop-details.html"><img src="{{url_for('static', filename='img/product/sp__products05.png')}}" alt=""></a>
+                                        </div>
+                                        <div class="sp--product--content">
+                                            <h6 class="title"><a href="shop-details.html">Organic Broccoli</a></h6>
+                                            <div class="rating">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                            </div>
+                                            <div class="price">$7.99/kg</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xl-3 col-md-4 col-sm-6 grid-item grid-sizer cat-one">
+                                    <div class="sp--product--item mb-50">
+                                        <div class="sp--product--thumb">
+                                            <a href="cart.html" class="wishlist"><i class="flaticon-heart-shape-outline"></i></a>
+                                            <a href="shop-details.html"><img src="{{url_for('static', filename='img/product/sp__products06.png')}}" alt=""></a>
+                                        </div>
+                                        <div class="sp--product--content">
+                                            <h6 class="title"><a href="shop-details.html">Organic Butter</a></h6>
+                                            <div class="rating">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                            </div>
+                                            <div class="price">$3.99/kg</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xl-3 col-md-4 col-sm-6 grid-item grid-sizer cat-one cat-two">
+                                    <div class="sp--product--item mb-50">
+                                        <div class="sp--product--thumb">
+                                            <span class="batch new">New</span>
+                                            <a href="cart.html" class="wishlist"><i class="flaticon-heart-shape-outline"></i></a>
+                                            <a href="shop-details.html"><img src="{{url_for('static', filename='img/product/sp__products07.png')}}" alt=""></a>
+                                        </div>
+                                        <div class="sp--product--content">
+                                            <h6 class="title"><a href="shop-details.html">Mat Orange</a></h6>
+                                            <div class="rating">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                            </div>
+                                            <div class="price">$13.99/kg</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xl-3 col-md-4 col-sm-6 grid-item grid-sizer cat-one cat-two">
+                                    <div class="sp--product--item mb-50">
+                                        <div class="sp--product--thumb">
+                                            <a href="cart.html" class="wishlist"><i class="flaticon-heart-shape-outline"></i></a>
+                                            <a href="shop-details.html"><img src="{{url_for('static', filename='img/product/sp__products08.png')}}" alt=""></a>
+                                        </div>
+                                        <div class="sp--product--content">
+                                            <h6 class="title"><a href="shop-details.html">France Potato</a></h6>
+                                            <div class="rating">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                            </div>
+                                            <div class="price">$02.99/kg</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- category-area-end -->
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- special-products-area-end -->
+
+</main>
+
+{% endblock %} {% block footer %} {{ super() }} {% endblock %} 
+{% block js %} {{ super() }} 
+<script>
+    let str=`                                <div class="col-xl-3 col-md-4 col-sm-6 grid-item grid-sizer cat-two">
+        <div class="sp--product--item mb-50">
+            <div class="sp--product--thumb">
+                <span class="batch">-20 %</span>
+                <a href="cart.html" class="wishlist"><i class="flaticon-heart-shape-outline"></i></a>
+                <a href="shop-details.html"><img src="{{url_for('static', filename='img/product/sp__products01.png')}}" alt=""></a>
+            </div>
+            <div class="sp--product--content">
+                <h6 class="title"><a href="shop-details.html">Watermelon</a></h6>
+                <div class="rating">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="price">$12.00/kg</div>
+            </div>
+        </div>
+    </div>`;
+
+</script>
+
+{% endblock %}

@@ -97,8 +97,6 @@
             url: url,
             type: "get",
             success: function (ret) {
-                //bootbox.alert(ret.message);
-                //console.log(ret);
                 let ta_tab = $("#ta");
                 for (let i = 0; i < ret.data.length; i++) {
                     ta_tab.append(`<tr id="tr${i}"></tr>`); //添加一列
@@ -119,7 +117,8 @@
                 $(".edit_text").dblclick(function () {
                     /* 1.先拿到这个td原来的值，然后将这个td变成一个input:text,并且原来的值不动 */
                     let tdVal = $(this).text();
-                    let id=$(this).attr('id').substr(-1,1);
+                    let id=parseInt($(this).attr('id').replace(/[^\d]/g,' '));
+                    console.log(id);
                     let oInput = $("<input type='text' value='" + tdVal + "'/>");
                     $(this).html(oInput);
                     oInput.focus();
@@ -136,12 +135,14 @@
 
     function checkboxOnblur(checkbox)
     {
-        let id=checkbox.id.substr(-1,1);
+        let id=parseInt(checkbox.id.replace(/[^\d]/g,' '));
+        console.log(id);
         update_contact(id);
     }
     function selectOnblur(select)
     {
-        let id=select.id.substr(-1,1);
+        let id=parseInt(select.id.replace(/[^\d]/g,' '));
+        console.log(id);
         update_contact(id);
     }
 
@@ -196,6 +197,7 @@
         let name = $(`#name${id}`).text();
         let telephone = $(`#telephone${id}`).text();
         let campus_branch = $(`#select_campus_branch${id} option:selected`).text();
+        console.log(`#is_default${id}`);
         let is_default = $(`#is_default${id}`).get(0).checked;
         let full_address = $(`#full_address${id}`).text();
         //console.log(campus_branch);
