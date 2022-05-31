@@ -93,7 +93,9 @@ def get_item_info():
         res['statusCode'] = 200
         res['success'] = True
         res['message'] = "已找到商品信息"
+        
         dic = it.__data__
+        res["data"] = dic
         dic.pop('id')
         dic.pop('locked_num')
         dic['publish_time'] = str(dic['publish_time'])
