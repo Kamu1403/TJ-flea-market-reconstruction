@@ -1,9 +1,23 @@
 {% extends "base.html" %} {% block title %}
 <title>生成订单</title>
 <link rel="stylesheet" type="text/css" href="{{url_for('user.static',filename='css/Switch.css')}}" />
-
+<style>
+    .right{
+        float:right;
+    }
+</style>
 {% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
-<main><a href={{url_for('item.content',item_id=item_id)}}>返回商品页</a></main>
+<main>
+    <a href={{url_for('item.content',item_id=item_id)}}>返回商品页</a>
+    <br>
+    <a href="#" id="address_note">请选择你的地址</a>
+    <ul class="right">
+        <a href="{{url_for('user.address')}}">管理地址</a>
+    </ul>
+    <select id="address" class="custom-select">
+    </select>
+
+</main>
 {% endblock %} {% block footer %} {{ super() }} {% endblock %} {% block js %} {{ super() }}
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/5.5.2/bootbox.min.js"></script>
 <script type="text/javascript" charset="utf-8">
@@ -16,36 +30,21 @@
             url: url,
             type: "get",
             success: function (ret) {
-                //bootbox.alert(ret.message);
-                //console.log(ret);
-                let ta_tab = $("#ta");
-                for (let i = 0; i < ret.data.length; i++) {
-                    ta_tab.append(`<tr id="tr${i}"></tr>`); //添加一列
-                    let tab = $(`#tr${i}`); //把这一列的内容添加上
-                    let contact_id = ret.data[i].id;
-                    let campus_branch_select_text = get_branch_select_text(contact_id, ret.data[i].campus_branch);
-                    let default_button_text = get_default_button_text(contact_id, ret.data[i].default);
-                    //console.log(campus_branch_select_text);
-                    tab.append(`<td class='edit_text' id='name${contact_id}'>${ret.data[i].name}</td>`);
-                    tab.append(`<td class='edit_text' id='telephone${contact_id}'>${ret.data[i].telephone}</td>`);
-                    tab.append(`<td class='edit_text' id='full_address${contact_id}'>${ret.data[i].full_address}</td>`);
-                    tab.append(`<td id='campus_branch${contact_id}'>${campus_branch_select_text}</td>`);
-                    tab.append(`<td>${default_button_text}</td>`);
+                if(ret.data.length>0){
+                    let ta_tab = $("#address");
+                    for (let i = 0; i < ret.data.length; i++) {
+                        if(ret.data[i].default==true)ta_tab.append(`<option id="option${i}" value="" selected="selected"></option>`); //添加一列
+                        else ta_tab.append(`<option id="option${i}" value=""></option>`); //添加一列
+                        let address_info=ret.data[i].name+"-"+ret.data[i].campus_branch+"-"+ret.data[i].full_address+"-"+ret.data[i].telephone;
+                        $(`#option${i}`).val(address_info);
+                        $(`#option${i}`).text(address_info);
+                    }                    
                 }
-
-                /* 给表格里面每一个带有edit_text的td添加一个dblclick事件 */
-                $(".edit_text").dblclick(function () {
-                    /* 1.先拿到这个td原来的值，然后将这个td变成一个input:text,并且原来的值不动 */
-                    let tdVal = $(this).text();
-                    let oInput = $("<input type='text' value='" + tdVal + "'/>");
-                    $(this).html(oInput);
-                    oInput.focus();
-
-                    /* 2.失去焦点，这个td变为原来的text，value为修改过后的value */
-                    oInput.blur(function () {
-                        oInput.parent().html(oInput.val());
-                    });
-                });
+                else{
+                    let note=$("#address_note");
+                    note.text("您还没有设置地址哦, 请前往此链接设置地址");
+                    note.attr('href',`{{url_for('user.address')}}`)
+                }
             },
         });
     });

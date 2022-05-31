@@ -71,10 +71,10 @@
                                             <span class="item-count" id="message_cnt">0</span>
                                         </li>
                                         <li class="header-user" id="bar_icon_history">
-                                            <a href="#" title="历史记录"><i class="flaticon-wall-clock"></i></a>
+                                            <a href="/user/history" title="历史记录"><i class="flaticon-wall-clock"></i></a>
                                         </li>
                                         <li class="header-wishlist" id="bar_icon_favor">
-                                            <a href="#" title="我的收藏"><i class="flaticon-heart-shape-outline"></i></a>
+                                            <a href="/user/favor" title="我的收藏"><i class="flaticon-heart-shape-outline"></i></a>
                                             
                                         </li>
                                         <li class="header-cart-action">
@@ -192,9 +192,9 @@
         <!--<script src="  {{url_for('static', filename='js/dropdown.js')}}"></script>-->
         <script type="text/javascript">
             $(document).ready(function () {
-                $.get("/api/get_user_id", function (ret) {
+                //$.get("/api/get_user_id", function (ret) {
                     // console.log(ret);
-                    if (ret.statusCode == 401) {
+                    if ("{{current_user}}".indexOf("Anonymous") != -1) { // 未登录true 登录false
                         $(bar_icon_post).remove();
                         $(bar_icon_chatroom).remove();
                         $(bar_icon_history).remove();
@@ -220,7 +220,7 @@
                         });
                     }
                     
-                });
+                //});
             });
             
             $("#item_name").keyup(function(event){
