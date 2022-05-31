@@ -52,6 +52,13 @@ main %}
                                     </span>\
                                     </td>\
                                     </tr>`);
+                        $("thead").append(`<tr>\
+                            <td>\
+                                <span>\
+                                    发起时间:${data.create_time}\
+                                    </span>\
+                                    </td>\
+                                    </tr>`);
                         let tfoot = $("tfoot");
                         for (var i = 0; i < 5; i++) {
                             tfoot.append("<tr></tr>");
