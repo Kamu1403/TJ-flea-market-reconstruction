@@ -212,6 +212,8 @@
                 shelved_num = data.shelved_num;
                 $("#item_name_").text(data.name);
                 $("#user_name").text(get_user_name(data.user_id));
+                let url=`/user/${data.user_id}/space`;
+                $("#user_name").attr('href',url);
 
                 $("#price_").text(`￥${data.price}`);
                 $("#stock_").text(`- ` + data.type == 0 ? "剩余" : "需要" + `${data.shelved_num}件`);
