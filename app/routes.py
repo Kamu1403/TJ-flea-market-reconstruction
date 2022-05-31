@@ -2,11 +2,12 @@
 # -*- coding: UTF-8 -*-
 ###主要是注册登录管理
 
+from email import message
 import os
 import json
 from datetime import datetime
 from app import app, database
-from flask import render_template, flash, redirect, url_for, request,Response
+from flask import render_template, flash, redirect, url_for, request, Response
 from flask_login import current_user, login_user, logout_user, login_required
 from user.models import User  #模型
 from werkzeug.security import generate_password_hash
@@ -31,6 +32,7 @@ def before_request():
     if database.is_closed():
         database.connect()
 
+
 # @app.before_request
 # def request_log():
 #     with open(os.path.join(app.static_folder,"test.json"),"a+") as f:
@@ -44,9 +46,10 @@ def before_request():
 #         json.dump(d,f)
 #         f.write(",\n")
 
+
 @app.after_request
-def log(response:Response) -> Response:
-    with open(os.path.join(app.static_folder,"history.log"),"a+") as f:
+def log(response: Response) -> Response:
+    with open(os.path.join(app.static_folder, "history.log"), "a+") as f:
         d = dict()
         d["url"] = request.url
         d["ip"] = request.remote_addr
@@ -58,7 +61,7 @@ def log(response:Response) -> Response:
         if current_user.is_authenticated:
             d["user_id"] = current_user.id
         # print(d)
-        json.dump(d,f,ensure_ascii=False)
+        json.dump(d, f, ensure_ascii=False)
         f.write('\n')
     return response
 
@@ -115,3 +118,8 @@ def login():
     if current_user.is_authenticated:
         return redirect(url_for('user.index'))
     return render_template('password_login.html')
+
+
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template("404.html", message=error, error_code=404)

@@ -33,7 +33,7 @@ class Feedback(BaseModel):
     """
     #id = pw.IntegerField(primary_key=True)  # 主键，不显式定义的话peewee默认定义一个自增的id
     user_id = pw.ForeignKeyField(User, verbose_name="发布者的学号")
-    publish_time = pw.DateField(verbose_name="发布时间",
+    publish_time = pw.DateTimeField(verbose_name="发布时间",
                                 null=False,
                                 default=datetime.now())
 
@@ -53,7 +53,7 @@ class User_Management(BaseModel):
     """
     #id = pw.IntegerField(primary_key=True)  # 主键，不显式定义的话peewee默认定义一个自增的id
     user_id = pw.ForeignKeyField(User, verbose_name="发布者的学号")
-    ban_time=pw.DateField(verbose_name="解封时间",
+    ban_time=pw.DateTimeField(verbose_name="解封时间",
                                 null=False,
                                 default=datetime.now())#置当用户表中state=-1时，可以改变此项的值以实现封号时间
     ban_reason=pw.CharField(verbose_name="封号原因", max_length=1024)

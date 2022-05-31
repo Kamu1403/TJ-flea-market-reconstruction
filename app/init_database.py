@@ -81,19 +81,19 @@ def fake_data():  #填一些假数据进去
     User.create(
         id=1951705,
         user_no="1951705",
-        username="高曾谊",
+        username="高曾谊",name="高曾谊",
         state=1,  #管理员
         password_hash=generate_password_hash("1951705"),
         email=str(1951705) + "@tongji.edu.cn")
     User.create(id=1950084,
                 user_no="1950084",
-                username="陈泓仰",
+                username="陈泓仰",name="陈泓仰",
                 state=1,
                 password_hash=generate_password_hash("1950084"),
                 email=str(1950084) + "@tongji.edu.cn")
     User.create(id=1951566,
                 user_no="1951566",
-                username="贾仁军",
+                username="贾仁军",name="贾仁军",
                 password_hash=generate_password_hash("1951566"),
                 email=str(1951566) + "@tongji.edu.cn")
     User.create(

@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
+from email import message
 from flask_login import current_user
 from order import order_blue
 from app import database
 from flask import render_template, flash, redirect, url_for, request
-from order.models import Order, Contact
+from order.models import Order, Contact, Order_state
 from item.models import Item, Item_state, Item_type
 from user.models import User_state
 import json
@@ -29,11 +30,20 @@ def order_view(order_id: int):
 
 @order_blue.route('/review/<order_id>/', methods=['GET', 'POST'])
 def review(order_id: int):  #order_id为订单ID
+    if not current_user.is_authenticated:
+        return render_template('404.html', message="请先登录")
+    try:
+        order = Order.get(Order.id == order_id,
+                          Order.state == Order_state.End.value)
+    except:
+        return render_template('404.html', message="未找到对应已完成订单")
     return render_template('order_review.html')
 
 
 @order_blue.route('/manage/', methods=['GET', 'POST'])
 def manage():
+    if not current_user.is_authenticated:
+        return render_template('404.html', message="请先登录")
     return render_template('order_manage.html')
 
 
@@ -46,7 +56,7 @@ def generate(item_id: int):
     except:
         return render_template('404.html', message="未找到该物品")
     if item.state == Item_state.Sale.value and item.shelved_num > 0 and item.user_id.id != current_user.id:  #正常在售且有存量且发布者不是当前用户
-        return render_template('order_generate.html', item_id=int(item_id))
+        return render_template('order_generate.html', item=item)
     else:
         message = "不允许自己同自己做生意"
         if item.shelved_num <= 0:

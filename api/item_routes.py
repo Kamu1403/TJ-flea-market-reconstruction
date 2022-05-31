@@ -93,10 +93,11 @@ def get_item_info():
         res['statusCode'] = 200
         res['success'] = True
         res['message'] = "已找到商品信息"
+
         dic = it.__data__
+        res["data"] = dic
         dic.pop('id')
         dic.pop('locked_num')
-        res['data'] = dic
         dic['publish_time'] = str(dic['publish_time'])
         dic['price'] = float(dic['price'])
         if not current_user.is_authenticated:
@@ -195,8 +196,8 @@ def get_search():
         return make_response_json(200, "搜索结果如下", new_data)
 
 
-@api_blue.route("/change_item_status", methods=["PUT"])
-def change_item_status():
+@api_blue.route("/change_item_state", methods=["PUT"])
+def change_item_state():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
     data = request.get_json()
@@ -210,11 +211,14 @@ def change_item_status():
     except Exception as e:
         return make_response_json(404, "此商品不存在")
     else:
-        if item.type == data["state"]:
+        if item.state == data["state"]:
             return make_response_json(400, "商品当前状态和希望更改的状态相同")
         else:
             if current_user.state == User_state.Admin.value:
                 item.state = data["state"]
+                # if data["state"] == User_state.Freeze.value:
+                #     向物品所有者发布一条消息
+                #       pass
                 item.save()
                 return make_response_json(200, "操作成功")
             elif current_user.state == User_state.Under_ban.value:
@@ -364,7 +368,7 @@ def post_item_info():
             shutil.move(os.path.join(tempath, j["MD5"]),
                         os.path.join(curpath, 'pic/'))
         #将所有的图片转到用户对应文件夹
-    return make_response_json(200, "上传成功")
+    return make_response_json(200, "上传成功",{"url":url_for('item.content',item_id=new.id)})
 
 
 def get_pillow_img_form_data_stream(data):
@@ -468,7 +472,7 @@ def delete_favor():
 def get_favor():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
-    tep = Favor.select().where(Favor.user_id == current_user.id)
+    tep = Favor.select().where(Favor.user_id == current_user.id).order_by(Favor.collect_time)
     data = []
     for i in tep:
         res = dict()
@@ -500,7 +504,7 @@ def get_item_favor():
 def get_history():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
-    tep = History.select().where(History.user_id == current_user.id)
+    tep = History.select().where(History.user_id == current_user.id).order_by(History.visit_time)
     data = []
     for i in tep:
         res = dict()
@@ -546,7 +550,7 @@ def report():
     data = request.get_json()
     feed_data = dict()
     feed_data["user_id"] = current_user.id
-    feed_data["publish_time"] = date.today()
+    feed_data["publish_time"] = datetime.now()
     feed_data["state"] = Feedback_state.Unread.value
     try:
         kind = int(data['kind'])
@@ -606,7 +610,7 @@ def item_to_show():
             return make_response_json(400, "请求格式错误")
         else:
             td = timedelta(days=data["range"])
-            last_time = date.today() - td
+            last_time = datetime.now() - td
             need.append(Item.publish_time >= last_time)
     try:
         if len(need):

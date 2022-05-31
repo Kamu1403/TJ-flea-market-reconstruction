@@ -51,9 +51,9 @@
                         </div>
                         <div class="shop-perched-info" id="non_seller_visible" hidden>
                             <div class="sd-cart-wrap">
-                                <form action="#">
+                                <form action="javascript:void(0)">
                                     <div class="cart-plus-minus">
-                                        <input type="text" value="1" />
+                                        <input type="text" value="1" onblur="check_buy_num()" id="buy_num"/>
                                     </div>
                                 </form>
                             </div>
@@ -64,17 +64,16 @@
                         <div class="shop-perched-info" id="seller_visible" hidden>
                             <a href="#" class="btn">修改商品信息</a>
                             <p>&nbsp;&nbsp;&nbsp;</p>
-                            <a href="#" class="btn">下架商品</a>
+                            <a href="#" class="btn" id="item_down_shelf_">下架商品</a>
                         </div>
                         <div class="shop-perched-info" id="manager_visible" hidden>
-                            <a href="#" class="btn">强制下架商品</a>
                         </div>
                         <div class="shop-perched-info" id="visitor_visible" hidden>
                             <a href="{{ url_for("login") }}" class="btn">请先登录</a>
                         </div>
                         <div class="shop-details-bottom">
-                            <h5 class="title">
-                                <a href="javascript:void(0)" onclick="add_favor()"><i class="far fa-heart"></i> 加入收藏</a>
+                            <h5 class="title" id="item_favor_">
+                                
                             </h5>
                             <ul>
                                 <li>
@@ -100,6 +99,7 @@
 <script type="text/javascript" charset="utf-8">
     var debug = 0;
     var item_id = parseInt("{{ item_id|safe }}");
+    var shelved_num = 0;
     $("#item_id_").text(item_id);
     function get_user_name(user_id) {
         let url = "/api/get_user_username";
@@ -118,6 +118,16 @@
         });
         return user_name;
     }
+
+    function check_buy_num() {
+        if (!$.isNumeric($('#buy_num')[0].value)) $('#buy_num')[0].value = 1;
+        if ($('#buy_num')[0].value < 1) $('#buy_num')[0].value = 1;
+        if ($('#buy_num')[0].value > shelved_num) $('#buy_num')[0].value = shelved_num;
+    }
+    $('.qtybutton').on('click', function() {
+        check_buy_num();
+    });
+
     function add_favor() {
         let url = "/api/add_favor";
         if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
@@ -128,14 +138,75 @@
             contentType: "application/json;charset=utf-8",
             processData: false,
             success: function (ret) {
+                if (ret.statusCode == 201) {
+                    $("[id=item_favor_]").empty();
+                    $("[id=item_favor_]").append('<a href="javascript:void(0)" onclick="delete_favor()"  style="color:#C00000"><i class="fa fa-heart"></i> 取消收藏</a>');
+                }
+                else
+                    alert('添加收藏失败：' + ret.message);
+            },
+        });
+    }
+    function delete_favor() {
+        let url = "/api/delete_favor";
+        if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
+        $.ajax({
+            url: url,
+            type: "delete",
+            data: JSON.stringify({ item_id_list: [item_id] }),
+            contentType: "application/json;charset=utf-8",
+            processData: false,
+            success: function (ret) {
+                if (ret.statusCode == 200) {
+                    $("[id=item_favor_]").empty();
+                    $("[id=item_favor_]").append('<a href="javascript:void(0)" onclick="add_favor()"><i class="far fa-heart"></i> 加入收藏</a>');
+                }
+                else
+                    alert('删除收藏失败：' + ret.message);
+            },
+        });
+    }
+    function change_item_state(state) {
+        let url = "/api/change_item_state";
+        if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
+        $.ajax({
+            url: url,
+            type: "put",
+            data: JSON.stringify({ item_id: item_id, state: state}),
+            contentType: "application/json;charset=utf-8",
+            processData: false,
+            success: function (ret) {
                 console.log(ret);
+                if (state == -1) {
+                    if (ret.statusCode == 200) {
+                        $('#manager_visible').empty();
+                        $('#manager_visible').append('<a href="#" class="btn" onclick="change_item_state(0)">恢复商品上架（管理员）</a>');
+                        $("#item_state_").text('被管理员强制下架');
+                        alert("强制下架商品成功")
+                    }
+                    else
+                        alert('强制下架失败：' + ret.message);
+                }
+                if (state == 0) {
+                    if (ret.statusCode == 200) {
+                        $('#manager_visible').empty();
+                        $('#manager_visible').append('<a href="#" class="btn" onclick="change_item_state(-1)">强制下架商品</a>');
+                        alert("恢复商品上架成功")
+                    }
+                    else
+                        alert('恢复商品上架失败：' + ret.message);
+                }
+                if (state == 1) {
+                    if (ret.statusCode == 200) {
+                        alert("下架商品成功")
+                    }
+                    else 
+                        alert('下架商品失败：' + ret.message);
+                }
             },
         });
     }
     $(document).ready(function () {
-        console.log("{{current_user.id|safe}}");
-        console.log();
-
         let url = "/api/get_item_info";
         if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
         $.ajax({
@@ -143,7 +214,8 @@
             type: "get",
             data: { item_id: item_id },
             success: function (ret) {
-                if ("{{current_user.id|safe}}" != "") {
+                if ("{{current_user}}".indexOf("Anonymous") == -1) { // 用户已登录
+                    
                     if (ret.isPub) $("[id=seller_visible]").removeAttr("hidden");
                     else $("[id=non_seller_visible]").removeAttr("hidden");
                     if (ret.isAdmin) $("[id=manager_visible]").removeAttr("hidden");
@@ -151,6 +223,7 @@
                     $("[id=visitor_visible]").removeAttr("hidden");
                 }
                 let data = ret.data;
+                shelved_num = data.shelved_num;
                 $("#item_name_").text(data.name);
                 $("#user_name").text(get_user_name(data.user_id));
 
@@ -167,17 +240,37 @@
                 switch (data.state) {
                     case 0:
                         state_str = "正常发布";
+                        $('#manager_visible').append('<a href="#" class="btn" onclick="change_item_state(-1)">强制下架商品</a>');
                         break;
                     case -1:
                         state_str = "被管理员强制下架";
+                        $('#manager_visible').append('<a href="#" class="btn" onclick="change_item_state(0)">恢复商品上架（管理员）</a>');
                         break;
                     case 1:
                         state_str = "被发布方下架";
+                        $('#manager_visible').append('<a href="#" class="btn" onclick="change_item_state(-1)">强制下架商品</a>');
                         break;
                 }
                 $("#item_state_").text(state_str);
             },
         });
+
+        url = "/api/get_item_favor";
+        if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
+        $.ajax({
+            url: url,
+            type: "get",
+            data: {item_id: item_id},
+            success: function (ret) {
+                if (ret.statusCode == 200) {
+                    if (ret.data == false)
+                        $("[id=item_favor_]").append('<a href="javascript:void(0)" onclick="add_favor()"><i class="far fa-heart"></i> 加入收藏</a>');
+                    else
+                        $("[id=item_favor_]").append('<a href="javascript:void(0)" onclick="delete_favor()"  style="color:#C00000"><i class="fa fa-heart"></i> 取消收藏</a>');
+                }
+                
+            }
+        })
 
         url = "/api/get_item_head_pic";
         if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
@@ -203,7 +296,7 @@
                             <img src="${pic_url}" alt="" />
                         </div>
                     </div>`);
-                } else alert("获取商品头图失败\n" + ret.message);
+                } else alert("获取商品头图失败:" + ret.message);
             },
         });
         url = "/api/get_item_pics";
@@ -231,7 +324,7 @@
                             </div>
                         </div>`);
                     }
-                } else alert("获取商品图片失败\n" + ret.message);
+                } else alert("获取商品图片失败：" + ret.message);
             },
         });
     });

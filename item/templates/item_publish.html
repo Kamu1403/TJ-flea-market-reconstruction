@@ -46,7 +46,7 @@
                                     </div>
                                 </div>
                                 <div class="different-address-wrap">
-                                    <div class="header-super-store d-none d-xl-block d-lg-none d-md-block">
+                                    <div class="header-super-store d-xl-block d-md-block">
                                         <div class="dropdown">
                                             <button class="dropdown-toggle" type="button" id="choice" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">请选择发布类型</button>
                                             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton4">
@@ -150,7 +150,7 @@
             urls.push(obj1);
         });
         let formData = JSON.stringify({ name: name, price: parseFloat(price), tag: tag, type: parseInt(type), shelved_num: parseInt(quantity), description: message, urls: urls });
-        console.log(formData);
+        // console.log(formData);
         $.ajax({
             url: "/api/post_item_info",
             type: "post",
@@ -159,8 +159,9 @@
             processData: false,
             success: function (ret) {
                 if (ret.statusCode == 200) {
-                    console.log(ret);
-                } else alert(ret.message);
+                    alert("商品发布成功，点击确认后将跳转至商品详情页。");
+                    window.location = ret.data.url;
+                } else alert("商品发布失败：\n" + ret.message + "\n点击确认返回修改。");
             },
         });
     }
