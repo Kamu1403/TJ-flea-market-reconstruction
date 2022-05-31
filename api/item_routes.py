@@ -472,7 +472,7 @@ def delete_favor():
 def get_favor():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
-    tep = Favor.select().where(Favor.user_id == current_user.id)
+    tep = Favor.select().where(Favor.user_id == current_user.id).order_by(Favor.collect_time)
     data = []
     for i in tep:
         res = dict()
@@ -504,7 +504,7 @@ def get_item_favor():
 def get_history():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
-    tep = History.select().where(History.user_id == current_user.id)
+    tep = History.select().where(History.user_id == current_user.id).order_by(History.visit_time)
     data = []
     for i in tep:
         res = dict()
@@ -550,7 +550,7 @@ def report():
     data = request.get_json()
     feed_data = dict()
     feed_data["user_id"] = current_user.id
-    feed_data["publish_time"] = date.today()
+    feed_data["publish_time"] = datetime.now()
     feed_data["state"] = Feedback_state.Unread.value
     try:
         kind = int(data['kind'])
@@ -610,7 +610,7 @@ def item_to_show():
             return make_response_json(400, "请求格式错误")
         else:
             td = timedelta(days=data["range"])
-            last_time = date.today() - td
+            last_time = datetime.now() - td
             need.append(Item.publish_time >= last_time)
     try:
         if len(need):
