@@ -51,7 +51,7 @@
                                     let desc = $(`#history_item_data${ret.data[i].item_id}`);
                                     desc.append(`<a href = /item/content/${ret.data[i].item_id} >${item_ret.data.name}</a>`);
                                     desc.append(`<p>${item_ret.data.description}</p>`);
-                                    desc.append(`<a href=/user/${item_ret.data.user_id}/space>查看商家</a>`);
+                                    desc.append(`<a href=/user/${item_ret.data.user_id}/user_info>查看商家</a>`);
                                 }
                             },
                         });

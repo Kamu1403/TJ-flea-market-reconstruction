@@ -7,7 +7,7 @@ from admin.models import Feedback, User_Management
 from order.models import Contact, Review, Order, Order_State_Item, Order_Item
 from item.models import Item, History, Favor
 from chat.models import Room, Message, Recent_Chat_List, Meet_List
-
+from datetime import timedelta
 
 def drop_tables():
     if Order_Item.table_exists:
@@ -175,6 +175,14 @@ def fake_data():  #填一些假数据进去
                 locked_num=10,
                 type=0)
 
+    Item.create(id=7,
+                name="方便面",
+                user_id=1951566,
+                price=2.22,
+                shelved_num=0,
+                locked_num=10,
+                type=0)
+
     #浏览 收藏
     History.create(user_id=1951705, item_id=2, visit_time=datetime(2022, 4, 1))
     History.create(user_id=1951566, item_id=2)
@@ -238,17 +246,17 @@ def fake_data():  #填一些假数据进去
     Review.create(id=4, user_id=1951566, feedback_content="默认好评")
 
     # 商品
-    Order.create(id=1, user_id=1951566, payment=1, state=0)
+    Order.create(id=1, user_id=1951566, payment=2, state=0,create_time=datetime.now()-timedelta(days=20))
     Order.create(
         id=2,  # 悬赏
         user_id=1953493,
         payment=0.01,
-        state=1,
+        state=-1,
         confirm_time=datetime.now(),
         note="我来帮你写sj！")
     Order.create(id=3, user_id=1951566, payment=12, state=0)  #3份方便面
 
-    Order.create(id=4, user_id=1951566, payment=10.5, state=2)  #3份方便面
+    Order.create(id=4, user_id=1951566, payment=10.5, state=1)  #3份方便面
 
     Order_State_Item.create(order_id=1, user_review_id=1, op_user_review_id=4)
     Order_State_Item.create(order_id=2,
@@ -268,7 +276,7 @@ def fake_data():  #填一些假数据进去
 
     #订单1中包含 1份苹果  商品
     Order_Item.create(order_id=1, quantity=1, price=1, item_id=1)  #苹果
-    #悬赏
+    
     Order.create(id=5, user_id=1951566, payment=1.11, state=0)
     Order.create(
         id=6,  # 悬赏
@@ -281,18 +289,22 @@ def fake_data():  #填一些假数据进去
 
     Order.create(id=8, user_id=1951566, payment=9.99, state=2)  #3份方便面
 
-    Order_State_Item.create(order_id=1, user_review_id=1, op_user_review_id=4)
-    Order_State_Item.create(order_id=2,
-                            cancel_user=1950084,
-                            cancel_reason="沈坚作业不能作为悬赏！")
-    Order_State_Item.create(order_id=3)
-    Order_State_Item.create(order_id=4)
+    Order_State_Item.create(order_id=5)
+    Order_State_Item.create(order_id=6)
+    Order_State_Item.create(order_id=7)
+    Order_State_Item.create(order_id=8)
+
+
     # 悬赏
     #订单5中包含 3
     Order_Item.create(order_id=5, quantity=3, price=200, item_id=5)  #耳机
 
     #订单6中包含 1份作业
     Order_Item.create(order_id=6, quantity=1, price=5, item_id=4)  #sj作业
+
+    Order_Item.create(order_id=7, quantity=3, price=3.33, item_id=2)  #方便面
+
+    Order_Item.create(order_id=7, quantity=3, price=3.33, item_id=2)  #方便面
 
 
 def init_database(drop_database: bool):
