@@ -186,8 +186,8 @@
                     <div class="pagination-wrap">
                         <ul>
                             <li class="prev"><a href="shop.html">Prev</a></li>
-                            <li><a href="shop.html">1</a></li>
-                            <li class="active"><a href="shop.html">2</a></li>
+                            <li class="active"><a href="shop.html">1</a></li>
+                            <li><a href="shop.html">2</a></li>
                             <li><a href="shop.html">3</a></li>
                             <li><a href="shop.html">4</a></li>
                             <li><a href="shop.html">...</a></li>
@@ -217,30 +217,40 @@
                     console.log(ret.message);
                 } else {
                     var items = ret.data;
-                    //console.log(items);
                     for (let i = 0; i < items.length; i++) {
-                        var str =
-                            '<div class="col-xl-3 col-md-4 col-sm-6">\
-                                <div class="sp-product-item">\
-                                    <div class="sp-product-thumb">\
-                                        <span class="batch">New</span>\
-                                        <a href="/item/content/' +
-                            ret.data[i]["id"] +
-                            '"><img src="../static/img/product/sp_products09.png" alt=""></a>\
-                                    </div>\
-                                    <div class="sp-product-content">\
-                                        <h6 class="title"><a href="/item/content/' +
-                            ret.data[i]["id"] +
-                            '">' +
-                            ret.data[i]["name"] +
-                            "</a></h6>\
-                                        <p>单价:" +
-                            ret.data[i]["price"] +
-                            "</p>\
-                                    </div>\
-                                </div>\
-                            </div>";
-                        //console.log(str);
+
+                        let item=items[i];
+                        let id=item.id;
+                        let name=item.name;
+                        let price=item.price;
+                        let time=item.publish_time;
+                        let purl=""
+                        $.ajax({
+                            url: "/api/get_item_head_pic",
+                            async: false,
+                            data:{item_id:id},
+                            type: "get",
+                            success: function (ret) {
+                                purl=ret.data.url;
+                            }
+                        });
+                        let str =
+                            `<div class="col-xl-3 col-md-4 col-sm-6">
+                                <div class="sp-product-item">
+                                    <div class="sp-product-thumb">
+                                        <span class="batch">New</span>
+                                        <a href="/item/content/${id}">
+                                            <img style="width:200px;height:200px" src="${purl}" alt=""></a>
+                                    </div>
+                                    <div class="sp-product-content">
+                                        <h6 class="title">
+                                            <a href="/item/content/${id}">${name}</a>
+                                        </h6>
+                                        <p>单价:${price}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>`;
                         $(display).append(str);
                     }
                 }
