@@ -216,6 +216,9 @@ def change_item_state():
         else:
             if current_user.state == User_state.Admin.value:
                 item.state = data["state"]
+                # if data["state"] == User_state.Freeze.value:
+                #     向物品所有者发布一条消息
+                #       pass
                 item.save()
                 return make_response_json(200, "操作成功")
             elif current_user.state == User_state.Under_ban.value:
