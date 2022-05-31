@@ -211,7 +211,7 @@ def change_item_state():
     except Exception as e:
         return make_response_json(404, "此商品不存在")
     else:
-        if item.type == data["state"]:
+        if item.state == data["state"]:
             return make_response_json(400, "商品当前状态和希望更改的状态相同")
         else:
             if current_user.state == User_state.Admin.value:
