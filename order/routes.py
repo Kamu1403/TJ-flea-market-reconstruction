@@ -6,7 +6,7 @@ from order import order_blue
 from app import database
 from flask import render_template, flash, redirect, url_for, request
 from order.models import Order, Contact
-from item.models import Item, Item_type
+from item.models import Item, Item_state, Item_type
 from user.models import User_state
 import json
 
@@ -41,12 +41,17 @@ def manage():
 @order_blue.route('/generate/<int:item_id>/', methods=['GET', 'POST'])
 def generate(item_id: int):
     if not current_user.is_authenticated:
-        return redirect(url_for('index'))
+        return render_template('404.html', message="请先登录")
     try:
         item = Item.get(Item.id == item_id)
     except:
-        return redirect(url_for('index'))
-    if item.state == 0 and item.shelved_num > 0 and item.user_id.id != current_user.id:  #正常在售且有存量且发布者不是当前用户
+        return render_template('404.html', message="未找到该物品")
+    if item.state == Item_state.Sale.value and item.shelved_num > 0 and item.user_id.id != current_user.id:  #正常在售且有存量且发布者不是当前用户
         return render_template('order_generate.html', item_id=int(item_id))
     else:
-        return redirect(url_for('index'))
+        message = "不允许自己同自己做生意"
+        if item.shelved_num <= 0:
+            message = "该商品售罄"
+        elif item.state != Item_state.Sale.value:
+            message = "该商品或悬赏被下架或冻结"
+        return render_template('404.html', message=message)
