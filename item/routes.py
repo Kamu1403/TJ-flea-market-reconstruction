@@ -46,7 +46,9 @@ def content(item_id: int):  #goods_id/want_id
         finally:
             last.save()
         # 加入：当商品状态不为0时，只有卖家和管理员可见，其他人访问返回异常提示（或404页面）（或开一个默认的，代表被下架的商品）
-    return render_template('item_content.html', item_id=item_id)
+    return render_template('item_content.html',
+                           item=item,
+                           item_id=int(item_id))
 
 
 @item_blue.route('/publish/', methods=['GET', 'POST'])
