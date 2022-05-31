@@ -6,7 +6,7 @@ main %}
   <div>
     <span>test</span>
     <span>清空已失效商品</span>
-    <span>一键清空</span>
+    <button id="control">一键清空</button>
   </div>
   <table>
     <tbody id="my_favor"></tbody>
@@ -16,6 +16,21 @@ main %}
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/5.5.2/bootbox.min.js"></script>
 <script type="text/javascript" charset="utf-8">
   var debug = 0;
+  function delete_favor(list) {
+    let url = "/api/delete_favor";
+    if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
+    $.ajax({
+      url: url,
+      type: "delete",
+      data: JSON.stringify({ item_id_list: list }),
+      contentType: "application/json;charset=utf-8",
+      processData: false,
+      success: function (ret) {
+        window.alert(ret.message);
+        window.location.reload();
+      }
+    })
+  }
   $(document).ready(function () {
     let url = "/api/get_favor";
     if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
@@ -27,13 +42,16 @@ main %}
           window.alert(ret.message);
           window.location.href = "{{url_for('index')}}";
         } else {
+          let item_array = new Array();
+
           let tbody = $("#my_favor");
           for (let i = 0; i < ret.data.length; i++) {
+            item_array.push(ret.data[i].item_id);
             tbody.append(`<tr id="my_favor${ret.data[i].id}"></tr>`);
             let p_tr = $(`#my_favor${ret.data[i].id}`);
             p_tr.append(`<td id="favor_item_pic${ret.data[i].item_id}"></td>`);
             p_tr.append(`<td id="favor_item_data${ret.data[i].item_id}"></td>`);
-            p_tr.append(`<td><button>取消收藏</button></td>`);
+            p_tr.append(`<td><button onclick=delete_favor([${ret.data[i].item_id}])>取消收藏</button></td>`);
             let pic_url = "/api/get_item_head_pic";
             if (debug) pic_url = `http://127.0.0.1:4523/mock/927026${pic_url}`;
             $.ajax({
@@ -62,6 +80,8 @@ main %}
               },
             });
           }
+          console.log(item_array);
+          $("#control").click(function () { delete_favor(item_array) });
         }
       },
     });
