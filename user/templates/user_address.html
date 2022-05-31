@@ -133,8 +133,30 @@
             },
         });
     });
+
+    function checkboxOnblur(checkbox)
+    {
+        let id=checkbox.id.substr(-1,1);
+        update_contact(id);
+    }
+    function selectOnblur(select)
+    {
+        let id=select.id.substr(-1,1);
+        update_contact(id);
+    }
+
+    function checkboxOnclick(checkbox)
+    {
+        if (checkbox.checked==true){
+            $(".switch").each(function(index,obj){obj.checked=false;});
+            $("#"+checkbox.id)[0].checked=true;
+        }
+        else{
+            $("#"+checkbox.id)[0].checked=false;
+        }
+    }
     function get_branch_select_text(id, campus_branch) {
-        let res = `<select  class="custom-select" id=select_campus_branch${id}>`;
+        let res = `<select  class="custom-select" id=select_campus_branch${id} onblur="selectOnblur(this)">`;
         let branchs = ["四平路校区", "嘉定校区", "沪西校区", "沪北校区"];
         for (let i = 0; i < branchs.length; i++) {
             if (campus_branch == branchs[i]) res += `<option value='select${i}' selected>${branchs[i]}</option>`;
@@ -145,9 +167,9 @@
     }
     function get_default_button_text(contact_id, is_default) {
         let res;
-        if (is_default) res = `<input type="checkbox" class="switch" checked="checked" id='is_default${contact_id}'/>`;
-        else res = `<input class="switch" type="checkbox" id='is_default${contact_id}'/>`;
-        console.log(res);
+        if (is_default) res = `<input type="checkbox" class="switch" checked="checked" id='is_default${contact_id}' onclick="checkboxOnclick(this)" onblur="checkboxOnblur(this)"/>`;
+        else res = `<input class="switch" type="checkbox" id='is_default${contact_id}' 
+        onclick="checkboxOnclick(this)" onblur="checkboxOnblur(this)"/>`;
         return res;
     }
     function delete_by_id(id) {
