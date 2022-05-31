@@ -68,14 +68,14 @@
                                                 </li>
                                             </ul>
                                             <div class="tab-content" id="myTabContentTwo">
-                                                <div class="tab-pane fade show active" id="wants" role="tabpanel" aria-labelledby="details-tab">
+                                                <div class="tab-pane fade show active" id="wants" role="tabpanel" aria-labelledby="wants-tab">
                                                     <div class="product-desc-content" >
                                                         <div class="row" id="swants" >
                                                         </div>
                                                     </div>
                                                 </div>
 
-                                                <div class="row fade show active" id="goods" role="tabpanel" aria-labelledby="details-tab">
+                                                <div class="tab-pane fade" id="goods" role="tabpanel" aria-labelledby="goods-tab">
                                                     <div class="product-desc-content">
                                                         <div class="row" id="sgoods">
                                                         </div>
@@ -209,16 +209,16 @@
                     let app=`<a id="item_${id}" value=${value} style=${style} onclick="add_favor(this)" class="wishlist"><i class="flaticon-heart-shape-outline"></i></a>
                     <a href="/item/content/${id}"><img src="${purl}" alt=""></a>`
                     if (type==0)
-                            $("#sgoods").append(str);
-                        else
-                            $("#swants").append(str);
+                        $("#sgoods").append(str);
+                    else
+                        $("#swants").append(str);
                     $(`#pre_item_${id}`).append(app);
                 }
             }
         });
 
         $.get(url2, function (ret) {  
-            if (debug==1)
+            if (debug==1)  
                 ret.statusCode=200;
             if (ret.statusCode == 401||ret.statusCode==404) {
                     console.log(ret.message);
