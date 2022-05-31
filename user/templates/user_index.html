@@ -81,7 +81,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                
+
                                             </div>
                                         </div>
                                     </div>
@@ -207,7 +207,7 @@
                     let style_sheet=["background-color:#ffffff;color:#4eb92d","background-color:#4eb92d;color:#ffffff"]
                     let style=style_sheet[value];
                     let app=`<a id="item_${id}" value=${value} style=${style} onclick="add_favor(this)" class="wishlist"><i class="flaticon-heart-shape-outline"></i></a>
-                    <a href="/item/content/${id}"><img height="200px" width="200px" src="${purl}" alt=""></a>`
+                    <a href="/item/content/${id}"><img src="${purl}" alt=""></a>`
                     if (type==0)
                             $("#sgoods").append(str);
                         else

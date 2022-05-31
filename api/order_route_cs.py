@@ -17,15 +17,7 @@ def get_order():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
     data = dict(request.args)
-    need = [Order.user_id == current_user.id]
-    ordered_num = False
-    if "max_num" in data:
-        try:
-            data["max_num"] = int(data["max_num"])
-        except Exception as e:
-            return make_response_json(400, "请求格式错误")
-        else:
-            ordered_num = True
+    my_order = [(Order.user_id == current_user)|(Item.user_id==current_user.id)]
     if "range" in data:
         try:
             data["range"] = int(data["range"])
@@ -34,23 +26,24 @@ def get_order():
         else:
             td = timedelta(days=data["range"])
             last_time = datetime.now() - td
-            need.append(Order.create_time >= last_time)
+            my_order.append(Order_Item.order_id.create_time >= last_time)
     try:
-        need_od = Order.select().where(*need).order_by(
-            Order.create_time.desc()).execute()
+        my_od_item = Order_Item.select(Order_Item.order_id,Order_Item.item_id)\
+        .join(Order,on=(Order.id==Order_Item.order_id)).join(Item,on=(Item.id==Order_Item.item_id))\
+        .where(*my_order).order_by(
+            Order_Item.order_id.create_time.desc())
     except Exception as e:
         return make_response_json(500, f"查询发生错误 {repr(e)}")
     else:
         datas = list()
-        num = 0
-        for i in need_od:
-            j = i.__data__
-            if ordered_num:
-                if num < data["max_num"]:
-                    datas.append(j["id"])
-                    num += 1
-            else:
-                datas.append(j["id"])
+        order_set = dict()
+        for j in my_od_item:
+            if j.order_id.id not in order_set:
+                order_set[j.order_id.id] = len(datas)
+                datas.append({"order_id":j.order_id.id,"user_id":j.order_id.user_id.id\
+                    ,"op_user_id":j.item_id.user_id.id,"item_id_list":list()})
+            if j.item_id.id not in datas[order_set[j.order_id.id]]["item_id_list"]:
+                datas[order_set[j.order_id.id]]["item_id_list"].append(j.item_id.id)
     return make_response_json(200, "返回订单", datas)
 
 
