@@ -20,7 +20,7 @@
                             </div>
                             {% else %}
                             <div class="checkout-form-top">
-                                <h5 class="title">{{ opt_userid }}的个人信息</h5>
+                                <h5 id="pname" class="title">个人信息</h5>
                             </div>
                             {% endif %}
                             
@@ -190,6 +190,7 @@
                 console.log(ret);
                 if (opt_userid!=current_user_id)
                 {
+                    $("#pname").text(ret.data.username+"的个人信息");
                     $("#username").attr('disabled',"disabled");
                     if (ret.data.user_no_is_published)
                     {
@@ -216,7 +217,6 @@
                         $(".building-info-wrap").append(str);
                     }
                 }
-
 
                 $("#username").val(ret.data.username);
                 $("#score").val(ret.data.score);
