@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
+from email import message
 from http.client import responses
 from urllib import response
 from item import item_blue
@@ -27,15 +28,24 @@ def teardown_request(exc):  #exc必须写上
 
 @item_blue.route('/content/<item_id>/', methods=['GET', 'POST'])
 def content(item_id: int):  #goods_id/want_id
-    if current_user.is_authenticated:
+    try:
+        item = Item.get(Item.id == item_id)
+    except:
+        return render_template('404.html', message="该商品不存在")
+
+    if current_user.is_authenticated:  #已登录便加入历史
         try:
-            last = History.get(History.user_id == current_user.id, History.item_id == item_id)
+            last = History.get(History.user_id == current_user.id,
+                               History.item_id == item_id)
         except Exception as e:
-            last = History(user_id=current_user.id, item_id=item_id, visit_time=datetime.now())
+            last = History(user_id=current_user.id,
+                           item_id=item_id,
+                           visit_time=datetime.now())
         else:
             last.visit_time = datetime.now()
         finally:
             last.save()
+        # 加入：当商品状态不为0时，只有卖家和管理员可见，其他人访问返回异常提示（或404页面）（或开一个默认的，代表被下架的商品）
     return render_template('item_content.html', item_id=item_id)
 
 
