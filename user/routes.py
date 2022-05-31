@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
+from redis import RedisCluster
 from user import user_blue
 from flask import render_template, flash, redirect, url_for, request
 from user.models import User
@@ -44,8 +45,14 @@ def publish():
 #个人中心
 @user_blue.route('/<opt_userid>/space', methods=['GET', 'POST'])
 def space(opt_userid: int):  #opt_userid为目标用户ID
+    try:
+        user = User.get(User.id == opt_userid)
+    except:
+        return redirect(url_for('index'))
     if current_user.is_authenticated:
-        return render_template('user_space.html', current_user=current_user)
+        return render_template('user_space.html',
+                               current_user=current_user,
+                               opt_user=user)
     else:
         return redirect(url_for('index'))  # 重定向到/index
 
@@ -53,12 +60,18 @@ def space(opt_userid: int):  #opt_userid为目标用户ID
 #个人信息管理
 @user_blue.route('/<opt_userid>/user_info', methods=['GET', 'POST'])
 def user_info(opt_userid: int):  #opt_userid为目标用户ID
+    try:
+        user = User.get(User.id == opt_userid)
+    except:
+        return redirect(url_for('index'))
     if current_user.is_authenticated:
         return render_template('user_info.html',
                                current_user=current_user,
                                opt_userid=int(opt_userid))
     else:
         return redirect(url_for('index'))  # 重定向到/index
+
+
 @user_blue.route('/order', methods=['GET', 'POST'])
 def order():
     return render_template("user_order.html", current_user=current_user)

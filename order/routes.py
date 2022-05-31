@@ -34,4 +34,13 @@ def manage():
 
 @order_blue.route('/generate/<int:item_id>/', methods=['GET', 'POST'])
 def generate(item_id: int):
-    return render_template('order_generate.html')
+    if not current_user.is_authenticated:
+        return redirect(url_for('index'))
+    try:
+        item = Item.get(Item.id == item_id)
+    except:
+        return redirect(url_for('index'))
+    if item.state == 0 and item.shelved_num > 0 and item.user_id.id != current_user.id:  #正常在售且有存量且发布者不是当前用户
+        return render_template('order_generate.html')
+    else:
+        return redirect(url_for('index'))
