@@ -1,8 +1,12 @@
 {% extends "base.html" %} {% block title %}
 <title>用户个人信息</title>
+{% endblock %} 
+{% block css %}
+{{ super() }} 
 <link rel="stylesheet" type="text/css" href="{{url_for('user.static',filename='css/Switch.css')}}" />
+{% endblock %} 
 
-{% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
+{% block header %} {{ super() }} {% endblock %} {% block main %}
 <main>
     <div class="cart-area pt-90 pb-90">
         <div class="container">
@@ -31,19 +35,26 @@
                                         <input type="text" value="" disabled="disabled" id="user_no" />
                                     </div>
                                     <div class="col-md-1">
-                                        <input type="checkbox" class="switch" checked="checked" id="user_no_is_published"/>
+                                        <input style="padding: 12px 20px;" type="checkbox" 
+                                        class="switch" checked="checked" id="user_no_is_published"
+                                        onclick="checkboxOnclick(this)"/>
                                     </div>                                    
                                     <div class="col-md-2">
-                                        <p id="check_"> &nbsp公开</p>
+                                        <p id="check_user_no_is_published">公开</p>
                                     </div>
                                 </div>
 
                                 性别
-                                <select id="gender" class="custom-select">
-                                    <option value='保密'>保密</option>
-                                    <option value='男'>男</option>
-                                    <option value='女' selected="selected">女</option>
-                                </select>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                    <select id="gender" class="custom-select">
+                                        <option value='保密'>保密</option>
+                                        <option value='男'>男</option>
+                                        <option value='女' selected="selected">女</option>
+                                    </select>
+                                    </div>
+                                </br></br></br>
+                                </div>
                                 
                                 姓名
                                 <div class="row">
@@ -51,10 +62,11 @@
                                         <input type="text" placeholder="请填写你的姓名" value="" id="name" />
                                     </div>
                                     <div class="col-md-1">
-                                        <input type="checkbox" class="switch" checked="checked" id="name_is_published"/>
+                                        <input style="padding: 12px 20px;" type="checkbox" class="switch" checked="checked" id="name_is_published"
+                                        onclick="checkboxOnclick(this)"/>
                                     </div>                                    
                                     <div class="col-md-2">
-                                        <p id="check_"> &nbsp公开</p>
+                                        <p id="check_name_is_published">公开</p>
                                     </div>
                                 </div>
 
@@ -69,10 +81,11 @@
                                         </select>
                                     </div>
                                     <div class="col-md-1">
-                                        <input type="checkbox" class="switch" checked="checked" id="campus_is_published"/>
+                                        <input style="padding: 12px 20px;" type="checkbox" class="switch" checked="checked" id="campus_is_published"
+                                        onclick="checkboxOnclick(this)"/>
                                     </div>                                    
                                     <div class="col-md-2">
-                                        <p id="check_"> &nbsp公开</p>
+                                        <p id="check_campus_is_published">公开</p>
                                     </div>
                                 </div>
                                 {% endif %}
@@ -99,10 +112,19 @@
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/5.5.2/bootbox.min.js"></script>
 <script type="text/javascript" charset="utf-8">
     //var opt_userid = "{{ opt_userid|safe }}"; // 如果有python传过来的
-    var opt_userid = {{ opt_userid }};
-    var current_user_id={{current_user.id}};
+    var opt_userid = "{{ opt_userid|safe }}";
+    var current_user_id="{{ current_user.id|safe }}";
     var debug = 0;
-    
+    function checkboxOnclick(checkbox){
+        if (checkbox.checked==false)
+        {
+            $("#check_"+checkbox.id).text("不公开");
+        }
+        else
+        {
+            $("#check_"+checkbox.id).text("公开");
+        }
+    }
     function submit() {
         url = "/api/change_user_info";
         if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
@@ -114,6 +136,7 @@
         let name_is_published=$("#name_is_published").get(0).checked;
         let campus_branch=$("#campus_branch").val();
         let campus_is_published=$("#campus_is_published").get(0).checked;
+
         $.ajax({
             // query形式
             url: url,
@@ -157,6 +180,13 @@
                 $("#name_is_published").attr('checked',ret.data.name_is_published);
                 $("#campus_branch").val(ret.data.campus_branch);
                 $("#campus_is_published").attr('checked',ret.data.campus_is_published);
+
+                if (ret.data.user_no_is_published==false)
+                $("#check_user_no_is_published").text("不公开");
+                if (ret.data.name_is_published==false)
+                $("#check_name_is_published").text("不公开");
+                if (ret.data.campus_is_published==false)
+                $("#check_campus_is_published").text("不公开");
             },
         });
     });
