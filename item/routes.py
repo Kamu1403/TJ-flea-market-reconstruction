@@ -5,7 +5,7 @@ from http.client import responses
 from urllib import response
 from item import item_blue
 from app import database
-from item.models import Item, History, Favor, Item_type
+from item.models import Item, History, Favor, Item_type,Item_state
 from datetime import date, datetime
 from flask import make_response, jsonify, render_template, flash, redirect, url_for, request
 from flask_login import current_user
@@ -32,6 +32,15 @@ def content(item_id: int):  #goods_id/want_id
         item = Item.get(Item.id == item_id)
     except:
         return render_template('404.html', message="该商品不存在")
+    else:
+        if not current_user.is_authenticated:
+            isAdmin = False
+            isPub = False
+        else:
+            isAdmin = (current_user.state == User_state.Admin.value)
+            isPub = (item.user_id.id == current_user.id)
+            if item.state != Item_state.Sale.value and not isAdmin and isPub:
+                return render_template('404.html',message="该商品您现在无权访问")
 
     if current_user.is_authenticated:  #已登录便加入历史
         try:
