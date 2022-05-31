@@ -205,11 +205,13 @@
 {% endblock %} {% block footer %} {{ super() }} {% endblock %} {% block js %} {{ super() }}
 <script type="text/javascript" charset="utf-8">
     var keyword = "{{ keyword|safe }}";
+    var search_type = "{{ search_type|safe }}";
+    console.log(keyword,search_type)
     $(document).ready(function () {
         $.ajax({
             url: "/api/search",
             type: "post",
-            data: JSON.stringify({ search_type: 0, start_time: "", end_time: "", order_type: "", key_word: keyword }),
+            data: JSON.stringify({ search_type: search_type, start_time: "", end_time: "", order_type: "", key_word: keyword }),
             contentType: "application/json;charset=utf-8",
             processData: false,
             success: function (ret) {

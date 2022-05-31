@@ -100,10 +100,11 @@ def index():
 def search():  #keyword为你搜索的东西
     try:
         keyword = request.args["keyword"]
-        type = request.args["type"]
+        search_type = request.args["search_type"]
+        print(keyword,search_type)
     except:
         return render_template('404.html', message="格式错误", error_code=400)
-    return render_template('search.html', keyword=keyword, type=type)
+    return render_template('search.html', keyword=keyword, search_type=search_type)
 
 
 @app.route('/register', methods=['GET'])

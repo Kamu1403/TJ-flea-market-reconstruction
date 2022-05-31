@@ -50,12 +50,10 @@
                             <div class="d-block d-sm-flex align-items-center justify-content-end">
                                 <div class="header-search-wrap">
                                     <form onsubmit="return false;">
-                                        <select class="custom-select">
-                                            <option selected="">所有种类</option>
-                                            <option>-- 学习用品</option>
-                                            <option>-- 生活用品</option>
-                                            <option>-- 其他（待添加）</option>
-                                            <option>-- 其他</option>
+                                        <select id="type" class="custom-select">
+                                            <option selected="" value=2>所有种类</option>
+                                            <option value=0>-- 商品</option>
+                                            <option value=1>-- 悬赏</option>
                                         </select>
                                         <input id="item_name" type="text" placeholder="搜索..." />
                                         <button id="search" type="button" onclick="search_item()"><i class="flaticon-loupe-1"></i></button>
@@ -232,10 +230,11 @@
             });
             function search_item() {
                 var item = $("#item_name").val();
+                var type=$("#type").val();
                 if (item=="")
                     location.reload(true);
                 else
-                    window.location.href = "/search/" + item;
+                    window.location.href = "/search?keyword=" + item+"&search_type="+type;
             }
         </script>
         {% endblock %}
