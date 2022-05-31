@@ -93,7 +93,7 @@ def get_item_info():
         res['statusCode'] = 200
         res['success'] = True
         res['message'] = "已找到商品信息"
-        
+
         dic = it.__data__
         res["data"] = dic
         dic.pop('id')
@@ -196,8 +196,8 @@ def get_search():
         return make_response_json(200, "搜索结果如下", new_data)
 
 
-@api_blue.route("/change_item_status", methods=["PUT"])
-def change_item_status():
+@api_blue.route("/change_item_state", methods=["PUT"])
+def change_item_state():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
     data = request.get_json()
