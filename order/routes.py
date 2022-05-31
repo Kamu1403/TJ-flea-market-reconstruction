@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
 from flask_login import current_user
-from importlib_metadata import method_cache
 from order import order_blue
 from app import database
 from flask import render_template, flash, redirect, url_for, request
