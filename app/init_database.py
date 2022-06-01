@@ -217,31 +217,31 @@ def fake_data():  #填一些假数据进去
                    user_id=1950084,
                    name="陈泓仰",
                    telephone="+86 1112111111",
-                   full_address="xyxx",
+                   full_address="address2",
                    default=True)
     Contact.create(id=3,
                    user_id=1953493,
                    name="程森",
                    telephone="+86 1111111131",
-                   full_address="zzzx",
+                   full_address="address2",
                    default=True)
     Contact.create(id=4,
                    user_id=1951566,
                    name="贾仁军",
                    telephone="+86 11123111131",
-                   full_address="kkzx",
+                   full_address="address2",
                    default=True)
     Contact.create(id=5,
                    user_id=1952219,
                    name="彭斐然",
                    telephone="+86 11123111131",
-                   full_address="kkzx",
+                   full_address="address2",
                    default=True)
     Contact.create(id=6,
                    user_id=1951859,
                    name="杨可盈",
                    telephone="+86 11123111131",
-                   full_address="kkzx",
+                   full_address="address2",
                    default=True)
 
     Review.create(id=1, user_id=1951705, feedback_content="默认好评")
