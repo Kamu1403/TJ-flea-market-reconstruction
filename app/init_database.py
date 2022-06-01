@@ -9,6 +9,7 @@ from item.models import Item, History, Favor
 from chat.models import Room, Message, Recent_Chat_List, Meet_List
 from datetime import timedelta
 
+
 def drop_tables():
     if Order_Item.table_exists:
         Order_Item.drop_table()
@@ -81,19 +82,22 @@ def fake_data():  #填一些假数据进去
     User.create(
         id=1951705,
         user_no="1951705",
-        username="高曾谊",name="高曾谊",
+        username="高曾谊",
+        name="高曾谊",
         state=1,  #管理员
         password_hash=generate_password_hash("1951705"),
         email=str(1951705) + "@tongji.edu.cn")
     User.create(id=1950084,
                 user_no="1950084",
-                username="陈泓仰",name="陈泓仰",
+                username="陈泓仰",
+                name="陈泓仰",
                 state=1,
                 password_hash=generate_password_hash("1950084"),
                 email=str(1950084) + "@tongji.edu.cn")
     User.create(id=1951566,
                 user_no="1951566",
-                username="贾仁军",name="贾仁军",
+                username="贾仁军",
+                name="贾仁军",
                 password_hash=generate_password_hash("1951566"),
                 email=str(1951566) + "@tongji.edu.cn")
     User.create(
@@ -200,13 +204,13 @@ def fake_data():  #填一些假数据进去
     Contact.create(id=10,
                    user_id=1951705,
                    name="高曾谊",
-                   telephone="+86 11111uoiujoij",
+                   telephone="+86 12345238678",
                    full_address="address2",
                    default=False)
     Contact.create(id=1,
                    user_id=1951705,
                    name="高曾谊",
-                   telephone="+86 111dfasfs11",
+                   telephone="+86 2134234324",
                    full_address="address1",
                    default=True)
     Contact.create(id=2,
@@ -246,7 +250,11 @@ def fake_data():  #填一些假数据进去
     Review.create(id=4, user_id=1951566, feedback_content="默认好评")
 
     # 商品
-    Order.create(id=1, user_id=1951566, payment=2, state=2,create_time=datetime.now()-timedelta(days=20))
+    Order.create(id=1,
+                 user_id=1951566,
+                 payment=2,
+                 state=2,
+                 create_time=datetime.now() - timedelta(days=20))
     Order.create(
         id=2,  # 悬赏
         user_id=1953493,
@@ -277,7 +285,7 @@ def fake_data():  #填一些假数据进去
 
     #订单1中包含 1份苹果  商品
     Order_Item.create(order_id=1, quantity=1, price=1, item_id=1)  #苹果
-    
+
     Order.create(id=5, user_id=1951566, payment=1.11, state=0)
     Order.create(
         id=6,  # 悬赏
@@ -293,7 +301,6 @@ def fake_data():  #填一些假数据进去
     Order_State_Item.create(order_id=6)
     Order_State_Item.create(order_id=7)
     Order_State_Item.create(order_id=8)
-
 
     # 悬赏
     #订单5中包含 3份耳机
