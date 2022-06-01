@@ -13,7 +13,7 @@ def judge_user_id(user_id: str):
         return [400, "账号格式错误"]
     #if '@' not in user_id:
     #    user_id += "@tongji.edu.cn"
-    pattern = re.compile(r'^\d@tongji\.edu\.cn$')
+    pattern = re.compile(r'^\d{5,7}@tongji\.edu\.cn$')
     result = pattern.findall(user_id)
     if len(result) > 0:
         return [0, "验证通过"]
