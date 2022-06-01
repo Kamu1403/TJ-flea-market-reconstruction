@@ -216,7 +216,7 @@
                 $("#user_name").attr('href',url);
 
                 $("#price_").text(`￥${data.price}`);
-                $("#stock_").text(`- ` + data.type == 0 ? "剩余" : "需要" + `${data.shelved_num}件`);
+                $("#stock_").text(`- ` + (data.type == 0 ? "剩余" : "需要") + `${data.shelved_num}件`);
                 $("#description_").text(data.description);
                 $("#description_").text(data.description);
                 $("#item_type_").text(data.type == 0 ? "售卖" : "悬赏");
