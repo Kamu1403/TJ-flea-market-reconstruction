@@ -30,7 +30,7 @@ def index():
         return render_template("user_index.html",
                                current_user=current_user)  #html的名字不能相同
     else:
-        return render_template('404.html', message="请先登录")
+        return redirect(url_for('login'))
 
 
 @user_blue.route('/publish', methods=['GET', 'POST'])
@@ -38,7 +38,7 @@ def publish():
     if current_user.is_authenticated:
         return render_template("user_publish.html", current_user=current_user)
     else:
-        return render_template('404.html', message="请先登录")
+        return redirect(url_for('login'))
 
 
 #个人中心
@@ -47,7 +47,7 @@ def space():
     if current_user.is_authenticated:
         return render_template('user_space.html', current_user=current_user)
     else:
-        return render_template('404.html', message="请先登录")
+        return redirect(url_for('login'))
 
 
 #个人信息管理
@@ -79,7 +79,7 @@ def history():
     if current_user.is_authenticated:
         return render_template('user_history.html')
     else:
-        return render_template('404.html', message="请先登录")
+        return redirect(url_for('login'))
 
 
 #收藏
@@ -88,7 +88,7 @@ def favor():
     if current_user.is_authenticated:
         return render_template('user_favor.html')
     else:
-        return render_template('404.html', message="请先登录")
+        return redirect(url_for('login'))
 
 
 @user_blue.route('/address', methods=['GET', 'POST'])
@@ -96,4 +96,4 @@ def address():
     if current_user.is_authenticated:
         return render_template('user_address.html')
     else:
-        return render_template('404.html', message="请先登录")
+        return redirect(url_for('login'))
