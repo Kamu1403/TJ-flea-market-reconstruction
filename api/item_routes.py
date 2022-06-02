@@ -582,15 +582,17 @@ def report():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户还未登陆")
     data = request.get_json()
-    feed_data = dict()
-    feed_data["user_id"] = current_user.id
-    feed_data["publish_time"] = datetime.now()
-    feed_data["state"] = Feedback_state.Unread.value
+    feedback_data = dict()
+    feedback_data["user_id"] = current_user.id
+    feedback_data["publish_time"] = datetime.now()
+    feedback_data["state"] = Feedback_state.Unread.value
     try:
         kind = int(data['kind'])
     except Exception as e:
         return make_response_json(400, "请求格式不对")
-    feed_data["kind"] = kind
+    if kind not in [eval(f"Feedback_kind.{i}.value") for i in Feedback_kind.__members__]:
+        return make_response_json(400,"请求格式不对")
+    feedback_data["kind"] = kind
     if 'reason' in data:
         reason = data["reason"]
     else:
@@ -617,9 +619,9 @@ def report():
         reason += "用户id:{} 用户名称:{} ".format(user.id, user.name)
     else:
         pass
-    feed_data["feedback_content"] = reason
+    feedback_data["feedback_content"] = reason
     try:
-        Feedback.create(**feed_data)
+        Feedback.create(**feedback_data)
     except Exception as e:
         return make_response_json(500, f"存储时发生错误 {repr(e)}")
     return make_response_json(200, "举报完成,请等待管理员处理...")

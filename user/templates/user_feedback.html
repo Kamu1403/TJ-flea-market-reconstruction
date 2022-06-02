@@ -1,0 +1,78 @@
+{% extends "base.html" %} {% block title %}
+<title>同济大学跳蚤市场</title>
+{% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
+
+<main>
+    <div>
+        <span> 反馈理由为: </span>
+        <input type="radio" class="feedback" name="kind" value="0" />举报用户 <input type="radio" class="feedback" name="kind" value="1" />举报物品 <input type="radio" class="feedback" name="kind" value="2" />反馈网站bug <input type="radio" class="feedback" name="kind" value="3" />个人提问
+        <input type="radio" class="feedback" name="kind" value="4" />交易维权 <input type="radio" class="feedback" name="kind" value="5" />其他
+    </div>
+    <div id="next">
+        <p id="input_prompt"></p>
+        <input id="feedback_input" />
+    </div>
+    <div>
+        <textarea id="reason" cols="20" rows="8" placeholder="详细反馈"></textarea>
+    </div>
+    <button id="submit">提交反馈</button>
+</main>
+
+{% endblock %} {% block footer %} {{ super() }} {% endblock %} {% block js %} {{ super() }}
+
+<script>
+    var debug = 0;
+    $(document).ready(function () {
+        $(".feedback").click(function () {
+            let kind = $(this)[0].value;
+            if (kind == 0 || kind == 1) {
+                let input_info;
+                if (kind == 0) {
+                    input_info = "请输入想举报的用户ID";
+                    $("#feedback_input").attr("name", "user_id");
+                } else {
+                    input_info = "请输入想举报的物品ID";
+                    $("#feedback_input").attr("name", "item_id");
+                }
+                $("#input_prompt").text(input_info);
+
+                $("#next").show();
+            } else {
+                $("#feedback_input").removeAttr("name");
+                $("#next").hide();
+            }
+            $("#feedback_input").val("");
+        });
+        $("#submit").click(function () {
+            let feedback = $(".feedback");
+            let data = {};
+            for (var i = 0; i < feedback.length; i++) {
+                if (feedback[i].checked) {
+                    data["kind"] = feedback[i].value;
+                    if (data.kind < 2) {
+                        data[$("#feedback_input").attr("name")] = $("#feedback_input").val();
+                    }
+                    break;
+                }
+            }
+            data.reason = $("#reason").val();
+            let url = "/api/report";
+            if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
+            $.ajax({
+                url: url,
+                type: "post",
+                data: JSON.stringify(data),
+                contentType: "application/json",
+                processData: false,
+                success: function (ret) {
+                    window.alert(ret.message);
+                    if (ret.statusCode == 200) {
+                        window.location.href = "{{url_for('user.index')}}";
+                    }
+                },
+            });
+        });
+        $(".feedback[value='0']").click();
+    });
+</script>
+{% endblock %}
