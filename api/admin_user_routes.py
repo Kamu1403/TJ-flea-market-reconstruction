@@ -208,7 +208,7 @@ def get_reports():
     for i in datas:
         data[str(i.state)].append(i.id)
     return make_response_json(200,"查询结果如下",data=data)
-        
+
 
 
 @api_blue.route("/admin_get_report",methods = ["GET"])
@@ -226,6 +226,7 @@ def admin_get_report():
         return make_response_json(404,"不存在此反馈")
     datas = feedback.__data__
     datas.pop("id")
+    datas["publish_time"] = str(datas["publish_time"])
     return make_response_json(200,"此反馈信息如下",data=datas)
 
 
@@ -248,5 +249,4 @@ def reply_feedback():
     feedback.state = Feedback_state.Replied.value
     feedback.save()
     return make_response_json(200,"回复完成")
-    
-    
+

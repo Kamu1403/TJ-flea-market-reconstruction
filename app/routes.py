@@ -2,9 +2,6 @@
 # -*- coding: UTF-8 -*-
 ###主要是注册登录管理
 
-from ast import keyword
-from distutils.log import error
-from email import message
 import os
 import json
 from datetime import datetime

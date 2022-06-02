@@ -1,21 +1,47 @@
 {% extends "base.html" %} {% block title %}
-<title>同济大学跳蚤市场</title>
-{% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
-<main></main>
+<title>反馈详情</title>
+{% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block
+main %}
+<main>
+
+</main>
 {% endblock %} {% block footer %} {{ super() }} {% endblock %} {% block js %} {{ super() }}
 
 <script type="text/javascript" charset="utf-8">
     var feedback_id = "{{ feedback_id|safe }}"; // 如果有python传过来的
     var debug = 0;
     $(document).ready(function () {
-        let url = "/api/get_reports";
+        let url = "/api/admin_get_report";
         if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
         $.ajax({
             // json形式
             url: url,
             type: "get",
+            data: { feedback_id: feedback_id },
             success: function (ret) {
-                console.log(ret);
+                let main = $("main");
+                for (i in ret.data) {
+                    main.append(`<p>${i}:${ret.data[i]}</p>`);
+                }
+                main.append(`<textarea row=12 col=40></textarea>`);
+                main.append("<button>回复反馈</button>");
+                let reply = main.children().eq(-2);
+                let submit = main.children().eq(-1);
+                submit.click(function () {
+                    let reply_url = "/api/reply_feedback";
+                    if (debug) reply_url = `http://127.0.0.1:4523/mock/927026${reply_url}`;
+                    $.ajax({
+                        url: reply_url,
+                        type: "put",
+                        data: JSON.stringify({ feedback_id: feedback_id, reply_content: reply.val() }),
+                        contentType: "application/json;charset=utf-8",
+                        processData: false,
+                        success: function (reply_ret) {
+                            window.alert(reply_ret.message);
+                            window.location.href = "{{url_for('index')}}";
+                        }
+                    })
+                })
             },
         });
     });

@@ -1,7 +1,10 @@
 {% extends "base.html" %} {% block title %}
-<title>同济大学跳蚤市场</title>
-{% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
-<main></main>
+<title>反馈清单</title>
+{% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block
+main %}
+<main>
+
+</main>
 {% endblock %} {% block footer %} {{ super() }} {% endblock %} {% block js %} {{ super() }}
 
 <script type="text/javascript" charset="utf-8">
@@ -14,7 +17,17 @@
             url: url,
             type: "get",
             success: function (ret) {
-                console.log(ret);
+                if (ret.statusCode == 200) {
+                    let main = $("main");
+                    for (var i in ret.data) {
+                        main.append(`<div id=report${i}></div>`);
+                        let repost_list = $(`#report${i}`);
+                        repost_list.append(`<p>${i}</p>`)
+                        for (var j = 0; j < ret.data[i].length; j++) {
+                            repost_list.append(`<span><a href=/admin/feedback/${ret.data[i][j]}/>查看反馈${ret.data[i][j]}</a></span>`);
+                        }
+                    }
+                }
             },
         });
     });
