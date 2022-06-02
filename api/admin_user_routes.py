@@ -88,6 +88,8 @@ def change_user_state():
     except:
         return make_response_json(404, "未找到用户")
     else:
+        if tep.state == User_state.Admin.state:
+            return make_response_json(400,"不可修改管理员状态")
         tep.state = user_state
         tep.save()
         return make_response_json(200, "操作成功")

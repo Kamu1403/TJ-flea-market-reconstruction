@@ -606,6 +606,8 @@ def report():
             item = Item.get(Item.id == item_id)
         except Exception as e:
             return make_response_json(404, "待举报的物品不存在")
+        if item.user_id.id == current_user.id:
+            return make_response_json(400,"不可举报自己的物品")
         reason += "物品id:{} 物品名称:{} ".format(item.id, item.name)
     elif kind == Feedback_kind.User.value:
         try:
@@ -616,6 +618,8 @@ def report():
             user = User.get(User.id == user_id)
         except Exception as e:
             return make_response_json(404, "待举报的用户不存在")
+        if user.id == current_user.id:
+            return make_response_json(400,"请勿举报自己")
         reason += "用户id:{} 用户名称:{} ".format(user.id, user.name)
     else:
         pass
