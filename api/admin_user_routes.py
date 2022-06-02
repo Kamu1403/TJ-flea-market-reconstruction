@@ -195,3 +195,58 @@ def change_user_info():
             return make_response_json(500, "程序发生如下错误:\n{}".format(e))
         else:
             return make_response_json(200, "操作成功")
+
+@api_blue.route("/get_reports",methods=["GET"])
+def get_reports():
+    if not current_user.is_authenticated or current_user.state != User_state.Admin.value:
+        return make_response_json(401,"用户无权访问")
+    try:
+        datas = Feedback.select(Feedback.id,Feedback.state).order_by(Feedback.publish_time).execute()
+    except Exception as e:
+        return make_response_json(500,f"系统发生故障 {repr(e)}")
+    data = {str(i):list() for i in Feedback_state._value2member_map_}
+    for i in datas:
+        data[str(i.state)].append(i.id)
+    return make_response_json(200,"查询结果如下",data=data)
+        
+
+
+@api_blue.route("/admin_get_report",methods = ["GET"])
+def admin_get_report():
+    if not current_user.is_authenticated or current_user.state != User_state.Admin.value:
+        return make_response_json(401,"用户无权访问")
+    data = dict(request.args)
+    try:
+        feedback_id = int(data["feedback_id"])
+    except Exception as e:
+        return make_response_json(400,"请求格式错误")
+    try:
+        feedback = Feedback.get(Feedback.id == feedback_id)
+    except Exception as e:
+        return make_response_json(404,"不存在此反馈")
+    datas = feedback.__data__
+    datas.pop("id")
+    return make_response_json(200,"此反馈信息如下",data=datas)
+
+
+@api_blue.route("/reply_feedback",methods=["PUT"])
+def reply_feedback():
+    if not current_user.is_authenticated or current_user.state != User_state.Admin.value:
+        return make_response_json(401,"用户无权访问")
+    data = request.get_json()
+    if "reply_content" not in data:
+        return make_response_json(400,"请求格式错误")
+    try:
+        feedback_id = int(data["feedback_id"])
+    except Exception as e:
+        return make_response_json(400,"请求格式错误")
+    try:
+        feedback = Feedback.get(Feedback.id == feedback_id)
+    except Exception as e:
+        return make_response_json(404,"不存在此反馈")
+    feedback.reply_content = data["reply_content"]
+    feedback.state = Feedback_state.Replied.value
+    feedback.save()
+    return make_response_json(200,"回复完成")
+    
+    

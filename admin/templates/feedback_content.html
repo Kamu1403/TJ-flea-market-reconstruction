@@ -1,0 +1,24 @@
+{% extends "base.html" %} {% block title %}
+<title>同济大学跳蚤市场</title>
+{% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
+<main></main>
+{% endblock %} {% block footer %} {{ super() }} {% endblock %} {% block js %} {{ super() }}
+
+<script type="text/javascript" charset="utf-8">
+    var feedback_id = "{{ feedback_id|safe }}"; // 如果有python传过来的
+    var debug = 0;
+    $(document).ready(function () {
+        let url = "/api/get_reports";
+        if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
+        $.ajax({
+            // json形式
+            url: url,
+            type: "get",
+            success: function (ret) {
+                console.log(ret);
+            },
+        });
+    });
+</script>
+
+{% endblock %}
