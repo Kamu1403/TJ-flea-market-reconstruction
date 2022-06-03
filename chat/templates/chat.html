@@ -42,7 +42,7 @@
                                 <input id="text" size="80" placeholder="Enter your message here"><br><br>
                                 <input id="image" type="file"><br><br>
                                 <div>
-                                    <img src="" id="preview" />
+                                    <img src="" id="preview" style="height:150px"/>
                                 </div>
                                 <a href="#" onclick="leave_room();">Leave this room</a>
                     </div>
@@ -95,8 +95,8 @@
         });
         $('#image').change(function (e) {
             $('#preview').attr("src", URL.createObjectURL($(this)[0].files[0]));
-            setTimeout('test()', 2000);
-            alert("submitted!");
+            //1.需要向socketio的后台发送post请求，提交url，在聊天记录中添加对应记录
+            //2.在读取消息时，需要按照消息类型，分别从不同的地方读取，比方说文本信息可以从message直接取，图片信息要根据url查询得到
         });
 
         window.addEventListener('beforeunload', function (event) {  // or 'unload'
@@ -107,12 +107,6 @@
             while (new Date().getTime() < until);
         });
     });
-
-    function test() {
-        let width = $('#preview').width();
-        let height = $('#preview').height();
-        console.log(width, height);
-    }
     function leave_room() {
         socket.emit('left', { room: room }, function () {
             socket.disconnect();
