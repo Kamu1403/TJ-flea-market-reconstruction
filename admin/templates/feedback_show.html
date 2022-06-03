@@ -24,7 +24,7 @@ main %}
                         let repost_list = $(`#report${i}`);
                         repost_list.append(`<p>${i}</p>`)
                         for (var j = 0; j < ret.data[i].length; j++) {
-                            repost_list.append(`<p><a href=/admin/feedback/${ret.data[i][j]}/>查看反馈${ret.data[i][j]}</a></p>`);
+                            repost_list.append(`<a class='btn' href=/admin/feedback/${ret.data[i][j]}/>查看反馈${ret.data[i][j]}</a>`);
                         }
                     }
                 }
