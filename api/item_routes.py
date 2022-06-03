@@ -620,7 +620,7 @@ def report():
             return make_response_json(404, "待举报的用户不存在")
         if user.id == current_user.id:
             return make_response_json(400,"请勿举报自己")
-        reason += "用户id:{} 用户名称:{} ".format(user.id, user.name)
+        reason = "用户id:{}    ".format(user.id) + reason
     else:
         pass
     feedback_data["feedback_content"] = reason

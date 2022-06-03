@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 from api.utils import *
 from api import api_blue
-
+from datetime import datetime,timedelta
 from .send_verification_mail import send_email
 
 
@@ -173,10 +173,21 @@ def _login(user_id, password=None):
             return make_response_json(400, "密码错误")
 
     if user.state == -1:
-        return make_response_json(400, "您的账号已被冻结")
+        try:
+            ban = User_Management.get(User_Management.user_id == user.id)
+        except Exception as e:
+            user.state = User_state.Normal.value
+            user.save()
+        else:
+            if ban.ban_time < datetime.now():
+                ban.delete_instance()
+                user.state = User_state.Normal.value
+                user.save()
+            else:
+                return make_response_json(400, "您的账号已被冻结")
 
     # 记住登录状态，同时维护current_user
-    login_user(user, True, datetime.timedelta(days=30))
+    login_user(user, True, timedelta(days=30))
 
     return make_response_json(data={"url": url_for('user.index')})
 

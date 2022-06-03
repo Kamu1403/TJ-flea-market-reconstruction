@@ -20,9 +20,20 @@ main %}
             data: { feedback_id: feedback_id },
             success: function (ret) {
                 let main = $("main");
+                console.log(ret.data);
+                main.append(`<p>反馈用户ID:${ret.data.user_id}</p>`);
+                main.append(`<p>反馈类型:${ret.data.kind}</p>`);
+                main.append(`<p>反馈时间:${ret.data.publish_time}</p>`);
+                main.append(`<p>反馈内容:${ret.data.feedback_content}</p>`)
+                main.append(`<p>反馈状态:${ret.data.state}</p>`);
+                if (ret.data.state == -1) {
+                    main.append(`<p>回复内容:${ret.data.reply_content}</p>`)
+                }
+                /*
                 for (i in ret.data) {
                     main.append(`<p>${i}:${ret.data[i]}</p>`);
-                }
+                }*/
+
                 main.append(`<textarea row=12 col=40></textarea>`);
                 main.append("<button>回复反馈</button>");
                 let reply = main.children().eq(-2);
@@ -37,8 +48,9 @@ main %}
                         contentType: "application/json;charset=utf-8",
                         processData: false,
                         success: function (reply_ret) {
-                            window.alert(reply_ret.message);
-                            window.location.href = "{{url_for('index')}}";
+                            console.log(reply_ret);
+                            //window.alert(reply_ret.message);
+                            //window.location.href = "{{url_for('index')}}";
                         }
                     })
                 })

@@ -39,7 +39,7 @@ def content(item_id: int):  #goods_id/want_id
         else:
             isAdmin = (current_user.state == User_state.Admin.value)
             isPub = (item.user_id.id == current_user.id)
-            if item.state != Item_state.Sale.value and not isAdmin and isPub:
+            if item.state != Item_state.Sale.value and not isAdmin and not isPub:
                 return render_template('404.html',error_code=401,message="该商品您现在无权访问")
 
     if current_user.is_authenticated:  #已登录便加入历史

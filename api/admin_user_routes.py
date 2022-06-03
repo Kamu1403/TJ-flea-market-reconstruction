@@ -225,6 +225,7 @@ def admin_get_report():
     except Exception as e:
         return make_response_json(404,"不存在此反馈")
     datas = feedback.__data__
+    print(datas)
     datas.pop("id")
     datas["publish_time"] = str(datas["publish_time"])
     return make_response_json(200,"此反馈信息如下",data=datas)
@@ -248,5 +249,5 @@ def reply_feedback():
     feedback.reply_content = data["reply_content"]
     feedback.state = Feedback_state.Replied.value
     feedback.save()
-    return make_response_json(200,"回复完成")
+    return make_response_json(200,"回复完成",data=feedback.__data__)
 

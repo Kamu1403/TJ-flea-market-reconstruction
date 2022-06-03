@@ -41,8 +41,9 @@ def feedback(feedback_id:int):
         except Exception as e:
             return render_template("404.html", error_code=404, message="此反馈不存在")
         else:
-            feedback.state = Feedback_state.Read.value
-            feedback.save()
+            if feedback.state == Feedback_state.Unread.value:
+                feedback.state = Feedback_state.Read.value
+                feedback.save()
             return render_template("feedback_content.html",feedback_id = feedback_id)
     else:
         return render_template('404.html', error_code=401, message="您无权访问此页面")
