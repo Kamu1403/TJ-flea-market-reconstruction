@@ -7,32 +7,8 @@
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-lg-4">
-                    <div class="shop-cart-total order-summary-wrap">
+                    <div class="shop-cart-total order-summary-wrap" id="meet_list">
                         <h3 class="title">我的消息</h3>
-                        <div class="os-products-item">
-                            <div class="thumb">
-                                <a href="shop-details.html"><img src="{{url_for('static',filename='img/product/os-products-thumb.jpg')}}" alt=""></a>
-                            </div>
-                            <div class="content">
-                                <h6 class="title">
-                                    <a href="/chat/1950084">1950084</a>
-                                </h6>
-                                <span class="price">...</span>
-                            </div>
-                            <div class="remove">x</div>
-                        </div>
-                        <div class="os-products-item">
-                            <div class="thumb">
-                                <a href="shop-details.html"><img src="{{url_for('static',filename='img/product/os-products-thumb.jpg')}}" alt=""></a>
-                            </div>
-                            <div class="content">
-                                <h6 class="title">
-                                    <a href="/chat/1951705">1951705</a>
-                                </h6>
-                                <span class="price">...</span>
-                            </div>
-                            <div class="remove">x</div>
-                        </div>
                     </div>
                 </div>
                 <div class="col-lg-8">
@@ -74,12 +50,13 @@
             socket.emit('left', { room: room }, function () {
                 socket.disconnect();
             });
-        });
+        }); 
         socket.on('status', function (data) {
             $('#chat').val($('#chat').val() + '<' + data.time + ">\n" + data.msg + '\n');
             $('#chat').scrollTop($('#chat')[0].scrollHeight);
         });
         socket.on('message', function (data) {
+            console.log("***");
             $('#chat').val($('#chat').val() + data.time + "\n" + data.msg + '\n');
             $('#chat').scrollTop($('#chat')[0].scrollHeight);
         });
@@ -106,6 +83,38 @@
             var until = new Date().getTime() + 500;
             while (new Date().getTime() < until);
         });
+    
+        $.ajax({
+            type: "GET",
+            url: "/api/get_meet_list",
+            success: function (ret) {
+                if(ret.statusCode==200)
+                {
+                    let meet_list=ret.data.meet_list;
+
+                    for (let i=0;i<meet_list.length;i++)
+                    {
+                        let name=meet_list[i];
+                        let str=`                        
+                        <div class="os-products-item">
+                            <div class="thumb">
+                                <a href="/user/${name}/user_info"><img src="{{url_for('static',filename='img/product/os-products-thumb.jpg')}}" alt=""></a>
+                            </div>
+                            <div class="content">
+                                <h6 class="title">
+                                    <a href="/chat/${name}">${name}</a>
+                                </h6>
+                                <span class="price">...</span>
+                            </div>
+                            <div class="remove">x</div>
+                        </div>`;
+                        $("#meet_list").append(str);
+                    }
+                }
+                else
+                    alert(ret.message);
+            }
+        })
     });
     function leave_room() {
         socket.emit('left', { room: room }, function () {
