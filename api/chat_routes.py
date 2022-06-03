@@ -37,7 +37,7 @@ def get_last_msg():
             meet_list=""
         else:
             meet_list=meet.meet_list[user]
-        res=[]
+        res={}
         for m in meet_list:
             room=user+'-'+m
             reroom=m+'-'+user
@@ -47,7 +47,7 @@ def get_last_msg():
                 roomid=reroomid
             msg=roomid.last_message
             sender=roomid.last_sender_id.id
-            res.append({'sender_id:':sender,'last_msg':msg})
+            res[m]={'sender':sender,'last_msg':msg}
         return make_response_json(200, "获取最后消息成功",res)
     else:
         return make_response_json(401, "当前用户未登录")

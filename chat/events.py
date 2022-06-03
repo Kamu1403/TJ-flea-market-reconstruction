@@ -98,6 +98,8 @@ def text(message):
     
     emit('message', {'msg': sender + ':' + message['msg'],'time':message['time'],'type':message['type']},
          room=message['receiver'])
+    
+    #在message外需要新增事件notice，作用：在一方输入后更新另一方的聊天列表显示
     print(sender)
     if not database.is_closed():
         database.close()
