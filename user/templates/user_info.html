@@ -1,10 +1,10 @@
 {% extends "base.html" %} {% block title %}
 <title>用户个人信息</title>
-{% endblock %} 
+{% endblock %}
 {% block css %}
-{{ super() }} 
+{{ super() }}
 <link rel="stylesheet" type="text/css" href="{{url_for('user.static',filename='css/Switch.css')}}" />
-{% endblock %} 
+{% endblock %}
 
 {% block header %} {{ super() }} {% endblock %} {% block main %}
 <main>
@@ -23,92 +23,94 @@
                                 <h5 id="pname" class="title">个人信息</h5>
                             </div>
                             {% endif %}
-                            
+
 
                             <div class="building-info-wrap">
                                 <div>
-                                <span>用户名</span>
-                                <input type="text" value="用户名" id="username" />
+                                    <span>用户名</span>
+                                    <input type="text" value="用户名" id="username" />
                                 </div>
 
                                 <div>
-                                <span>信誉分</span>
-                                <input type="text" value="100" disabled="disabled" id="score" />
+                                    <span>信誉分</span>
+                                    <input type="text" value="100" disabled="disabled" id="score" />
                                 </div>
-                                
+
                                 <div>
-                                <span>邮箱</span>
-                                <input type="text" value="test@test" disabled="disabled" id="email" />
+                                    <span>邮箱</span>
+                                    <input type="text" value="test@test" disabled="disabled" id="email" />
                                 </div>
 
                                 {% if opt_userid == current_user.id %}
-                                
+
                                 <div>
-                                <span>学号</span>
-                                <div class="row">
-                                    <div class="col-md-9">
-                                        <input type="text" value="" disabled="disabled" id="user_no" />
+                                    <span>学号</span>
+                                    <div class="row">
+                                        <div class="col-md-9">
+                                            <input type="text" value="" disabled="disabled" id="user_no" />
+                                        </div>
+                                        <div class="col-md-1">
+                                            <input style="padding: 12px 20px;" type="checkbox" class="switch"
+                                                checked="checked" id="user_no_is_published"
+                                                onclick="checkboxOnclick(this)" />
+                                        </div>
+                                        <div class="col-md-2">
+                                            <p id="check_user_no_is_published">公开</p>
+                                        </div>
                                     </div>
-                                    <div class="col-md-1">
-                                        <input style="padding: 12px 20px;" type="checkbox" 
-                                        class="switch" checked="checked" id="user_no_is_published"
-                                        onclick="checkboxOnclick(this)"/>
-                                    </div>                                    
-                                    <div class="col-md-2">
-                                        <p id="check_user_no_is_published">公开</p>
-                                    </div>
-                                </div>
                                 </div>
 
                                 <div>
-                                <span>性别</span>
-                                <div class="row">
-                                    <div class="col-md-2">
-                                    <select id="gender" class="custom-select">
-                                        <option value='保密'>保密</option>
-                                        <option value='男'>男</option>
-                                        <option value='女' selected="selected">女</option>
-                                    </select>
+                                    <span>性别</span>
+                                    <div class="row">
+                                        <div class="col-md-2">
+                                            <select id="gender" class="custom-select">
+                                                <option value='保密'>保密</option>
+                                                <option value='男'>男</option>
+                                                <option value='女' selected="selected">女</option>
+                                            </select>
+                                        </div>
+                                        </br></br></br>
                                     </div>
-                                </br></br></br>
-                                </div>
                                 </div>
 
                                 <div>
-                                <span>姓名</span>
-                                <div class="row">
-                                    <div class="col-md-9">
-                                        <input type="text" placeholder="请填写你的姓名" value="" id="name" />
+                                    <span>姓名</span>
+                                    <div class="row">
+                                        <div class="col-md-9">
+                                            <input type="text" placeholder="请填写你的姓名" value="" id="name" />
+                                        </div>
+                                        <div class="col-md-1">
+                                            <input style="padding: 12px 20px;" type="checkbox" class="switch"
+                                                checked="checked" id="name_is_published"
+                                                onclick="checkboxOnclick(this)" />
+                                        </div>
+                                        <div class="col-md-2">
+                                            <p id="check_name_is_published">公开</p>
+                                        </div>
                                     </div>
-                                    <div class="col-md-1">
-                                        <input style="padding: 12px 20px;" type="checkbox" class="switch" checked="checked" id="name_is_published"
-                                        onclick="checkboxOnclick(this)"/>
-                                    </div>                                    
-                                    <div class="col-md-2">
-                                        <p id="check_name_is_published">公开</p>
-                                    </div>
-                                </div>
                                 </div>
 
                                 <div>
-                                <span>校区</span>
-                                <div class="row">
-                                    <div class="col-md-9">
-                                        <select id="campus_branch" class="custom-select">
-                                            <option value='四平路校区'>四平路校区</option>
-                                            <option value='嘉定校区'>嘉定校区</option>
-                                            <option value='沪西校区'>沪西校区</option>
-                                            <option value='沪北校区' selected="selected">沪北校区</option>
-                                        </select>
+                                    <span>校区</span>
+                                    <div class="row">
+                                        <div class="col-md-9">
+                                            <select id="campus_branch" class="custom-select">
+                                                <option value='四平路校区'>四平路校区</option>
+                                                <option value='嘉定校区'>嘉定校区</option>
+                                                <option value='沪西校区'>沪西校区</option>
+                                                <option value='沪北校区' selected="selected">沪北校区</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-1">
+                                            <input style="padding: 12px 20px;" type="checkbox" class="switch"
+                                                checked="checked" id="campus_is_published"
+                                                onclick="checkboxOnclick(this)" />
+                                        </div>
+                                        <div class="col-md-2">
+                                            <p id="check_campus_is_published">公开</p>
+                                        </div>
                                     </div>
-                                    <div class="col-md-1">
-                                        <input style="padding: 12px 20px;" type="checkbox" class="switch" checked="checked" id="campus_is_published"
-                                        onclick="checkboxOnclick(this)"/>
-                                    </div>                                    
-                                    <div class="col-md-2">
-                                        <p id="check_campus_is_published">公开</p>
-                                    </div>
-                                </div>
                                 </div>
 
                                 {% endif %}
@@ -131,6 +133,19 @@
                 </div>
             </div>
             {% endif %}
+            {% if current_user.state == 1 %}
+            <div id="ban_table" hidden>
+                <div>
+                    <input class="ban" type="date" />
+                </div>
+                <div>
+                    <textarea class="ban">
+
+                    </textarea>
+                </div>
+            </div>
+            <a class="btn" id="ban" onclick="ban()">封禁该用户</a>
+            {% endif %}
         </div>
 </main>
 {% endblock %} {% block footer %} {{ super() }} {% endblock %} {% block js %} {{ super() }}
@@ -138,25 +153,62 @@
 <script type="text/javascript" charset="utf-8">
     //var opt_userid = "{{ opt_userid|safe }}"; // 如果有python传过来的
     var opt_userid = "{{ opt_userid|safe }}";
-    var current_user_id="{{ current_user.id|safe }}";
+    var current_user_id = "{{ current_user.id|safe }}";
     var debug = 0;
-    function checkboxOnclick(checkbox){
-        if (checkbox.checked==false)
-            $("#check_"+checkbox.id).text("不公开");
+    function ban() {
+        if ($("#ban_table").is(':hidden')) {
+            $("#ban_table").removeAttr('hidden');
+            $("#ban").text("封禁");
+        }
+        else {
+            let ban_content = $(".ban");
+            let ban_url = "/api/add_ban";
+            if (debug) ban_url = `http://127.0.0.1:4523/mock/927026${ban_url}`;
+            $.ajax({
+                url: ban_url,
+                type: "post",
+                data: JSON.stringify({ user_id: opt_userid, ban_time: $(".ban")[0].value, ban_reason: $(".ban")[1].value }),
+                contentType: "application/json;charset=utf-8",
+                processData: false,
+                success: function (ban_ret) {
+                    console.log(ban_ret);
+                    let change_url = "/api/change_user_state";
+                    if (debug) change_url = `http://127.0.0.1:4523/mock/927026${change_url}`;
+                    if (ban_ret.success == true) {
+                        $.ajax({
+                            url: change_url,
+                            type: "put",
+                            data: JSON.stringify({ user_id: opt_userid, user_state: -1 }),
+                            contentType: "application/json;charset=utf-8",
+                            processData: false,
+                            success: function (change_ret) {
+                                window.alert(change_ret.message);
+                                window.location.href = "{{url_for('index')}}";
+                            }
+                        });
+                    }
+                }
+            }
+            );
+        }
+    }
+    function checkboxOnclick(checkbox) {
+        if (checkbox.checked == false)
+            $("#check_" + checkbox.id).text("不公开");
         else
-            $("#check_"+checkbox.id).text("公开");
+            $("#check_" + checkbox.id).text("公开");
     }
     function submit() {
         url = "/api/change_user_info";
         if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
 
-        let username=$("#username").val();
-        let user_no_is_published=$("#user_no_is_published").get(0).checked;
-        let gender=$("#gender option:selected").text();
-        let name=$("#name").val();
-        let name_is_published=$("#name_is_published").get(0).checked;
-        let campus_branch=$("#campus_branch").val();
-        let campus_is_published=$("#campus_is_published").get(0).checked;
+        let username = $("#username").val();
+        let user_no_is_published = $("#user_no_is_published").get(0).checked;
+        let gender = $("#gender option:selected").text();
+        let name = $("#name").val();
+        let name_is_published = $("#name_is_published").get(0).checked;
+        let campus_branch = $("#campus_branch").val();
+        let campus_is_published = $("#campus_is_published").get(0).checked;
 
         $.ajax({
             // query形式
@@ -164,13 +216,13 @@
             type: "put",
             contentType: "application/json;charset=utf-8",
             processData: false,
-            data: JSON.stringify({ 
+            data: JSON.stringify({
                 username: username,
-                user_no_is_published:user_no_is_published,
-                gender:gender,name:name,
-                name_is_published:name_is_published,
-                campus_branch:campus_branch,
-                campus_is_published:campus_is_published 
+                user_no_is_published: user_no_is_published,
+                gender: gender, name: name,
+                name_is_published: name_is_published,
+                campus_branch: campus_branch,
+                campus_is_published: campus_is_published
             }),
             async: false, // 当需要将值传给函数外部时需要强制同步
             success: function (ret) {
@@ -185,32 +237,28 @@
         $.ajax({
             url: url,
             type: "get",
-            data:{user_id:opt_userid},
+            data: { user_id: opt_userid },
             success: function (ret) {
                 console.log(ret);
-                if (opt_userid!=current_user_id)
-                {
-                    $("#pname").text(ret.data.username+"的个人信息");
-                    $("#username").attr('disabled',"disabled");
-                    if (ret.data.user_no_is_published)
-                    {
-                        let str=`<div>
+                if (opt_userid != current_user_id) {
+                    $("#pname").text(ret.data.username + "的个人信息");
+                    $("#username").attr('disabled', "disabled");
+                    if (ret.data.user_no_is_published) {
+                        let str = `<div>
                             <span>学号</span>
                             <input type="text" value="用户名" id="user_no" disabled="disabled"/>
                             </div>`;
                         $(".building-info-wrap").append(str);
                     }
-                    if (ret.data.name_is_published)
-                    {
-                        let str=`<div>
+                    if (ret.data.name_is_published) {
+                        let str = `<div>
                             <span>姓名</span>
                             <input type="text" value="姓名" id="name" disabled="disabled"/>
                             </div>`;
                         $(".building-info-wrap").append(str);
                     }
-                    if (ret.data.campus_is_published)
-                    {
-                        let str=`<div>
+                    if (ret.data.campus_is_published) {
+                        let str = `<div>
                             <span>校区</span>
                             <input type="text" value="校区" id="campus_branch" disabled="disabled"/>
                             </div>`;
@@ -222,19 +270,19 @@
                 $("#score").val(ret.data.score);
                 $("#email").val(ret.data.email);
                 $("#user_no").val(ret.data.user_no);
-                $("#user_no_is_published").attr('checked',ret.data.user_no_is_published);
+                $("#user_no_is_published").attr('checked', ret.data.user_no_is_published);
                 $("#gender").val(ret.data.gender);
                 $("#name").val(ret.data.name);
-                $("#name_is_published").attr('checked',ret.data.name_is_published);
+                $("#name_is_published").attr('checked', ret.data.name_is_published);
                 $("#campus_branch").val(ret.data.campus_branch);
-                $("#campus_is_published").attr('checked',ret.data.campus_is_published);
+                $("#campus_is_published").attr('checked', ret.data.campus_is_published);
 
-                if (ret.data.user_no_is_published==false)
-                $("#check_user_no_is_published").text("不公开");
-                if (ret.data.name_is_published==false)
-                $("#check_name_is_published").text("不公开");
-                if (ret.data.campus_is_published==false)
-                $("#check_campus_is_published").text("不公开");
+                if (ret.data.user_no_is_published == false)
+                    $("#check_user_no_is_published").text("不公开");
+                if (ret.data.name_is_published == false)
+                    $("#check_name_is_published").text("不公开");
+                if (ret.data.campus_is_published == false)
+                    $("#check_campus_is_published").text("不公开");
             },
         });
     });

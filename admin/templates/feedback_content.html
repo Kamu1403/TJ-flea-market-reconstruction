@@ -35,7 +35,7 @@ main %}
                 }*/
 
                 main.append(`<textarea row=12 col=40></textarea>`);
-                main.append("<button>回复反馈</button>");
+                main.append("<a href='#' class='btn'>回复反馈</a>");
                 let reply = main.children().eq(-2);
                 let submit = main.children().eq(-1);
                 submit.click(function () {
@@ -48,9 +48,9 @@ main %}
                         contentType: "application/json;charset=utf-8",
                         processData: false,
                         success: function (reply_ret) {
-                            console.log(reply_ret);
-                            //window.alert(reply_ret.message);
-                            //window.location.href = "{{url_for('index')}}";
+                            //console.log(reply_ret);
+                            window.alert(reply_ret.message);
+                            window.location.href = "{{url_for('admin.feedback_show')}}";
                         }
                     })
                 })
