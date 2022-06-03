@@ -184,7 +184,7 @@ def _login(user_id, password=None):
                 user.state = User_state.Normal.value
                 user.save()
             else:
-                return make_response_json(400, "您的账号已被冻结")
+                return make_response_json(400, f"您的账号已被冻结 冻结理由:{ban.ban_reason} 结束时间:{str(ban.ban_time)}")
 
     # 记住登录状态，同时维护current_user
     login_user(user, True, timedelta(days=30))
