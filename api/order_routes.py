@@ -4,7 +4,6 @@ from api.utils import *
 from api import api_blue
 
 MINUS_SCORE = 5  #取消一个已经确认了的订单，扣五分
-SYS_ADMIN_NO = 80000000
 
 
 @api_blue.route("/change_order_state", methods=["PUT"])
