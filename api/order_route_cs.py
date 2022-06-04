@@ -261,10 +261,10 @@ def order_post():
         od_it_list.append(od_it)
     if od_it.item_id.type == Item_type.Goods.value:
         send_message(SYS_ADMIN_NO, od_it.item_id.user_id.id,
-                     "已有用户购买你的商品，请前往个人中心确认或取消订单")
+                     f"已有用户购买你的商品<{od_it.item_id.name}>，请前往个人中心确认或取消订单")
     else:
         send_message(SYS_ADMIN_NO, od_it.item_id.user_id.id,
-                     "已有用户接取你的悬赏，请前往个人中心确认或取消订单")
+                     f"已有用户接取你的悬赏<{od_it.item_id.name}>，请前往个人中心确认或取消订单")
     return make_response_json(201, "订单生成成功，请等待商家确认", data={"order_id": od.id})
 
 

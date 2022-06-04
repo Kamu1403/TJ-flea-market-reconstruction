@@ -281,5 +281,5 @@ def reply_feedback():
     feedback.reply_content = data["reply_content"]
     feedback.state = Feedback_state.Replied.value
     feedback.save()
-    send_message(SYS_ADMIN_NO, feedback.user_id.id,data["reply_content"])
+    send_message(SYS_ADMIN_NO, feedback.user_id.id,f'管理员已回复你的反馈，回复内容：\n{data["reply_content"]}')
     return make_response_json(200, "回复完成")

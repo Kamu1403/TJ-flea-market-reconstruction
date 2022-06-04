@@ -52,7 +52,9 @@ def change_order_state():
             _order_item.item_id.locked_num -= _order_item.quantity
             _order_item.item_id.save()
             #send_message(SYS_ADMIN_NO, _order_item.item_id.user_id.id, "您的订单已完成")
-
+        if req_state == Order_state.Confirm.value:  #想确认订单,给订单发起者发信息
+            send_message(SYS_ADMIN_NO, _order_item.order_id.user_id.id,
+                         f"您的订单<{_order_item.item_id.name}>已被对方确认，请及时与对方交易")
         order.state = req_state
         order.save()
         return make_response_json(200, "操作成功")
@@ -86,7 +88,7 @@ def change_order_state():
                 order.user_id.save()
                 send_message(
                     SYS_ADMIN_NO, order_op_user_id,
-                    "您的订单<{_order_item.item_id.name}>已被对方取消，请保管好您的财物")
+                    f"您的订单<{_order_item.item_id.name}>已被对方取消，请保管好您的财物")
             _order_item.item_id.locked_num -= _order_item.quantity
             _order_item.item_id.shelved_num += _order_item.quantity
             _order_item.item_id.save()
@@ -121,7 +123,7 @@ def change_order_state():
                 order_op_user_id.save()
                 send_message(
                     SYS_ADMIN_NO, order_user_id,
-                    "您的订单<{_order_item.item_id.name}>已被对方取消，请保管好您的财物")
+                    f"您的订单<{_order_item.item_id.name}>已被对方取消，请保管好您的财物")
 
             _order_item.item_id.locked_num -= _order_item.quantity
             _order_item.item_id.shelved_num += _order_item.quantity
@@ -134,7 +136,7 @@ def change_order_state():
             order.state = Order_state.Confirm.value
             order.save()
             send_message(SYS_ADMIN_NO, order_user_id,
-                         "您的订单<{_order_item.item_id.name}>已被对方确认，请及时与对方交易")
+                         f"您的订单<{_order_item.item_id.name}>已被对方确认，请及时与对方交易")
             return make_response_json(200, "操作成功")
         else:
             return make_response_json(500, "req_state订单状态错误！")
