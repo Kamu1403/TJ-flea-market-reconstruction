@@ -59,9 +59,8 @@ def log(response: Response) -> Response:
         d["time"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S %A")
         if current_user.is_authenticated:
             d["user_id"] = current_user.id
-        # print(d)
-        json.dump(d, f, ensure_ascii=False)
-        f.write('\n')
+        #json.dump(d, f, ensure_ascii=False)
+        #f.write('\n')
     return response
 
 
