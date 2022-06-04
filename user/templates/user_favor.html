@@ -36,6 +36,8 @@
             success: function (ret) {
                 if (ret.statusCode == 200) {
                     $(robj).parent().parent().remove();
+                    // 悬浮框提示删除成功
+                    // 点击撤销
                 } else alert("删除历史失败：\n" + ret.message);
             },
         });
@@ -87,7 +89,7 @@
                             <td class="product-name"> <h4><a href="/item/content/${item.item_id}" id="item_name_${index}">${item_name}</a></h4></td>
                             <td class="product-name"> <h4 id="item_type_${index}">${item_type}</h4></td>
                             <td class="product-name"> <h4><a href=${user_href} id="publisher_name_${index}">${publisher_name}</a></h4></td>
-                            <td class="product-delete"><a href="#" id="remove_item_id_${item.item_id}" onclick="remove(this)"><i class="far fa-trash-alt"></i></a></td>
+                            <td class="product-delete"><a href="#" id="remove_item_id_${item.item_id}" onclick="remove(this)"><i class="fa fa-heart" style="color:#C00000"></i></a></td>
                         </tr>`;
                         $(auto_append).append(str);
                     }

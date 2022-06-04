@@ -69,6 +69,8 @@
             success: function (ret) {
                 if (ret.statusCode == 200) {
                     $(robj).parent().parent().remove();
+                    // 悬浮框提示删除成功
+                    // 点击撤销
                 } else alert("删除历史失败：\n" + ret.message);
             },
         });
