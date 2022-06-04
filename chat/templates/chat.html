@@ -13,7 +13,13 @@
                 </div>
                 <div class="col-lg-8">
                     <div class="checkout-form-wrap" id="textbox">
-                        <h4> {{ receiver }}</h4>
+                        
+                            {% if receiver=="80000000" %}
+                            <h4 style="color:#C00000"> 系统通知</h4>
+                            {% else %}
+                            <h4>{{ receiver }}</h4>
+                            {% endif %}
+                        
                                 <textarea id="chat" cols="80" rows="20"></textarea><br><br>
                                 <input id="text" size="80" placeholder="Enter your message here"><br><br>
                                 <input id="image" type="file"><br><br>
@@ -42,7 +48,7 @@
             window.location.href = "{{ url_for('chat.index') }}";
         }
         if (room=="")
-        {
+        {   $('#textbox').after("<span>您还未选中聊天室</span>")
             $('#textbox').hide();
         }
 
@@ -57,18 +63,23 @@
             });
         }); 
         socket.on('status', function (data) {
-            $('#chat').val($('#chat').val() + '<' + data.time + ">\n" +data.msg + '\n');
+            $('#chat').val($('#chat').val() + '<' + data.time + ">\n" + data.sender+':'+data.msg + '\n');
             $('#chat').scrollTop($('#chat')[0].scrollHeight);
         });
         socket.on('message', function (data) {
             let name = data.other_user;
-            $('#chat').val($('#chat').val() + data.time + "\n" + data.msg + '\n');
+            let sname= name;
+            let color="#516583"
+            if (data.sender=="80000000"){
+                sname="系统通知";
+                color="#C00000";
+            }
+            $('#chat').val($('#chat').val() + data.time + "\n" + sname+':'+data.msg + '\n');
             $('#chat').scrollTop($('#chat')[0].scrollHeight);
             if (`#chat_${name}`.length>0)
                 $(`#chat_${name}`).html(data.msg);
             else
             {
-                let sender=data.sender
                 let last_msg=data.msg
                 let str=`  
                         <div class="os-products-item">
@@ -77,9 +88,9 @@
                             </div>
                             <div class="content">
                                 <h6 class="title">
-                                    <a href="/chat/${name}">${name}</a>
+                                    <a href="/chat/${name}" style="color:${color}">${sname}</a>
                                 </h6>
-                                <span class="price" id="chat_${name}">${sender}: ${last_msg}</span>
+                                <span class="price" id="chat_${name}">${last_msg}</span>
                             </div>
                             <div class="remove">x</div>
                         </div>`;
@@ -135,20 +146,26 @@
                     for (let i=0;i<meet_list.length;i++)
                     {
                         let name=meet_list[i];
-                        let sender=last_msg_dict[name]['sender']
+                        let sname= name;
+                        let color="#516583"
+                        if (name=="80000000"){
+                            sname="系统通知";
+                            color="#C00000";
+                        }
+                        console.log(color)
                         let last_msg=last_msg_dict[name]['last_msg']
                         let str=`  
-                        <div class="os-products-item">
+                        <div class="os-products-item" id="meet_${name}">
                             <div class="thumb">
                                 <a href="/user/${name}/user_info"><img src="{{url_for('static',filename='img/product/os-products-thumb.jpg')}}" alt=""></a>
                             </div>
                             <div class="content">
                                 <h6 class="title">
-                                    <a href="/chat/${name}">${name}</a>
+                                    <a href="/chat/${name}" style="color:${color}">${sname}</a>
                                 </h6>
-                                <span class="price" id="chat_${name}">${sender}: ${last_msg}</span>
+                                <span class="price" id="chat_${name}">${last_msg}</span>
                             </div>
-                            <div class="remove">x</div>
+                            <div class="remove" onclick="deldiv(${name})">x</div>
                         </div>`;
                         $("#meet_list").append(str);
                     }
@@ -158,6 +175,25 @@
             }
         });
     });
+    function deldiv(name)
+    {   
+        $(`#meet_${name}`).remove();
+        $.ajax({
+            type: "DELETE",
+            url: "/api/del_meet",
+            data: JSON.stringify({user_id:name}),
+            contentType: "application/json;charset=utf-8",
+            processData: false,
+            success: function (ret) {
+                if(ret.statusCode==200)
+                {
+                    window.location.href = "{{ url_for('chat.index') }}";
+                }
+                else
+                    alert(ret.message);
+            }
+        });
+    }
     function leave_room() {
         socket.emit('left', { room: room }, function () {
             socket.disconnect();

@@ -53,3 +53,20 @@ def get_last_msg():
         return make_response_json(200, "获取最后消息成功",res)
     else:
         return make_response_json(401, "当前用户未登录")
+    
+@api_blue.route('/del_meet',methods=['DELETE'])
+def del_meet():
+    if (current_user.is_authenticated):
+        suser=str(current_user.id)
+        del_user=str(request.get_json()['user_id'])
+        user,created=Meet_List.get_or_create(user_id=suser)
+        meet_list={}
+        if created:
+            meet_list[user]=[]
+        else:
+            meet_list=user.meet_list
+            meet_list[suser].remove(del_user)
+        Meet_List.update(meet_list=meet_list).where(Meet_List.user_id==suser).execute()
+        return make_response_json(200, "获取会话列表成功")
+    else:
+        return make_response_json(401, "当前用户未登录")

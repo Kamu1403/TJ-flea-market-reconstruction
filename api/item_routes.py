@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
 import base64
-from email.policy import default
 from io import BytesIO
 import shutil
 
 import werkzeug
 from api.utils import *
 from api import api_blue
-from item.models import Item_type, Item_state
+from item.models import Item_type, Item_state, Item_tag_type
 from item import item_blue
 from admin.models import Feedback, Feedback_kind, Feedback_state
 from datetime import datetime, date, timedelta
@@ -152,8 +151,13 @@ def get_search():
 
     need = (Item.id, Item.name, Item.user_id, Item.publish_time, Item.price, Item.tag)
     select_need = [Item.name.contains(key_word)]
-    if search_type in [eval(f"Item_type.{i}.value") for i in Item_type.__members__]:
+    if search_type in Item_type._value2member_map_:
         select_need.append(Item.type == search_type)
+    if "tag" in data:
+        if data["tag"] not in Item_tag_type._value2member_map_:
+            return make_response_json(400, "请求格式错误")
+        else:
+            select_need.append(Item.tag == data["tag"])
     try:
         if "start_time" in data:
             start_time = data["start_time"]
@@ -209,6 +213,11 @@ def change_item_state():
                 # if data["state"] == User_state.Freeze.value:
                 #     向物品所有者发布一条消息
                 #       pass
+                if data["state"] == Item_state.Freeze.value:
+                    if item.type == Item_type.Goods.value:
+                        send_message(SYS_ADMIN_NO, item.user_id.id, f"您的商品<{item.name}>被系统管理员下架")
+                    elif item.type == Item_type.Want.value:
+                        send_message(SYS_ADMIN_NO, item.user_id.id, f"您的悬赏<{item.name}>被系统管理员下架")
                 item.save()
                 return make_response_json(200, "操作成功")
             elif current_user.state == User_state.Under_ban.value:
@@ -263,6 +272,10 @@ def change_item_data():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
     data = request.get_json()
+    if "tag" not in data:
+        return make_response_json(400, "请选择物品类型")
+    if data["tag"] not in Item_tag_type._value2member_map_:
+        return make_response_json(400, "请求格式错误")
     try:
         data["id"] = int(data["id"])
         if "shelved_num" in data:
@@ -273,6 +286,7 @@ def change_item_data():
             data["price"] = float(data["price"])
     except Exception as e:
         return make_response_json(400, "请求格式不对")
+
     try:
         item = Item.get(Item.id == data["id"])
     except Exception as e:
@@ -315,7 +329,10 @@ def post_item_info():
     if current_user.state == User_state.Under_ban.value:
         return make_response_json(401, "当前用户已被封号")
     data = request.get_json()
-
+    if "tag" not in data:
+        return make_response_json(400, "请选择物品类型")
+    if data["tag"] not in Item_tag_type._value2member_map_:
+        return make_response_json(400, "请求格式错误")
     try:
         price = float(data["price"])
         item_type = int(data["type"])
@@ -639,3 +656,8 @@ def item_to_show():
             else:
                 datas["show"].append(j)
     return make_response_json(200, "返回订单", datas)
+
+
+@api_blue.route("/get_class", methods=["GET"])
+def get_class():
+    return make_response_json(200, "类别如下", data={"class": list(Item_tag_type._value2member_map_.keys())})
