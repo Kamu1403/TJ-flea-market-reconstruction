@@ -1,21 +1,20 @@
 from flask import redirect, url_for, render_template, request,flash
 from flask_login import current_user
 from chat import chat_blue
-from flask_socketio import leave_room
-from flask import make_response, request, jsonify
-from chat.models import Room,Recent_Chat_List,Meet_List
+from flask_socketio import join_room,emit
+from flask import jsonify
+from chat.models import Room,Meet_List
 from api.utils import *
 from app import database
+import datetime
 
 def create_or_update_meet_list(sender,receiver):
-    print(sender,receiver)
     user,created=Meet_List.get_or_create(user_id=sender)
     meet_list={}
     if created:
         meet_list[sender]=[receiver]
     else:
         meet_list=user.meet_list
-        print(meet_list)
         if receiver not in meet_list[sender]:
             meet_list[sender].append(receiver)
     Meet_List.update(meet_list=meet_list).where(Meet_List.user_id==sender).execute()
@@ -67,8 +66,6 @@ def chat(opt_userid:int):
                 
             create_or_update_meet_list(sender,receiver)
             create_or_update_meet_list(receiver,sender)
-
-
         return render_template('chat.html',sender=sender,receiver=receiver,room=room)
     else:
         return redirect(url_for('login'))  # 重定向到/login
