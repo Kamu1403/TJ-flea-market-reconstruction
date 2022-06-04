@@ -67,6 +67,13 @@
                 $('#chat').scrollTop($('#chat')[0].scrollHeight);
                 $(`#chat_${name}`).html(data.msg);
             });
+
+            socket.on('alert',function(data)
+            {
+                $('#chat').val($('#chat').val() + data.time + "\n" + data.msg + '\n');
+                $('#chat').scrollTop($('#chat')[0].scrollHeight);
+            });
+
             $('#text').keypress(function (e) {
                 var code = e.keyCode || e.which;
                 let cur_time = new Date(new Date().getTime()).toLocaleString();

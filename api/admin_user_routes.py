@@ -90,9 +90,35 @@ def change_user_state():
     else:
         if tep.state == User_state.Admin.value:
             return make_response_json(400,"不可修改管理员状态")
-        tep.state = user_state
-        tep.save()
-        return make_response_json(200, "操作成功")
+        if user_state == User_state.Under_ban.value:
+            try:
+                ban_time = datetime.strptime(req["ban_time"],"%Y-%m-%d")
+            except Exception as e:
+                return make_response_json(400,"请求格式错误")
+            if "ban_reason" not in req:
+                return make_response_json(400,"请求格式错误")
+            try:
+                ban = User_Management.get(User_Management.user_id == user_id)
+            except Exception as e:
+                ban = User_Management.create(user_id=user_id,ban_time=ban_time,ban_reason=req["ban_reason"])
+            else:
+                ban.ban_time = ban_time
+                ban.ban_reason = req["ban_reason"]
+                ban.save()
+            finally:
+                tep.state = user_state
+                tep.save()
+                return make_response_json(200, "操作成功")
+        elif user_state == User_state.Normal.value:
+            if tep.state == User_state.Under_ban.value:
+                try:
+                    ban = User_Management.get(User_Management.user_id == user_id)
+                except Exception as e:
+                    return make_response_json(500,"系统错误")
+                ban.delete_instance()
+                tep.state = user_state
+                tep.save()
+            return make_response_json(200,"操作成功")
 
         #query=User.update(state=-1).where(User.id==user_id)
         #query.execute()
@@ -250,36 +276,3 @@ def reply_feedback():
     feedback.state = Feedback_state.Replied.value
     feedback.save()
     return make_response_json(200,"回复完成")
-
-@api_blue.route("/add_ban",methods=["POST"])
-def add_ban():
-    if current_user.is_authenticated and current_user.state == User_state.Admin.value:
-        data = request.get_json()
-        print(data)
-        try:
-            user_id = int(data["user_id"])
-        except Exception as e:
-            return make_response_json(400,"请求格式错误")
-        try:
-            user = User.get(User.id == user_id)
-        except Exception as e:
-            return make_response_json(404,"不存在的用户")
-        if user.state == User_state.Admin.value:
-            return make_response_json(401,"不可封禁管理员")
-        try:
-            ban_time = datetime.strptime(data["ban_time"],"%Y-%m-%d")
-        except Exception as e:
-            return make_response_json(400,"请求格式错误")
-        if "ban_reason" not in data:
-            return make_response_json(400,"请求格式错误")
-        try:
-            ban = User_Management.get(User_Management.user_id == user_id)
-        except Exception as e:
-            ban = User_Management.create(user_id=user_id,ban_time=ban_time,ban_reason=data["ban_reason"])
-        else:
-            ban.ban_time = ban_time
-            ban.ban_reason = data["ban_reason"]
-            ban.save()
-        return make_response_json(200,"填入成功")
-    else:
-        return make_response_json(401,"无权访问")

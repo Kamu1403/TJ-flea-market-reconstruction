@@ -8,6 +8,8 @@ from chat.models import Room,Message,Recent_Chat_List
 from app import socketio
 from app import database
 
+
+
 import json
 
 @socketio.on('joined', namespace='/chat')
@@ -17,6 +19,7 @@ def joined(message):
         
     sender = str(current_user.id) 
     roomid = message['room']
+    
     
     join_room(sender)
     """

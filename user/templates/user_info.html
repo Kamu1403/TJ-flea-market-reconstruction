@@ -134,17 +134,19 @@
             </div>
             {% endif %}
             {% if current_user.state == 1 %}
-            <div id="ban_table" hidden>
-                <div>
-                    <input class="ban" type="date" />
-                </div>
-                <div>
-                    <textarea class="ban">
+            <div id="change_user">
+                <div id="ban_table" hidden>
+                    <div>
+                        <input class="ban" type="date" />
+                    </div>
+                    <div>
+                        <textarea class="ban">
 
                     </textarea>
+                    </div>
                 </div>
+                <a class="btn" id="ban"></a>
             </div>
-            <a class="btn" id="ban" onclick="ban()">封禁该用户</a>
             {% endif %}
         </div>
 </main>
@@ -155,41 +157,42 @@
     var opt_userid = "{{ opt_userid|safe }}";
     var current_user_id = "{{ current_user.id|safe }}";
     var debug = 0;
-    function ban() {
-        if ($("#ban_table").is(':hidden')) {
-            $("#ban_table").removeAttr('hidden');
-            $("#ban").text("封禁");
+    function change_user_state(state) {
+        let change_url = "/api/change_user_state";
+        if (debug) change_url = `http://127.0.0.1:4523/mock/927026${change_url}`;
+        if (state == -1) {
+            if ($("#ban_table").is(':hidden')) {
+                $("#ban_table").removeAttr('hidden');
+                $("#ban").text("封禁");
+            }
+            else {
+                let ban_content = $(".ban");
+                $.ajax({
+                    url: change_url,
+                    type: "put",
+                    data: JSON.stringify({ user_id: opt_userid, user_state: state, ban_time: $(".ban")[0].value, ban_reason: $(".ban")[1].value }),
+                    contentType: "application/json;charset=utf-8",
+                    processData: false,
+                    success: function (ban_ret) {
+                        window.alert(ban_ret.message);
+                        window.location.href = "{{url_for('index')}}";
+                    }
+                }
+                );
+            }
         }
         else {
-            let ban_content = $(".ban");
-            let ban_url = "/api/add_ban";
-            if (debug) ban_url = `http://127.0.0.1:4523/mock/927026${ban_url}`;
             $.ajax({
-                url: ban_url,
-                type: "post",
-                data: JSON.stringify({ user_id: opt_userid, ban_time: $(".ban")[0].value, ban_reason: $(".ban")[1].value }),
+                url: change_url,
+                type: "put",
+                data: JSON.stringify({ user_id: opt_userid, user_state: state }),
                 contentType: "application/json;charset=utf-8",
                 processData: false,
                 success: function (ban_ret) {
-                    console.log(ban_ret);
-                    let change_url = "/api/change_user_state";
-                    if (debug) change_url = `http://127.0.0.1:4523/mock/927026${change_url}`;
-                    if (ban_ret.success == true) {
-                        $.ajax({
-                            url: change_url,
-                            type: "put",
-                            data: JSON.stringify({ user_id: opt_userid, user_state: -1 }),
-                            contentType: "application/json;charset=utf-8",
-                            processData: false,
-                            success: function (change_ret) {
-                                window.alert(change_ret.message);
-                                window.location.href = "{{url_for('index')}}";
-                            }
-                        });
-                    }
+                    window.alert(ban_ret.message);
+                    window.location.href = "{{url_for('index')}}";
                 }
-            }
-            );
+            });
         }
     }
     function checkboxOnclick(checkbox) {
@@ -283,6 +286,19 @@
                     $("#check_name_is_published").text("不公开");
                 if (ret.data.campus_is_published == false)
                     $("#check_campus_is_published").text("不公开");
+                if (ret.data.state == 1) {
+                    $("#change_user").remove();
+                }
+                else if (ret.data.state == 0) {
+                    $("#ban").text("封禁该用户");
+                    $("#ban").click(function () { change_user_state(-1) });
+                }
+                else {
+                    $("#ban").text("修改封禁信息");
+                    $("#ban").click(function () { change_user_state(-1) });
+                    $("#change_user").append("<a class='btn' id='normal'>为该用户解封</a>");
+                    $("#normal").click(function () { change_user_state(0) });
+                }
             },
         });
     });
