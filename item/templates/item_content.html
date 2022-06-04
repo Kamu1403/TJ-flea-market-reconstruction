@@ -280,7 +280,12 @@ main %}
 
                     if (ret.isPub) $("[id=seller_visible]").removeAttr("hidden");
                     else if (ret.data.state == 0) $("[id=non_seller_visible]").removeAttr("hidden");
-                    if (ret.isAdmin) $("[id=manager_visible]").removeAttr("hidden");
+                    if (ret.isAdmin) {
+                        if ($("#seller_visible").is(":hidden")) {
+                            $("[id=seller_visible]").removeAttr("hidden");
+                        }
+                        $("[id=manager_visible]").removeAttr("hidden");
+                    }
                 } else {
                     $("[id=visitor_visible]").removeAttr("hidden");
                 }
@@ -305,7 +310,9 @@ main %}
                 switch (data.state) {
                     case 0:
                         state_str = "正常发布";
-                        $('#item_down_shelf_').append('<a href="#" class="btn" onclick="change_item_state(1)">下架商品</a>');
+                        if (ret.isPub && !ret.isAdmin) {
+                            $('#item_down_shelf_').append('<a href="#" class="btn" onclick="change_item_state(1)">下架商品</a>');
+                        }
                         $('#manager_visible').append('<a href="#" class="btn" onclick="change_item_state(-1)">强制下架商品</a>');
                         break;
                     case -1:
