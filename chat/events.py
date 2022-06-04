@@ -28,7 +28,8 @@ def joined(message):
     """
     
     for user in Message.select().where(Message.room_id==roomid):
-        emit('message', {'msg': str(user.sender_id) + ':' + user.msg_content,
+        emit('message', {'sender':str(user.sender_id), 'msg':user.msg_content,
+                         'other_user':message['receiver'],
                          'time':str(user.msg_time),'type':user.msg_type},
          room=sender)
 

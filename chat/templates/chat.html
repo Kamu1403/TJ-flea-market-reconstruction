@@ -13,7 +13,13 @@
                 </div>
                 <div class="col-lg-8">
                     <div class="checkout-form-wrap" id="textbox">
-                        <h4> {{ receiver }}</h4>
+                        
+                            {% if receiver=="80000000" %}
+                            <h4 style="color:#C00000"> 系统通知</h4>
+                            {% else %}
+                            <h4>{{ receiver }}</h4>
+                            {% endif %}
+                        
                                 <textarea id="chat" cols="80" rows="20"></textarea><br><br>
                                 <input id="text" size="80" placeholder="Enter your message here"><br><br>
                                 <input id="image" type="file"><br><br>
@@ -62,7 +68,13 @@
         });
         socket.on('message', function (data) {
             let name = data.other_user;
-            $('#chat').val($('#chat').val() + data.time + "\n" + data.sender+':'+data.msg + '\n');
+            let sname= name;
+            let color="#516583"
+            if (data.sender=="80000000"){
+                sname="系统通知";
+                color="#C00000";
+            }
+            $('#chat').val($('#chat').val() + data.time + "\n" + sname+':'+data.msg + '\n');
             $('#chat').scrollTop($('#chat')[0].scrollHeight);
             if (`#chat_${name}`.length>0)
                 $(`#chat_${name}`).html(data.msg);
@@ -76,7 +88,7 @@
                             </div>
                             <div class="content">
                                 <h6 class="title">
-                                    <a href="/chat/${name}">${name}</a>
+                                    <a href="/chat/${name}" style="color:${color}">${sname}</a>
                                 </h6>
                                 <span class="price" id="chat_${name}">${last_msg}</span>
                             </div>
@@ -134,6 +146,13 @@
                     for (let i=0;i<meet_list.length;i++)
                     {
                         let name=meet_list[i];
+                        let sname= name;
+                        let color="#516583"
+                        if (name=="80000000"){
+                            sname="系统通知";
+                            color="#C00000";
+                        }
+                        console.log(color)
                         let last_msg=last_msg_dict[name]['last_msg']
                         let str=`  
                         <div class="os-products-item" id="meet_${name}">
@@ -142,7 +161,7 @@
                             </div>
                             <div class="content">
                                 <h6 class="title">
-                                    <a href="/chat/${name}">${name}</a>
+                                    <a href="/chat/${name}" style="color:${color}">${sname}</a>
                                 </h6>
                                 <span class="price" id="chat_${name}">${last_msg}</span>
                             </div>
