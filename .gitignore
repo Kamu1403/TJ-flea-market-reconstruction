@@ -137,9 +137,10 @@ dmypy.json
 api/verify_code.json
 
 # temp
-item/static/resource/temp/*
 api/pic/*
-item/static/resource/item_pic/7/
+item/static/resource/temp/*
 item/static/resource/item_pic/8/
 item/static/resource/item_pic/9/
 item/static/resource/item_pic/10/
+item/static/resource/item_pic/11/
+item/static/resource/item_pic/12/
