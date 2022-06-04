@@ -133,7 +133,7 @@
                 </div>
             </div>
             {% endif %}
-            {% if current_user.state == 1 %}
+            {% if current_user.state == 1 and opt_userid != current_user.id %}
             <div id="ban_table" hidden>
                 <div>
                     <input class="ban" type="date" />
@@ -171,10 +171,9 @@
                 contentType: "application/json;charset=utf-8",
                 processData: false,
                 success: function (ban_ret) {
-                    console.log(ban_ret);
-                    let change_url = "/api/change_user_state";
-                    if (debug) change_url = `http://127.0.0.1:4523/mock/927026${change_url}`;
                     if (ban_ret.success == true) {
+                        let change_url = "/api/change_user_state";
+                        if (debug) change_url = `http://127.0.0.1:4523/mock/927026${change_url}`;
                         $.ajax({
                             url: change_url,
                             type: "put",
@@ -186,6 +185,10 @@
                                 window.location.href = "{{url_for('index')}}";
                             }
                         });
+                    }
+                    else {
+                        window.alert(ban_ret.message);
+                        window.location.href = "{{url_for('index')}}";
                     }
                 }
             }
