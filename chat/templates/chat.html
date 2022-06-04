@@ -19,15 +19,23 @@
                             {% else %}
                             <h4>{{ receiver }}</h4>
                             {% endif %}
-                        
-                                <textarea id="chat" cols="80" rows="20"></textarea><br><br>
-                                <input id="text" size="80" placeholder="Enter your message here"><br><br>
-                                <input id="image" type="file"><br><br>
+
+                            <div class="contact-info-wrap" id="chat" style="height:300px;overflow:auto;">
+                            </div>
+                            <br><br>
+                                <input id="text" size="50" placeholder="Enter your message here"><br><br>
+                                
+                                <div class="continue-shopping">
+                                    <form action="javascript:void(0)">
+                                        <input type="file" id="file" style="display: none" onchange="uploadImg()"/>
+                                        <button href="javascript:void(0)" onclick="selectImg()" class="btn">上传图片</button>
+                                    </form>
+                                </div>
                                 <div>
                                     <img src="" id="preview" style="height:150px"/>
                                 </div>
                                 <a href="#" onclick="leave_room();">Leave this room</a>
-                    </div>
+                    </>
                 </div>
             </div>
         </div>
@@ -41,6 +49,7 @@
     var room = '{{ room|safe }}';
     var sender='{{ sender|safe }}';
     var receiver = '{{ receiver|safe }}';
+
     $(document).ready(function () {
         if (sender!="" && sender==receiver)
         {
@@ -62,10 +71,6 @@
                 socket.disconnect();
             });
         }); 
-        socket.on('status', function (data) {
-            $('#chat').val($('#chat').val() + '<' + data.time + ">\n" + data.sender+':'+data.msg + '\n');
-            $('#chat').scrollTop($('#chat')[0].scrollHeight);
-        });
         socket.on('message', function (data) {
             let name = data.other_user;
             let sname= name;
@@ -74,7 +79,21 @@
                 sname="系统通知";
                 color="#C00000";
             }
-            $('#chat').val($('#chat').val() + data.time + "\n" + sname+':'+data.msg + '\n');
+            if (data.type==0)
+            {
+                let str=`<span> ${data.time}</br>${sname}:${data.msg}</br></span>`
+                $('#chat').append(str);
+            }
+            else
+            {
+                let str=`
+                <span> ${data.time}</br>${sname}:
+                    <a href='/chat/static/resource/temp/${room}/${data.msg}' target=_blank>
+                    <img style="width:100px" src='/chat/static/resource/temp/${room}/${data.msg}'/>
+                </br>
+                </span>`
+                $('#chat').append(str);
+            }
             $('#chat').scrollTop($('#chat')[0].scrollHeight);
             if (`#chat_${name}`.length>0)
                 $(`#chat_${name}`).html(data.msg);
@@ -97,11 +116,7 @@
                         $("#meet_list").append(str);
             }
         });
-        socket.on('alert',function(data)
-        {
-            $('#chat').val($('#chat').val() + data.time + "\n" + data.msg + '\n');
-            $('#chat').scrollTop($('#chat')[0].scrollHeight);
-        });
+        
         $('#text').keypress(function (e) {
             var code = e.keyCode || e.which;
             let cur_time = new Date(new Date().getTime()).toLocaleString();
@@ -111,11 +126,6 @@
                 if (text != "")
                     socket.emit('text', { msg: text, time: cur_time, receiver: receiver, room: room, type: "text" });
             }
-        });
-        $('#image').change(function (e) {
-            $('#preview').attr("src", URL.createObjectURL($(this)[0].files[0]));
-            //1.需要向socketio的后台发送post请求，提交url，在聊天记录中添加对应记录
-            //2.在读取消息时，需要按照消息类型，分别从不同的地方读取，比方说文本信息可以从message直接取，图片信息要根据url查询得到
         });
         window.addEventListener('beforeunload', function (event) {  // or 'unload'
             navigator.sendBeacon("/chat/close", room);
@@ -193,6 +203,44 @@
                     alert(ret.message);
             }
         });
+    }
+    function selectImg(){
+        $("#file").click(); // 相当于模拟点击一下选择图片按钮
+    }
+    function uploadImg() {
+        var file = $("#file")[0].files[0];
+        console.log(file)
+        //objUrl = getObjectURL($("#file")[0].files[0]); // 展示用户选择的图片
+        //1.需要向socketio的后台发送post请求，提交url，在聊天记录中添加对应记录
+        //2.在读取消息时，需要按照消息类型，分别从不同的地方读取，比方说文本信息可以从message直接取，图片信息要根据url查询得到
+        if (file) {
+            // console.log("开始上传图片：" + file.name);
+            var formData = new FormData();
+            formData.append("file",file);
+            formData.append("room",room);
+            formData.append("sender",sender);
+            formData.append("receiver",receiver);
+            var debug = 0;
+            if (debug == 0) {
+                $.ajax({
+                    url: "/api/post_chat_pic",
+                    type: "post",
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function (ret) {
+                        if (ret.statusCode == 200) {
+                            console.log(ret.message);
+                            md5 = ret.data;
+                            //updatePage(objUrl, md5);
+                        } else alert(ret.message);
+                    },
+                });
+            } else {
+                md5 = Math.random().toString(36).substr(2);
+                //updatePage(objUrl, md5);
+            }
+        } else alert("未选择图片！");
     }
     function leave_room() {
         socket.emit('left', { room: room }, function () {

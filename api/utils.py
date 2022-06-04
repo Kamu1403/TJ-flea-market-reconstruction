@@ -57,21 +57,13 @@ def make_response_json(statusCode: int = 200,
         message = quick_response[1]
     if success == None:
         success = True if statusCode // 100 == 2 else False
-    return make_response(
-        jsonify({
-            'success': success,
-            'statusCode': statusCode,
-            'message': message,
-            'data': data
-        }))
+    return make_response(jsonify({'success': success, 'statusCode': statusCode, 'message': message, 'data': data}))
 
 
-def send_message(sender: str | int,
-                 receiver: str | int,
-                 message: str,
-                 type: str = 'text'):
+def send_message(sender: str | int, receiver: str | int, message: str, type: int = 0):
     '''
     直接从后端发送消息
+    :params type:0为文本,1为图片
     '''
     try:
         sender = str(sender)
