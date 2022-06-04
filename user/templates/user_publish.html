@@ -56,7 +56,7 @@
                         let item_id = id;
                         p_tr.append(`<td id="item_pic${id}"></td>`);
                         p_tr.append(`<td id="item_data${id}">${ret.data[i].name}</td>`);
-                        p_tr.append(`<td><a href="/item/${id}">物品详情</a></td>`);
+                        p_tr.append(`<td><a href="/item/content/${id}">物品详情</a></td>`);
                         let pic_url = "/api/get_item_head_pic";
                         if (debug) pic_url = `http://127.0.0.1:4523/mock/927026${pic_url}`;
                         $.ajax({
