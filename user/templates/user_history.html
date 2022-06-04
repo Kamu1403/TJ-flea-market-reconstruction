@@ -117,7 +117,7 @@
                         });
                         let str = `<tr id="tr_${index}">
                             <td class="product-name"> <h4 id="visit_time_${index}">${item["visit_time"]}</h4></td>
-                            <td class="product-thumbnail"><img id="thumbnail_item_id_${item.item_id}" src="#" alt="" /></td>
+                            <td class="product-thumbnail"><a href="/item/content/${item.item_id}"><img id="thumbnail_item_id_${item.item_id}" src="#" alt="" /></td></a>
                             <td class="product-name"> <h4><a href="/item/content/${item.item_id}" id="item_name_${index}">${item_name}</a></h4></td>
                             <td class="product-name"> <h4 id="item_type_${index}">${item_type}</h4></td>
                             <td class="product-name"> <h4><a href=${user_href} id="publisher_name_${index}">${publisher_name}</a></h4></td>
