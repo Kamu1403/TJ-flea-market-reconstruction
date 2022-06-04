@@ -41,9 +41,9 @@ def joined(message):
     #将该房间内的所有未读信息全部置为已读
     Message.update(msg_read=1).where(Message.room_id==roomid).execute()
     
-    emit('status', {'msg': sender+ ' has entered the room.','time':message['time']},
+    '''emit('status', {'msg': sender+ ' has entered the room.','time':message['time']},
          room=sender)
-    '''进入提醒可删除'''
+    进入提醒可删除'''
     
     if not database.is_closed():
         database.close()
@@ -123,8 +123,8 @@ def left(message):
     Room.update(room_state=Room.room_state-1).where(Room.room_id==roomid).execute()
     print("-")
     
-    emit('status', {'msg': sender + ' has left the room.'},
+    '''emit('status', {'msg': sender + ' has left the room.'},
          room=sender)
-    '''退出提醒可删除'''
+    退出提醒可删除'''
     if not database.is_closed():
         database.close()
