@@ -1,165 +1,78 @@
 {% extends "base.html" %} {% block title %}
-<title>我的发布</title>
-{% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
+<title>我的订单</title>
+{% endblock %} {% block css %} {{ super() }}
+<link rel="stylesheet" type="text/css" href="{{url_for('user.static',filename='css/Switch.css')}}" />
+{% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
 <main>
-    <!-- slider-area -->
     <section class="slider--area pb=20" data-background="{{url_for('static', filename='img/bg/slider_area_bg2.jpg')}}">
         <div class="container-fluid">
             <div class="row">
                 <div class="col-2 d-lg-block">{% include "cont_side.html" %}</div>
-
                 <div class="col-10 d-lg-block">
-                    <div class="member_main">
-                        <div class="m-userinfo" style="border-radius: 15px">
-                            <div class="s-userbar s-bar" style="border-radius: 5px; padding-top: 20px">
-                                <div class="s-baseinfo" style="border-radius: 5px">
-                                    <a href="404.html" class="s-avatar">
-                                        <span class="s-edit-mask">编辑资料</span>
-                                        <img src="{{url_for('static', filename='img/images/user1.png')}}" />
-                                    </a>
-                                    <div class="s-name">
-                                        <a href="404.html">
-                                            <em>{{current_user.username}}</em>
-                                            ({{current_user.id}})
-                                        </a>
-                                    </div>
-                                    <div class="s-prestige" style="margin-left: 80px"></div>
-                                </div>
-                                <ul class="s-my-stuffs">
-                                    <li>
-                                        <a href="404.html" class="J_DropTrigger i-trigger">我的地址</a>
-                                    </li>
-                                    <li>
-                                        <a href="404.html" class="J_DropTrigger i-trigger">隐私管理</a>
-                                    </li>
-                                    <li>
-                                        <a href="404.html" class="J_DropTrigger i-trigger"> <em>我的信誉</em> ({{current_user.score}}分)</a>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="s-my-counts s-content">
-                                <ul>
-                                    <li>
-                                        <a data-spm="d4919660" target="_blank" href="shop-details.html">
-                                            <span
-                                                >待同意
-                                                <em></em>
-                                            </span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a data-spm="d4919661" target="_blank" href="shop-details.html">
-                                            <span
-                                                >待完成
-                                                <em>1</em>
-                                            </span></a
-                                        >
-                                    </li>
-                                    <li>
-                                        <a data-spm="d4919662" target="_blank" href="shop-details.html">
-                                            <span
-                                                >已完成
-                                                <em></em>
-                                            </span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a data-spm="d4919663" target="_blank" href="shop-details.html">
-                                            <span
-                                                >待评价
-                                                <em></em>
-                                            </span>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a data-spm="d4919664" target="_blank" href="shop-details.html">
-                                            <span
-                                                >已关闭
-                                                <em></em>
-                                            </span>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="m-logistics g-box-base g-mb-set">
-                            <div class="s-bar"><img src="{{url_for('static', filename='img/icon/recentdeal.png')}}" style="width: 28px; height: 28px" />我的发布</div>
-                            <div class="cart-wrapper">
-                                <div class="table-responsive">
-                                    <table class="table mb-0">
-                                        <thead>
-                                            <tr>
-                                                <th class="product-thumbnail"></th>
-                                                <th class="product-name">发布详情</th>
-                                                <th class="product-price">单价</th>
-                                                <th class="product-quantity">数量</th>
-                                                <th class="product-subtotal">发布类型</th>
-                                                <th class="product-subtotal">发布状态</th>
-                                                <th class="product-delete"></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td class="product-name"><span>2022-5-30</span></td>
-                                                <td class="product-name" colspan="2"><span></span></td>
-                                                <td class="product-name"></td>
-                                                <td class="product-name" colspan="3"><span></span></td>
-                                            </tr>
-                                            <tr>
-                                                <td class="product-thumbnail">
-                                                    <a href="shop-details.html"><img src="{{url_for('static',filename='img/product/cart_img01.jpg')}}" alt="" /></a>
-                                                </td>
-                                                <td class="product-name">
-                                                    <h4>
-                                                        <a href="shop-details.html">圆圆的东西</a>
-                                                    </h4>
-                                                </td>
-                                                <td class="product-price">$ 27.00</td>
-                                                <td class="product-subtotal">
-                                                    <span>1</span>
-                                                </td>
-                                                <td class="product-subtotal"><span>悬赏</span></td>
-                                                <td class="product-subtotal"><span>待接取</span></td>
-                                                <td class="product-delete">
-                                                    <a href="#"><i class="far fa-trash-alt"></i></a>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                        <tbody>
-                                            <tr>
-                                                <td class="product-name"><span>2022-5-30</span></td>
-                                                <td class="product-name" colspan="2"><span></span></td>
-                                                <td class="product-name"></td>
-                                                <td class="product-name" colspan="3"><span></span></td>
-                                            </tr>
-                                            <tr>
-                                                <td class="product-thumbnail">
-                                                    <a href="shop-details.html"><img src="{{url_for('static',filename='img/product/cart_img01.jpg')}}" alt="" /></a>
-                                                </td>
-                                                <td class="product-name">
-                                                    <h4>
-                                                        <a href="shop-details.html">圆圆的东西</a>
-                                                    </h4>
-                                                </td>
-                                                <td class="product-price">$ 27.00</td>
-                                                <td class="product-subtotal">
-                                                    <span>1</span>
-                                                </td>
-                                                <td class="product-subtotal"><span>出售</span></td>
-                                                <td class="product-subtotal"><span>已下架</span></td>
-                                                <td class="product-delete">
-                                                    <a href="#"><i class="far fa-trash-alt"></i></a>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    我发布的商品：
+                    <table>
+                        <tbody id="my_goods"></tbody>
+                    </table>
+                    我发布的悬赏：
+                    <table>
+                        <tbody id="my_want"></tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </section>
 </main>
-{% endblock %} {% block footer %} {{ super() }} {% endblock %} {% block js %} {{ super() }} {% endblock %}
+{% endblock %} {% block footer %} {{ super() }} {% endblock %} {% block js %} {{ super() }}
+
+<script type="text/javascript" charset="utf-8">
+    var debug = 0;
+    $(document).ready(function () {
+        let url = "/api/get_user_item";
+        if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
+        $.ajax({
+            url: url,
+            type: "GET",
+            success: function (ret) {
+                console.log(ret);
+                if (ret.statusCode != 200) {
+                    window.alert(ret.message);
+                    window.location.href = "{{url_for('index')}}";
+                } else {
+                    let tbody_goods = $("#my_goods");
+                    let tbody_want = $("#my_want");
+                    for (let i = 0; i < ret.data.length; i++) {
+                        let id = ret.data[i].id;
+                        let type = ret.data[i].type;
+                        let tbody;
+                        if (type == 0) {
+                            //商品
+                            tbody = tbody_goods;
+                        } else if (type == 1) {
+                            //悬赏
+                            tbody = tbody_want;
+                        }
+                        tbody.append(`<tr id="my_item${id}"></tr>`);
+                        let p_tr = $(`#my_item${id}`);
+                        let item_id = id;
+                        p_tr.append(`<td id="item_pic${id}"></td>`);
+                        p_tr.append(`<td id="item_data${id}">${ret.data[i].name}</td>`);
+                        p_tr.append(`<td><a href="/item/${id}">物品详情</a></td>`);
+                        let pic_url = "/api/get_item_head_pic";
+                        if (debug) pic_url = `http://127.0.0.1:4523/mock/927026${pic_url}`;
+                        $.ajax({
+                            url: pic_url,
+                            type: "GET",
+                            data: { item_id: item_id },
+                            success: function (pic_ret) {
+                                if (pic_ret.statusCode == 200) {
+                                    $(`#item_pic${id}`).append(`<img src=${pic_ret.data.url} height=40 width=40>`);
+                                }
+                            },
+                        });
+                    }
+                }
+            },
+        });
+    });
+</script>
+{% endblock %}
