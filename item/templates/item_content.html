@@ -173,20 +173,19 @@ main %}
         for (var i = 0; i < form_data.length; i++) {
             data[form_data[i].name] = form_data[i].value;
         }
-        console.log(data);
-        //let change_url = "/api/change_item_data";
-        //if (debug) change_url = `http://127.0.0.1:4523/mock/927026${change_url}`
-        //$.ajax({
-        //    url: change_url,
-        //    type: "put",
-        //    data: JSON.stringify(data),
-        //    contentType: "application/json;charset=utf-8",
-        //    processData: false,
-        //    success: function (ret) {
-        //        window.alert(ret.message);
-        //        window.location.reload();
-        //    }
-        //})
+        let change_url = "/api/change_item_data";
+        if (debug) change_url = `http://127.0.0.1:4523/mock/927026${change_url}`
+        $.ajax({
+            url: change_url,
+            type: "put",
+            data: JSON.stringify(data),
+            contentType: "application/json;charset=utf-8",
+            processData: false,
+            success: function (ret) {
+                window.alert(ret.message);
+                window.location.reload();
+            }
+        })
     };
     function get_user_name(user_id) {
         let url = "/api/get_user_username";
@@ -333,7 +332,9 @@ main %}
                         break;
                     case -1:
                         state_str = "被管理员强制下架";
-                        $('#item_down_shelf_').append('<a href="{{url_for("user.feedback")}}" class="btn">申请恢复商品上架</a>');
+                        if (ret.isPub && !ret.isAdmin) {
+                            $('#item_down_shelf_').append('<a href="{{url_for("user.feedback")}}" class="btn">申请恢复商品上架</a>');
+                        }
                         $('#manager_visible').append('<a href="#" class="btn" onclick="change_item_state(0)">恢复商品上架（管理员）</a>');
                         break;
                     case 1:
