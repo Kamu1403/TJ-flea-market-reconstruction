@@ -76,7 +76,7 @@ main %}
                     console.log(ret.message);
                 } else {
                     $("#display").children().remove();
-                    var items = ret.data;
+                    var items = ret.data.item_list;
                     for (let i = 0; i < items.length; i++) {
                         let item = items[i];
                         let id = item.id;

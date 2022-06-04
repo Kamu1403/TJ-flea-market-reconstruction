@@ -3,6 +3,7 @@
 import base64
 from io import BytesIO
 import shutil
+from typing import final
 
 import werkzeug
 from api.utils import *
@@ -142,6 +143,22 @@ def get_user_item():
 @api_blue.route('/search', methods=['POST'])
 def get_search():
     data = request.get_json()
+    if "range_min" in data or "range_max" in data:
+        if "range_min" in data and "range_max" in data:
+            try:
+                range_min = int(data["range_min"])
+                range_max = int(data["range_max"])
+            except Exception as e:
+                return make_response_json(400,"请求格式错误")
+            else:
+                if range_max < range_min:
+                    return make_response_json(400,"请求格式错误")
+
+        else:
+            return make_response_json(400,"请求格式错误")
+    else:
+        range_min = 0
+        range_max = 50
     try:
         search_type = int(data["search_type"])
     except Exception as e:
@@ -197,7 +214,9 @@ def get_search():
             i['price'] = float(i['price'])
             i['publish_time'] = str(i['publish_time'])
             new_data.append(i)
-        return make_response_json(200, "搜索结果如下", new_data)
+        range_max = min(len(new_data),range_max)
+        final_data = {"total_count":len(new_data),"item_list":new_data[range_min:range_max]}
+        return make_response_json(200, "搜索结果如下", data=final_data)
 
 
 @api_blue.route("/change_item_state", methods=["PUT"])
