@@ -122,7 +122,8 @@ def send_message(sender: str | int, receiver: str | int, message: str, type: int
 
         Room.update(
             last_message=message,
-            last_sender_id=sender).where(Room.room_id == room).execute()
+            last_sender_id=sender,
+            msg_type=type).where(Room.room_id == room).execute()
 
         emit('message', {
             'sender': sender,

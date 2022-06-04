@@ -88,22 +88,28 @@
             {
                 let str=`
                 <span> ${data.time}</br>${sname}:
-                    <a href='/chat/static/resource/temp/${room}/${data.msg}' target=_blank>
+                    <a href='/chat/static/resource/temp/${room}/${data.msg}' onclick="OpenFullSizeWindow(this.href);return false">
                     <img style="width:100px" src='/chat/static/resource/temp/${room}/${data.msg}'/>
                 </br>
                 </span>`
                 $('#chat').append(str);
             }
             $('#chat').scrollTop($('#chat')[0].scrollHeight);
+            let last_msg=data.msg
+                if (data.type==1)
+                    last_msg="[图片]";
             if (`#chat_${name}`.length>0)
-                $(`#chat_${name}`).html(data.msg);
+                $(`#chat_${name}`).html(last_msg);
             else
             {
                 let last_msg=data.msg
+                if (data.type==1)
+                    last_msg="[图片]";
                 let str=`  
                         <div class="os-products-item">
                             <div class="thumb">
-                                <a href="/user/${name}/user_info"><img src="{{url_for('static',filename='img/product/os-products-thumb.jpg')}}" alt=""></a>
+                                <a href="/user/${name}/user_info">
+                                    <img src="/user/static/resource/user-pic/${name}/avatar.jpg" alt="" /></a>
                             </div>
                             <div class="content">
                                 <h6 class="title">
@@ -163,6 +169,8 @@
                             color="#C00000";
                         }
                         let last_msg=last_msg_dict[name]['last_msg']
+                        if (last_msg_dict[name]['type']==1)
+                            last_msg="[图片]";
                         let str=`  
                         <div class="os-products-item" id="meet_${name}">
                             <div class="thumb">
@@ -204,15 +212,18 @@
             }
         });
     }
+    function OpenFullSizeWindow(url)
+    {
+        var newWindow = window.open("");
+        newWindow.document.body.innerHTML = '<img style="height:600px" src="' + url + '" alt="">';
+    }
+
+
     function selectImg(){
         $("#file").click(); // 相当于模拟点击一下选择图片按钮
     }
     function uploadImg() {
         var file = $("#file")[0].files[0];
-        console.log(file)
-        //objUrl = getObjectURL($("#file")[0].files[0]); // 展示用户选择的图片
-        //1.需要向socketio的后台发送post请求，提交url，在聊天记录中添加对应记录
-        //2.在读取消息时，需要按照消息类型，分别从不同的地方读取，比方说文本信息可以从message直接取，图片信息要根据url查询得到
         if (file) {
             // console.log("开始上传图片：" + file.name);
             var formData = new FormData();
