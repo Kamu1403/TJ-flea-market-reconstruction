@@ -12,11 +12,15 @@ main %}
                         <div class="row">
                             <div class="col-md-6 col-sm-7">
                                 <div class="shop-top-left">
+                                    <!--
                                     <ul>
                                         <li>
                                             <a href="#"><i class="fas fa-bars"></i> FILTER</a>
                                         </li>
                                     </ul>
+                                -->
+                                    <select class="form-control" name="tag" onchange="test()">
+                                    </select>
                                 </div>
                             </div>
                             <div class="col-md-6 col-sm-5">
@@ -60,17 +64,18 @@ main %}
 <script type="text/javascript" charset="utf-8">
     var keyword = "{{ keyword|safe }}";
     var search_type = "{{ search_type|safe }}";
-    $(document).ready(function () {
+    function send_search(data) {
         $.ajax({
             url: "/api/search",
             type: "post",
-            data: JSON.stringify({ search_type: search_type, start_time: "", end_time: "", order_type: "", key_word: keyword }),
+            data: JSON.stringify(data),
             contentType: "application/json;charset=utf-8",
             processData: false,
             success: function (ret) {
                 if (ret.statusCode == 400) {
                     console.log(ret.message);
                 } else {
+                    $("#display").children().remove();
                     var items = ret.data;
                     for (let i = 0; i < items.length; i++) {
                         let item = items[i];
@@ -104,11 +109,34 @@ main %}
                                     </div>
                                 </div>
                             </div>`;
-                        $(display).append(str);
+                        $("#display").append(str);
                     }
                 }
             },
         });
+    }
+    function test() {
+        var data = { search_type: search_type, start_time: "", end_time: "", order_type: "", key_word: keyword };
+        if ($(".form-control[name='tag']").val() != "all") {
+            data["tag"] = $(".form-control[name='tag']").val();
+        }
+        send_search(data);
+    }
+
+
+    $(document).ready(function () {
+        send_search({ search_type: search_type, start_time: "", end_time: "", order_type: "", key_word: keyword });
+        $.ajax({
+            url: "/api/get_class",
+            type: "get",
+            success: function (class_ret) {
+                $(".form-control[name='tag']").append(`<option selected='selected'>all</option>`);
+                for (var i = 0; i < class_ret.data.class.length; i++) {
+                    $(".form-control[name='tag']").append(`<option value='${class_ret.data.class[i]}'>\
+                        ${class_ret.data.class[i]}</option>`);
+                }
+            }
+        })
     });
 </script>
 {% endblock %}
