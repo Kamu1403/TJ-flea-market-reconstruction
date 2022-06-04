@@ -44,6 +44,7 @@ main %}
                             </ul>
                         </div>
                         <div class="shop-details-price">
+                            <h2>￥</h2>
                             <h2 class="price" id="price_">
                                 <价格>
                             </h2>
@@ -64,7 +65,46 @@ main %}
                             <a href="#" class="btn" id="contact_publisher_">联系卖家</a>
                         </div>
                         <div class="shop-perched-info" id="seller_visible" hidden>
-                            <a href="#" class="btn">修改商品信息</a>
+                            <a href="#" class="btn" data-toggle="modal" data-target="#change_item"
+                                onclick="add_data()">修改商品信息</a>
+                            <div class="modal fade" id="change_item" tabindex="-1" role="dialog" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">修改商品信息</h5>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form action="javascript:void(0);">
+                                                <div class="form-group">
+                                                    <label class="col-form-label">商品名</label>
+                                                    <input type="text" class="form-control" name="name" />
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-form-label">商品单价</label>
+                                                    <input type="text" class="form-control" name="price" />
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-form-label">商品标签</label>
+                                                    <input type="text" class="form-control" name="tag" />
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-form-label">商品数量</label>
+                                                    <input type="text" class="form-control" name="shelved_num" />
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-form-label">商品描述</label>
+                                                    <input type="text" class="form-control" name="description" />
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary"
+                                                data-dismiss="modal">关闭</button>
+                                            <button type="button" class="btn" onclick="test_submit()">提交</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <p>&nbsp;&nbsp;&nbsp;</p>
                             <div id="item_down_shelf_">
 
@@ -105,6 +145,32 @@ main %}
     var item_id = parseInt("{{ item_id|safe }}");
     var shelved_num = 0;
     $("#item_id_").text(item_id);
+    function add_data() {
+        $("input.form-control[name='name']")[0].value = $("#item_name_").text();
+        $("input.form-control[name='price']")[0].value = $("#price_").text();
+        $("input.form-control[name='shelved_num']")[0].value = $("#shelved_num_").text();
+        $("input.form-control[name='description']")[0].value = $("#description_").text();
+    };
+    function test_submit() {
+        let form_data = $("input.form-control");
+        let data = { id: item_id };
+        for (var i = 0; i < form_data.length; i++) {
+            data[form_data[i].name] = form_data[i].value;
+        }
+        let change_url = "/api/change_item_data";
+        if (debug) change_url = `http://127.0.0.1:4523/mock/927026${change_url}`
+        $.ajax({
+            url: change_url,
+            type: "put",
+            data: JSON.stringify(data),
+            contentType: "application/json;charset=utf-8",
+            processData: false,
+            success: function (ret) {
+                window.alert(ret.message);
+                window.location.reload();
+            }
+        })
+    };
     function get_user_name(user_id) {
         let url = "/api/get_user_username";
         if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
@@ -224,8 +290,8 @@ main %}
                 let url = `/user/${data.user_id}/user_info`;
                 $("#user_name").attr('href', url);
 
-                $("#price_").text(`￥${data.price}`);
-                $("#stock_").text(`- ` + (data.type == 0 ? "剩余" : "需要") + `${data.shelved_num}件`);
+                $("#price_").text(`${data.price}`);
+                $("#stock_").append(`- ` + (data.type == 0 ? "剩余" : "需要") + `<span id='shelved_num_'>${data.shelved_num}</span>件`);
                 $("#description_").text(data.description);
                 $("#description_").text(data.description);
                 $("#item_type_").text(data.type == 0 ? "售卖" : "悬赏");
