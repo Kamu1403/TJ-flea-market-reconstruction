@@ -10,6 +10,8 @@ def get_message_cnt():
         for chat in Recent_Chat_List.select().where(Recent_Chat_List.receiver_id==user):
             unread+=chat.unread
         res={'unread':unread}
+        
+        send_message("80000000",user,"获取成功",'text')
         return make_response_json(200, "获取未读条数成功",res)
     else:
         return make_response_json(401, "当前用户未登录")

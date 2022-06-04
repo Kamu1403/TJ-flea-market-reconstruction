@@ -73,7 +73,6 @@ def chat(opt_userid:int):
 @chat_blue.route('/close',methods=['POST','GET'])
 def close():
     room=request.data.decode()
-    sender=str(current_user.id)
     
     print("-")
     Room.update(room_state=Room.room_state-1).where(Room.room_id==room).execute()
