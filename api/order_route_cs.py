@@ -341,9 +341,8 @@ def address():
                     return make_response_json(400, "至少要保留一个默认地址")
         for i in range(len(temp)):
             try:
-                new_data = dict()
                 for j in data[i]:
-                    if j in dir(update_data[i]):
+                    if j in update_data[i].__data__:
                         exec(f"""if update_data[{i}].{j} != data[{i}]["{j}"]:
     update_data[{i}].{j} = data[{i}]["{j}"]
                         """)

@@ -292,9 +292,8 @@ def change_item_data():
     else:
         if current_user.state == User_state.Admin.value:
             for i in data:
-                if i not in dir(item):
-                    data.pop(i)
-            item = Item(**data)
+                if i in item.__data__:
+                    exec(f"item.{i} = data['{i}']")
             item.save()
             return make_response_json(200, "操作成功")
         elif current_user.state == User_state.Under_ban.value:
@@ -303,15 +302,11 @@ def change_item_data():
             if current_user.id != item.user_id.id:
                 return make_response_json(401, "不可改变其他人的商品状态")
             else:
-                if data["state"] == Item_state.Freeze.value:
-                    return make_response_json(401, "权限不足")
-                else:
-                    for i in data:
-                        if i in dir(item):
-                            data.pop(i)
-                    item = Item(**data)
-                    item.save()
-                    return make_response_json(200, "操作成功")
+                for i in data:
+                    if i in item.__data__:
+                        exec(f"item.{i} = data['{i}']")
+                item.save()
+                return make_response_json(200, "操作成功")
 
 
 def trans_square(image):
