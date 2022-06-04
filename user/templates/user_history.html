@@ -2,62 +2,146 @@
 <title>我的历史</title>
 {% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
 <main>
-    <table>
-        <tbody id="my_history"></tbody>
-    </table>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-12">
+                <div class="cart-wrapper">
+                    <div class="table-responsive">
+                        <table class="table mb-0">
+                            <thead>
+                                <tr></tr>
+                            </thead>
+                            <tbody id="auto_append"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-7">
+                <div class="shop-cart-total" style="background-color: rgba(255, 255, 255, 0.5); border: none">
+                    <div class="shop-cart-widget">
+                        <a class="btn" onclick="remove_all()" id="remove_all_button">清空历史</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </main>
 {% endblock %} {% block footer %} {{ super() }} {% endblock %} {% block js %} {{ super() }}
 
 <script type="text/javascript" charset="utf-8">
     var debug = 0;
+    function remove_all() {
+        let url = "/api/delete_history";
+        if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
+        let uid_list = [];
+        $("[id^=thumbnail_item_id_]").each(function (index, obj) {
+            let uid = parseInt($(this).attr("id").split("_")[3]);
+            uid_list.push(uid);
+        });
+        console.log(uid_list);
+        $.ajax({
+            url: url,
+            type: "delete",
+            data: JSON.stringify({ item_id_list: uid_list }),
+            contentType: "application/json;charset=utf-8",
+            processData: false,
+            success: function (ret) {
+                if (ret.statusCode == 200) {
+                    location.reload();
+                } else alert("清空历史失败：\n" + ret.message);
+            },
+        });
+    }
+    function remove(robj) {
+        uid = parseInt(robj.id.split("_")[3]);
+        let url = "/api/delete_history";
+        if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
+        $.ajax({
+            url: url,
+            type: "delete",
+            data: JSON.stringify({ item_id_list: [uid] }),
+            contentType: "application/json;charset=utf-8",
+            processData: false,
+            success: function (ret) {
+                if (ret.statusCode == 200) {
+                    $(robj).parent().parent().remove();
+                } else alert("删除历史失败：\n" + ret.message);
+            },
+        });
+    }
     $(document).ready(function () {
         let url = "/api/get_history";
         if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
         $.ajax({
             url: url,
             type: "GET",
+            async: false,
             success: function (ret) {
                 if (ret.statusCode != 200) {
                     window.alert(ret.message);
                     window.location.href = "{{url_for('index')}}";
                 } else {
-                    let tbody = $("#my_history");
-                    for (let i = 0; i < ret.data.length; i++) {
-                        tbody.append(`<tr id="my_history${ret.data[i].id}"></tr>`);
-                        let p_tr = $(`#my_history${ret.data[i].id}`);
-                        p_tr.append(`<td id="history_item_pic${ret.data[i].item_id}"></td>`);
-                        p_tr.append(`<td id="history_item_data${ret.data[i].item_id}"></td>`);
-                        //p_tr.append(`<td><button>取消历史</button></td>`);
-                        let pic_url = "/api/get_item_head_pic";
-                        if (debug) pic_url = `http://127.0.0.1:4523/mock/927026${pic_url}`;
-                        $.ajax({
-                            url: pic_url,
-                            type: "GET",
-                            data: { item_id: ret.data[i].item_id },
-                            success: function (pic_ret) {
-                                if (pic_ret.statusCode == 200) {
-                                    $(`#history_item_pic${ret.data[i].item_id}`).append(`<img src=${pic_ret.data.url} height=40 width=40>`);
-                                }
-                            },
-                        });
+                    data = ret.data;
+                    if (data.length == 0) {
+                        $(auto_append).append(`<tr><td class="product-price"><h4>无浏览记录</h4></td></tr>`);
+                        $("#remove_all_button").prop("hidden", "hidden");
+                        return;
+                    }
+                    for (index in data) {
+                        let item = data[index];
+
+                        let item_name = `#item_id=${item.item_id}`;
+                        let item_type = "";
+                        let publisher_name = "";
+                        let user_href = "#";
                         let item_url = "/api/get_item_info";
                         if (debug) item_url = `http://127.0.0.1:4523/mock/927026${item_url}`;
                         $.ajax({
                             url: item_url,
                             type: "Get",
-                            data: { item_id: ret.data[i].item_id },
+                            data: { item_id: item.item_id },
+                            async: false,
                             success: function (item_ret) {
                                 if (item_ret.statusCode == 200) {
-                                    let desc = $(`#history_item_data${ret.data[i].item_id}`);
-                                    desc.append(`<a href = /item/content/${ret.data[i].item_id} >${item_ret.data.name}</a>`);
-                                    desc.append(`<p>${item_ret.data.description}</p>`);
-                                    desc.append(`<a href=/user/${item_ret.data.user_id}/user_info>查看商家</a>`);
-                                }
+                                    item_detail = item_ret.data;
+                                    item_name = item_detail.name;
+                                    item_type = item_detail.type ? "悬赏" : "出售";
+                                    publisher_name = item_detail.user_id;
+                                    user_href = `/user/${publisher_name}/user_info`;
+                                } else publisher_name = "获取商品详情失败";
                             },
                         });
+                        let str = `<tr id="tr_${index}">
+                            <td class="product-name"> <h4 id="visit_time_${index}">${item["visit_time"]}</h4></td>
+                            <td class="product-thumbnail"><img id="thumbnail_item_id_${item.item_id}" src="#" alt="" /></td>
+                            <td class="product-name"> <h4><a href="/item/content/${item.item_id}" id="item_name_${index}">${item_name}</a></h4></td>
+                            <td class="product-name"> <h4 id="item_type_${index}">${item_type}</h4></td>
+                            <td class="product-name"> <h4><a href=${user_href} id="publisher_name_${index}">${publisher_name}</a></h4></td>
+                            <td class="product-delete"><a href="#" id="remove_item_id_${item.item_id}" onclick="remove(this)"><i class="far fa-trash-alt"></i></a></td>
+                        </tr>`;
+                        $(auto_append).append(str);
                     }
                 }
             },
+        });
+
+        let pic_url = "/api/get_item_head_pic";
+        if (debug) pic_url = `http://127.0.0.1:4523/mock/927026${pic_url}`;
+        $("[id^=thumbnail_item_id_]").each(function (index, obj) {
+            let uid = parseInt($(this).attr("id").split("_")[3]);
+            $.ajax({
+                url: pic_url,
+                type: "GET",
+                data: { item_id: uid },
+                async: false,
+                success: function (ret) {
+                    if (ret.statusCode == 200) $(`#thumbnail_item_id_${uid}`).attr("src", ret.data.url);
+                },
+            });
         });
     });
 </script>
