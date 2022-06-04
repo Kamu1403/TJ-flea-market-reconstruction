@@ -85,7 +85,8 @@ main %}
                                                 </div>
                                                 <div class="form-group">
                                                     <label class="col-form-label">商品标签</label>
-                                                    <input type="text" class="form-control" name="tag" />
+                                                    <select class="form-control" name="tag" required="required">
+                                                    </select>
                                                 </div>
                                                 <div class="form-group">
                                                     <label class="col-form-label">商品数量</label>
@@ -146,14 +147,28 @@ main %}
     var shelved_num = 0;
     $("#item_id_").text(item_id);
     function add_data() {
-        $("input.form-control[name='name']")[0].value = $("#item_name_").text();
-        $("input.form-control[name='price']")[0].value = $("#price_").text();
-        $("input.form-control[name='tag']")[0].value = $("#item_tag_").text();
-        $("input.form-control[name='shelved_num']")[0].value = $("#shelved_num_").text();
-        $("input.form-control[name='description']")[0].value = $("#description_").text();
+        $(".form-control[name='name']")[0].value = $("#item_name_").text();
+        $(".form-control[name='price']")[0].value = $("#price_").text();
+        $(".form-control[name='shelved_num']")[0].value = $("#shelved_num_").text();
+        $(".form-control[name='description']")[0].value = $("#description_").text();
+        $.ajax({
+            url: "/api/get_class",
+            type: "get",
+            success: function (class_ret) {
+                console.log(class_ret);
+                console.log($(".form-control[name='price']")[0]);
+                for (var i = 0; i < class_ret.data.class.length; i++) {
+                    $(".form-control[name='tag']").append(`<option value='${class_ret.data.class[i]}'>\
+                        ${class_ret.data.class[i]}</option>`);
+                    if (class_ret.data.class[i] == $("#item_tag_").text()) {
+                        $(`option[value='${class_ret.data.class[i]}']`).attr("selected", "selected");
+                    }
+                }
+            }
+        })
     };
     function test_submit() {
-        let form_data = $("input.form-control");
+        let form_data = $(".form-control");
         let data = { id: item_id };
         for (var i = 0; i < form_data.length; i++) {
             data[form_data[i].name] = form_data[i].value;
@@ -317,7 +332,9 @@ main %}
                         break;
                     case -1:
                         state_str = "被管理员强制下架";
-                        $('#item_down_shelf_').append('<a href="{{url_for("user.feedback")}}" class="btn">申请恢复商品上架</a>');
+                        if (ret.isPub && !ret.isAdmin) {
+                            $('#item_down_shelf_').append('<a href="{{url_for("user.feedback")}}" class="btn">申请恢复商品上架</a>');
+                        }
                         $('#manager_visible').append('<a href="#" class="btn" onclick="change_item_state(0)">恢复商品上架（管理员）</a>');
                         break;
                     case 1:

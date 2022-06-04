@@ -5,7 +5,7 @@
 from user.models import User
 from admin.models import Feedback, User_Management
 from order.models import Contact, Review, Order, Order_State_Item, Order_Item
-from item.models import Item, History, Favor
+from item.models import Item, History, Favor,Item_tag_type
 from chat.models import Room, Message, Recent_Chat_List, Meet_List
 from datetime import timedelta
 
@@ -138,11 +138,12 @@ def fake_data():  #填一些假数据进去
                 shelved_num=999,
                 locked_num=10,
                 price=1.11,
-                tag="食物",
+                tag=Item_tag_type.tag_11.value,
                 type=0)
     Item.create(id=2,
                 name="方便面",
                 user_id=1950084,
+                tag=Item_tag_type.tag_11.value,
                 price=3.33,
                 shelved_num=999,
                 locked_num=10,
@@ -150,6 +151,7 @@ def fake_data():  #填一些假数据进去
     Item.create(id=3,
                 name="肉",
                 user_id=1950084,
+                tag=Item_tag_type.tag_11.value,
                 price=10,
                 shelved_num=999,
                 locked_num=10,
@@ -158,7 +160,7 @@ def fake_data():  #填一些假数据进去
                 name="沈坚作业",
                 user_id=1951705,
                 price=0.01,
-                tag="作业",
+                tag=Item_tag_type.tag_19.value,
                 description="求帮忙写sj作业",
                 type=1)
     Item.create(id=5,
@@ -167,7 +169,7 @@ def fake_data():  #填一些假数据进去
                 shelved_num=2,
                 locked_num=2,
                 price=300,
-                tag="电子用品",
+                tag=Item_tag_type.tag_2.value,
                 description="求耳机一副",
                 type=1)
 
@@ -175,6 +177,7 @@ def fake_data():  #填一些假数据进去
                 name="方便面",
                 user_id=1951566,
                 price=3.33,
+                tag=Item_tag_type.tag_11.value,
                 shelved_num=999,
                 locked_num=10,
                 type=0)
@@ -183,6 +186,7 @@ def fake_data():  #填一些假数据进去
                 name="方便面",
                 user_id=1951566,
                 price=2.22,
+                tag=Item_tag_type.tag_11.value,
                 shelved_num=0,
                 locked_num=10,
                 type=0)

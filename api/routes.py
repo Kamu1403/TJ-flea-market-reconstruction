@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 from api.utils import *
 from api import api_blue
-from datetime import datetime,timedelta
+from datetime import datetime, timedelta
 from .send_verification_mail import send_email
 
 
@@ -25,9 +25,7 @@ def judge_user_id(user_id: str):
 
 
 curpath = os.path.dirname(__file__)
-config = os.path.join(
-    curpath, 'verify_code.json'
-)  # [{"time": int(time.time()), "user_id":str, "code":str}]
+config = os.path.join(curpath, 'verify_code.json')  # [{"time": int(time.time()), "user_id":str, "code":str}]
 if not os.path.exists(config):
     with open(config, "w", encoding="utf-8") as fp:
         print("[]", file=fp)
@@ -36,10 +34,7 @@ if not os.path.exists(config):
 def save_verify_code(code: List[dict]):
     nowtime = time.time()
     with open(config, "w", encoding="utf-8") as fp:
-        json.dump(list(filter(lambda x: nowtime - x["time"] < 900, code)),
-                  fp,
-                  indent=4,
-                  ensure_ascii=False)
+        json.dump(list(filter(lambda x: nowtime - x["time"] < 900, code)), fp, indent=4, ensure_ascii=False)
 
 
 def get_verify_code() -> List[dict]:
@@ -141,16 +136,10 @@ def send_verification_code():
     if jcf[0] != 0:
         return make_response_json(quick_response=jcf)
     verification_code = create_string_number(6)
-    ret = send_email(
-        "同济跳蚤市场 注册验证码", [user_id],
-        f'您的注册验证码为：{verification_code}。有效期为15分钟。\n此邮件为系统自动发出，请勿回复。')
+    ret = send_email("同济跳蚤市场 注册验证码", [user_id], f'您的注册验证码为：{verification_code}。有效期为15分钟。\n此邮件为系统自动发出，请勿回复。')
 
     code_list = get_verify_code()
-    code_list.append({
-        "time": int(time.time()),
-        "user_id": user_id,
-        "code": verification_code.upper()
-    })
+    code_list.append({"time": int(time.time()), "user_id": user_id, "code": verification_code.upper()})
     save_verify_code(code_list)
     if ret["status"] == False:
         return make_response_json(400, "验证码邮件发送失败，请重试或联系网站管理员。")
@@ -227,11 +216,13 @@ def register_or_login_using_verification_code():
     if password != "":
         if not user_exist:
             xuehao = user_id.split('@')[0]
-            User.create(id=int(xuehao),
-                        username=xuehao,
-                        user_no=xuehao,
-                        password_hash=generate_password_hash(password),
-                        email=user_id)
+            try:
+                xuehao_int = int(xuehao)
+            except:  # user_no目前没有使用到，视为未定义。
+                user = User.create(username=xuehao, user_no=xuehao, password_hash=generate_password_hash(password), email=user_id)
+            else:
+                user = User.create(id=xuehao_int, username=xuehao, user_no=xuehao, password_hash=generate_password_hash(password), email=user_id)
+            user.create_avatar()  # 生成头像
             return make_response_json(200, "注册成功")
         else:
             tep.password_hash = generate_password_hash(password)

@@ -99,12 +99,13 @@ def index():
 
 @app.route('/search', methods=['GET', 'POST'])
 def search():  #keyword为你搜索的东西
+    data = dict()
     try:
-        keyword = request.args["keyword"]
-        search_type = request.args["search_type"]
+        data["keyword"] = request.args["keyword"]
+        data["search_type"] = request.args["search_type"]
     except:
         return render_template('404.html', message="格式错误", error_code=400)
-    return render_template('search.html', keyword=keyword, search_type=search_type)
+    return render_template('search.html', **data)
 
 
 @app.route('/register', methods=['GET'])

@@ -4,6 +4,7 @@ from api.utils import *
 from api import api_blue
 from datetime import datetime
 
+
 def GetUserDict(i, is_self=False) -> dict:
     user = {}
     user['id'] = i.id
@@ -89,18 +90,20 @@ def change_user_state():
         return make_response_json(404, "未找到用户")
     else:
         if tep.state == User_state.Admin.value:
-            return make_response_json(400,"不可修改管理员状态")
+            return make_response_json(400, "不可修改管理员状态")
         if user_state == User_state.Under_ban.value:
             try:
-                ban_time = datetime.strptime(req["ban_time"],"%Y-%m-%d")
+                ban_time = datetime.strptime(req["ban_time"], "%Y-%m-%d")
             except Exception as e:
-                return make_response_json(400,"请求格式错误")
+                return make_response_json(400, "请求格式错误")
             if "ban_reason" not in req:
-                return make_response_json(400,"请求格式错误")
+                return make_response_json(400, "请求格式错误")
             try:
                 ban = User_Management.get(User_Management.user_id == user_id)
             except Exception as e:
-                ban = User_Management.create(user_id=user_id,ban_time=ban_time,ban_reason=req["ban_reason"])
+                ban = User_Management.create(user_id=user_id,
+                                             ban_time=ban_time,
+                                             ban_reason=req["ban_reason"])
             else:
                 ban.ban_time = ban_time
                 ban.ban_reason = req["ban_reason"]
@@ -112,13 +115,14 @@ def change_user_state():
         elif user_state == User_state.Normal.value:
             if tep.state == User_state.Under_ban.value:
                 try:
-                    ban = User_Management.get(User_Management.user_id == user_id)
+                    ban = User_Management.get(
+                        User_Management.user_id == user_id)
                 except Exception as e:
-                    return make_response_json(500,"系统错误")
+                    return make_response_json(500, "系统错误")
                 ban.delete_instance()
                 tep.state = user_state
                 tep.save()
-            return make_response_json(200,"操作成功")
+            return make_response_json(200, "操作成功")
 
         #query=User.update(state=-1).where(User.id==user_id)
         #query.execute()
@@ -146,6 +150,7 @@ def get_user_info():
         return make_response_json(200, "获取用户数据成功",
                                   GetUserDict(tep, current_user.id == user_id))
 
+
 #访问其它用户
 @api_blue.route('/get_user_username', methods=['GET'])
 def get_user_username():
@@ -160,7 +165,7 @@ def get_user_username():
     except:
         return make_response_json(404, "未找到用户")
     else:
-        return make_response_json(200, "获取用户数据姓名",{"name":tep.username})
+        return make_response_json(200, "获取用户数据姓名", {"name": tep.username})
 
 
 @api_blue.route('/get_user_id', methods=["GET"])
@@ -222,57 +227,59 @@ def change_user_info():
         else:
             return make_response_json(200, "操作成功")
 
-@api_blue.route("/get_reports",methods=["GET"])
+
+@api_blue.route("/get_reports", methods=["GET"])
 def get_reports():
     if not current_user.is_authenticated or current_user.state != User_state.Admin.value:
-        return make_response_json(401,"用户无权访问")
+        return make_response_json(401, "用户无权访问")
     try:
-        datas = Feedback.select(Feedback.id,Feedback.state).order_by(Feedback.publish_time).execute()
+        datas = Feedback.select(Feedback.id, Feedback.state).order_by(
+            Feedback.publish_time).execute()
     except Exception as e:
-        return make_response_json(500,f"系统发生故障 {repr(e)}")
-    data = {str(i):list() for i in Feedback_state._value2member_map_}
+        return make_response_json(500, f"系统发生故障 {repr(e)}")
+    data = {str(i): list() for i in Feedback_state._value2member_map_}
     for i in datas:
         data[str(i.state)].append(i.id)
-    return make_response_json(200,"查询结果如下",data=data)
+    return make_response_json(200, "查询结果如下", data=data)
 
 
-
-@api_blue.route("/admin_get_report",methods = ["GET"])
+@api_blue.route("/admin_get_report", methods=["GET"])
 def admin_get_report():
     if not current_user.is_authenticated or current_user.state != User_state.Admin.value:
-        return make_response_json(401,"用户无权访问")
+        return make_response_json(401, "用户无权访问")
     data = dict(request.args)
     try:
         feedback_id = int(data["feedback_id"])
     except Exception as e:
-        return make_response_json(400,"请求格式错误")
+        return make_response_json(400, "请求格式错误")
     try:
         feedback = Feedback.get(Feedback.id == feedback_id)
     except Exception as e:
-        return make_response_json(404,"不存在此反馈")
+        return make_response_json(404, "不存在此反馈")
     datas = feedback.__data__
     print(datas)
     datas.pop("id")
     datas["publish_time"] = str(datas["publish_time"])
-    return make_response_json(200,"此反馈信息如下",data=datas)
+    return make_response_json(200, "此反馈信息如下", data=datas)
 
 
-@api_blue.route("/reply_feedback",methods=["PUT"])
+@api_blue.route("/reply_feedback", methods=["PUT"])
 def reply_feedback():
     if not current_user.is_authenticated or current_user.state != User_state.Admin.value:
-        return make_response_json(401,"用户无权访问")
+        return make_response_json(401, "用户无权访问")
     data = request.get_json()
     if "reply_content" not in data:
-        return make_response_json(400,"请求格式错误")
+        return make_response_json(400, "请求格式错误")
     try:
         feedback_id = int(data["feedback_id"])
     except Exception as e:
-        return make_response_json(400,"请求格式错误")
+        return make_response_json(400, "请求格式错误")
     try:
         feedback = Feedback.get(Feedback.id == feedback_id)
     except Exception as e:
-        return make_response_json(404,"不存在此反馈")
+        return make_response_json(404, "不存在此反馈")
     feedback.reply_content = data["reply_content"]
     feedback.state = Feedback_state.Replied.value
     feedback.save()
-    return make_response_json(200,"回复完成")
+    send_message(SYS_ADMIN_NO, feedback.user_id.id,f'管理员已回复你的反馈，回复内容：\n{data["reply_content"]}')
+    return make_response_json(200, "回复完成")

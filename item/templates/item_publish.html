@@ -1,6 +1,7 @@
 {% extends "base.html" %} {% block title %}
 <title>发布悬赏或商品</title>
-{% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
+{% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block
+main %}
 <!-- main-area -->
 <main>
     <!-- cart-area -->
@@ -39,80 +40,85 @@
 
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <input type="text" placeholder="标签" id="tag" />
-                                    </div>
-                                    <div class="col-md-6">
-                                        <input type="text" placeholder="数量" id="quantity" />
+                                        <label class="col-form-label">商品标签</label>
+                                        <select id="tag" class="form-control" name="tag" required="required">
+                                        </select>
                                     </div>
                                 </div>
-                                <div class="different-address-wrap">
-                                    <div class="header-super-store d-xl-block d-md-block">
-                                        <div class="dropdown">
-                                            <button class="dropdown-toggle" type="button" id="choice" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">请选择发布类型</button>
-                                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton4">
-                                                <a class="dropdown-item" onclick="change_choice(0)">发布商品</a>
-                                                <a class="dropdown-item" onclick="change_choice(1)">发布悬赏</a>
-                                            </div>
+                                <div class="col-md-6">
+                                    <input type="text" placeholder="数量" id="quantity" />
+                                </div>
+                            </div>
+                            <div class="different-address-wrap">
+                                <div class="header-super-store d-xl-block d-md-block">
+                                    <div class="dropdown">
+                                        <button class="dropdown-toggle" type="button" id="choice" data-toggle="dropdown"
+                                            aria-haspopup="true" aria-expanded="false">请选择发布类型</button>
+                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton4">
+                                            <a class="dropdown-item" onclick="change_choice(0)">发布商品</a>
+                                            <a class="dropdown-item" onclick="change_choice(1)">发布悬赏</a>
                                         </div>
                                     </div>
                                 </div>
-                                <textarea name="message" id="message" placeholder="详细描述..."></textarea>
                             </div>
+                            <textarea name="message" id="message" placeholder="详细描述..."></textarea>
+                    </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-7">
+                <div class="cart-wrapper">
+                    <div class="table-responsive">
+                        <table class="table mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="product-thumbnail"></th>
+                                    <th class="product-name">图片</th>
+                                    <!-- <th class="product-price">Price</th> -->
+                                    <th class="product-quantity">设为头图</th>
+                                    <!-- <th class="product-subtotal">SUBTOTAL</th> -->
+                                    <th class="product-delete"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="auto_append"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-7">
+                <div class="shop-cart-bottom">
+                    <div class="cart-coupon">
+                        <form action="javascript:void(0)">
+                            <input type="file" id="file" style="display: none" />
+                            <input type="text" id="show_file_name" placeholder="" readonly="readonly"
+                                disabled="disabled" />
+                            <button href="javascript:void(0)" onclick="selectImg()" class="btn">选择图片</button>
                         </form>
                     </div>
-                </div>
-            </div>
-        </div>
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-lg-7">
-                    <div class="cart-wrapper">
-                        <div class="table-responsive">
-                            <table class="table mb-0">
-                                <thead>
-                                    <tr>
-                                        <th class="product-thumbnail"></th>
-                                        <th class="product-name">图片</th>
-                                        <!-- <th class="product-price">Price</th> -->
-                                        <th class="product-quantity">设为头图</th>
-                                        <!-- <th class="product-subtotal">SUBTOTAL</th> -->
-                                        <th class="product-delete"></th>
-                                    </tr>
-                                </thead>
-                                <tbody id="auto_append"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row justify-content-center">
-                <div class="col-lg-7">
-                    <div class="shop-cart-bottom">
-                        <div class="cart-coupon">
-                            <form action="javascript:void(0)">
-                                <input type="file" id="file" style="display: none" />
-                                <input type="text" id="show_file_name" placeholder="" readonly="readonly" disabled="disabled" />
-                                <button href="javascript:void(0)" onclick="selectImg()" class="btn">选择图片</button>
-                            </form>
-                        </div>
-                        <div class="continue-shopping">
-                            <a href="javascript:void(0)" onclick="uploadImg()" class="btn">上传图片</a>
-                        </div>
+                    <div class="continue-shopping">
+                        <a href="javascript:void(0)" onclick="uploadImg()" class="btn">上传图片</a>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-lg-7">
-                    <div class="shop-cart-total" style="background-color: rgba(255, 255, 255, 0.5); border: none">
-                        <div class="shop-cart-widget">
-                            <a class="btn" onclick="submit()">提交发布</a>
-                        </div>
+    </div>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-7">
+                <div class="shop-cart-total" style="background-color: rgba(255, 255, 255, 0.5); border: none">
+                    <div class="shop-cart-widget">
+                        <a class="btn" onclick="submit()">提交发布</a>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
     </div>
 
     <!-- cart-area-end -->
@@ -122,6 +128,18 @@
 {% endblock %} {% block footer %} {{ super() }} {% endblock %} {% block js %} {{ super() }}
 
 <script>
+    $(document).ready(function () {
+        $.ajax({
+            url: "/api/get_class",
+            type: "get",
+            success: function (class_ret) {
+                for (var i = 0; i < class_ret.data.class.length; i++) {
+                    $(".form-control[name='tag']").append(`<option value='${class_ret.data.class[i]}'>\
+                        ${class_ret.data.class[i]}</option>`);
+                }
+            }
+        })
+    });
     function submit() {
         let name = $("#name").val();
         let price = $("#price").val();
@@ -158,6 +176,8 @@
             contentType: "application/json;charset=utf-8",
             processData: false,
             success: function (ret) {
+                console.log(formData);
+                console.log(ret);
                 if (ret.statusCode == 200) {
                     alert("商品发布成功，点击确认后将跳转至商品详情页。");
                     window.location = ret.data.url;

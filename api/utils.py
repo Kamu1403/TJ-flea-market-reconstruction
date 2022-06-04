@@ -36,11 +36,16 @@ statusCode:
 
 其他详见接口文档
 '''
+SYS_ADMIN_NO = 80000000
 
 default_res = {'success': True, 'statusCode': 200, 'message': '', 'data': {}}
 
 
-def make_response_json(statusCode: int = 200, message: str = "", data: dict = {}, success: bool = None, quick_response: list = None):
+def make_response_json(statusCode: int = 200,
+                       message: str = "",
+                       data: dict = {},
+                       success: bool = None,
+                       quick_response: list = None):
     '''
     :params quick_response: [statusCode（若为0，则自动改为200）, message]
     如果success未指定，则当statusCode==200时为True，否则False
@@ -89,23 +94,55 @@ def send_message(sender: str | int, receiver: str | int, message: str, type: int
 
         if read == 0:
             if Recent_Chat_List.get_or_none(receiver_id=receiver) == None:
-                Recent_Chat_List.insert(receiver_id=receiver, sender_id=sender, last_time=time, last_msg=message, unread=1).execute()
+                Recent_Chat_List.insert(receiver_id=receiver,
+                                        sender_id=sender,
+                                        last_time=time,
+                                        last_msg=message,
+                                        unread=1).execute()
             else:
-                Recent_Chat_List.update(last_time=time, last_msg=message, unread=Recent_Chat_List.unread + 1).where(Recent_Chat_List.receiver_id == receiver
-                                                                                                                    and Recent_Chat_List.sender_id == sender).execute()
+                Recent_Chat_List.update(
+                    last_time=time,
+                    last_msg=message,
+                    unread=Recent_Chat_List.unread + 1).where(
+                        Recent_Chat_List.receiver_id == receiver
+                        and Recent_Chat_List.sender_id == sender).execute()
 
                 Recent_Chat_List.update(
                     last_time=time,
                     last_msg=message,
-                ).where(Recent_Chat_List.receiver_id == sender and Recent_Chat_List.sender_id == receiver).execute()
+                ).where(Recent_Chat_List.receiver_id == sender
+                        and Recent_Chat_List.sender_id == receiver).execute()
 
-        Message.create(msg_time=time, room_id=room, sender_id=sender, msg_type=type, msg_content=message, msg_read=read)
+        Message.create(msg_time=time,
+                       room_id=room,
+                       sender_id=sender,
+                       msg_type=type,
+                       msg_content=message,
+                       msg_read=read)
 
-        Room.update(last_message=message, last_sender_id=sender).where(Room.room_id == room).execute()
+        Room.update(
+            last_message=message,
+            last_sender_id=sender).where(Room.room_id == room).execute()
 
-        emit('message', {'sender':sender,'msg':message,'other_user': receiver, 'time': time, 'type': type}, room=sender, namespace='/chat')
+        emit('message', {
+            'sender': sender,
+            'msg': message,
+            'other_user': receiver,
+            'time': time,
+            'type': type
+        },
+             room=sender,
+             namespace='/chat')
 
-        emit('message', {'sender':sender,'msg':message,'other_user': sender, 'time': time, 'type': type}, room=receiver, namespace='/chat')
+        emit('message', {
+            'sender': sender,
+            'msg': message,
+            'other_user': sender,
+            'time': time,
+            'type': type
+        },
+             room=receiver,
+             namespace='/chat')
         return (200, "操作成功")
     except Exception as e:
         return (500, repr(e))
