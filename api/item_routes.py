@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
 import base64
-from email.policy import default
 from io import BytesIO
 import shutil
 
 import werkzeug
 from api.utils import *
 from api import api_blue
-from item.models import Item_type, Item_state
+from item.models import Item_type, Item_state,Item_tag_type
 from item import item_blue
 from admin.models import Feedback, Feedback_kind, Feedback_state
 from datetime import datetime, date, timedelta
@@ -275,6 +274,10 @@ def change_item_data():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
     data = request.get_json()
+    if "tag" not in data:
+        return make_response_json(400,"请选择物品类型")
+    if data["tag"] not in Item_tag_type._value2member_map_:
+        return make_response_json(400,"请求格式错误")
     try:
         data["id"] = int(data["id"])
         if "shelved_num" in data:
@@ -285,6 +288,7 @@ def change_item_data():
             data["price"] = float(data["price"])
     except Exception as e:
         return make_response_json(400, "请求格式不对")
+
     try:
         item = Item.get(Item.id == data["id"])
     except Exception as e:
@@ -329,7 +333,10 @@ def post_item_info():
     if current_user.state == User_state.Under_ban.value:
         return make_response_json(401, "当前用户已被封号")
     data = request.get_json()
-
+    if "tag" not in data:
+        return make_response_json(400,"请选择物品类型")
+    if data["tag"] not in Item_tag_type._value2member_map_:
+        return make_response_json(400,"请求格式错误")
     try:
         price = float(data["price"])
         item_type = int(data["type"])
@@ -671,3 +678,7 @@ def item_to_show():
             else:
                 datas["show"].append(j)
     return make_response_json(200, "返回订单", datas)
+
+@api_blue.route("/get_class",methods=["GET"])
+def get_class():
+    return make_response_json(200,"类别如下",data={"class":list(Item_tag_type._value2member_map_.keys())})
