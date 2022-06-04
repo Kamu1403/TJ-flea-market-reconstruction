@@ -12,7 +12,7 @@
                     </div>
                 </div>
                 <div class="col-lg-8">
-                    <div class="checkout-form-wrap">
+                    <div class="checkout-form-wrap" id="textbox">
                         <h4> {{ receiver }}</h4>
                                 <textarea id="chat" cols="80" rows="20"></textarea><br><br>
                                 <input id="text" size="80" placeholder="Enter your message here"><br><br>
@@ -41,93 +41,101 @@
             alert("不能给自己发消息哦~");
             window.location.href = "{{ url_for('chat.index') }}";
         }
-        socket = io.connect('ws://' + document.domain + ':' + location.port + '/chat');
-        socket.on('connect', function () {
+        if (room=="")
+        {
+            $('#textbox').hide();
+        }
+        else
+        {
+            socket = io.connect('ws://' + document.domain + ':' + location.port + '/chat');
+            socket.on('connect', function () {
             let cur_time = new Date(new Date().getTime()).toLocaleString();
             socket.emit('joined', { time: cur_time, room: room, receiver: receiver });
-        });
-        socket.on('disconnect', function () {
-            socket.emit('left', { room: room }, function () {
-                socket.disconnect();
             });
-        }); 
-        socket.on('status', function (data) {
-            $('#chat').val($('#chat').val() + '<' + data.time + ">\n" + data.msg + '\n');
-            $('#chat').scrollTop($('#chat')[0].scrollHeight);
-        });
-        socket.on('message', function (data) {
-            $('#chat').val($('#chat').val() + data.time + "\n" + data.msg + '\n');
-            $('#chat').scrollTop($('#chat')[0].scrollHeight);
-            $(`#chat_${name}`)
-        });
-        $('#text').keypress(function (e) {
-            var code = e.keyCode || e.which;
-            let cur_time = new Date(new Date().getTime()).toLocaleString();
-            if (code == 13) {
-                text = $('#text').val();
-                $('#text').val('');
-                if (text != "")
-                    socket.emit('text', { msg: text, time: cur_time, receiver: receiver, room: room, type: "text" });
-            }
-        });
-        $('#image').change(function (e) {
-            $('#preview').attr("src", URL.createObjectURL($(this)[0].files[0]));
-            //1.需要向socketio的后台发送post请求，提交url，在聊天记录中添加对应记录
-            //2.在读取消息时，需要按照消息类型，分别从不同的地方读取，比方说文本信息可以从message直接取，图片信息要根据url查询得到
-        });
-
-        window.addEventListener('beforeunload', function (event) {  // or 'unload'
-            navigator.sendBeacon("/chat/close", room);
-
-            // more safely (optional...?)
-            var until = new Date().getTime() + 500;
-            while (new Date().getTime() < until);
-        });
-    
-        $.ajax({
-            type: "GET",
-            url: "/api/get_meet_list",
-            success: function (ret) {
-                if(ret.statusCode==200)
-                {
-                    let meet_list=ret.data.meet_list;
-                    let last_msg_dict= new Array(); //定义一个字典
-                        $.ajax({
-                            type: "GET",
-                            async: false,
-                            url: "/api/get_last_msg",
-                            success: function (ret) {
-                                if(ret.statusCode==200)
-                                    last_msg_dict=ret.data;
-                                else
-                                    alert(ret.message);
-                            }
-                        });
-                    for (let i=0;i<meet_list.length;i++)
-                    {
-                        let name=meet_list[i];
-                        let sender=last_msg_dict[name]['sender']
-                        let last_msg=last_msg_dict[name]['last_msg']
-                        let str=`  
-                        <div class="os-products-item">
-                            <div class="thumb">
-                                <a href="/user/${name}/user_info"><img src="{{url_for('static',filename='img/product/os-products-thumb.jpg')}}" alt=""></a>
-                            </div>
-                            <div class="content">
-                                <h6 class="title">
-                                    <a href="/chat/${name}">${name}</a>
-                                </h6>
-                                <span class="price" id="chat_${name}">${sender}: ${last_msg}</span>
-                            </div>
-                            <div class="remove">x</div>
-                        </div>`;
-                        $("#meet_list").append(str);
-                    }
+            socket.on('disconnect', function () {
+                socket.emit('left', { room: room }, function () {
+                    socket.disconnect();
+                });
+            }); 
+            socket.on('status', function (data) {
+                $('#chat').val($('#chat').val() + '<' + data.time + ">\n" + data.msg + '\n');
+                $('#chat').scrollTop($('#chat')[0].scrollHeight);
+            });
+            socket.on('message', function (data) {
+                let name = data.other_user;
+                $('#chat').val($('#chat').val() + data.time + "\n" + data.msg + '\n');
+                $('#chat').scrollTop($('#chat')[0].scrollHeight);
+                $(`#chat_${name}`).html(data.msg);
+            });
+            $('#text').keypress(function (e) {
+                var code = e.keyCode || e.which;
+                let cur_time = new Date(new Date().getTime()).toLocaleString();
+                if (code == 13) {
+                    text = $('#text').val();
+                    $('#text').val('');
+                    if (text != "")
+                        socket.emit('text', { msg: text, time: cur_time, receiver: receiver, room: room, type: "text" });
                 }
-                else
-                    alert(ret.message);
-            }
-        });
+            });
+            $('#image').change(function (e) {
+                $('#preview').attr("src", URL.createObjectURL($(this)[0].files[0]));
+                //1.需要向socketio的后台发送post请求，提交url，在聊天记录中添加对应记录
+                //2.在读取消息时，需要按照消息类型，分别从不同的地方读取，比方说文本信息可以从message直接取，图片信息要根据url查询得到
+            });
+
+            window.addEventListener('beforeunload', function (event) {  // or 'unload'
+                navigator.sendBeacon("/chat/close", room);
+
+                // more safely (optional...?)
+                var until = new Date().getTime() + 500;
+                while (new Date().getTime() < until);
+            });
+        
+            $.ajax({
+                type: "GET",
+                url: "/api/get_meet_list",
+                success: function (ret) {
+                    if(ret.statusCode==200)
+                    {
+                        let meet_list=ret.data.meet_list;
+                        let last_msg_dict= new Array(); //定义一个字典
+                            $.ajax({
+                                type: "GET",
+                                async: false,
+                                url: "/api/get_last_msg",
+                                success: function (ret) {
+                                    if(ret.statusCode==200)
+                                        last_msg_dict=ret.data;
+                                    else
+                                        alert(ret.message);
+                                }
+                            });
+                        for (let i=0;i<meet_list.length;i++)
+                        {
+                            let name=meet_list[i];
+                            let sender=last_msg_dict[name]['sender']
+                            let last_msg=last_msg_dict[name]['last_msg']
+                            let str=`  
+                            <div class="os-products-item">
+                                <div class="thumb">
+                                    <a href="/user/${name}/user_info"><img src="{{url_for('static',filename='img/product/os-products-thumb.jpg')}}" alt=""></a>
+                                </div>
+                                <div class="content">
+                                    <h6 class="title">
+                                        <a href="/chat/${name}">${name}</a>
+                                    </h6>
+                                    <span class="price" id="chat_${name}">${sender}: ${last_msg}</span>
+                                </div>
+                                <div class="remove">x</div>
+                            </div>`;
+                            $("#meet_list").append(str);
+                        }
+                    }
+                    else
+                        alert(ret.message);
+                }
+            });
+        }
     });
     function leave_room() {
         socket.emit('left', { room: room }, function () {

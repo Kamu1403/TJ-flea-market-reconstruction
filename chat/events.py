@@ -93,12 +93,19 @@ def text(message):
     
     Room.update(last_message=message['msg'],last_sender_id=sender).where(Room.room_id==roomid).execute()
     
-    emit('message', {'msg': sender + ':' + message['msg'],'time':message['time'],'type':message['type']},
+    emit('message', {'msg': sender + ':' + message['msg'],
+                     'other_user':message['receiver'],
+                     'time':message['time'],
+                     'type':message['type']},
          room=sender)
     
-    emit('message', {'msg': sender + ':' + message['msg'],'time':message['time'],'type':message['type']},
+    emit('message', {'msg': sender + ':' + message['msg'],
+                     'other_user':sender,
+                     'time':message['time'],
+                     'type':message['type']},
          room=message['receiver'])
     
+        
     #在message外需要新增事件notice，作用：在一方输入后更新另一方的聊天列表显示
     print(sender)
     if not database.is_closed():

@@ -7,6 +7,20 @@ from chat.models import Room,Recent_Chat_List,Meet_List
 from api.utils import *
 from app import database
 
+def create_or_update_meet_list(sender,receiver):
+    print(sender,receiver)
+    user,created=Meet_List.get_or_create(user_id=sender)
+    meet_list={}
+    if created:
+        meet_list[sender]=[receiver]
+    else:
+        meet_list=user.meet_list
+        print(meet_list)
+        if receiver not in meet_list[sender]:
+            meet_list[sender].append(receiver)
+    Meet_List.update(meet_list=meet_list).where(Meet_List.user_id==sender).execute()
+
+
 @chat_blue.before_request
 def before_request():
     if database.is_closed():
@@ -50,15 +64,9 @@ def chat(opt_userid:int):
                 Room.create(room_id=room,last_sender_id=sender)
             elif reroomid!=None:
                 room=reroom
-            user,created=Meet_List.get_or_create(user_id=sender)
-            meet_list={}
-            if created:
-                meet_list[sender]=[receiver]
-            else:
-                meet_list=user.meet_list
-                if receiver not in meet_list[sender]:
-                    meet_list[sender].append(receiver)
-            Meet_List.update(meet_list=meet_list).where(Meet_List.user_id==sender).execute()
+                
+            create_or_update_meet_list(sender,receiver)
+            create_or_update_meet_list(receiver,sender)
 
 
         return render_template('chat.html',sender=sender,receiver=receiver,room=room)
