@@ -119,7 +119,8 @@ def get_last_msg():
                 roomid=reroomid
             msg=roomid.last_message
             sender=roomid.last_sender_id.id
-            res[m]={'sender':sender,'last_msg':msg}
+            type=roomid.msg_type
+            res[m]={'sender':sender,'last_msg':msg,'type':type}
         return make_response_json(200, "获取最后消息成功",res)
     else:
         return make_response_json(401, "当前用户未登录")

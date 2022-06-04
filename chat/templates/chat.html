@@ -162,12 +162,12 @@
                             sname="系统通知";
                             color="#C00000";
                         }
-                        console.log(color)
                         let last_msg=last_msg_dict[name]['last_msg']
                         let str=`  
                         <div class="os-products-item" id="meet_${name}">
                             <div class="thumb">
-                                <a href="/user/${name}/user_info"><img src="{{url_for('static',filename='img/product/os-products-thumb.jpg')}}" alt=""></a>
+                                <a href="/user/${name}/user_info">
+                                    <img src="/user/static/resource/user-pic/${name}/avatar.jpg" alt="" /></a>
                             </div>
                             <div class="content">
                                 <h6 class="title">

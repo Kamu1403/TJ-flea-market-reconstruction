@@ -95,7 +95,7 @@ def text(message):
                 msg_content=message['msg'],
                 msg_read=read)
     
-    Room.update(last_message=message['msg'],last_sender_id=sender).where(Room.room_id==roomid).execute()
+    Room.update(last_message=message['msg'],last_sender_id=sender,msg_type=message['type']).where(Room.room_id==roomid).execute()
     
     emit('message', {'sender':sender,
                      'msg':message['msg'],

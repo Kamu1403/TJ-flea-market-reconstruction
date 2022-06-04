@@ -38,6 +38,10 @@ class Room(BaseModel):
     
     last_sender_id =pw.ForeignKeyField(User, verbose_name="最后一条消息发送方的id")
     last_message =pw.CharField(verbose_name="最后消息")
+    #消息类型 0-文本类型 1-图片类型 2-系统通知类型
+    msg_type = pw.IntegerField(verbose_name="消息类型", null=False, default=Msg_type.Text.value,
+                                constraints=[pw.Check("msg_type >=0")])
+
     # 该房间内产生的最后一次通信记录，可以为空
 
 
