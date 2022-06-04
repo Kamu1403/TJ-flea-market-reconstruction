@@ -1,14 +1,19 @@
 {% extends "base.html" %} {% block title %}
 <title>我的订单</title>
-{% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
+{% endblock %} {% block css %} {{ super() }}
+<link rel="stylesheet" type="text/css" href="{{url_for('user.static',filename='css/Switch.css')}}" />
+{% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
 <main>
     <section class="slider--area pb=20" data-background="{{url_for('static', filename='img/bg/slider_area_bg2.jpg')}}">
         <div class="container-fluid">
             <div class="row">
                 <div class="col-2 d-lg-block">{% include "cont_side.html" %}</div>
-                <table>
-                    <tbody id="my_order"></tbody><table>
-                <div class="col-10 d-lg-block"></div>
+
+                <div class="col-10 d-lg-block">
+                    <table>
+                        <tbody id="my_order"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </section>
@@ -31,11 +36,11 @@
                 } else {
                     let tbody = $("#my_order");
                     for (let i = 0; i < ret.data.length; i++) {
-                        let order_id=ret.data[i].order_id;
+                        let order_id = ret.data[i].order_id;
                         tbody.append(`<tr id="my_order${order_id}"></tr>`);
                         let p_tr = $(`#my_order${order_id}`);
 
-                        let item_id=ret.data[i].item_id_list[0];//目前还只有一个商品信息
+                        let item_id = ret.data[i].item_id_list[0]; //目前还只有一个商品信息
                         p_tr.append(`<td id="order_item_pic${order_id}"></td>`);
                         p_tr.append(`<td id="order_item_data${order_id}"></td>`);
                         p_tr.append(`<td><a href="/order/${order_id}">订单详情</a></td>`);
@@ -65,7 +70,7 @@
                                     desc.append(`<a href=/user/${item_ret.data.user_id}/user_info>查看商家</a>`);
                                 }
                             },
-                        });  
+                        });
                     }
                 }
             },
