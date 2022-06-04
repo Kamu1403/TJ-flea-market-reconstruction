@@ -159,10 +159,13 @@ def get_search():
     need = (Item.id, Item.name, Item.user_id, Item.publish_time, Item.price,
             Item.tag)
     select_need = [Item.name.contains(key_word)]
-    if search_type in [
-            eval(f"Item_type.{i}.value") for i in Item_type.__members__
-    ]:
+    if search_type in Item_type._value2member_map_:
         select_need.append(Item.type == search_type)
+    if "tag" in data:
+        if data["tag"] not in Item_tag_type._value2member_map_:
+            return make_response_json(400,"请求格式错误")
+        else:
+            select_need.append(Item.tag == data["tag"])
     try:
         if "start_time" in data:
             start_time = data["start_time"]
