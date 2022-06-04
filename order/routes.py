@@ -37,14 +37,8 @@ def review(order_id: int):  #order_id为订单ID
                           Order.state == Order_state.End.value)
     except:
         return render_template('404.html', message="未找到对应已完成订单")
+
     return render_template('order_review.html')
-
-
-@order_blue.route('/manage/', methods=['GET', 'POST'])
-def manage():
-    if not current_user.is_authenticated:
-        return render_template('404.html', message="请先登录")
-    return render_template('order_manage.html')
 
 
 @order_blue.route('/generate/<int:item_id>/', methods=['GET', 'POST'])
