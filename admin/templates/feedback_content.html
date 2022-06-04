@@ -20,7 +20,7 @@ main %}
             data: { feedback_id: feedback_id },
             success: function (ret) {
                 let main = $("main");
-                console.log(ret.data);
+                //console.log(ret.data);
                 main.append(`<p>反馈用户ID:${ret.data.user_id}</p>`);
                 main.append(`<p>反馈类型:${ret.data.kind}</p>`);
                 main.append(`<p>反馈时间:${ret.data.publish_time}</p>`);
