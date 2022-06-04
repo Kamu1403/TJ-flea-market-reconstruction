@@ -44,6 +44,7 @@ def publish():
 #个人中心
 @user_blue.route('/space', methods=['GET', 'POST'])
 def space():
+    return redirect(url_for('user.order'))
     if current_user.is_authenticated:
         return render_template('user_space.html', current_user=current_user)
     else:
@@ -97,8 +98,9 @@ def address():
         return render_template('user_address.html')
     else:
         return redirect(url_for('login'))
-    
-@user_blue.route("/feedback",methods=["GET","POST"])
+
+
+@user_blue.route("/feedback", methods=["GET", "POST"])
 def feedback():
     if current_user.is_authenticated:
         return render_template('user_feedback.html')

@@ -4,6 +4,7 @@ from api.utils import *
 from api import api_blue
 
 MINUS_SCORE = 5  #取消一个已经确认了的订单，扣五分
+SYS_ADMIN_NO = 80000000
 
 
 @api_blue.route("/change_order_state", methods=["PUT"])
@@ -30,7 +31,7 @@ def change_order_state():
         return make_response_json(404, "没有找到此订单明细")
 
     order_user_id = order.user_id.id
-    order_op_user_id = _order_item.item_id.user_id
+    order_op_user_id = _order_item.item_id.user_id.id
     if req_state == order.state:  #要修改的状态和数据库内订单状态重复了，改不改都一样，直接返回成功
         return make_response_json(400, "操作过于频繁")
     elif current_user.state == User_state.Admin.value:  #管理员,无限权力
@@ -41,9 +42,18 @@ def change_order_state():
             _order_item.item_id.locked_num -= _order_item.quantity
             _order_item.item_id.shelved_num += _order_item.quantity
             _order_item.item_id.save()
+            if current_user.id != order_user_id:
+                send_message(SYS_ADMIN_NO, order_user_id,
+                             f"您的订单<{_order_item.item_id.name}>已被管理员取消")
+            if current_user.id != order_op_user_id:
+                send_message(SYS_ADMIN_NO, _order_item.order_id.user_id.id,
+                             f"您的订单<{_order_item.item_id.name}>已被管理员取消")
+
         if req_state == Order_state.End.value:  #完成订单
             _order_item.item_id.locked_num -= _order_item.quantity
             _order_item.item_id.save()
+            #send_message(SYS_ADMIN_NO, _order_item.item_id.user_id.id, "您的订单已完成")
+
         order.state = req_state
         order.save()
         return make_response_json(200, "操作成功")
@@ -75,6 +85,9 @@ def change_order_state():
             if order.state == Order_state.Confirm.value:  #已经确认过的，要扣除信誉分 5 分
                 order.user_id.score -= MINUS_SCORE
                 order.user_id.save()
+                send_message(
+                    SYS_ADMIN_NO, order_op_user_id,
+                    "您的订单<{_order_item.item_id.name}>已被对方取消，请保管好您的财物")
             _order_item.item_id.locked_num -= _order_item.quantity
             _order_item.item_id.shelved_num += _order_item.quantity
             _order_item.item_id.save()
@@ -107,6 +120,10 @@ def change_order_state():
             if order.state == Order_state.Confirm.value:  #已经确认过的，要扣除信誉分 5 分
                 order_op_user_id.score -= MINUS_SCORE
                 order_op_user_id.save()
+                send_message(
+                    SYS_ADMIN_NO, order_user_id,
+                    "您的订单<{_order_item.item_id.name}>已被对方取消，请保管好您的财物")
+
             _order_item.item_id.locked_num -= _order_item.quantity
             _order_item.item_id.shelved_num += _order_item.quantity
             _order_item.item_id.save()
@@ -117,6 +134,8 @@ def change_order_state():
         elif req_state == Order_state.Confirm.value:  #想确认订单
             order.state = Order_state.Confirm.value
             order.save()
+            send_message(SYS_ADMIN_NO, order_user_id,
+                         "您的订单<{_order_item.item_id.name}>已被对方确认，请及时与对方交易")
             return make_response_json(200, "操作成功")
         else:
             return make_response_json(500, "req_state订单状态错误！")

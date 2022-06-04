@@ -66,7 +66,7 @@
                                         </li>
                                         <li class="header-cart-wrap" id="bar_icon_chatroom">
                                             <a href="/chat/" title="聊天室"><i class="flaticon-mail"></i></a>
-                                            <span class="item-count" id="message_cnt">0</span>
+                                            <span class="item-count" id="message_cnt" hidden>0</span>
                                         </li>
                                         <li class="header-user" id="bar_icon_history">
                                             <a href="/user/history" title="历史记录"><i class="flaticon-wall-clock"></i></a>
@@ -211,11 +211,9 @@
                             </div>
                         </li>`);
                         $.get("/api/get_message_cnt", function (ret) {
-                            if (ret.statusCode == 401) {
-                                $("#message_cnt").text(0);
-                            } else {
+                            if (ret.statusCode != 401) 
                                 $("#message_cnt").text(ret.data.unread);
-                            }
+                            if (parseInt($("#message_cnt").text()) != 0) $("#message_cnt").removeAttr('hidden');
                         });
                     }
                     

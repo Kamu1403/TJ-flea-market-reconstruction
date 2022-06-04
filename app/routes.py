@@ -31,6 +31,11 @@ def before_request():
     if database.is_closed():
         database.connect()
 
+@app.before_request
+def state_check():
+    if current_user.is_authenticated:
+        if current_user.state == User_state.Under_ban.value:
+            logout_user()
 
 # @app.before_request
 # def request_log():
