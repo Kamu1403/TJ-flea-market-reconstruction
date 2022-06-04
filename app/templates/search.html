@@ -60,7 +60,6 @@ main %}
 <script type="text/javascript" charset="utf-8">
     var keyword = "{{ keyword|safe }}";
     var search_type = "{{ search_type|safe }}";
-    console.log(keyword,search_type)
     $(document).ready(function () {
         $.ajax({
             url: "/api/search",
