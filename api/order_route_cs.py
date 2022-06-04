@@ -17,7 +17,9 @@ def get_order():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
     data = dict(request.args)
-    my_order = [(Order.user_id == current_user)|(Item.user_id==current_user.id)]
+    my_order = [
+        (Order.user_id == current_user) | (Item.user_id == current_user.id)
+    ]
     if "range" in data:
         try:
             data["range"] = int(data["range"])
@@ -42,8 +44,10 @@ def get_order():
                 order_set[j.order_id.id] = len(datas)
                 datas.append({"order_id":j.order_id.id,"user_id":j.order_id.user_id.id\
                     ,"op_user_id":j.item_id.user_id.id,"item_id_list":list()})
-            if j.item_id.id not in datas[order_set[j.order_id.id]]["item_id_list"]:
-                datas[order_set[j.order_id.id]]["item_id_list"].append(j.item_id.id)
+            if j.item_id.id not in datas[order_set[
+                    j.order_id.id]]["item_id_list"]:
+                datas[order_set[j.order_id.id]]["item_id_list"].append(
+                    j.item_id.id)
     return make_response_json(200, "返回订单", datas)
 
 
@@ -255,9 +259,13 @@ def order_post():
             od.delete_instance()
             return make_response_json(500, f"订单详情存储时出错 {repr(e)}")
         od_it_list.append(od_it)
-    return make_response_json(201,
-                              "订单生成成功，请等待商家确认",
-                              data={"order_id": od.id})
+    if od_it.item_id.type == Item_type.Goods.value:
+        send_message(SYS_ADMIN_NO, od_it.item_id.user_id.id,
+                     f"已有用户购买你的商品<{od_it.item_id.name}>，请前往个人中心确认或取消订单")
+    else:
+        send_message(SYS_ADMIN_NO, od_it.item_id.user_id.id,
+                     f"已有用户接取你的悬赏<{od_it.item_id.name}>，请前往个人中心确认或取消订单")
+    return make_response_json(201, "订单生成成功，请等待商家确认", data={"order_id": od.id})
 
 
 @api_blue.route("/address", methods=["POST", "PUT", "DELETE"])
