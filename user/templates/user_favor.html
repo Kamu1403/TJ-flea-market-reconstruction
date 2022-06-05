@@ -37,9 +37,10 @@ main %}
             success: function (ret) {
                 if (ret.statusCode == 200) {
                     $(robj).parent().parent().remove();
+                    suspend("alert-success","删除收藏成功")
                     // 悬浮框提示删除成功
                     // 点击撤销
-                } else alert("删除历史失败：\n" + ret.message);
+                } else alert("删除收藏失败：\n" + ret.message);
             },
         });
     }

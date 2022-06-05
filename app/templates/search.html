@@ -1,7 +1,6 @@
 {% extends "base.html" %} {% block title %}
 <title>同济大学跳蚤市场--搜索结果</title>
-{% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block
-main %}
+{% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
 <main>
     <!-- shop-area -->
     <section class="shop--area pt-90 pb-90">
@@ -12,24 +11,18 @@ main %}
                         <div class="row">
                             <div class="col-md-6 col-sm-7">
                                 <div class="shop-top-left">
-                                    <!--
-                                    <ul>
-                                        <li>
-                                            <a href="#"><i class="fas fa-bars"></i> FILTER</a>
-                                        </li>
-                                    </ul>
-                                -->
-                                    <select class="form-control" name="tag" onchange="test()">
-                                    </select>
+                                    <form action="#">
+                                        <select class="shop-top-left" name="tag" onchange="send_search_with_filter()"></select>
+                                    </form>
                                 </div>
                             </div>
                             <div class="col-md-6 col-sm-5">
                                 <div class="shop-top-right">
                                     <form action="#">
-                                        <select name="sort" onchange="test()">
-                                            <option value="time" selected="selected">Sort by time</option>
-                                            <option value="price">Sort by price</option>
-                                            <option value="name">Sort by name</option>
+                                        <select name="sort" onchange="send_search_with_filter()">
+                                            <option value="name" selected="selected">按搜索结果相似度排序</option>
+                                            <option value="price">按价格从低到高排序</option>
+                                            <option value="time">按发布时间从近到远排序</option>
                                         </select>
                                     </form>
                                 </div>
@@ -40,16 +33,7 @@ main %}
                         <div id="display" class="row justify-content-center"></div>
                     </div>
                     <div class="pagination-wrap">
-                        <ul>
-                            <li class="prev"><a href="shop.html">Prev</a></li>
-                            <li class="active"><a href="shop.html">1</a></li>
-                            <li><a href="shop.html">2</a></li>
-                            <li><a href="shop.html">3</a></li>
-                            <li><a href="shop.html">4</a></li>
-                            <li><a href="shop.html">...</a></li>
-                            <li><a href="shop.html">10</a></li>
-                            <li class="next"><a href="shop.html">Next</a></li>
-                        </ul>
+                        <ul id="page_nav_bar"></ul>
                     </div>
                 </div>
             </div>
@@ -62,6 +46,7 @@ main %}
 <script type="text/javascript" charset="utf-8">
     var keyword = "{{ keyword|safe }}";
     var search_type = "{{ search_type|safe }}";
+    var start_num = 0;
     function send_search(data) {
         $.ajax({
             url: "/api/search",
@@ -70,8 +55,8 @@ main %}
             contentType: "application/json;charset=utf-8",
             processData: false,
             success: function (ret) {
+                console.log(ret);
                 if (ret.statusCode == 400) {
-                    //console.log(ret.message);
                     window.alert(ret.message);
                     window.location.href = "{{url_for('index')}}";
                 } else {
@@ -96,7 +81,7 @@ main %}
                         let str = `<div class="col-xl-3 col-md-4 col-sm-6">
                                 <div class="sp-product-item">
                                     <div class="sp-product-thumb">
-                                        <span class="batch">New</span>
+                                        <!--<span class="batch">New</span>-->
                                         <a href="/item/content/${id}">
                                             <img src="${purl}" alt=""></a>
                                     </div>
@@ -111,33 +96,45 @@ main %}
                             </div>`;
                         $("#display").append(str);
                     }
+                    // 渲染地址跳转栏
+                    //<li class="prev"><a href="shop.html">Prev</a></li>
+                    //<li class="active"><a href="shop.html">1</a></li>
+                    //<li><a href="shop.html">2</a></li>
+                    //<li><a href="shop.html">3</a></li>
+                    //<li><a href="shop.html">4</a></li>
+                    //<li><a href="shop.html">...</a></li>
+                    //<li><a href="shop.html">10</a></li>
+                    //<li class="next"><a href="shop.html">Next</a></li>
+                    $("#page_nav_bar").empty();
+                    $("#page_nav_bar").append();
                 }
             },
         });
     }
-    function test() {
+    function send_search_with_filter() {
         var data = { search_type: search_type, start_time: "", end_time: "", key_word: keyword };
-        if ($(".form-control[name='tag']").val() != "all") {
-            data["tag"] = $(".form-control[name='tag']").val();
+        if ($(".shop-top-left[name='tag']").val() != "全部商品类型") {
+            data["tag"] = $(".shop-top-left[name='tag']").val();
         }
         data["order_type"] = $("select[name='sort']").val();
         send_search(data);
     }
 
-
     $(document).ready(function () {
+        $("#item_name").val(keyword);
+        console.log(search_type);
+        $("#type.custom-select ").val(parseInt(search_type));
         send_search({ search_type: search_type, start_time: "", end_time: "", order_type: "", key_word: keyword });
         $.ajax({
             url: "/api/get_class",
             type: "get",
             success: function (class_ret) {
-                $(".form-control[name='tag']").append(`<option value='all' selected='selected'>all</option>`);
+                $(".shop-top-left[name='tag']").append(`<option value='全部商品类型' selected='selected'>全部商品类型</option>`);
                 for (var i = 0; i < class_ret.data.class.length; i++) {
-                    $(".form-control[name='tag']").append(`<option value='${class_ret.data.class[i]}'>\
-                        ${class_ret.data.class[i]}</option>`);
+                    $(".shop-top-left[name='tag']").append(`<option value='${class_ret.data.class[i]}'>${class_ret.data.class[i]}</option>`);
                 }
-            }
-        })
+            },
+        });
     });
 </script>
 {% endblock %}

@@ -52,6 +52,7 @@ main %}
             processData: false,
             success: function (ret) {
                 if (ret.statusCode == 200) {
+                    suspend("alert-success","清空历史成功")
                     location.reload();
                 } else alert("清空历史失败：\n" + ret.message);
             },
@@ -72,6 +73,7 @@ main %}
                     $(robj).parent().parent().remove();
                     // 悬浮框提示删除成功
                     // 点击撤销
+                    suspend("alert-success","删除历史成功")
                 } else alert("删除历史失败：\n" + ret.message);
             },
         });

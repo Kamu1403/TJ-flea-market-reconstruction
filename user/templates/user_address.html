@@ -216,6 +216,7 @@
             //async: false, // 当需要将值传给函数外部时需要强制同步
             success: function (ret) {
                 if (ret.statusCode == 200) {
+                    suspend("alert-success","修改保存成功")
                     $("#show_hint").removeAttr("hidden");
                     setTimeout(function () {
                         $("#show_hint").prop("hidden", "hidden");
@@ -246,6 +247,7 @@
             //async: false, // 当需要将值传给函数外部时需要强制同步
             success: function (ret) {
                 if (ret.statusCode == 200) {
+                    suspend("alert-success","添加成功")
                     //alert("添加成功");
                     window.location.reload();
                 } else bootbox.alert(ret.message);

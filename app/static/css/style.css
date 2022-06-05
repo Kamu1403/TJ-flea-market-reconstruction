@@ -3254,6 +3254,11 @@ label {
     align-items: center;
     justify-content: flex-end;
 }
+.shop-top-left form select {
+    border: none;
+    outline: none;
+    color: #282828;
+}
 .shop-top-right form select {
     border: none;
     outline: none;
