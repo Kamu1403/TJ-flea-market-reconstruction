@@ -131,7 +131,7 @@ main %}
             url: "/api/get_class",
             type: "get",
             success: function (class_ret) {
-                $(".form-control[name='tag']").append(`<option selected='selected'>all</option>`);
+                $(".form-control[name='tag']").append(`<option value='all' selected='selected'>all</option>`);
                 for (var i = 0; i < class_ret.data.class.length; i++) {
                     $(".form-control[name='tag']").append(`<option value='${class_ret.data.class[i]}'>\
                         ${class_ret.data.class[i]}</option>`);
