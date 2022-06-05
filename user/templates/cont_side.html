@@ -6,23 +6,43 @@
         </div>
         <div class="shop-cat-list">
             <ul>
-                <li><a id="order" href="{{ url_for('user.order') }}">我的订单</a></li>
-                <li><a id="publish" href="{{ url_for('user.publish') }}">我的发布</a></li>
-                <li><a id="publish" href="{{ url_for('user.favor') }}">我的收藏</a></li>
-                <li><a id="publish" href="{{ url_for('user.history') }}">我的足迹</a></li>
+                <li><a href="{{ url_for('user.order') }}">我的订单</a></li>
+                <li><a href="{{ url_for('user.publish') }}">我的发布</a></li>
+                <li><a href="{{ url_for('user.favor') }}">我的收藏</a></li>
+                <li><a href="{{ url_for('user.history') }}">我的足迹</a></li>
             </ul>
         </div>
     </br>
         <div class="shop-widget-title">
-            <h6 class="title"><img src="{{url_for('static', filename='img/leftbar/我的买啦.png')}}" style="margin-right: 10px; margin-left: -5px; width: 13px; height: 13px" />我的账户</h6>
+            <h6 class="title"><img src="{{url_for('static', filename='img/leftbar/user.png')}}" style="margin-right: 10px; margin-left: -5px; width: 13px; height: 13px" />我的账户</h6>
         </div>
         <div class="shop-cat-list">
             <ul>
-                <li><a id="publish" href="{{ url_for('user.user_info',opt_userid=current_user.id) }}">个人资料</a></li>
-                <li><a id="publish" href="{{ url_for('user.address') }}">地址管理</a></li>
+                <li><a href="{{ url_for('user.user_info',opt_userid=current_user.id) }}">个人资料</a></li>
+                <li><a href="{{ url_for('user.address') }}">地址管理</a></li>
             </ul>
         </div>
-
+        <br /><br />
+        <div class="shop-widget-title">
+            <h6 class="title"><img src="{{url_for('static', filename='img/leftbar/admin.png')}}" style="margin-right: 10px; margin-left: -5px; width: 13px; height: 13px" />用户管理</h6>
+        </div>
+        {% if current_user.state==1 %}
+        <div class="shop-cat-list">
+            <ul>
+                <li>        
+                    <a href="{{url_for('admin.feedback_show')}}">
+                    反馈管理</a>
+                </li>
+                <li>
+                    <a href="{{url_for('admin.order_check')}}">
+                    订单管理</a>
+                </li>
+                <li><a href="{{url_for('admin.user_check')}}">
+                    用户管理</a>
+                </li>
+            </ul>
+        </div>
+        {% endif %}
         <dt></dt>
 </aside>
     <!-- <div class="widget shop-widget">

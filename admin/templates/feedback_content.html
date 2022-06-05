@@ -1,9 +1,8 @@
 {% extends "base.html" %} {% block title %}
 <title>反馈详情</title>
-{% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block
-main %}
+{% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
 <main>
-
+    <a href="{{url_for('admin.feedback_show')}}">返回</a>
 </main>
 {% endblock %} {% block footer %} {{ super() }} {% endblock %} {% block js %} {{ super() }}
 
@@ -24,10 +23,10 @@ main %}
                 main.append(`<p>反馈用户ID:${ret.data.user_id}</p>`);
                 main.append(`<p>反馈类型:${ret.data.kind}</p>`);
                 main.append(`<p>反馈时间:${ret.data.publish_time}</p>`);
-                main.append(`<p>反馈内容:${ret.data.feedback_content}</p>`)
+                main.append(`<p>反馈内容:${ret.data.feedback_content}</p>`);
                 main.append(`<p>反馈状态:${ret.data.state}</p>`);
                 if (ret.data.state == -1) {
-                    main.append(`<p>回复内容:${ret.data.reply_content}</p>`)
+                    main.append(`<p>回复内容:${ret.data.reply_content}</p>`);
                 }
                 /*
                 for (i in ret.data) {
@@ -51,9 +50,9 @@ main %}
                             //console.log(reply_ret);
                             window.alert(reply_ret.message);
                             window.location.href = "{{url_for('admin.feedback_show')}}";
-                        }
-                    })
-                })
+                        },
+                    });
+                });
             },
         });
     });

@@ -237,9 +237,21 @@ def get_reports():
             Feedback.publish_time).execute()
     except Exception as e:
         return make_response_json(500, f"系统发生故障 {repr(e)}")
-    data = {str(i): list() for i in Feedback_state._value2member_map_}
+
+    def FeedbackstateTostr(state):
+        if state == Feedback_state.Read.value:
+            return "read"
+        elif state == Feedback_state.Unread.value:
+            return "unread"
+        elif state == Feedback_state.Replied.value:
+            return "replied"
+
+    data = {
+        FeedbackstateTostr(i): list()
+        for i in Feedback_state._value2member_map_
+    }
     for i in datas:
-        data[str(i.state)].append(i.id)
+        data[FeedbackstateTostr(i.state)].append(i.id)
     return make_response_json(200, "查询结果如下", data=data)
 
 
@@ -281,5 +293,35 @@ def reply_feedback():
     feedback.reply_content = data["reply_content"]
     feedback.state = Feedback_state.Replied.value
     feedback.save()
-    send_message(SYS_ADMIN_NO, feedback.user_id.id,f'管理员已回复你的反馈，回复内容：\n{data["reply_content"]}')
+    send_message(SYS_ADMIN_NO, feedback.user_id.id,
+                 f'管理员已回复你的反馈，回复内容：\n{data["reply_content"]}')
     return make_response_json(200, "回复完成")
+
+
+@api_blue.route("/get_all_order", methods=["GET"])
+def get_all_order():
+    if not current_user.is_authenticated:
+        return make_response_json(401, "当前用户未登录")
+    if current_user.state != User_state.Admin.value:
+        return make_response_json(401, "当前用户不是管理员")
+
+    try:
+        my_od_item = Order_Item.select(Order_Item.order_id,Order_Item.item_id)\
+        .join(Order,on=(Order.id==Order_Item.order_id)).join(Item,on=(Item.id==Order_Item.item_id))\
+        .order_by(
+            Order_Item.order_id.create_time.desc())
+    except Exception as e:
+        return make_response_json(500, f"查询发生错误 {repr(e)}")
+    else:
+        datas = list()
+        order_set = dict()
+        for j in my_od_item:
+            if j.order_id.id not in order_set:
+                order_set[j.order_id.id] = len(datas)
+                datas.append({"order_id":j.order_id.id,"user_id":j.order_id.user_id.id\
+                    ,"op_user_id":j.item_id.user_id.id,"item_id_list":list(),"state":j.order_id.state})
+            if j.item_id.id not in datas[order_set[
+                    j.order_id.id]]["item_id_list"]:
+                datas[order_set[j.order_id.id]]["item_id_list"].append(
+                    j.item_id.id)
+    return make_response_json(200, "返回订单", datas)
