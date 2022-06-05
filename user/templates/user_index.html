@@ -125,10 +125,12 @@ main %}
                     if ($("#" + item.id).attr('value') == 0) {
                         $("#" + item.id).css({ "background-color": "#4eb92d", "color": "#ffffff" });
                         $("#" + item.id).attr("value", 1);
+                        suspend("alert-success","添加收藏成功")
                     }
                     else {
                         $("#" + item.id).css({ "background-color": "#ffffff", "color": "#4eb92d" });
                         $("#" + item.id).attr("value", 0);
+                        suspend("alert-success","删除收藏成功")
                     }
                 }
                 else

@@ -246,7 +246,7 @@
                         "z-index": 99999,
                         width:"75%",
                         left: ($(document.body).outerWidth(true) - 120) / 8,
-                        top: "5px",
+                        top: "10px",
                         position: "absolute",
                         padding: "20px",
                         "border-radius": "5px",
@@ -289,7 +289,7 @@
             
             function suspend(str,message=""){
                 switch(str){
-                    case "alert-success": success_prompt(message!=""?message:"提交成功");break;
+                    case "alert-success": alert_prompt(message!=""?message:"提交成功");break;
                     case "alert_warning": warning_prompt(message!=""?message:"错误警告");break;
                     case "alert-danger": fail_prompt(message!=""?message:"提交失败");break;
                     case "alert_info":	info_prompt(message!=""?message:"未查询到数据");break;

@@ -218,6 +218,7 @@ main %}
             processData: false,
             success: function (ret) {
                 if (ret.statusCode == 201) {
+                    suspend("alert-success","添加收藏成功")
                     $("[id=item_favor_]").empty();
                     $("[id=item_favor_]").append('<a href="javascript:void(0)" onclick="delete_favor()"  style="color:#C00000"><i class="fa fa-heart"></i> 取消收藏</a>');
                 }
@@ -237,6 +238,7 @@ main %}
             processData: false,
             success: function (ret) {
                 if (ret.statusCode == 200) {
+                    suspend("alert-success","删除收藏成功");
                     $("[id=item_favor_]").empty();
                     $("[id=item_favor_]").append('<a href="javascript:void(0)" onclick="add_favor()"><i class="far fa-heart"></i> 加入收藏</a>');
                 }
@@ -258,27 +260,33 @@ main %}
                 console.log(ret);
                 if (state == -1) {
                     if (ret.statusCode == 200) {
-                        alert("强制下架商品成功")
+                        suspend("alert-success","强制下架商品成功");
+                        //alert("强制下架商品成功")
                         location.reload();
                     }
                     else
-                        alert('强制下架失败：' + ret.message);
+                        suspend("alert-danger","强制下架失败: "+ret.message);
+                        //alert('强制下架失败：' + ret.message);
                 }
                 if (state == 0) {
                     if (ret.statusCode == 200) {
-                        alert("恢复商品上架成功");
+                        suspend("alert-success","恢复商品上架成功")
+                        //alert("恢复商品上架成功");
                         location.reload();
                     }
                     else
-                        alert('恢复商品上架失败：' + ret.message);
+                        suspend("alert-danger","恢复商品上架失败: "+ret.message);
+                        //alert('恢复商品上架失败：' + ret.message);
                 }
                 if (state == 1) {
                     if (ret.statusCode == 200) {
-                        alert("下架商品成功");
+                        suspend("alert-success","下架商品成功")
+                        //alert("下架商品成功");
                         location.reload();
                     }
                     else
-                        alert('下架商品失败：' + ret.message);
+                        suspend("alert-danger","下架商品失败: "+ret.message);
+                        //alert('下架商品失败：' + ret.message);
                 }
             },
         });

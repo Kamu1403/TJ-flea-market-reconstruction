@@ -205,8 +205,9 @@
             contentType: "application/json;charset=utf-8",
             processData: false,
             success: function (ret) {
-                if(ret.statusCode==200)
+                if(ret.statusCode == 200)
                 {
+                    suspend("alert-success","删除聊天成功");
                     window.location.href = "{{ url_for('chat.index') }}";
                 }
                 else
@@ -262,7 +263,7 @@
                     processData: false,
                     success: function (ret) {
                         if (ret.statusCode == 200) {
-                            console.log(ret.message);
+                            suspend("alert-success",ret.message)
                             md5 = ret.data;
                             //updatePage(objUrl, md5);
                         } else alert(ret.message);
