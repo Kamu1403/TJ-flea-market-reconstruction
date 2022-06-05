@@ -294,6 +294,10 @@ def change_item_data():
         return make_response_json(400, "请选择物品类型")
     if data["tag"] not in Item_tag_type._value2member_map_:
         return make_response_json(400, "请求格式错误")
+    if len(data["name"])>40:
+        return make_response_json(400,"名称过长")
+    if len(data["description"]) > 100:
+        return make_response_json(400,"描述过长")
     try:
         data["id"] = int(data["id"])
         if "shelved_num" in data:
@@ -353,6 +357,10 @@ def post_item_info():
     if current_user.state == User_state.Under_ban.value:
         return make_response_json(401, "当前用户已被封号")
     data = request.get_json()
+    if len(data["name"])>40:
+        return make_response_json(400,"名称过长")
+    if len(data["description"]) > 100:
+        return make_response_json(400,"描述过长")
     if "tag" not in data:
         return make_response_json(400, "请选择物品类型")
     if data["tag"] not in Item_tag_type._value2member_map_:
