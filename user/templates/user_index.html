@@ -154,6 +154,7 @@ main %}
                 for (let i = 0; i < ret.data.show.length; i++) {
                     let item = ret.data.show[i];
                     let id = item.id;
+                    let tag = item.tag;
                     let name = item.name;
                     let price = item.price;
                     let time = item.publish_time;
@@ -195,7 +196,7 @@ main %}
                                 </div>
                                 <div class="sp--product--content">
                                     <h6 class="title"><a href="/item/content/${id}">${name}</a></h6>
-                                    <div class="rating">${time}</div>
+                                    <div class="rating">${tag}</div>
                                     <div class="price">￥${price}</div>
                                 </div>
                             </div>

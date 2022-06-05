@@ -65,6 +65,7 @@
                     for (let i = 0; i < items.length; i++) {
                         let item = items[i];
                         let id = item.id;
+                        let tag = item.tag;
                         let name = item.name;
                         let price = item.price;
                         let time = item.publish_time;
@@ -85,12 +86,11 @@
                                         <a href="/item/content/${id}">
                                             <img src="${purl}" alt=""></a>
                                     </div>
-                                    <div class="sp-product-content">
-                                        <h6 class="title">
-                                            <a href="/item/content/${id}">${name}</a>
-                                        </h6>
-                                        <p>单价:${price}
-                                        </p>
+                                </br>
+                                    <div class="sp--product--content">
+                                        <h6 class="title"><a href="/item/content/${id}">${name}</a></h6>
+                                        <div class="rating">${tag}</div>
+                                        <div class="price">￥${price}</div>
                                     </div>
                                 </div>
                             </div>`;
