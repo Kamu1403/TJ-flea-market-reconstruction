@@ -194,7 +194,7 @@
         if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
         let contact_id=$("#address option:selected").val();
         let note=$("#order_note").val();
-        let number=$("#number").val();
+        let number=$("#buy_num").val();
 
         $.ajax({
             // query形式
@@ -209,6 +209,7 @@
             }),
             async: false, // 当需要将值传给函数外部时需要强制同步
             success: function (ret) {
+                //console.log(ret);
                 //alert(ret.message);
                 window.location.href=`/order/${ret.data.order_id}`;
             },
