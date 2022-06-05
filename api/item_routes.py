@@ -663,6 +663,10 @@ def item_to_show():
     data = dict(request.args)
     need = list()
     ordered_num = None
+    if current_user.is_authenticated:
+        user_id = current_user.id
+    else:
+        user_id = None
     if "max_num" in data:
         try:
             data["max_num"] = int(data["max_num"])
@@ -694,12 +698,14 @@ def item_to_show():
             j["publish_time"] = str(j["publish_time"])
             if ordered_num is not None:
                 if ordered_num < data["max_num"]:
-                    datas["show"].append(j)
-                    ordered_num += 1
+                    if user_id is None or user_id != j["user_id"]:
+                        datas["show"].append(j)
+                        ordered_num += 1
                 else:
                     break
             else:
-                datas["show"].append(j)
+                if user_id is None or user_id != j["user_id"]:
+                    datas["show"].append(j)
     return make_response_json(200, "返回订单", datas)
 
 
