@@ -57,7 +57,7 @@
             window.location.href = "{{ url_for('chat.index') }}";
         }
         if (room=="")
-        {   $('#textbox').after("<span>您还未选中聊天室</span>")
+        {   $('#textbox').after("<h4>您还未选中聊天室</h4>")
             $('#textbox').hide();
         }
 
@@ -72,22 +72,24 @@
             });
         }); 
         socket.on('message', function (data) {
+            let sender=data.sender; 
             let name = data.other_user;
-            let sname= name;
+            let sname=name;
             let color="#516583"
             if (data.sender=="80000000"){
                 sname="系统通知";
+                sender="系统通知";
                 color="#C00000";
             }
             if (data.type==0)
             {
-                let str=`<span> ${data.time}</br>${sname}:${data.msg}</br></span>`
+                let str=`<span> ${data.time}</br>${sender}:${data.msg}</br></span>`
                 $('#chat').append(str);
             }
             else
             {
                 let str=`
-                <span> ${data.time}</br>${sname}:
+                <span> ${data.time}</br>${sender}:
                     <a href='/chat/static/resource/temp/${room}/${data.msg}' onclick="OpenFullSizeWindow(this.href);return false">
                     <img style="width:100px" src='/chat/static/resource/temp/${room}/${data.msg}'/>
                 </br>
@@ -224,8 +226,27 @@
     }
     function uploadImg() {
         var file = $("#file")[0].files[0];
+        var filepath=$('#file')[0].value;
+        let fileTypes=[".jpg", ".png", ".jpeg", ".PNG", ".gif"]
         if (file) {
             // console.log("开始上传图片：" + file.name);
+
+        let isNext = false;
+        let fileEnd = filepath.substring(filepath.indexOf("."));//截取文件名的后缀
+        for (var i = 0; i < fileTypes.length; i++) {
+            if (fileTypes[i] == fileEnd) {
+                isNext = true;
+                break;
+            }
+        }
+        if (!isNext){
+            alert('不接受此文件类型');
+            $("#file").value();//如果文件后缀名不符合，清空已选择文件
+            return false;
+        }
+
+
+
             var formData = new FormData();
             formData.append("file",file);
             formData.append("room",room);

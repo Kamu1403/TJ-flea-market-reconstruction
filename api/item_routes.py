@@ -143,10 +143,6 @@ def get_search():
                 range_max = int(data["range_max"])
             except Exception as e:
                 return make_response_json(400,"请求格式错误")
-            else:
-                if range_max < range_min:
-                    return make_response_json(400,"请求格式错误")
-
         else:
             return make_response_json(400,"请求格式错误")
     else:
@@ -510,14 +506,29 @@ def delete_favor():
 def get_favor():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
+    req = dict(request.args)
+    if "range_min" in req or "range_max" in req:
+        if "range_min" in req and "range_max" in req:
+            try:
+                range_min = int(req["range_min"])
+                range_max = int(req["rang_max"])
+            except Exception as e:
+                return make_response_json(400,"请求格式错误")
+        else:
+            return make_response_json("请求格式错误")
+    else:
+        range_min = 0
+        range_max = 50
     tep = Favor.select().where(Favor.user_id == current_user.id).order_by(Favor.collect_time.desc())
-    data = []
+    fav_data = []
     for i in tep:
         res = dict()
         res['id'] = i.id
         res['item_id'] = i.item_id.id
         res['collect_time'] = str(i.collect_time)
-        data.append(res)
+        fav_data.append(res)
+    range_max = min(len(fav_data),range_max)
+    data = {"total_count":len(fav_data),"favor_list":fav_data[range_min:range_max]}
     return make_response_json(200, "操作成功", data)
 
 
@@ -541,14 +552,29 @@ def get_item_favor():
 def get_history():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
+    req = dict(request.args)
+    if "range_min" in req or "range_max" in req:
+        if "range_min" in req and "range_max" in req:
+            try:
+                range_min = int(req["range_min"])
+                range_max = int(req["rang_max"])
+            except Exception as e:
+                return make_response_json(400,"请求格式错误")
+        else:
+            return make_response_json("请求格式错误")
+    else:
+        range_min = 0
+        range_max = 50
     tep = History.select().where(History.user_id == current_user.id).order_by(History.visit_time.desc())
-    data = []
+    his_data = []
     for i in tep:
         res = dict()
         res['id'] = i.id
         res['item_id'] = i.item_id.id
         res['visit_time'] = str(i.visit_time)
-        data.append(res)
+        his_data.append(res)
+    range_max = min(len(his_data),range_max)
+    data = {"total_count":len(his_data),"history_list":his_data[range_min:range_max]}
     return make_response_json(200, "操作成功", data)
 
 
@@ -637,6 +663,10 @@ def item_to_show():
     data = dict(request.args)
     need = list()
     ordered_num = None
+    if current_user.is_authenticated:
+        user_id = current_user.id
+    else:
+        user_id = None
     if "max_num" in data:
         try:
             data["max_num"] = int(data["max_num"])
@@ -668,12 +698,14 @@ def item_to_show():
             j["publish_time"] = str(j["publish_time"])
             if ordered_num is not None:
                 if ordered_num < data["max_num"]:
-                    datas["show"].append(j)
-                    ordered_num += 1
+                    if user_id is None or user_id != j["user_id"]:
+                        datas["show"].append(j)
+                        ordered_num += 1
                 else:
                     break
             else:
-                datas["show"].append(j)
+                if user_id is None or user_id != j["user_id"]:
+                    datas["show"].append(j)
     return make_response_json(200, "返回订单", datas)
 
 
