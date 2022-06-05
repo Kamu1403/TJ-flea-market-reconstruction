@@ -152,5 +152,22 @@
             },
         });
     });
+    function change_state(order_id, state) {//修改订单状态
+        $.ajax({
+            url: "/api/change_order_state",
+            type: "put",
+            data: JSON.stringify({ order_id: order_id, state: state }),
+            contentType: "application/json;charset=utf-8",
+            processData: false,
+            success: function (ret) {
+                if (ret.statusCode == 200) {
+                    alert(ret.message);
+                    window.location.reload();
+                } else {
+                    alert(ret.message);
+                }
+            },
+        });
+    }
 </script>
 {% endblock %}
