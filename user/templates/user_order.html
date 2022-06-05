@@ -10,8 +10,21 @@
                 <div class="col-2 d-lg-block">{% include "cont_side.html" %}</div>
 
                 <div class="col-10 d-lg-block">
+                    待确认订单<br />
                     <table>
-                        <tbody id="my_order"></tbody>
+                        <tbody id="my_order_wait_confirm"></tbody>
+                    </table>
+                    待完成订单<br />
+                    <table>
+                        <tbody id="my_order_confirmed"></tbody>
+                    </table>
+                    已完成订单<br />
+                    <table>
+                        <tbody id="my_order_done"></tbody>
+                    </table>
+                    已取消订单<br />
+                    <table>
+                        <tbody id="my_order_cancel"></tbody>
                     </table>
                 </div>
             </div>
@@ -22,34 +35,49 @@
 
 <script type="text/javascript" charset="utf-8">
     var debug = 0;
+    var current_user_id={{current_user.id}};
     $(document).ready(function () {
         let url = "/api/get_order";
         if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
         $.ajax({
             url: url,
             type: "GET",
+            async: false, // 当需要将值传给函数外部时需要强制同步
             success: function (ret) {
                 console.log(ret);
                 if (ret.statusCode != 200) {
                     window.alert(ret.message);
                     window.location.href = "{{url_for('index')}}";
                 } else {
-                    let tbody = $("#my_order");
+                    let mytbody;
+
                     for (let i = 0; i < ret.data.length; i++) {
+                        if (ret.data[i].state == 0) mytbody = $("#my_order_wait_confirm");
+                        else if (ret.data[i].state == 1) mytbody = $("#my_order_confirmed");
+                        else if (ret.data[i].state == 2) mytbody = $("#my_order_done");
+                        else if (ret.data[i].state == -1) mytbody = $("#my_order_cancel");
+
                         let order_id = ret.data[i].order_id;
-                        tbody.append(`<tr id="my_order${order_id}"></tr>`);
+                        mytbody.append(`<tr id="my_order${order_id}"></tr>`);
                         let p_tr = $(`#my_order${order_id}`);
 
                         let item_id = ret.data[i].item_id_list[0]; //目前还只有一个商品信息
                         p_tr.append(`<td id="order_item_pic${order_id}"></td>`);
                         p_tr.append(`<td id="order_item_data${order_id}"></td>`);
                         p_tr.append(`<td><a href="/order/${order_id}">订单详情</a></td>`);
+
+                        p_tr.append(`<div id="state_message${order_id}"></div>`);
+                        p_tr.append(`<button id="confirm${order_id}" onclick="change_state('${order_id}',1)">确认订单</button>`);
+                        p_tr.append(`<button id="complete${order_id}" onclick="change_state('${order_id}',2)">完成订单</button>`);
+                        p_tr.append(`<button id="cancel${order_id}" onclick="change_state('${order_id}',-1)">取消订单</button>`);
+                        if(ret.data[i].state==2){p_tr.append(`<a href="/order/review/${order_id}">前往评价</a>`)}
                         let pic_url = "/api/get_item_head_pic";
                         if (debug) pic_url = `http://127.0.0.1:4523/mock/927026${pic_url}`;
                         $.ajax({
                             url: pic_url,
                             type: "GET",
                             data: { item_id: item_id },
+                            async: false, // 当需要将值传给函数外部时需要强制同步
                             success: function (pic_ret) {
                                 if (pic_ret.statusCode == 200) {
                                     $(`#order_item_pic${order_id}`).append(`<img src=${pic_ret.data.url} height=40 width=40>`);
@@ -62,12 +90,43 @@
                             url: item_url,
                             type: "Get",
                             data: { item_id: item_id },
+                            async: false, // 当需要将值传给函数外部时需要强制同步
                             success: function (item_ret) {
                                 if (item_ret.statusCode == 200) {
                                     let desc = $(`#order_item_data${order_id}`);
                                     desc.append(`<a href = /item/content/${item_id} >${item_ret.data.name}</a>`);
                                     desc.append(`<p>${item_ret.data.description}</p>`);
                                     desc.append(`<a href=/chat/${item_ret.data.user_id}>联系商家</a>`);
+
+                                    //订单状态逻辑
+                                    let state_message;
+                                    if (ret.data[i].state == 0) {
+                                        state_message = "等待商家确认";
+                                        if (current_user_id != item_ret.data.user_id) {
+                                            //当前用户不是卖家
+                                            $(`#confirm${order_id}`).attr("disabled", "disabled");
+                                        }
+                                        $(`#complete${order_id}`).attr("disabled", "disabled");
+                                    } else if (ret.data[i].state == 1) {
+                                        state_message = "等待收货方完成";
+                                        if ((current_user_id == item_ret.data.user_id && item_ret.data.type == 0) || (current_user_id == ret.data[i].user_id && item_ret.data.type == 1)) {
+                                            //当前用户不是收货方
+                                            $(`#complete${order_id}`).attr("disabled", "disabled");
+                                        }
+                                        $(`#confirm${order_id}`).attr("disabled", "disabled");
+
+                                    } else if (ret.data[i].state == -1) {
+                                        state_message = "已被取消";
+                                        $(`#cancel${order_id}`).attr("disabled", "disabled");
+                                        $(`#complete${order_id}`).attr("disabled", "disabled");
+                                        $(`#confirm${order_id}`).attr("disabled", "disabled");
+                                    } else if (ret.data[i].state == 2) {
+                                        state_message = "已完成";
+                                        $(`#cancel${order_id}`).attr("disabled", "disabled");
+                                        $(`#complete${order_id}`).attr("disabled", "disabled");
+                                        $(`#confirm${order_id}`).attr("disabled", "disabled");
+                                    }
+                                    $(`#state_message${order_id}`).append(`<span><p>订单状态:${state_message}</p></span>`);
                                 }
                             },
                         });
