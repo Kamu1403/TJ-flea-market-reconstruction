@@ -1,5 +1,5 @@
 {% extends "base.html" %} {% block title %}
-<title>·´À¡Çåµ¥</title>
+<title>ç”¨æˆ·ç®¡ç†</title>
 {% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
 <main>
     <div class="col-lg-9 col-md-8">
@@ -12,36 +12,26 @@
 
 <script type="text/javascript" charset="utf-8">
     var debug = 0;
-    //var FeedbackstateTostr = { 0: "unread", 1: "read", "-1": "replied" };
+
     $(document).ready(function () {
-        let url = "/api/get_reports";
+        let url = "/api/get_all_user";
         if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
         $.ajax({
-            // jsonĞÎÊ½
+            // jsonå½¢å¼
             url: url,
             type: "get",
             success: function (ret) {
+                console.log(ret);
                 if (ret.statusCode == 200) {
+                    let user_list = $("#user_manage");
+                    user_list.append(`<thead><th>ç”¨æˆ·å</th><th>è¯¦æƒ…é“¾æ¥</th></thead>`);
                     for (var i in ret.data) {
-                        let report_list = $(`#${i}`);
-                        report_list.append(`<thead><th>·´À¡ÄÚÈİ</th><th>ÏêÇéÁ´½Ó</th></thead>`);
-                        for (var j = 0; j < ret.data[i].length; j++) {
-                            feedback_id = ret.data[i][j];
-                            report_list.append(`<tr id="${feedback_id}"></tr>`);
-                            report = $(`#${feedback_id}`);
-                            $.ajax({
-                                // jsonĞÎÊ½
-                                url: "/api/admin_get_report",
-                                type: "get",
-                                data: { feedback_id: feedback_id },
-                                async: false,
-                                success: function (ret) {
-                                    console.log(ret);
-                                    report.append(`<td><p>${ret.data.feedback_content}</p></td>`);
-                                },
-                            });
-                            report.append(`<td><a href=/admin/feedback/${feedback_id}/>·´À¡ÏêÇé</a></td>`);
-                        }
+                        console.log(ret.data[i]);
+                        user_info = ret.data[i];
+                        user_list.append(`<tr id="${user_info.id}"></tr>`);
+                        user = $(`#${user_info.id}`);
+                        user.append(`<td><p>${user_info.username}</p></td>`);
+                        user.append(`<td><a href="/user/${user_info.id}/user_info">ç”¨æˆ·è¯¦æƒ…</a></td>`);
                     }
                 }
             },

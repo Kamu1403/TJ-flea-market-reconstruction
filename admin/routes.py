@@ -22,12 +22,18 @@ def teardown_request(exc):  #exc必须写上
 
 @admin_blue.route('/user_check', methods=['GET', 'POST'])
 def user_check():
-    return render_template('user_check.html')
+    if current_user.is_authenticated and current_user.state == User_state.Admin.value:
+        return render_template('user_check.html')
+    else:
+        return render_template('404.html', error_code=401, message="您无权访问此页面")
 
 
 @admin_blue.route('/order_check', methods=['GET', 'POST'])
 def order_check():
-    return render_template('order_check.html')
+    if current_user.is_authenticated and current_user.state == User_state.Admin.value:
+        return render_template('order_check.html')
+    else:
+        return render_template('404.html', error_code=401, message="您无权访问此页面")
 
 
 @admin_blue.route('/feedback_show', methods=['GET', 'POST'])
