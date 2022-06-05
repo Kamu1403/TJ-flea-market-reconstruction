@@ -1,6 +1,7 @@
 {% extends "base.html" %} {% block title %}
 <title>我的历史</title>
-{% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
+{% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block
+main %}
 <main>
     <div class="container">
         <div class="row justify-content-center">
@@ -87,7 +88,7 @@
                     window.alert(ret.message);
                     window.location.href = "{{url_for('index')}}";
                 } else {
-                    data = ret.data;
+                    data = ret.data.history_list;
                     if (data.length == 0) {
                         $(auto_append).append(`<tr><td class="product-price"><h4>无浏览记录</h4></td></tr>`);
                         $("#remove_all_button").prop("hidden", "hidden");
