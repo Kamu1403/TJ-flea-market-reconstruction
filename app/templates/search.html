@@ -26,12 +26,10 @@ main %}
                             <div class="col-md-6 col-sm-5">
                                 <div class="shop-top-right">
                                     <form action="#">
-                                        <select name="select">
-                                            <option value="">Sort by newness</option>
-                                            <option>Free Shipping</option>
-                                            <option>Best Match</option>
-                                            <option>Newest Item</option>
-                                            <option>Size A - Z</option>
+                                        <select name="sort" onchange="test()">
+                                            <option value="time" selected="selected">Sort by time</option>
+                                            <option value="price">Sort by price</option>
+                                            <option value="name">Sort by name</option>
                                         </select>
                                     </form>
                                 </div>
@@ -118,10 +116,11 @@ main %}
         });
     }
     function test() {
-        var data = { search_type: search_type, start_time: "", end_time: "", order_type: "", key_word: keyword };
+        var data = { search_type: search_type, start_time: "", end_time: "", key_word: keyword };
         if ($(".form-control[name='tag']").val() != "all") {
             data["tag"] = $(".form-control[name='tag']").val();
         }
+        data["order_type"] = $("select[name='sort']").val();
         send_search(data);
     }
 
@@ -132,7 +131,7 @@ main %}
             url: "/api/get_class",
             type: "get",
             success: function (class_ret) {
-                $(".form-control[name='tag']").append(`<option selected='selected'>all</option>`);
+                $(".form-control[name='tag']").append(`<option value='all' selected='selected'>all</option>`);
                 for (var i = 0; i < class_ret.data.class.length; i++) {
                     $(".form-control[name='tag']").append(`<option value='${class_ret.data.class[i]}'>\
                         ${class_ret.data.class[i]}</option>`);
