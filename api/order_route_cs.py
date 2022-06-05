@@ -43,7 +43,7 @@ def get_order():
             if j.order_id.id not in order_set:
                 order_set[j.order_id.id] = len(datas)
                 datas.append({"order_id":j.order_id.id,"user_id":j.order_id.user_id.id\
-                    ,"op_user_id":j.item_id.user_id.id,"item_id_list":list()})
+                    ,"op_user_id":j.item_id.user_id.id,"item_id_list":list(),"state":j.order_id.state})
             if j.item_id.id not in datas[order_set[
                     j.order_id.id]]["item_id_list"]:
                 datas[order_set[j.order_id.id]]["item_id_list"].append(
@@ -425,20 +425,7 @@ def order_evaluate():
     except Exception as e:
         return make_response_json(500, f"查询过程出现问题 {repr(e)}")
     if order.user_id.id == current_user.id:
-        try:
-            review = Review.create(user_id=current_user.id,
-                                   publish_time=datetime.now(),
-                                   feedback_content=data["feedback_content"])
-        except Exception as e:
-            return make_response_json(500, f"存储过程出现问题 {repr(e)}")
-        order_state_item.user_review_id = review
-    else:
-        try:
-            od_it = Order_Item.get(Order_Item.order_id == order_id)
-        except Exception as e:
-            review.delete_instance()
-            return make_response_json(500, f"查询过程出现问题 {repr(e)}")
-        if od_it.item_id.user_id.id == current_user.id:
+        if order_state_item.user_review_id == None:  #不存在就加
             try:
                 review = Review.create(
                     user_id=current_user.id,
@@ -446,11 +433,38 @@ def order_evaluate():
                     feedback_content=data["feedback_content"])
             except Exception as e:
                 return make_response_json(500, f"存储过程出现问题 {repr(e)}")
-            order_state_item.op_user_review_id = review
+            order_state_item.user_review_id = review
+        else:  #存在就返回error
+            #order_state_item.user_review_id.publish_time = datetime.now()
+            #order_state_item.user_review_id.feedback_content = data[
+            #    "feedback_content"]
+            return make_response_json(401, f"您已评价过该订单")
+    else:
+        try:
+            od_it = Order_Item.get(Order_Item.order_id == order_id)
+        except Exception as e:
+            review.delete_instance()
+            return make_response_json(500, f"查询过程出现问题 {repr(e)}")
+        if od_it.item_id.user_id.id == current_user.id:
+            if order_state_item.op_user_review_id == None:
+                try:
+                    review = Review.create(
+                        user_id=current_user.id,
+                        publish_time=datetime.now(),
+                        feedback_content=data["feedback_content"])
+                except Exception as e:
+                    return make_response_json(500, f"存储过程出现问题 {repr(e)}")
+                order_state_item.op_user_review_id = review
+            else:
+                #order_state_item.op_user_review_id.publish_time = datetime.now()
+                #order_state_item.op_user_review_id.feedback_content = data[
+                #    "feedback_content"]
+                return make_response_json(401, f"您已评价过该订单")
+
         else:
             return make_response_json(401, "无权评论此订单")
     order_state_item.save()
-    return make_response_json(200, "评价完成", {"url": url_for('order.manage')})
+    return make_response_json(200, "评价完成", {"url": url_for('user.order')})
 
 
 """
