@@ -13,29 +13,29 @@
                 </div>
                 <div class="col-lg-8">
                     <div class="checkout-form-wrap" id="textbox">
-                        
+                        <form action="javascript:void(0)">
                             {% if receiver=="80000000" %}
-                            <h4 style="color:#C00000"> 系统通知</h4>
+                            <h4 style="color: #c00000">系统通知</h4>
                             {% else %}
                             <h4>{{ receiver }}</h4>
                             {% endif %}
 
-                            <div class="contact-info-wrap" id="chat" style="height:300px;overflow:auto;">
+                            <div class="contact-info-wrap" id="chat" style="height: 300px; overflow: auto"></div>
+                            <br /><br />
+                            <div class="building-info-wrap"><input id="text" placeholder="回车发送消息..." /><br /><br /></div>
+
+                            <div class="continue-shopping">
+                                <form action="javascript:void(0)">
+                                    <input type="file" id="file" style="display: none" onchange="uploadImg()" />
+                                    <button href="javascript:void(0)" onclick="selectImg()" class="btn">上传图片</button>
+                                </form>
                             </div>
-                            <br><br>
-                                <input id="text" size="50" placeholder="Enter your message here"><br><br>
-                                
-                                <div class="continue-shopping">
-                                    <form action="javascript:void(0)">
-                                        <input type="file" id="file" style="display: none" onchange="uploadImg()"/>
-                                        <button href="javascript:void(0)" onclick="selectImg()" class="btn">上传图片</button>
-                                    </form>
-                                </div>
-                                <div>
-                                    <img src="" id="preview" style="height:150px"/>
-                                </div>
-                                <a href="#" onclick="leave_room();">Leave this room</a>
-                    </>
+                            <div>
+                                <img src="" id="preview" style="height: 150px" />
+                            </div>
+                            <a href="#" onclick="leave_room();">Leave this room</a>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
@@ -46,68 +46,60 @@
 <script type="text/javascript" src="//cdn.socket.io/4.4.1/socket.io.min.js"></script>
 <script type="text/javascript" charset="utf-8">
     var socket;
-    var room = '{{ room|safe }}';
-    var sender='{{ sender|safe }}';
-    var receiver = '{{ receiver|safe }}';
-    
+    var room = "{{ room|safe }}";
+    var sender = "{{ sender|safe }}";
+    var receiver = "{{ receiver|safe }}";
+
     $(document).ready(function () {
-        if (sender!="" && sender==receiver)
-        {
+        if (sender != "" && sender == receiver) {
             alert("不能给自己发消息哦~");
             window.location.href = "{{ url_for('chat.index') }}";
         }
-        if (room=="")
-        {   $('#textbox').after("<h4>您还未选中聊天室</h4>")
-            $('#textbox').hide();
+        if (room == "") {
+            $("#textbox").after("<h4>您还未选中聊天室</h4>");
+            $("#textbox").hide();
         }
 
-        socket = io.connect('ws://' + document.domain + ':' + location.port + '/chat');
-        socket.on('connect', function () {
-        let cur_time = new Date(new Date().getTime()).toLocaleString();
-        socket.emit('joined', { time: cur_time, room: room, receiver: receiver });
+        socket = io.connect("ws://" + document.domain + ":" + location.port + "/chat");
+        socket.on("connect", function () {
+            let cur_time = new Date(new Date().getTime()).toLocaleString();
+            socket.emit("joined", { time: cur_time, room: room, receiver: receiver });
         });
-        socket.on('disconnect', function () {
-            socket.emit('left', { room: room }, function () {
+        socket.on("disconnect", function () {
+            socket.emit("left", { room: room }, function () {
                 socket.disconnect();
             });
-        }); 
-        socket.on('message', function (data) {
-            let sender=data.sender; 
+        });
+        socket.on("message", function (data) {
+            let sender = data.sender;
             let name = data.other_user;
-            let sname=name;
-            let color="#516583"
-            if (data.sender=="80000000"){
-                sname="系统通知";
-                sender="系统通知";
-                color="#C00000";
+            let sname = name;
+            let color = "#516583";
+            if (data.sender == "80000000") {
+                sname = "系统通知";
+                sender = "系统通知";
+                color = "#C00000";
             }
-            if (data.type==0)
-            {
-                let str=`<span> ${data.time}</br>${sender}:${data.msg}</br></span>`
-                $('#chat').append(str);
-            }
-            else
-            {
-                let str=`
+            if (data.type == 0) {
+                let str = `<span> ${data.time}</br>${sender}:${data.msg}</br></span>`;
+                $("#chat").append(str);
+            } else {
+                let str = `
                 <span> ${data.time}</br>${sender}:</br>
                     <a href='/chat/static/resource/temp/${room}/${data.msg}' onclick="OpenFullSizeWindow(this.href);return false">
                     <img style="width:100px" src='/chat/static/resource/temp/${room}/${data.msg}'/>
                 </br>
-                </span>`
-                $('#chat').append(str);
+                </span>`;
+                $("#chat").append(str);
             }
-            $('#chat').scrollTop($('#chat')[0].scrollHeight);
-            let last_msg=data.msg
-                if (data.type==1)
-                    last_msg="[图片]";
-            if (`#chat_${name}`.length>0)
-                $(`#chat_${name}`).html(last_msg);
-            else
-            {
-                let last_msg=data.msg
-                if (data.type==1)
-                    last_msg="[图片]";
-                let str=`  
+            $("#chat").scrollTop($("#chat")[0].scrollHeight);
+            let last_msg = data.msg;
+            if (data.type == 1) last_msg = "[图片]";
+            if (`#chat_${name}`.length > 0) $(`#chat_${name}`).html(last_msg);
+            else {
+                let last_msg = data.msg;
+                if (data.type == 1) last_msg = "[图片]";
+                let str = `  
                         <div class="os-products-item">
                             <div class="thumb">
                                 <a href="/user/${name}/user_info">
@@ -121,59 +113,54 @@
                             </div>
                             <div class="remove">x</div>
                         </div>`;
-                        $("#meet_list").append(str);
+                $("#meet_list").append(str);
             }
         });
-        
-        $('#text').keypress(function (e) {
+
+        $("#text").keypress(function (e) {
             var code = e.keyCode || e.which;
             let cur_time = new Date(new Date().getTime()).toLocaleString();
             if (code == 13) {
-                text = $('#text').val();
-                $('#text').val('');
-                if (text != "")
-                    socket.emit('text', { msg: text, time: cur_time, receiver: receiver, room: room, type: 0 });
+                text = $("#text").val();
+                $("#text").val("");
+                if (text != "") socket.emit("text", { msg: text, time: cur_time, receiver: receiver, room: room, type: 0 });
             }
         });
-        window.addEventListener('beforeunload', function (event) {  // or 'unload'
+        window.addEventListener("beforeunload", function (event) {
+            // or 'unload'
             navigator.sendBeacon("/chat/close", room);
             // more safely (optional...?)
             var until = new Date().getTime() + 500;
             while (new Date().getTime() < until);
         });
-    
+
         $.ajax({
             type: "GET",
             url: "/api/get_meet_list",
             success: function (ret) {
-                if(ret.statusCode==200)
-                {
-                    let meet_list=ret.data.meet_list;
-                    let last_msg_dict= new Array(); //定义一个字典
-                        $.ajax({
-                            type: "GET",
-                            async: false,
-                            url: "/api/get_last_msg",
-                            success: function (ret) {
-                                if(ret.statusCode==200)
-                                    last_msg_dict=ret.data;
-                                else
-                                    alert(ret.message);
-                            }
-                        });
-                    for (let i=0;i<meet_list.length;i++)
-                    {
-                        let name=meet_list[i];
-                        let sname= name;
-                        let color="#516583"
-                        if (name=="80000000"){
-                            sname="系统通知";
-                            color="#C00000";
+                if (ret.statusCode == 200) {
+                    let meet_list = ret.data.meet_list;
+                    let last_msg_dict = new Array(); //定义一个字典
+                    $.ajax({
+                        type: "GET",
+                        async: false,
+                        url: "/api/get_last_msg",
+                        success: function (ret) {
+                            if (ret.statusCode == 200) last_msg_dict = ret.data;
+                            else alert(ret.message);
+                        },
+                    });
+                    for (let i = 0; i < meet_list.length; i++) {
+                        let name = meet_list[i];
+                        let sname = name;
+                        let color = "#516583";
+                        if (name == "80000000") {
+                            sname = "系统通知";
+                            color = "#C00000";
                         }
-                        let last_msg=last_msg_dict[name]['last_msg']
-                        if (last_msg_dict[name]['type']==1)
-                            last_msg="[图片]";
-                        let str=`  
+                        let last_msg = last_msg_dict[name]["last_msg"];
+                        if (last_msg_dict[name]["type"] == 1) last_msg = "[图片]";
+                        let str = `  
                         <div class="os-products-item" id="meet_${name}">
                             <div class="thumb">
                                 <a href="/user/${name}/user_info">
@@ -189,70 +176,60 @@
                         </div>`;
                         $("#meet_list").append(str);
                     }
-                }
-                else
-                    alert(ret.message);
-            }
+                } else alert(ret.message);
+            },
         });
     });
-    function deldiv(name)
-    {   
+    function deldiv(name) {
         $(`#meet_${name}`).remove();
         $.ajax({
             type: "DELETE",
             url: "/api/del_meet",
-            data: JSON.stringify({user_id:name}),
+            data: JSON.stringify({ user_id: name }),
             contentType: "application/json;charset=utf-8",
             processData: false,
             success: function (ret) {
-                if(ret.statusCode == 200)
-                {
-                    suspend("alert-success","删除聊天成功");
+                if (ret.statusCode == 200) {
+                    suspend("alert-success", "删除聊天成功");
                     window.location.href = "{{ url_for('chat.index') }}";
-                }
-                else
-                    alert(ret.message);
-            }
+                } else alert(ret.message);
+            },
         });
     }
-    function OpenFullSizeWindow(url)
-    {
+    function OpenFullSizeWindow(url) {
         var newWindow = window.open("");
         newWindow.document.body.innerHTML = '<img style="height:600px" src="' + url + '" alt="">';
     }
 
-
-    function selectImg(){
+    function selectImg() {
         $("#file").click(); // 相当于模拟点击一下选择图片按钮
     }
     function uploadImg() {
         var file = $("#file")[0].files[0];
-        var filepath=$('#file')[0].value;
-        let fileTypes=[".jpg", ".png", ".jpeg", ".PNG", ".gif"]
+        var filepath = $("#file")[0].value;
+        let fileTypes = [".jpg", ".png", ".jpeg", ".PNG", ".gif"];
         if (file) {
             // console.log("开始上传图片：" + file.name);
 
-        let isNext = false;
-        let fileEnd = filepath.substring(filepath.indexOf("."));//截取文件名的后缀
-        for (var i = 0; i < fileTypes.length; i++) {
-            if (fileTypes[i] == fileEnd) {
-                isNext = true;
-                break;
+            let isNext = false;
+            let fileEnd = filepath.substring(filepath.indexOf(".")); //截取文件名的后缀
+            for (var i = 0; i < fileTypes.length; i++) {
+                if (fileTypes[i] == fileEnd) {
+                    isNext = true;
+                    break;
+                }
             }
-        }
-        if (!isNext){
-            alert('不接受此文件类型');
-            $("#file").value();//如果文件后缀名不符合，清空已选择文件
-            return false;
-        }
-
-
+            if (!isNext) {
+                alert("不接受此文件类型");
+                $("#file").value(); //如果文件后缀名不符合，清空已选择文件
+                return false;
+            }
 
             var formData = new FormData();
-            formData.append("file",file);
-            formData.append("room",room);
-            formData.append("sender",sender);
-            formData.append("receiver",receiver);
+            formData.append("file", file);
+            formData.append("room", room);
+            formData.append("sender", sender);
+            formData.append("receiver", receiver);
             var debug = 0;
             if (debug == 0) {
                 $.ajax({
@@ -263,7 +240,7 @@
                     processData: false,
                     success: function (ret) {
                         if (ret.statusCode == 200) {
-                            suspend("alert-success",ret.message)
+                            suspend("alert-success", ret.message);
                             md5 = ret.data;
                             //updatePage(objUrl, md5);
                         } else alert(ret.message);
@@ -276,7 +253,7 @@
         } else alert("未选择图片！");
     }
     function leave_room() {
-        socket.emit('left', { room: room }, function () {
+        socket.emit("left", { room: room }, function () {
             socket.disconnect();
             // go back to the index page
             window.location.href = "{{ url_for('user.index') }}";

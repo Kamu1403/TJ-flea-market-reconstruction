@@ -4,21 +4,22 @@
 
 {% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
 <main>
-    <div class="cart-area pt-90 pb-90">
+    <section class="shop--area shop-right-sidebar pt-90 pb-90" data-background="{{url_for('static', filename='img/bg/slider_area_bg2.jpg')}}">
         <div class="container">
             <div class="row justify-content-center">
-                <div class="col-lg-12">
+                <div class="col-3">{% include "cont_side.html" %}</div>
+                <div class="col-9">
                     <b>请双击表单内容进行修改</b>
 
                     <table id="tab" width="100%" border="0" cellspacing="0" cellpadding="0" class="table">
                         <thead class="thead-light">
                             <tr>
-                                <th>收件人姓名</th>
+                                <th>收件人</th>
                                 <th>电话</th>
                                 <th>详细地址</th>
                                 <th>所在校区</th>
-                                <th>是否为默认地址</th>
-                                <th>删除</th>
+                                <th>设为默认</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody id="ta"></tbody>
@@ -36,7 +37,7 @@
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-lg-7">
-                    <div class="shop-cart-total" style="margin-top: 0px; background-color: rgba(255, 255, 255, 0.5); border: none">
+                    <div class="shop-cart-total" style="margin-top: 0px; background-color: rgba(255, 255, 255, 0); border: none">
                         <div class="shop-cart-widget">
                             <a class="btn" data-toggle="modal" data-target="#address">添加新地址</a>
                         </div>
@@ -83,7 +84,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </section>
 </main>
 {% endblock %} {% block footer %} {{ super() }} {% endblock %} {% block js %} {{ super() }}
 
@@ -110,7 +111,7 @@
                     tab.append(`<td class='edit_text' id='full_address${contact_id}'>${ret.data[i].full_address}</td>`);
                     tab.append(`<td id='campus_branch${contact_id}'>${campus_branch_select_text}</td>`);
                     tab.append(`<td>${default_button_text}</td>`);
-                    tab.append(`<td><input type='button' class='btn btn-success' id='delete_contact_id${contact_id}' onclick='delete_by_id(${contact_id})' value='删除地址'</td>`);
+                    tab.append(`<td><input type='button' class='btn btn-success' id='delete_contact_id${contact_id}' onclick='delete_by_id(${contact_id})' value='删除'</td>`);
                 }
 
                 /* 给表格里面每一个带有edit_text的td添加一个dblclick事件 */
@@ -216,7 +217,7 @@
             //async: false, // 当需要将值传给函数外部时需要强制同步
             success: function (ret) {
                 if (ret.statusCode == 200) {
-                    suspend("alert-success","修改保存成功")
+                    suspend("alert-success", "修改保存成功");
                     $("#show_hint").removeAttr("hidden");
                     setTimeout(function () {
                         $("#show_hint").prop("hidden", "hidden");
@@ -247,7 +248,7 @@
             //async: false, // 当需要将值传给函数外部时需要强制同步
             success: function (ret) {
                 if (ret.statusCode == 200) {
-                    suspend("alert-success","添加成功")
+                    suspend("alert-success", "添加成功");
                     //alert("添加成功");
                     window.location.reload();
                 } else bootbox.alert(ret.message);

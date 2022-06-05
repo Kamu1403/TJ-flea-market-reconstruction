@@ -8,10 +8,11 @@
 
 {% block header %} {{ super() }} {% endblock %} {% block main %}
 <main>
-    <div class="cart-area pt-90 pb-90">
+    <section class="shop--area shop-right-sidebar pt-90 pb-90" data-background="{{url_for('static', filename='img/bg/slider_area_bg2.jpg')}}">
         <div class="container">
             <div class="row justify-content-center">
-                <div class="col-lg-7">
+                <div class="col-3">{% include "cont_side.html" %}</div>
+                <div class="col-9">
                     <div class="checkout-form-wrap">
                         <form action="javascript:void(0)">
                             {% if opt_userid == current_user.id %}
@@ -118,36 +119,38 @@
                             </div>
                         </form>
                     </div>
-                </div>
-            </div>
-            {% if opt_userid == current_user.id %}
-            <div class="container">
-                <div class="row justify-content-center">
-                    <div class="col-lg-7">
-                        <div class="shop-cart-total" style="background-color: rgba(255, 255, 255, 0.5); border: none">
-                            <div class="shop-cart-widget">
-                                <a class="btn" onclick="submit()">提交修改</a>
+                    {% if opt_userid == current_user.id %}
+                    <div class="container">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-7">
+                                <div class="shop-cart-total"
+                                    style="background-color: rgba(255, 255, 255, 0); border: none">
+                                    <div class="shop-cart-widget">
+                                        <a class="btn" onclick="submit()">提交修改</a>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-            {% endif %}
-            {% if current_user.state == 1 %}
-            <div id="change_user">
-                <div id="ban_table" hidden>
-                    <div>
-                        <input class="ban" type="date" />
-                    </div>
-                    <div>
-                        <textarea class="ban">
+                    {% endif %}
+                    {% if current_user.state == 1 %}
+                    <div id="change_user">
+                        <div id="ban_table" hidden>
+                            <div>
+                                <input class="ban" type="date" />
+                            </div>
+                            <div>
+                                <textarea class="ban">
                     </textarea>
+                            </div>
+                        </div>
+                        <a class="btn" id="ban"></a>
                     </div>
+                    {% endif %}
                 </div>
-                <a class="btn" id="ban"></a>
             </div>
-            {% endif %}
         </div>
+    </section>
 </main>
 {% endblock %} {% block footer %} {{ super() }} {% endblock %} {% block js %} {{ super() }}
 

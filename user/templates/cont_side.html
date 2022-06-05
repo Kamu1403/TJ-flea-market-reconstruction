@@ -1,8 +1,7 @@
-
- <aside class="shop-sidebar" style="padding-left:130px;">
+<aside class="shop-sidebar" style="padding-left: 45px">
     <div class="widget shop-widget">
         <div class="shop-widget-title">
-            <h6 class="title"><img src="{{url_for('static', filename='img/leftbar/file.png')}}" style="margin-right: 10px; margin-left: -5px; width: 13px; height: 13px" />订单管理</h6>
+            <h6 class="title">订单管理</h6>
         </div>
         <div class="shop-cat-list">
             <ul>
@@ -12,9 +11,9 @@
                 <li><a href="{{ url_for('user.history') }}">我的足迹</a></li>
             </ul>
         </div>
-    </br>
+        <br />
         <div class="shop-widget-title">
-            <h6 class="title"><img src="{{url_for('static', filename='img/leftbar/user.png')}}" style="margin-right: 10px; margin-left: -5px; width: 13px; height: 13px" />我的账户</h6>
+            <h6 class="title">我的账户</h6>
         </div>
         <div class="shop-cat-list">
             <ul>
@@ -22,39 +21,18 @@
                 <li><a href="{{ url_for('user.address') }}">地址管理</a></li>
             </ul>
         </div>
-        <br /><br />
-        <div class="shop-widget-title">
-            <h6 class="title"><img src="{{url_for('static', filename='img/leftbar/admin.png')}}" style="margin-right: 10px; margin-left: -5px; width: 13px; height: 13px" />用户管理</h6>
-        </div>
+        <br />
         {% if current_user.state==1 %}
+        <div class="shop-widget-title">
+            <h6 class="title">用户管理</h6>
+        </div>
         <div class="shop-cat-list">
             <ul>
-                <li>        
-                    <a href="{{url_for('admin.feedback_show')}}">
-                    反馈管理</a>
-                </li>
-                <li>
-                    <a href="{{url_for('admin.order_check')}}">
-                    订单管理</a>
-                </li>
-                <li><a href="{{url_for('admin.user_check')}}">
-                    用户管理</a>
-                </li>
+                <li><a href="{{url_for('admin.feedback_show')}}">反馈管理</a></li>
+                <li><a href="{{url_for('admin.order_check')}}">订单管理</a></li>
+                <li><a href="{{url_for('admin.user_check')}}">用户管理</a></li>
             </ul>
         </div>
         {% endif %}
-        <dt></dt>
-</aside>
-    <!-- <div class="widget shop-widget">
-        <div class="shop-widget-title">
-            <h6 class="title">Filter By Price</h6>
-        </div>
-        <div class="price_filter">
-            <div id="slider-range"></div>
-            <div class="price_slider_amount">
-                <span>Price :</span>
-                <input type="text" id="amount" name="price" placeholder="Add Your Price" />
-            </div>
-        </div>
     </div>
-    -->
+</aside>

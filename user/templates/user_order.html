@@ -4,12 +4,11 @@
 <link rel="stylesheet" type="text/css" href="{{url_for('user.static',filename='css/Switch.css')}}" />
 {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
 <main>
-    <section class="slider--area pb=20" data-background="{{url_for('static', filename='img/bg/slider_area_bg2.jpg')}}">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-lg-3 col-md-8">{% include "cont_side.html" %}</div>
-
-                <div class="col-lg-9 col-md-8">
+    <section class="shop--area shop-right-sidebar pt-90 pb-90" data-background="{{url_for('static', filename='img/bg/slider_area_bg2.jpg')}}">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-3">{% include "cont_side.html" %}</div>
+                <div class="col-9">
                     待确认订单<br />
                     <table>
                         <tbody id="my_order_wait_confirm"></tbody>
@@ -35,7 +34,7 @@
 
 <script type="text/javascript" charset="utf-8">
     var debug = 0;
-    var current_user_id="{{current_user.id|safe}}";
+    var current_user_id = "{{current_user.id|safe}}";
     $(document).ready(function () {
         let url = "/api/get_order";
         if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
@@ -70,23 +69,21 @@
                         p_tr.append(`<button id="confirm${order_id}" onclick="change_state('${order_id}',1)">确认订单</button>`);
                         p_tr.append(`<button id="complete${order_id}" onclick="change_state('${order_id}',2)">完成订单</button>`);
                         p_tr.append(`<button id="cancel${order_id}" onclick="change_state('${order_id}',-1)">取消订单</button>`);
-                        if(ret.data[i].state==2){
-                            let is_review_url="/api/get_user_is_review";
+                        if (ret.data[i].state == 2) {
+                            let is_review_url = "/api/get_user_is_review";
                             $.ajax({
-                                url:is_review_url,
-                                type:"GET",
-                                data:{order_id:order_id},
-                                success:function(review_ret){
-                                    if(review_ret.statusCode==200){
-                                        if(review_ret['data']['is_review']==false)
-                                            p_tr.append(`<a href="/order/review/${order_id}">前往评价</a>`);
+                                url: is_review_url,
+                                type: "GET",
+                                data: { order_id: order_id },
+                                success: function (review_ret) {
+                                    if (review_ret.statusCode == 200) {
+                                        if (review_ret["data"]["is_review"] == false) p_tr.append(`<a href="/order/review/${order_id}">前往评价</a>`);
                                         else p_tr.append(`<a href="/order/review/${order_id}">查看历史评价</a>`);
-                                    }else{
+                                    } else {
                                         bootbox.alert(review_ret.message);
                                     }
                                 },
                             });
-
                         }
                         let pic_url = "/api/get_item_head_pic";
                         if (debug) pic_url = `http://127.0.0.1:4523/mock/927026${pic_url}`;
@@ -131,7 +128,6 @@
                                             $(`#complete${order_id}`).attr("disabled", "disabled");
                                         }
                                         $(`#confirm${order_id}`).attr("disabled", "disabled");
-
                                     } else if (ret.data[i].state == -1) {
                                         state_message = "已被取消";
                                         $(`#cancel${order_id}`).attr("disabled", "disabled");
@@ -152,7 +148,8 @@
             },
         });
     });
-    function change_state(order_id, state) {//修改订单状态
+    function change_state(order_id, state) {
+        //修改订单状态
         $.ajax({
             url: "/api/change_order_state",
             type: "put",

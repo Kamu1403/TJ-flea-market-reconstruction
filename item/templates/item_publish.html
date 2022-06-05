@@ -5,29 +5,10 @@ main %}
 <!-- main-area -->
 <main>
     <!-- cart-area -->
-    <div class="cart-area pt-90 pb-90">
+    <div class="cart-area pt-90">
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-lg-7">
-                    <!--
-                    <div class="checkout-progress-wrap">
-                        <div class="progress">
-                            <div class="progress-bar" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
-                        </div>
-                        <div class="checkout-progress-step">
-                            <ul>
-                                <li class="active">
-                                    <div class="icon"><i class="fas fa-check"></i></div>
-                                    <span>填写信息</span>
-                                </li>
-                                <li>
-                                    <div class="icon">2</div>
-                                    <span>发布成功</span>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    -->
                     <div class="checkout-form-wrap">
                         <form action="javascript:void(0)">
                             <div class="checkout-form-top">
@@ -36,18 +17,17 @@ main %}
 
                             <div class="building-info-wrap">
                                 <input type="text" placeholder="物品名称" id="name" />
-                                <input type="text" placeholder="价格" id="price" />
-
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <label class="col-form-label">商品标签</label>
-                                        <select id="tag" class="form-control" name="tag" required="required">
-                                        </select>
+                                        <input type="text" placeholder="数量" id="quantity" />
+                                    </div>
+                                    <div class="col-md-6">
+                                        <input type="text" placeholder="价格" id="price" />
                                     </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <input type="text" placeholder="数量" id="quantity" />
-                                </div>
+                                <label class="col-form-label">商品标签</label>
+                                <select id="tag" class="form-control" name="tag" required="required">
+                                </select>
                             </div>
                             <div class="different-address-wrap">
                                 <div class="header-super-store d-xl-block d-md-block">
@@ -61,6 +41,7 @@ main %}
                                     </div>
                                 </div>
                             </div>
+                            <br />
                             <textarea name="message" id="message" placeholder="详细描述..."></textarea>
                     </div>
                     </form>
@@ -111,7 +92,7 @@ main %}
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-7">
-                <div class="shop-cart-total" style="background-color: rgba(255, 255, 255, 0.5); border: none">
+                <div class="shop-cart-total" style="background-color: rgba(255, 255, 255, 0); border: none">
                     <div class="shop-cart-widget">
                         <a class="btn" onclick="submit()">提交发布</a>
                     </div>
@@ -134,8 +115,7 @@ main %}
             type: "get",
             success: function (class_ret) {
                 for (var i = 0; i < class_ret.data.class.length; i++) {
-                    $(".form-control[name='tag']").append(`<option value='${class_ret.data.class[i]}'>\
-                        ${class_ret.data.class[i]}</option>`);
+                    $(".form-control[name='tag']").append(`<option value='${class_ret.data.class[i]}'>${class_ret.data.class[i]}</option>`);
                 }
             }
         })
@@ -182,7 +162,7 @@ main %}
                     alert("商品发布成功，点击确认后将跳转至商品详情页。");
                     window.location = ret.data.url;
                 } else
-                    suspend("alert-danger","商品发布失败: "+ret.message + "\n请重试。"); 
+                    suspend("alert-danger", "商品发布失败: " + ret.message + "\n请重试。");
                 //alert("商品发布失败：\n" + ret.message + "\n点击确认返回修改。");
             },
         });
