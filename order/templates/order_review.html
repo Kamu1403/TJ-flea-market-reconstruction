@@ -11,13 +11,14 @@
 
                 <div class="col-10 d-lg-block">
                     <div id="my_order"></div>
-                    <div class="building-info-wrap">
+                    <div id="review_post" class="building-info-wrap">
                         <!--请输入评价星数
                         <input type="text" value="5" placeholder="5" id="number" />-->
                         请输入评价内容
                         <input type="text" value="" placeholder="请输入你的评价..." id="order_note" />
                         <a class="btn" onclick="submit_review()">提交</a>
                     </div>
+                    <div id="review"></div>
                 </div>
             </div>
         </div>
@@ -44,41 +45,70 @@
                     window.location.href = "{{url_for('index')}}";
                 } else {
                     let tbody = $("#my_order");
+                    tbody.append(`<tr id="my_order${order_id}"></tr>`);
+                    let p_tr = $(`#my_order${order_id}`);
 
-                        tbody.append(`<tr id="my_order${order_id}"></tr>`);
-                        let p_tr = $(`#my_order${order_id}`);
+                    let item_id = ret.data.item_info[0].item_id; //目前还只有一个商品信息
+                    p_tr.append(`<td id="order_item_pic${order_id}"></td>`);
+                    p_tr.append(`<td id="order_item_data${order_id}"></td>`);
+                    p_tr.append(`<td><a href="/order/${order_id}">订单详情</a></td>`);
+                    let pic_url = "/api/get_item_head_pic";
+                    if (debug) pic_url = `http://127.0.0.1:4523/mock/927026${pic_url}`;
+                    $.ajax({
+                        url: pic_url,
+                        type: "GET",
+                        data: { item_id: item_id },
+                        success: function (pic_ret) {
+                            if (pic_ret.statusCode == 200) {
+                                $(`#order_item_pic${order_id}`).append(`<img src=${pic_ret.data.url} height=40 width=40>`);
+                            }
+                        },
+                    });
+                    let item_url = "/api/get_item_info";
+                    if (debug) item_url = `http://127.0.0.1:4523/mock/927026${item_url}`;
+                    $.ajax({
+                        url: item_url,
+                        type: "Get",
+                        data: { item_id: item_id },
+                        success: function (item_ret) {
+                            if (item_ret.statusCode == 200) {
+                                let desc = $(`#order_item_data${order_id}`);
+                                desc.append(`<a href = /item/content/${item_id} >${item_ret.data.name}</a>`);
+                                desc.append(`<p>${item_ret.data.description}</p>`);
+                                desc.append(`<a href=/chat/${item_ret.data.user_id}>联系商家</a>`);
+                            }
+                        },
+                    });
 
-                        let item_id = ret.data.item_info[0].item_id; //目前还只有一个商品信息
-                        p_tr.append(`<td id="order_item_pic${order_id}"></td>`);
-                        p_tr.append(`<td id="order_item_data${order_id}"></td>`);
-                        p_tr.append(`<td><a href="/order/${order_id}">订单详情</a></td>`);
-                        let pic_url = "/api/get_item_head_pic";
-                        if (debug) pic_url = `http://127.0.0.1:4523/mock/927026${pic_url}`;
-                        $.ajax({
-                            url: pic_url,
-                            type: "GET",
-                            data: { item_id: item_id },
-                            success: function (pic_ret) {
-                                if (pic_ret.statusCode == 200) {
-                                    $(`#order_item_pic${order_id}`).append(`<img src=${pic_ret.data.url} height=40 width=40>`);
+                    let is_review_url="/api/get_user_is_review";
+                    $.ajax({
+                        url:is_review_url,
+                        type:"GET",
+                        data:{order_id:order_id},
+                        success:function(review_ret){
+                            if(review_ret.statusCode==200){
+                                if(review_ret['data']['is_review']==true)//评价过了
+                                {
+                                    $("#review_post").attr("hidden","hidden");
+                                    review_id=review_ret.data.review_id;
+                                    feedback_url="/api/get_review";
+                                    $.ajax({
+                                        url:feedback_url,
+                                        type:"GET",
+                                        data:{review_id:review_id},
+                                        success:function(feedback_ret){
+                                            console.log(feedback_ret);
+                                            if(feedback_ret.statusCode==200){
+                                                $("#review").append(feedback_ret.data.feedback_content);
+                                            }else bootbox.alert(feedback_ret.message);
+                                        },
+                                    });
                                 }
-                            },
-                        });
-                        let item_url = "/api/get_item_info";
-                        if (debug) item_url = `http://127.0.0.1:4523/mock/927026${item_url}`;
-                        $.ajax({
-                            url: item_url,
-                            type: "Get",
-                            data: { item_id: item_id },
-                            success: function (item_ret) {
-                                if (item_ret.statusCode == 200) {
-                                    let desc = $(`#order_item_data${order_id}`);
-                                    desc.append(`<a href = /item/content/${item_id} >${item_ret.data.name}</a>`);
-                                    desc.append(`<p>${item_ret.data.description}</p>`);
-                                    desc.append(`<a href=/chat/${item_ret.data.user_id}>联系商家</a>`);
-                                }
-                            },
-                        });
+                            }else{
+                                bootbox.alert(review_ret.message);
+                            }
+                        },
+                    });
                 }
             },
         });

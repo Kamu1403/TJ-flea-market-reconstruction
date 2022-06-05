@@ -70,7 +70,24 @@
                         p_tr.append(`<button id="confirm${order_id}" onclick="change_state('${order_id}',1)">确认订单</button>`);
                         p_tr.append(`<button id="complete${order_id}" onclick="change_state('${order_id}',2)">完成订单</button>`);
                         p_tr.append(`<button id="cancel${order_id}" onclick="change_state('${order_id}',-1)">取消订单</button>`);
-                        if(ret.data[i].state==2){p_tr.append(`<a href="/order/review/${order_id}">前往评价</a>`)}
+                        if(ret.data[i].state==2){
+                            let is_review_url="/api/get_user_is_review";
+                            $.ajax({
+                                url:is_review_url,
+                                type:"GET",
+                                data:{order_id:order_id},
+                                success:function(review_ret){
+                                    if(review_ret.statusCode==200){
+                                        if(review_ret['data']['is_review']==false)
+                                            p_tr.append(`<a href="/order/review/${order_id}">前往评价</a>`);
+                                        else p_tr.append(`<a href="/order/review/${order_id}">查看历史评价</a>`);
+                                    }else{
+                                        bootbox.alert(review_ret.message);
+                                    }
+                                },
+                            });
+
+                        }
                         let pic_url = "/api/get_item_head_pic";
                         if (debug) pic_url = `http://127.0.0.1:4523/mock/927026${pic_url}`;
                         $.ajax({
