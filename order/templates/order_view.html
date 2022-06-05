@@ -1,25 +1,102 @@
 {% extends "base.html" %} {% block title %}
-<title></title>
-{% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block
-main %}
+<title>查看订单 {{order_id}}</title>
+{% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
 <main>
-    <table>
-        <thead></thead>
-        <tbody>
-            <tr>
-                <th>商品名</th>
-                <th>商品图片</th>
-                <th>商品id</th>
-                <th>商品售价</th>
-                <th>订购数量</th>
-            </tr>
-        </tbody>
-        <tfoot></tfoot>
-    </table>
-    <div id="state"></div>
-    <button id="confirm" onclick="change_state('{{order_id}}',1)">确认订单</button>
-    <button id="complete" onclick="change_state('{{order_id}}',2)">完成订单</button>
-    <button id="cancel" onclick="change_state('{{order_id}}',-1)">取消订单</button>
+
+    <div class="cart-area pt-90 pb-90">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-xl-7 col-lg-12">
+                    <div class="shop-cart-total">
+                        <h3 class="title">确认订单</h3>
+                        <div class="shop-cart-widget">
+                            <form action="javascript:void(0)">
+                                <ul>
+                                    <li class="shop-check-wrap" id="user1">
+                                        <span>发起人</span>
+                                    </li>
+
+                                    <li class="shop-check-wrap" id="time">
+                                        <span>发起时间</span>
+                                    </li>
+
+                                    <li class="shop-check-wrap" id="user2">
+                                        <span>发布者</span>
+                                    </li>
+                                    <div class="row justify-content-center">
+                                    <div class="col-xl-10">
+                                        <div class="cart-wrapper">
+                                            <div class="table-responsive">
+                                                <table class="table mb-0">
+                                                    <thead>
+                                                        <tr>
+                                                            <th class="product-thumbnail">商品名</th>
+                                                            <th class="product-thumbnail">商品图片</th>
+                                                            <th class="product-thumbnail">商品ID</th>
+                                                            <th class="product-price">商品售价</th>
+                                                            <th class="product-quantity">订购数量</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td class="product-name" id="itemName">
+                                                                
+                                                            </td>
+                                                            <td class="product-thumbnail" id="itemPic">
+                                                                
+                                                            </td>
+                                                            <td class="product-subtotal" id="itemId">
+
+                                                            </td>
+                                                            <td class="product-price" id="itemPrice">
+                                                                
+                                                            </td>
+                                                            <td class="product-quantity" id="orderquantity">
+                                                                
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        </div>
+                                    </div>
+                                    <li>
+                                    </li>
+                                    <li class="shop-check-wrap" id="receiver">
+                                        <span>收件人</span>
+                                    </li>
+
+                                    <li class="shop-check-wrap" id="campus">
+                                        <span>所在校区</span>
+                                    </li>
+
+                                    <li class="shop-check-wrap" id="address">
+                                        <span>详细地址</span>
+                                    </li>
+
+                                    <li class="shop-check-wrap" id="note">
+                                        <span>备注</span>
+                                    </li>
+                                    
+                                    <li class="shop-check-wrap" id="totalPrice">
+                                        <span>总价</span>
+                                    </li>
+
+                                    <li class="shop-check-wrap" id="orderState">
+                                        <span>订单状态</span>
+                                    </li>
+                                </ul>
+
+                                <button class="btn" id="confirm" onclick="change_state('{{order_id}}',1)">确认订单</button></br></br>
+                                <button class="btn" id="complete" onclick="change_state('{{order_id}}',2)">完成订单</button></br></br>
+                                <button class="btn" id="cancel" onclick="change_state('{{order_id}}',-1)">取消订单</button></br></br>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </main>
 {% endblock %} {% block footer %} {{ super() }} {% endblock %} {% block js %} {{ super() }}
 
@@ -45,20 +122,8 @@ main %}
                     /*if (data.state > -1) {
                         $("#state").append(`<span><p>商家是否确认:${data.state > 0}</p></span>`);
                     }*/
-                    $("thead").append(`<tr>\
-                            <td>\
-                                <span>\
-                                    发起人为<a href='/user/${data.user_id}/user_info'>${data.user_id}</a>\
-                                    </span>\
-                                    </td>\
-                                    </tr>`);
-                    $("thead").append(`<tr>\
-                            <td>\
-                                <span>\
-                                    发起时间:${data.create_time}\
-                                    </span>\
-                                    </td>\
-                                    </tr>`);
+                    $("#user1").append(`<a href='/user/${data.user_id}/user_info'>${data.user_id}</a>`);
+                    $("#time").append(`${data.create_time}`);
                     let tfoot = $("tfoot");
                     for (var i = 0; i < 5; i++) {
                         tfoot.append("<tr></tr>");
@@ -68,27 +133,16 @@ main %}
                             tr.append("<td></td>");
                         }
                     }
-                    tfoot.children().eq(0).children().eq(0).text("收件人:");
-                    tfoot.children().eq(0).children().eq(1).text(`${data.name}`);
-                    tfoot.children().eq(1).children().eq(0).text("所在校区");
-                    tfoot.children().eq(1).children().eq(1).text(`${data.campus_branch}`);
-                    tfoot.children().eq(2).children().eq(0).text("详细地址");
-                    tfoot.children().eq(2).children().eq(1).text(`${data.full_address}`);
-                    tfoot.children().eq(3).children().eq(0).text("备注:");
-                    tfoot.children().eq(3).children().eq(1).text(`${data.note}`);
-                    tfoot.children().eq(4).children().eq(0).text("总价");
-                    tfoot.children().eq(4).children().eq(1).text(`${data.payment}`);
+                    $("#receiver").append(`${data.name}`);
+                    $("#campus").append(`${data.campus_branch}`);
+                    $("#address").append(`${data.full_address}`);
+                    $("#note").append(`${data.note}`==""?"无备注":`${data.note}`);
+                    $("#totalPrice").append(`${data.payment}`);
                     let tbody = $("tbody");
                     for (var i = 0; i < data.item_info.length; i++) {
-                        tbody.append("<tr></tr>");
-                        let len = tbody.children().length;
-                        let tr = tbody.children().eq(len - 1);
-                        for (var j = 0; j < 5; j++) {
-                            tr.append("<td></td>");
-                        }
-                        tr.children().eq(2).append(`<span>${data.item_info[i].item_id}</span>`);
-                        tr.children().eq(3).append(`<span>${data.item_info[i].price}</span>`);
-                        tr.children().eq(4).append(`<span>${data.item_info[i].quantity}</span>`);
+                        $("#itemId").append(`<a href="/item/content/${data.item_info[i].item_id}">${data.item_info[i].item_id}</a>`);
+                        $("#itemPrice").append(`<span>${data.item_info[i].price}</span>`);
+                        $("#orderquantity").append(`<span>${data.item_info[i].quantity}</span>`);
                         let item_url = "/api/get_item_info";
                         if (debug) item_url = `http://127.0.0.1:4523mock/927026${item_url}`;
                         let has_op = false;
@@ -100,15 +154,9 @@ main %}
                                 if (item_ret.statusCode != 200) {
                                     tr.children().eq(0).text(item_ret.message);
                                 } else {
-                                    tr.children().eq(0).append(`<span>${item_ret.data.name}</span>`);
+                                    $("#itemName").append(`<h4><a href="/item/content/${item_ret.data.name}">${item_ret.data.name}</a></h4>`);
                                     if (has_op == false) {
-                                        $("thead").append(`<tr>\
-                            <td>\
-                                <span>\
-                                    卖家为<a href='/user/${item_ret.data.user_id}/user_info'>${item_ret.data.user_id}</a>\
-                                    </span>\
-                                    </td>\
-                                    </tr>`);
+                                        $("#user2").append(`<a href='/user/${item_ret.data.user_id}/user_info'>${item_ret.data.user_id}</a>`);
                                         has_op = false;
                                     }
 
@@ -136,8 +184,7 @@ main %}
                                         $("#complete").attr("disabled", "disabled");
                                         $("#confirm").attr("disabled", "disabled");
                                     }
-                                    $("#state").append(`<span><p>订单状态:${state_message}</p></span>`);
-
+                                    $("#orderState").append(`${state_message}`);
                                 }
                             },
                         });
@@ -146,12 +193,14 @@ main %}
                         $.ajax({
                             url: pic_url,
                             type: "get",
+                            async:false,
                             data: { item_id: data.item_info[i].item_id },
                             success: function (pic_ret) {
                                 if (pic_ret.statusCode != 200) {
-                                    tr.children().eq(1).text(pic_ret.message);
+                                    $("#itemPic").append(`${pic_ret.message}`);
                                 } else {
-                                    tr.children().eq(1).append(`<img src=${pic_ret.data.url} width=40 height=40>`);
+                                    $("#itemPic").append(`<a href="/item/content/
+                                    ${data.item_info[i].item_id}"><img src=${pic_ret.data.url} width=40 height=40></a>`);
                                 }
                             },
                         });
