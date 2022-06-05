@@ -67,7 +67,7 @@
                                     let desc = $(`#order_item_data${order_id}`);
                                     desc.append(`<a href = /item/content/${item_id} >${item_ret.data.name}</a>`);
                                     desc.append(`<p>${item_ret.data.description}</p>`);
-                                    desc.append(`<a href=/user/${item_ret.data.user_id}/user_info>查看商家</a>`);
+                                    desc.append(`<a href=/chat/${item_ret.data.user_id}>联系商家</a>`);
                                 }
                             },
                         });
