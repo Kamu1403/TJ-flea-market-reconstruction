@@ -130,7 +130,7 @@
                 text = $('#text').val();
                 $('#text').val('');
                 if (text != "")
-                    socket.emit('text', { msg: text, time: cur_time, receiver: receiver, room: room, type: "text" });
+                    socket.emit('text', { msg: text, time: cur_time, receiver: receiver, room: room, type: 0 });
             }
         });
         window.addEventListener('beforeunload', function (event) {  // or 'unload'
