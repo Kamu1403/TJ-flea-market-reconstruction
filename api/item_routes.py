@@ -91,7 +91,7 @@ def get_item_info():
         dic.pop('id')
         dic.pop('locked_num')
         dic['publish_time'] = str(dic['publish_time'])
-        dic['price'] = Float(dic['price'])
+        dic['price'] = float(dic['price'])
         if not current_user.is_authenticated:
             isAdmin = False
             isPub = False
