@@ -228,7 +228,7 @@
             });
             function search_item() {
                 var item = $("#item_name").val();
-                var type=$("#type").val();
+                let type=$("#type.custom-select").val();
                 if (item=="")
                     location.reload(true);
                 else
