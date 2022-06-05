@@ -170,3 +170,117 @@ def get_item_id_by_order():
             tep = {"quantity": i.quantity, "item_id": i.item_id.id}
             res.append(tep)
         return make_response_json(200, "获取成功", res)
+
+
+@api_blue.route("/get_review_by_order", methods=["GET"])
+def get_review_by_order():
+    if not current_user.is_authenticated:
+        return make_response_json(401, "当前用户未登录")
+    data = dict(request.args)
+    try:
+        order_id = int(data['order_id'])
+    except:
+        return make_response(400, "请求格式不对")
+    res = dict()
+    try:
+        _order_state_item = Order_State_Item.get(
+            Order_State_Item.order_id == order_id)
+    except:
+        return make_response_json(404, "为找到对应订单状态明细")
+    else:
+        try:
+            if _order_state_item.user_review_id == None:
+                res['user_review_id'] = -1
+            else:
+                res["user_review_id"] = _order_state_item.user_review_id.id
+                review = _order_state_item.user_review_id
+                res["user_review_content"] = {
+                    "id": review.id,
+                    "user_id": review.user_id.id,
+                    "publish_time": str(review.publish_time),
+                    "feedback_content": review.feedback_content
+                }
+            if _order_state_item.op_user_review_id == None:
+                res['op_user_review_id'] = -1
+            else:
+                res["op_user_review_id"] = _order_state_item.op_user_review_id.id
+                review = _order_state_item.op_user_review_id
+                res["user_review_content"] = {
+                    "id": review.id,
+                    "user_id": review.user_id.id,
+                    "publish_time": str(review.publish_time),
+                    "feedback_content": review.feedback_content
+                }
+        except Exception as e:
+            return make_response_json(500, f"程序错误repr{e}")
+        return make_response_json(200, "操作成功", res)
+
+
+@api_blue.route("/get_user_is_review", methods=["GET"])
+def get_user_is_review():
+    if not current_user.is_authenticated:
+        return make_response_json(401, "当前用户未登录")
+    data = dict(request.args)
+    try:
+        order_id = int(data['order_id'])
+    except:
+        return make_response(400, "请求格式不对")
+    try:
+        user_id = int(data['user_id'])
+    except:
+        user_id = current_user.id
+    res = dict()
+    try:
+        _order_state_item = Order_State_Item.get(
+            Order_State_Item.order_id == order_id)
+    except:
+        return make_response_json(404, "为找到对应订单状态明细")
+    try:
+        _order_item = Order_Item.get(Order_Item.order_id == order_id)
+    except:
+        return make_response_json(404, "为找到订单明细")
+    if _order_item.item_id.user_id.id == user_id:  #是商家
+        if _order_state_item.op_user_review_id == None:
+            res['is_review'] = False
+            return make_response_json(200, "查找成功", res)
+        else:
+            res["is_review"] = True
+            res['review_id'] = _order_state_item.op_user_review_id.id
+            return make_response_json(200, "查找成功", res)
+    elif _order_item.order_id.user_id.id == user_id:  #是订单发起者
+        if _order_state_item.user_review_id == None:
+            res['is_review'] = False
+            return make_response_json(200, "查找成功", res)
+        else:
+            res["is_review"] = True
+            res['review_id'] = _order_state_item.user_review_id.id
+            return make_response_json(200, "查找成功", res)
+    else:
+        return make_response_json(401, "该用户不是订单双方")
+
+
+@api_blue.route("/get_review", methods=["GET"])
+def get_review():
+    if not current_user.is_authenticated:
+        return make_response_json(401, "当前用户未登录")
+    data = dict(request.args)
+    try:
+        review_id = int(data['review_id'])
+    except:
+        return make_response_json(400, "请求格式不对")
+
+    try:
+        review = Review.get(Review.id == review_id)
+    except:
+        return make_response_json(404, "为找到对应评价")
+    else:
+        try:
+            res = {
+                #"id": review.id,
+                "user_id": review.user_id.id,
+                "publish_time": str(review.publish_time),
+                "feedback_content": review.feedback_content
+            }
+        except Exception as e:
+            return make_response_json(500, f"程序错误repr{e}")
+        return make_response_json(200, "操作成功", res)
