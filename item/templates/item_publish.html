@@ -181,7 +181,9 @@ main %}
                 if (ret.statusCode == 200) {
                     alert("商品发布成功，点击确认后将跳转至商品详情页。");
                     window.location = ret.data.url;
-                } else alert("商品发布失败：\n" + ret.message + "\n点击确认返回修改。");
+                } else
+                    suspend("alert-danger","商品发布失败: "+ret.message + "\n请重试。"); 
+                //alert("商品发布失败：\n" + ret.message + "\n点击确认返回修改。");
             },
         });
     }
