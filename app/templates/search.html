@@ -121,7 +121,7 @@
     }
 
     $(document).ready(function () {
-        $("#item_name").attr("placeholder", keyword);
+        $("#item_name").val(keyword);
         console.log(search_type);
         $("#type.custom-select ").val(parseInt(search_type));
         send_search({ search_type: search_type, start_time: "", end_time: "", order_type: "", key_word: keyword });
