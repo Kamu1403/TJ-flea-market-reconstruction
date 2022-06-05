@@ -3,7 +3,6 @@
 import base64
 from io import BytesIO
 import shutil
-from typing import final
 
 import werkzeug
 from api.utils import *
@@ -15,7 +14,7 @@ from datetime import datetime, date, timedelta
 from hashlib import md5
 from difflib import SequenceMatcher
 from PIL import Image
-
+from numpy import float32 as Float
 
 def createPath(path: str) -> None:
     if not os.path.exists(path):
@@ -92,7 +91,7 @@ def get_item_info():
         dic.pop('id')
         dic.pop('locked_num')
         dic['publish_time'] = str(dic['publish_time'])
-        dic['price'] = float(dic['price'])
+        dic['price'] = Float(dic['price'])
         if not current_user.is_authenticated:
             isAdmin = False
             isPub = False
@@ -197,7 +196,7 @@ def get_search():
             #orderWay = (Item.publish_time.desc(), )  # 改：默认其实为相似度
             datas.sort(key=lambda x: SequenceMatcher(a=key_word, b=x["name"]).ratio(), reverse=True)
         for i in datas:
-            i['price'] = float(i['price'])
+            i['price'] = Float(i['price'])
             i['publish_time'] = str(i['publish_time'])
             new_data.append(i)
         range_max = min(len(new_data),range_max)
@@ -259,6 +258,10 @@ def change_item_num():
         data["num"] = int(data["num"])
     except Exception as e:
         return make_response_json(400, "请求格式不对")
+    if data["num"]<0:
+        return make_response_json(400,"不允许负数物品存在")
+    if data["num"].bit_length() > 31:
+        return make_response_json(400,"数量越界")
     try:
         item = Item.get(Item.id == data["item_id"])
     except Exception as e:
@@ -295,13 +298,19 @@ def change_item_data():
         data["id"] = int(data["id"])
         if "shelved_num" in data:
             data["shelved_num"] = int(data["shelved_num"])
-        if "locked_num" in data:
-            data["locked_num"] = int(data["locked_num"])
         if "price" in data:
-            data["price"] = float(data["price"])
+            data["price"] = Float(data["price"])
     except Exception as e:
         return make_response_json(400, "请求格式不对")
-
+    if data["shelved_num"]<0:
+        return make_response_json(400,"不允许负数商品个数")
+    if data["price"] == Float("inf") or data["price"] == Float("nan"):
+        return make_response_json(400,"价格越界")
+    if data["price"] <=0:
+        return make_response_json(400,"不允许非正数价格")
+    print(data["shelved_num"].bit_length())
+    if data["shelved_num"].bit_length()>31:
+        return make_response_json(400,"数量越界")
     try:
         item = Item.get(Item.id == data["id"])
     except Exception as e:
@@ -349,17 +358,24 @@ def post_item_info():
     if data["tag"] not in Item_tag_type._value2member_map_:
         return make_response_json(400, "请求格式错误")
     try:
-        price = float(data["price"])
+
+        price = Float(data["price"])
         item_type = int(data["type"])
         shelved_num = int(data["shelved_num"])
     except Exception as e:
+        print(e)
         return make_response_json(400, "数据类型错误")
+    if price == Float("inf") or price == Float("nan"):
+        return make_response_json(400,"价格越界")
     if price <= 0:
-        return make_response_json(400, "价格数值越界")
+        return make_response_json(400, "价格越界")
     if item_type != Item_type.Goods.value and item_type != Item_type.Want.value:
         return make_response_json(400, "仅能上传物品")
     if shelved_num <= 0:
-        return make_response_json(400, "数量数值越界")
+        return make_response_json(400, "数量越界")
+    print(shelved_num.bit_length())
+    if shelved_num.bit_length() > 31:
+        return make_response_json(400, "数量越界")
     data["user_id"] = current_user.id
     data["publish_time"] = datetime.now()
     print(data)

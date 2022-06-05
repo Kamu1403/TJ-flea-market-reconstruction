@@ -7,9 +7,7 @@ from item.models import Item_type, Item_state
 from order.models import Contact
 from datetime import datetime, timedelta
 
-Campus_List = [
-    eval(f"User_Campus_state.{i}.value") for i in User_Campus_state.__members__
-]
+
 
 
 @api_blue.route("/get_order", methods=["GET"])
@@ -311,7 +309,7 @@ def address():
             # j["id"] = j["contact_id"]
             # j.pop("contact_id")
             if "campus_branch" in j:
-                if j["campus_branch"] not in Campus_List:
+                if j["campus_branch"] not in User_Campus_state._value2member_map_:
                     return make_response_json(400, "校区填写错误")
             try:
                 # j["id"] = j["contact_id"]
@@ -369,7 +367,7 @@ def address():
         old_default = None
         for i, j in enumerate(data):
             if "campus_branch" in j:
-                if j["campus_branch"] not in Campus_List:
+                if j["campus_branch"] not in User_Campus_state._value2member_map_:
                     return make_response_json(400, "校区填写错误")
             j["user_id"] = current_user.id
             if "default" in j and j["default"]:
