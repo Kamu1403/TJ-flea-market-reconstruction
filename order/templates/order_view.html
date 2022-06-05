@@ -87,11 +87,12 @@
                                         <span>订单状态</span>
                                     </li>
                                 </ul>
-
-                                <button class="btn" id="confirm" onclick="change_state('{{order_id}}',1)">确认订单</button></br></br>
-                                <button class="btn" id="complete" onclick="change_state('{{order_id}}',2)">完成订单</button></br></br>
-                                <button class="btn" id="cancel" onclick="change_state('{{order_id}}',-1)">取消订单</button></br></br>
-                        </div>
+                                <div class="row justify-content-center">
+                                <button class="btn col-xl-3" id="confirm" onclick="change_state('{{order_id}}',1)">确认订单</button>&nbsp;&nbsp;
+                                <button class="btn col-xl-3" id="complete" onclick="change_state('{{order_id}}',2)">完成订单</button>&nbsp;&nbsp;
+                                <button class="btn col-xl-3" id="cancel" onclick="change_state('{{order_id}}',-1)">取消订单</button>
+                                </div>
+                            </div>
                     </div>
                 </div>
             </div>
