@@ -363,11 +363,10 @@ def post_item_info():
         item_type = int(data["type"])
         shelved_num = int(data["shelved_num"])
     except Exception as e:
-        print(e)
         return make_response_json(400, "数据类型错误")
     if price == Float("inf") or price == Float("nan"):
         return make_response_json(400,"价格越界")
-    if price <= 0:
+    if price <= 1e-8:
         return make_response_json(400, "价格越界")
     if item_type != Item_type.Goods.value and item_type != Item_type.Want.value:
         return make_response_json(400, "仅能上传物品")
