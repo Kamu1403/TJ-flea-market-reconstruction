@@ -16,6 +16,7 @@ from difflib import SequenceMatcher
 from PIL import Image
 from numpy import float32 as Float
 
+
 def createPath(path: str) -> None:
     if not os.path.exists(path):
         os.makedirs(path)
@@ -35,8 +36,10 @@ def get_item_pics():
         item = Item.get(Item.id == item_id)
     except Exception as e:
         return make_response_json(400, "此物品不存在")
-    pic_path = os.path.join(item_blue.static_folder, f'resource/item_pic/{item_id}/pic')
-    default_pic = os.path.join(item_blue.static_folder, 'resource/default_pic/test.jpg')
+    pic_path = os.path.join(item_blue.static_folder,
+                            f'resource/item_pic/{item_id}/pic')
+    default_pic = os.path.join(item_blue.static_folder,
+                               'resource/default_pic/test.jpg')
     if not os.path.exists(pic_path):
         createPath(pic_path)
     if len(os.listdir(pic_path)) == 0:
@@ -44,7 +47,9 @@ def get_item_pics():
     pic_list = os.listdir(pic_path)
     pics = list()
     for pic_name in pic_list:
-        pics.append(url_for('item.static', filename=f'resource/item_pic/{item_id}/pic/{pic_name}'))
+        pics.append(
+            url_for('item.static',
+                    filename=f'resource/item_pic/{item_id}/pic/{pic_name}'))
     return make_response_json(200, "图片查找成功", data={"url": pics})
 
 
@@ -59,14 +64,17 @@ def get_item_head_pic():
         item = Item.get(Item.id == item_id)
     except Exception as e:
         return make_response_json(400, "此物品不存在")
-    pic_path = os.path.join(item_blue.static_folder, f'resource/item_pic/{item_id}/head')
-    default_pic = os.path.join(item_blue.static_folder, 'resource/default_pic/test.jpg')
+    pic_path = os.path.join(item_blue.static_folder,
+                            f'resource/item_pic/{item_id}/head')
+    default_pic = os.path.join(item_blue.static_folder,
+                               'resource/default_pic/test.jpg')
     if not os.path.exists(pic_path):
         createPath(pic_path)
     if len(os.listdir(pic_path)) == 0:
         shutil.copy(default_pic, pic_path)
     pic_list = os.listdir(pic_path)
-    pic = url_for('item.static', filename=f'resource/item_pic/{item_id}/head/{pic_list[0]}')
+    pic = url_for('item.static',
+                  filename=f'resource/item_pic/{item_id}/head/{pic_list[0]}')
     return make_response_json(200, "图片查找成功", data={"url": pic})
 
 
@@ -141,9 +149,9 @@ def get_search():
                 range_min = int(data["range_min"])
                 range_max = int(data["range_max"])
             except Exception as e:
-                return make_response_json(400,"请求格式错误")
+                return make_response_json(400, "请求格式错误")
         else:
-            return make_response_json(400,"请求格式错误")
+            return make_response_json(400, "请求格式错误")
     else:
         range_min = 0
         range_max = 50
@@ -161,7 +169,8 @@ def get_search():
         order_type = "name"
     #get_data = Item.select().where().exectue()
 
-    need = (Item.id, Item.name, Item.user_id, Item.publish_time, Item.price, Item.tag)
+    need = (Item.id, Item.name, Item.user_id, Item.publish_time, Item.price,
+            Item.tag)
     select_need = [Item.name.contains(key_word)]
     if search_type in Item_type._value2member_map_:
         select_need.append(Item.type == search_type)
@@ -194,13 +203,18 @@ def get_search():
             datas.sort(key=lambda x: x["price"], reverse=False)
         else:
             #orderWay = (Item.publish_time.desc(), )  # 改：默认其实为相似度
-            datas.sort(key=lambda x: SequenceMatcher(a=key_word, b=x["name"]).ratio(), reverse=True)
+            datas.sort(
+                key=lambda x: SequenceMatcher(a=key_word, b=x["name"]).ratio(),
+                reverse=True)
         for i in datas:
-            i['price'] = Float(i['price'])
+            i['price'] = float(i['price'])
             i['publish_time'] = str(i['publish_time'])
             new_data.append(i)
-        range_max = min(len(new_data),range_max)
-        final_data = {"total_count":len(new_data),"item_list":new_data[range_min:range_max]}
+        range_max = min(len(new_data), range_max)
+        final_data = {
+            "total_count": len(new_data),
+            "item_list": new_data[range_min:range_max]
+        }
         return make_response_json(200, "搜索结果如下", data=final_data)
 
 
@@ -229,9 +243,11 @@ def change_item_state():
                 #       pass
                 if data["state"] == Item_state.Freeze.value:
                     if item.type == Item_type.Goods.value:
-                        send_message(SYS_ADMIN_NO, item.user_id.id, f"您的商品<{item.name}>被系统管理员下架")
+                        send_message(SYS_ADMIN_NO, item.user_id.id,
+                                     f"您的商品<{item.name}>被系统管理员下架")
                     elif item.type == Item_type.Want.value:
-                        send_message(SYS_ADMIN_NO, item.user_id.id, f"您的悬赏<{item.name}>被系统管理员下架")
+                        send_message(SYS_ADMIN_NO, item.user_id.id,
+                                     f"您的悬赏<{item.name}>被系统管理员下架")
                 item.save()
                 return make_response_json(200, "操作成功")
             elif current_user.state == User_state.Under_ban.value:
@@ -258,10 +274,10 @@ def change_item_num():
         data["num"] = int(data["num"])
     except Exception as e:
         return make_response_json(400, "请求格式不对")
-    if data["num"]<0:
-        return make_response_json(400,"不允许负数物品存在")
+    if data["num"] < 0:
+        return make_response_json(400, "不允许负数物品存在")
     if data["num"].bit_length() > 31:
-        return make_response_json(400,"数量越界")
+        return make_response_json(400, "数量越界")
     try:
         item = Item.get(Item.id == data["item_id"])
     except Exception as e:
@@ -306,15 +322,15 @@ def change_item_data():
             data["price"] = Float(data["price"])
     except Exception as e:
         return make_response_json(400, "请求格式不对")
-    if data["shelved_num"]<0:
-        return make_response_json(400,"不允许负数商品个数")
+    if data["shelved_num"] < 0:
+        return make_response_json(400, "不允许负数商品个数")
     if data["price"] == Float("inf") or data["price"] == Float("nan"):
-        return make_response_json(400,"价格越界")
-    if data["price"] <=0:
-        return make_response_json(400,"不允许非正数价格")
+        return make_response_json(400, "价格越界")
+    if data["price"] <= 0:
+        return make_response_json(400, "不允许非正数价格")
     print(data["shelved_num"].bit_length())
-    if data["shelved_num"].bit_length()>31:
-        return make_response_json(400,"数量越界")
+    if data["shelved_num"].bit_length() > 31:
+        return make_response_json(400, "数量越界")
     try:
         item = Item.get(Item.id == data["id"])
     except Exception as e:
@@ -343,7 +359,9 @@ def trans_square(image):
     r"""Open the image using PIL."""
     image = image.convert('RGB')
     w, h = image.size
-    background = Image.new('RGB', size=(max(w, h), max(w, h)), color=(255, 255, 255))  # 创建背景图，颜色值为127
+    background = Image.new('RGB',
+                           size=(max(w, h), max(w, h)),
+                           color=(255, 255, 255))  # 创建背景图，颜色值为127
     length = int(abs(w - h) // 2)  # 一侧需要填充的长度
     box = (length, 0) if w < h else (0, length)  # 粘贴的位置
     background.paste(image, box)
@@ -373,7 +391,7 @@ def post_item_info():
     except Exception as e:
         return make_response_json(400, "数据类型错误")
     if price == Float("inf") or price == Float("nan"):
-        return make_response_json(400,"价格越界")
+        return make_response_json(400, "价格越界")
     if price <= 1e-8:
         return make_response_json(400, "价格越界")
     if item_type != Item_type.Goods.value and item_type != Item_type.Want.value:
@@ -390,10 +408,16 @@ def post_item_info():
         new = Item.create(**data)
     except Exception as e:
         return make_response_json(500, f"上传失败：{repr(e)}")
-    createPath(os.path.join(item_blue.static_folder, f'resource/item_pic/{new.id}/head'))
-    createPath(os.path.join(item_blue.static_folder, f'resource/item_pic/{new.id}/pic'))
-    default_pic = os.path.join(item_blue.static_folder, 'resource/default_pic/test.jpg')
-    curpath = os.path.join(item_blue.static_folder, f'resource/item_pic/{new.id}/')
+    createPath(
+        os.path.join(item_blue.static_folder,
+                     f'resource/item_pic/{new.id}/head'))
+    createPath(
+        os.path.join(item_blue.static_folder,
+                     f'resource/item_pic/{new.id}/pic'))
+    default_pic = os.path.join(item_blue.static_folder,
+                               'resource/default_pic/test.jpg')
+    curpath = os.path.join(item_blue.static_folder,
+                           f'resource/item_pic/{new.id}/')
     tempath = os.path.join(item_blue.static_folder, f'resource/temp/')
     if len(data["urls"]) == 0:
         #给一个默认图
@@ -410,7 +434,8 @@ def post_item_info():
             head_pic = head_pics[0]
         else:
             head_pic = head_pics[0]
-        shutil.copy(os.path.join(tempath, head_pic), os.path.join(curpath, 'head/'))
+        shutil.copy(os.path.join(tempath, head_pic),
+                    os.path.join(curpath, 'head/'))
 
         img = Image.open(os.path.join(curpath, 'head/', head_pic))
         img = trans_square(img)
@@ -418,9 +443,11 @@ def post_item_info():
         img.save(os.path.join(curpath, 'head/', head_pic), 'WEBP')
 
         for j in data["urls"]:
-            shutil.move(os.path.join(tempath, j["MD5"]), os.path.join(curpath, 'pic/'))
+            shutil.move(os.path.join(tempath, j["MD5"]),
+                        os.path.join(curpath, 'pic/'))
         #将所有的图片转到用户对应文件夹
-    return make_response_json(200, "上传成功", {"url": url_for('item.content', item_id=new.id)})
+    return make_response_json(200, "上传成功",
+                              {"url": url_for('item.content', item_id=new.id)})
 
 
 def get_pillow_img_form_data_stream(data):
@@ -487,7 +514,8 @@ def add_favor():
     try:
         repeat = False
         for i in req:
-            tep = Favor.select().where((Favor.user_id == current_user.id) & (Favor.item_id == i))
+            tep = Favor.select().where((Favor.user_id == current_user.id)
+                                       & (Favor.item_id == i))
             if tep.count() > 0:
                 repeat = True
             else:
@@ -512,12 +540,14 @@ def delete_favor():
     try:
         NotFound = False
         for i in req:
-            tep = Favor.select().where((Favor.user_id == current_user.id) & (Favor.item_id == i))
+            tep = Favor.select().where((Favor.user_id == current_user.id)
+                                       & (Favor.item_id == i))
 
             if tep.count() <= 0:
                 NotFound = True
             else:
-                Favor.delete().where((Favor.user_id == current_user.id) & (Favor.item_id == i)).execute()
+                Favor.delete().where((Favor.user_id == current_user.id)
+                                     & (Favor.item_id == i)).execute()
         if NotFound == True:
             return make_response_json(404, "不存在对应的收藏")
         return make_response_json(200, "删除成功")
@@ -536,13 +566,14 @@ def get_favor():
                 range_min = int(req["range_min"])
                 range_max = int(req["rang_max"])
             except Exception as e:
-                return make_response_json(400,"请求格式错误")
+                return make_response_json(400, "请求格式错误")
         else:
             return make_response_json("请求格式错误")
     else:
         range_min = 0
         range_max = 50
-    tep = Favor.select().where(Favor.user_id == current_user.id).order_by(Favor.collect_time.desc())
+    tep = Favor.select().where(Favor.user_id == current_user.id).order_by(
+        Favor.collect_time.desc())
     fav_data = []
     for i in tep:
         res = dict()
@@ -550,8 +581,11 @@ def get_favor():
         res['item_id'] = i.item_id.id
         res['collect_time'] = str(i.collect_time)
         fav_data.append(res)
-    range_max = min(len(fav_data),range_max)
-    data = {"total_count":len(fav_data),"favor_list":fav_data[range_min:range_max]}
+    range_max = min(len(fav_data), range_max)
+    data = {
+        "total_count": len(fav_data),
+        "favor_list": fav_data[range_min:range_max]
+    }
     return make_response_json(200, "操作成功", data)
 
 
@@ -564,7 +598,8 @@ def get_item_favor():
     except:
         return make_response_json(400, "格式错误")
     try:
-        tep = Favor.get(Favor.user_id == current_user.id, Favor.item_id == item_id)
+        tep = Favor.get(Favor.user_id == current_user.id,
+                        Favor.item_id == item_id)
     except:
         return make_response_json(200, "操作成功", False)
     else:
@@ -582,13 +617,14 @@ def get_history():
                 range_min = int(req["range_min"])
                 range_max = int(req["rang_max"])
             except Exception as e:
-                return make_response_json(400,"请求格式错误")
+                return make_response_json(400, "请求格式错误")
         else:
             return make_response_json("请求格式错误")
     else:
         range_min = 0
         range_max = 50
-    tep = History.select().where(History.user_id == current_user.id).order_by(History.visit_time.desc())
+    tep = History.select().where(History.user_id == current_user.id).order_by(
+        History.visit_time.desc())
     his_data = []
     for i in tep:
         res = dict()
@@ -596,8 +632,11 @@ def get_history():
         res['item_id'] = i.item_id.id
         res['visit_time'] = str(i.visit_time)
         his_data.append(res)
-    range_max = min(len(his_data),range_max)
-    data = {"total_count":len(his_data),"history_list":his_data[range_min:range_max]}
+    range_max = min(len(his_data), range_max)
+    data = {
+        "total_count": len(his_data),
+        "history_list": his_data[range_min:range_max]
+    }
     return make_response_json(200, "操作成功", data)
 
 
@@ -614,12 +653,14 @@ def item_delete_history():
     try:
         NotFound = False
         for i in req:
-            tep = History.select().where((History.user_id == current_user.id) & (History.item_id == i))
+            tep = History.select().where((History.user_id == current_user.id)
+                                         & (History.item_id == i))
 
             if tep.count() <= 0:
                 NotFound = True
             else:
-                History.delete().where((History.user_id == current_user.id) & (History.item_id == i)).execute()
+                History.delete().where((History.user_id == current_user.id)
+                                       & (History.item_id == i)).execute()
         if NotFound == True:
             return make_response_json(404, "不存在对应的历史")
         return make_response_json(200, "删除成功")
@@ -640,7 +681,9 @@ def report():
         kind = int(data['kind'])
     except Exception as e:
         return make_response_json(400, "请求格式不对")
-    if kind not in [eval(f"Feedback_kind.{i}.value") for i in Feedback_kind.__members__]:
+    if kind not in [
+            eval(f"Feedback_kind.{i}.value") for i in Feedback_kind.__members__
+    ]:
         return make_response_json(400, "请求格式不对")
     feedback_data["kind"] = kind
     if 'reason' in data:
@@ -708,9 +751,11 @@ def item_to_show():
             need.append(Item.publish_time >= last_time)
     try:
         if len(need):
-            need_od = Item.select().where(*need).order_by(Item.publish_time.desc()).execute()
+            need_od = Item.select().where(*need).order_by(
+                Item.publish_time.desc()).execute()
         else:
-            need_od = Item.select().order_by(Item.publish_time.desc()).execute()
+            need_od = Item.select().order_by(
+                Item.publish_time.desc()).execute()
     except Exception as e:
         return make_response_json(500, f"查询发生错误 {repr(e)}")
     else:
@@ -734,4 +779,7 @@ def item_to_show():
 
 @api_blue.route("/get_class", methods=["GET"])
 def get_class():
-    return make_response_json(200, "类别如下", data={"class": list(Item_tag_type._value2member_map_.keys())})
+    return make_response_json(
+        200,
+        "类别如下",
+        data={"class": list(Item_tag_type._value2member_map_.keys())})
