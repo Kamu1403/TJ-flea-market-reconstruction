@@ -7,9 +7,9 @@
     <section class="slider--area pb=20" data-background="{{url_for('static', filename='img/bg/slider_area_bg2.jpg')}}">
         <div class="container-fluid">
             <div class="row">
-                <div class="col-2 d-lg-block">{% include "cont_side.html" %}</div>
+                <div class="col-3 d-lg-block">{% include "cont_side.html" %}</div>
 
-                <div class="col-10 d-lg-block">
+                <div class="col-9 d-lg-block">
                     待确认订单<br />
                     <table>
                         <tbody id="my_order_wait_confirm"></tbody>
@@ -35,7 +35,7 @@
 
 <script type="text/javascript" charset="utf-8">
     var debug = 0;
-    var current_user_id={{current_user.id}};
+    var current_user_id="{{current_user.id|safe}}";
     $(document).ready(function () {
         let url = "/api/get_order";
         if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
