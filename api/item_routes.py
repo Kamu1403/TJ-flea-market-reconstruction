@@ -376,8 +376,8 @@ def post_item_info():
     data = request.get_json()
     if len(data["name"])>40:
         return make_response_json(400,"名称过长")
-    if len(data["description"]) > 100:
-        return make_response_json(400,"描述过长")
+    if len(data["description"]) > Item.description.max_length:
+        return make_response_json(400,f"描述过长,应限制在{Item.description.max_length}字以内")
     if "tag" not in data:
         return make_response_json(400, "请选择物品类型")
     if data["tag"] not in Item_tag_type._value2member_map_:
@@ -687,8 +687,8 @@ def report():
         reason = data["reason"]
     else:
         reason = ""
-    if len(reason) > Feedback.feedback_content.max_length:
-        return make_response_json(400,"反馈过长,需少于100字符")
+    if len(reason) > Feedback.feedback_content.max_length//2:
+        return make_response_json(400,f"反馈过长,应限制在{Feedback.feedback_content.max_length//2}字以内")
     if kind == Feedback_kind.Item.value:
         try:
             item_id = int(data['item_id'])
@@ -700,7 +700,7 @@ def report():
             return make_response_json(404, "待举报的物品不存在")
         if item.user_id.id == current_user.id:
             return make_response_json(400, "不可举报自己的物品")
-        reason += "物品id:{} 物品名称:{} ".format(item.id, item.name)
+        reason = "物品id:{} ".format(item.id) + reason
     elif kind == Feedback_kind.User.value:
         try:
             user_id = int(data["user_id"])
@@ -712,7 +712,7 @@ def report():
             return make_response_json(404, "待举报的用户不存在")
         if user.id == current_user.id:
             return make_response_json(400, "请勿举报自己")
-        reason = "用户id:{}    ".format(user.id) + reason
+        reason = "用户id:{} ".format(user.id) + reason
     else:
         pass
     feedback_data["feedback_content"] = reason
