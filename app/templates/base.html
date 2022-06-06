@@ -196,10 +196,9 @@
                     if (ret.statusCode != 401) 
                         $("#message_cnt").text(ret.data.unread);
                     if (parseInt($("#message_cnt").text()) != 0) $("#message_cnt").removeAttr('hidden');
-                    else $("#message_cnt").prop('hidden',true);
                 });
             }
-            setInterval('showUnreadNews()',500);//轮询执行，500ms一次
+            setInterval('showUnreadNews()',3000);//轮询执行，3000ms一次
 
 
             $(document).ready(function () {

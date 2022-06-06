@@ -223,6 +223,7 @@
             success: function (ret) {
                 if (ret.statusCode == 200) {
                     suspend("alert-success", "删除聊天成功");
+                    showUnreadNews();
                     if (receiver==name)
                         window.location.href = "{{ url_for('chat.index') }}";
                 } else alert(ret.message);
@@ -254,7 +255,7 @@
             }
             if (!isNext) {
                 alert("不接受此文件类型");
-                $("#file").value(); //如果文件后缀名不符合，清空已选择文件
+                $("#file").val(""); //如果文件后缀名不符合，清空已选择文件
                 return false;
             }
 
@@ -275,6 +276,7 @@
                         if (ret.statusCode == 200) {
                             suspend("alert-success", ret.message);
                             md5 = ret.data;
+                            $("#file").val("");
                             //updatePage(objUrl, md5);
                         } else alert(ret.message);
                     },
