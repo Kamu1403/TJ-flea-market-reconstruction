@@ -19,7 +19,7 @@
 
 <script type="text/javascript" charset="utf-8">
     var debug = 0;
-    //var FeedbackstateTostr = { 0: "unread", 1: "read", "-1": "replied" };
+    var current_user_id={{current_user.id}};
     $(document).ready(function () {
         let url = "/api/get_all_order";
         if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
@@ -76,7 +76,10 @@
                                     let desc = $(`#order_item_data${order_id}`);
                                     desc.append(`<a href = /item/content/${item_id} >${item_ret.data.name}</a>`);
                                     desc.append(`<p>${item_ret.data.description}</p>`);
-                                    desc.append(`<a href=/chat/${item_ret.data.user_id}>联系商家</a>`);
+                                    if (current_user_id==item_ret.data.user_id)//如果是商家
+                                        desc.append(`<a href=/chat/${ret.data[i].user_id}>联系买家</a>`);
+                                    else
+                                        desc.append(`<a href=/chat/${item_ret.data.user_id}>联系商家</a>`);
 
                                     //订单状态逻辑
                                     let state_message;
