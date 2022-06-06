@@ -147,11 +147,6 @@
             {
                 $(`#chat_${sender}`).html(last_msg);
             }
-            $.get("/api/get_message_cnt",async=false, function (ret) {
-                if (ret.statusCode != 401) 
-                    $("#message_cnt").text(ret.data.unread);
-                if (parseInt($("#message_cnt").text()) != 0) $("#message_cnt").removeAttr('hidden');
-            });
         })
         $("#text").keypress(function (e) {
             var code = e.keyCode || e.which;
@@ -228,12 +223,6 @@
             success: function (ret) {
                 if (ret.statusCode == 200) {
                     suspend("alert-success", "删除聊天成功");
-                    $.get("/api/get_message_cnt",async=false, function (ret) {
-                        if (ret.statusCode != 401) 
-                            $("#message_cnt").text(ret.data.unread);
-                        if (parseInt($("#message_cnt").text()) != 0) $("#message_cnt").removeAttr('hidden');
-                        else $("#message_cnt").hide();
-                    });
                     if (receiver==name)
                         window.location.href = "{{ url_for('chat.index') }}";
                 } else alert(ret.message);
