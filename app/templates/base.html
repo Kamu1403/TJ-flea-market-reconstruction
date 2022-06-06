@@ -190,6 +190,17 @@
         <script src="  {{url_for('static', filename='js/bootbox.min.js')}}"></script>
         <!--<script src="  {{url_for('static', filename='js/dropdown.js')}}"></script>-->
         <script type="text/javascript">
+            function showUnreadNews()
+            {
+                $.get("/api/get_message_cnt", function (ret) {
+                    if (ret.statusCode != 401) 
+                        $("#message_cnt").text(ret.data.unread);
+                    if (parseInt($("#message_cnt").text()) != 0) $("#message_cnt").removeAttr('hidden');
+                });
+            }
+            setInterval('showUnreadNews()',500);//轮询执行，500ms一次
+
+
             $(document).ready(function () {
                 //$.get("/api/get_user_id", function (ret) {
                     // console.log(ret);
@@ -210,14 +221,8 @@
                                 <a class="black-color" href="{{url_for("logout")}}">退出登录</a>
                             </div>
                         </li>`);
-                        $.get("/api/get_message_cnt", function (ret) {
-                            if (ret.statusCode != 401) 
-                                $("#message_cnt").text(ret.data.unread);
-                            if (parseInt($("#message_cnt").text()) != 0) $("#message_cnt").removeAttr('hidden');
-                        });
+                        showUnreadNews();
                     }
-                    
-                //});
             });
             
             $("#item_name").keyup(function(event){
