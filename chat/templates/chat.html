@@ -22,7 +22,7 @@
 
                             <div class="contact-info-wrap" id="chat" style="height: 300px; overflow: auto"></div>
                             <br /><br />
-                            <div class="building-info-wrap"><input id="text" placeholder="回车发送消息..." /><br /><br /></div>
+                            <div class="building-info-wrap"><input id="text" placeholder="回车发送消息..." /></br></br></div>
 
                             <div class="continue-shopping">
                                 <form action="javascript:void(0)">
@@ -97,8 +97,6 @@
             if (data.type == 1) last_msg = "[图片]";
             if (`#chat_${name}`.length > 0) $(`#chat_${name}`).html(last_msg);
             else {
-                let last_msg = data.msg;
-                if (data.type == 1) last_msg = "[图片]";
                 let str = `  
                         <div class="os-products-item">
                             <div class="thumb">
@@ -116,7 +114,45 @@
                 $("#meet_list").append(str);
             }
         });
-
+        socket.on("notice",function(data){
+            let sender = data.sender;
+            let sname = sender;
+            let color = "#516583";
+            if (data.sender == "80000000") {
+                sname = "系统通知";
+                sender = "系统通知";
+                color = "#C00000";
+            }
+            let last_msg = data.msg;
+            if (data.type == 1) last_msg = "[图片]";
+            if ($(`#meet_${sender}`).length==0)
+            {
+                let str = `  
+                        <div class="os-products-item" id="meet_${sender}">
+                            <div class="thumb">
+                                <a href="/user/${sender}/user_info">
+                                    <img src="/user/static/resource/user-pic/${sender}/avatar.jpg" alt="" /></a>
+                            </div>
+                            <div class="content">
+                                <h6 class="title">
+                                    <a href="/chat/${name}" style="color:${color}">${sname}</a>
+                                </h6>
+                                <span class="price" id="chat_${name}">${last_msg}</span>
+                            </div>
+                            <div class="remove" onclick="deldiv(${name})">x</div>
+                        </div>`;
+                        $("#meet_list").append(str);
+            }
+            else
+            {
+                $(`#chat_${sender}`).html(last_msg);
+            }
+            $.get("/api/get_message_cnt",async=false, function (ret) {
+                if (ret.statusCode != 401) 
+                    $("#message_cnt").text(ret.data.unread);
+                if (parseInt($("#message_cnt").text()) != 0) $("#message_cnt").removeAttr('hidden');
+            });
+        })
         $("#text").keypress(function (e) {
             var code = e.keyCode || e.which;
             let cur_time = new Date(new Date().getTime()).toLocaleString();
@@ -124,6 +160,7 @@
                 text = $("#text").val();
                 $("#text").val("");
                 if (text != "") socket.emit("text", { msg: text, time: cur_time, receiver: receiver, room: room, type: 0 });
+                return false;
             }
         });
         window.addEventListener("beforeunload", function (event) {
@@ -191,6 +228,11 @@
             success: function (ret) {
                 if (ret.statusCode == 200) {
                     suspend("alert-success", "删除聊天成功");
+                    $.get("/api/get_message_cnt",async=false, function (ret) {
+                        if (ret.statusCode != 401) 
+                            $("#message_cnt").text(ret.data.unread);
+                        if (parseInt($("#message_cnt").text()) != 0) $("#message_cnt").removeAttr('hidden');
+                    });
                     window.location.href = "{{ url_for('chat.index') }}";
                 } else alert(ret.message);
             },
