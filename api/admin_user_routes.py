@@ -4,6 +4,8 @@ from api.utils import *
 from api import api_blue
 from datetime import datetime
 
+from user.models import User_Campus_state
+
 
 def GetUserDict(i, is_self=False) -> dict:
     user = {}
@@ -193,7 +195,7 @@ def change_user_info():
         try:
             if 'username' in req:
                 if len(req["username"])>User.username.max_length:
-                    return make_response_json(400,f"名称长度过长,应小于{User.username.max_length}字")
+                    return make_response_json(400,f"用户名长度过长,应小于{User.username.max_length}字")
                 tep.username = req['username']
             if 'gender' in req:
                 try:
@@ -205,18 +207,26 @@ def change_user_info():
             if 'telephone_is_published' in req:
                 tep.telephone_is_published = req['telephone_is_published']
             if 'telephone' in req:
+                if len(req["telephone"])>User.telephone.max_length:
+                    return make_response_json(400,f"号码长度过长,应小于{User.telephone.max_length}字")
                 tep.telephone = req['telephone']
             if 'wechat_is_published' in req:
                 tep.wechat_is_published = req['wechat_is_published']
             if 'wechat' in req:
+                if len(req["wechat"])>User.wechat.max_length:
+                    return make_response_json(400,f"微信号长度过长,应小于{User.wechat.max_length}字")
                 tep.wechat = req['wechat']
             if 'qq_is_published' in req:
                 tep.qq_is_published = req['qq_is_published']
             if 'qq_number' in req:
+                if len(req["qq_number"])>User.qq_number.max_length:
+                    return make_response_json(400,f"QQ号长度过长,应小于{User.qq_number.max_length}字")
                 tep.qq_number = req['qq_number']
             if 'campus_is_published' in req:
                 tep.campus_is_published = req['campus_is_published']
             if 'campus_branch' in req:
+                if req["campus_branch"] not in User_Campus_state._value2member_map_:
+                    return make_response_json(400,f"请输入已有校区 {list(User_Campus_state._value2member_map_.keys())}")
                 tep.campus_branch = req['campus_branch']
             if 'dormitory_is_published' in req:
                 tep.dormitory_is_published = req['dormitory_is_published']
