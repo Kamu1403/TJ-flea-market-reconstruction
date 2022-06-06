@@ -100,6 +100,8 @@ def change_user_state():
                 return make_response_json(400,"时间错误")
             if "ban_reason" not in req:
                 return make_response_json(400, "请求格式错误")
+            if len(req["ban_reason"])>User_Management.ban_reason.max_length:
+                return make_response_json(400,f"封号原因过长,应限制在{User_Management.ban_reason.max_length}字以内")
             try:
                 ban = User_Management.get(User_Management.user_id == user_id)
             except Exception as e:
@@ -190,9 +192,14 @@ def change_user_info():
     else:
         try:
             if 'username' in req:
+                if len(req["username"])>User.username.max_length:
+                    return make_response_json(400,f"名称长度过长,应小于{User.username.max_length}字")
                 tep.username = req['username']
             if 'gender' in req:
-                tep.gender = req['gender']
+                try:
+                    tep.gender = req['gender']
+                except Exception as e:
+                    return make_response_json(400,"性别仅允许男、女或选择保密")
             if 'user_no_is_published' in req:
                 tep.user_no_is_published = req['user_no_is_published']
             if 'telephone_is_published' in req:
