@@ -266,6 +266,7 @@ def order_post():
     return make_response_json(201, "订单生成成功，请等待商家确认", data={"order_id": od.id})
 
 
+
 @api_blue.route("/address", methods=["POST", "PUT", "DELETE"])
 def address():
     if not current_user.is_authenticated:

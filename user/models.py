@@ -75,7 +75,7 @@ class User(UserMixin, BaseModel):
     dormitory = pw.CharField(verbose_name="所在宿舍楼", max_length=32)
 
     name_is_published = pw.BooleanField(verbose_name="是否公开姓名", default=False)
-    name = pw.CharField(verbose_name="真实姓名", max_length=16)
+    name = pw.CharField(verbose_name="真实姓名", max_length=64)
     major_is_published = pw.BooleanField(verbose_name="是否公开专业", default=False)
     major = pw.CharField(verbose_name="专业", max_length=32)
 
