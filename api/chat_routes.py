@@ -138,6 +138,22 @@ def del_meet():
             meet_list=user.meet_list
             meet_list[suser].remove(del_user)
         Meet_List.update(meet_list=meet_list).where(Meet_List.user_id==suser).execute()
+        Recent_Chat_List.update(unread=0).where(
+                Recent_Chat_List.receiver_id==suser
+                and Recent_Chat_List.sender_id==del_user).execute()
+        
+        
+        room = suser + '-' + del_user
+        reroom = del_user + '-' + suser
+        #查询是否存在该聊天,发送接收双方此时共享一个聊天室(聊天记录)
+        roomid = Room.get_or_none(Room.room_id==room)
+        reroomid=Room.get_or_none(Room.room_id==reroom)
+        if (roomid==None and reroomid==None):
+            Room.create(room_id=room,last_sender_id=suser)
+        elif reroomid!=None:
+            room=reroom
+            
+        Message.update(msg_read=1).where(Message.room_id==roomid).execute()
         return make_response_json(200, "获取会话列表成功")
     else:
         return make_response_json(401, "当前用户未登录")

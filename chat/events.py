@@ -4,13 +4,25 @@ from flask import session, request
 from flask_login import current_user
 from flask_socketio import emit, join_room, leave_room
 from datetime import datetime
-from chat.models import Room,Message,Recent_Chat_List
+from chat.models import Room,Message,Recent_Chat_List,Meet_List
 from app import socketio
 from app import database
 
 
 
 import json
+
+def create_or_update_meet_list(sender,receiver):
+    user,created=Meet_List.get_or_create(user_id=sender)
+    meet_list={}
+    if created:
+        meet_list[sender]=[receiver]
+    else:
+        meet_list=user.meet_list
+        if receiver not in meet_list[sender]:
+            meet_list[sender].append(receiver)
+    Meet_List.update(meet_list=meet_list).where(Meet_List.user_id==sender).execute()
+
 
 @socketio.on('joined', namespace='/chat')
 def joined(message):
@@ -96,6 +108,8 @@ def text(message):
                 msg_read=read)
     
     Room.update(last_message=message['msg'],last_sender_id=sender,msg_type=message['type']).where(Room.room_id==roomid).execute()
+    create_or_update_meet_list(sender,message['receiver'])
+    create_or_update_meet_list(message['receiver'],sender)
     
     emit('message', {'sender':sender,
                      'msg':message['msg'],
@@ -104,12 +118,20 @@ def text(message):
                      'type':message['type']},
          room=sender)
     
-    emit('message', {'sender':sender,
-                     'msg':message['msg'],
-                     'other_user':sender,
-                     'time':message['time'],
-                     'type':message['type']},
-         room=message['receiver'])
+    if (read==1):
+        emit('message', {'sender':sender,
+                        'msg':message['msg'],
+                        'other_user':sender,
+                        'time':message['time'],
+                        'type':message['type']},
+            room=message['receiver'])
+    else:
+        emit('notice', {'sender':sender,
+                        'msg':message['msg'],
+                        'other_user':sender,
+                        'time':message['time'],
+                        'type':message['type']},
+            room=message['receiver'])
 
     if not database.is_closed():
         database.close()
