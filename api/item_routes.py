@@ -690,6 +690,8 @@ def report():
         reason = data["reason"]
     else:
         reason = ""
+    if len(reason) > 100:
+        return make_response_json(400,"反馈过长,需少于100字符")
     if kind == Feedback_kind.Item.value:
         try:
             item_id = int(data['item_id'])

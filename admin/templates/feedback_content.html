@@ -1,6 +1,7 @@
 {% extends "base.html" %} {% block title %}
 <title>反馈详情</title>
-{% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
+{% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block
+main %}
 <main>
     <a href="{{url_for('admin.feedback_show')}}">返回</a>
 </main>
@@ -33,7 +34,7 @@
                     main.append(`<p>${i}:${ret.data[i]}</p>`);
                 }*/
 
-                main.append(`<textarea row=12 col=40></textarea>`);
+                main.append(`<textarea row=12 col=40 maxlength=100></textarea>`);
                 main.append("<a href='#' class='btn'>回复反馈</a>");
                 let reply = main.children().eq(-2);
                 let submit = main.children().eq(-1);
