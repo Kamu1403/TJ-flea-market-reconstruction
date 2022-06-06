@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
-
-from tabnanny import verbose
 from app import BaseModel
 import peewee as pw
 from datetime import datetime
-from user.models import User,User_Campus_state
+from user.models import User, User_Campus_state
 from item.models import Item
 
 
@@ -42,8 +40,8 @@ class Review(BaseModel):
     #id = pw.IntegerField(primary_key=True)  # 主键，不显式定义的话peewee默认定义一个自增的id
     user_id = pw.ForeignKeyField(User, verbose_name="发布者的学号")
     publish_time = pw.DateTimeField(verbose_name="发布时间",
-                                null=False,
-                                default=datetime.now())
+                                    null=False,
+                                    default=datetime.now())
     feedback_content = pw.CharField(verbose_name="详细反馈", max_length=1024)
 
 
@@ -89,8 +87,8 @@ class Order(BaseModel):
                             constraints=[pw.Check("state >=-1")])
 
     create_time = pw.DateTimeField(verbose_name="发布时间",
-                               null=False,
-                               default=datetime.now())
+                                   null=False,
+                                   default=datetime.now())
     confirm_time = pw.DateTimeField(verbose_name="双方确认时间")  #双方都确认，才填入此项
     end_time = pw.DateTimeField(verbose_name="完成时间")  #正常完成
     close_time = pw.DateTimeField(verbose_name="关闭时间")  #被一方取消

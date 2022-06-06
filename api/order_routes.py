@@ -225,10 +225,7 @@ def get_user_is_review():
         order_id = int(data['order_id'])
     except:
         return make_response(400, "请求格式不对")
-    try:
-        user_id = int(data['user_id'])
-    except:
-        user_id = current_user.id
+
     res = dict()
     try:
         _order_state_item = Order_State_Item.get(
@@ -239,24 +236,23 @@ def get_user_is_review():
         _order_item = Order_Item.get(Order_Item.order_id == order_id)
     except:
         return make_response_json(404, "为找到订单明细")
-    if _order_item.item_id.user_id.id == user_id:  #是商家
-        if _order_state_item.op_user_review_id == None:
-            res['is_review'] = False
-            return make_response_json(200, "查找成功", res)
-        else:
-            res["is_review"] = True
-            res['review_id'] = _order_state_item.op_user_review_id.id
-            return make_response_json(200, "查找成功", res)
-    elif _order_item.order_id.user_id.id == user_id:  #是订单发起者
-        if _order_state_item.user_review_id == None:
-            res['is_review'] = False
-            return make_response_json(200, "查找成功", res)
-        else:
-            res["is_review"] = True
-            res['review_id'] = _order_state_item.user_review_id.id
-            return make_response_json(200, "查找成功", res)
-    else:
+    if current_user.id != _order_item.item_id.user_id.id and current_user.id != _order_item.order_id.user_id.id:
         return make_response_json(401, "该用户不是订单双方")
+
+    res["op_user_name"] = _order_item.item_id.user_id.username
+    res["user_name"] = _order_item.order_id.user_id.username
+    if _order_state_item.user_review_id == None:
+        res['is_review'] = False
+    else:
+        res["is_review"] = True
+        res['review_id'] = _order_state_item.user_review_id.id
+
+    if _order_state_item.op_user_review_id == None:
+        res['op_is_review'] = False
+    else:
+        res["op_is_review"] = True
+        res['op_review_id'] = _order_state_item.op_user_review_id.id
+    return make_response_json(200, "查找成功", res)
 
 
 @api_blue.route("/get_review", methods=["GET"])

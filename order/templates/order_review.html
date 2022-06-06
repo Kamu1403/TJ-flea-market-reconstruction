@@ -10,14 +10,15 @@
                 <div class="col-3">{% include "cont_side.html" %}</div>
                 <div class="col-9">
                     <div id="my_order"></div>
+                    <div id="review"></div>
+                    <div id="op_review"></div>
                     <div id="review_post" class="building-info-wrap">
                         <!--请输入评价星数
                         <input type="text" value="5" placeholder="5" id="number" />-->
                         请输入评价内容
-                        <input type="text" value="" placeholder="请输入你的评价..." id="order_note" />
+                        <input type="text" value="" placeholder="请输入你的评价..." maxlength="600" id="order_note" />
                         <a class="btn" onclick="submit_review()">提交</a>
                     </div>
-                    <div id="review"></div>
                 </div>
             </div>
         </div>
@@ -28,86 +29,110 @@
 <script type="text/javascript" charset="utf-8">
     var debug = 0;
     var order_id = "{{ order_id|safe }}";
-
+    var current_user_id = "{{current_user.id|safe}}";
     $(document).ready(function () {
-        let url = "/api/get_order_info";
-        console.log(order_id);
+        let url = "/api/get_order";
         if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
         $.ajax({
             url: url,
             type: "GET",
             data: { order_id: order_id },
-            success: function (ret) {
-                console.log(ret);
-                if (ret.statusCode != 200) {
-                    window.alert(ret.message);
+            success: function (full_order_ret) {
+                if (full_order_ret.statusCode != 200) {
+                    window.alert(full_order_ret.message);
                     window.location.href = "{{url_for('index')}}";
                 } else {
                     let tbody = $("#my_order");
                     tbody.append(`<tr id="my_order${order_id}"></tr>`);
                     let p_tr = $(`#my_order${order_id}`);
+                    console.log(full_order_ret.data.length);
+                    for (var i = 0; i < full_order_ret.data.length; ++i) {
+                        console.log(i);
+                        if (full_order_ret.data[i].order_id == order_id) {
+                            ret = full_order_ret.data[i];
+                            console.log(ret);
+                            let item_id = ret.item_id_list[0]; //目前还只有一个商品信息
+                            p_tr.append(`<td id="order_item_pic${order_id}"></td>`);
+                            p_tr.append(`<td id="order_item_data${order_id}"></td>`);
+                            p_tr.append(`<td><a href="/order/${order_id}">订单详情</a></td>`);
+                            let pic_url = "/api/get_item_head_pic";
+                            if (debug) pic_url = `http://127.0.0.1:4523/mock/927026${pic_url}`;
+                            $.ajax({
+                                url: pic_url,
+                                type: "GET",
+                                data: { item_id: item_id },
+                                success: function (pic_ret) {
+                                    if (pic_ret.statusCode == 200) {
+                                        $(`#order_item_pic${order_id}`).append(`<img src=${pic_ret.data.url} height=40 width=40>`);
+                                    }
+                                },
+                            });
+                            let item_url = "/api/get_item_info";
+                            if (debug) item_url = `http://127.0.0.1:4523/mock/927026${item_url}`;
+                            $.ajax({
+                                url: item_url,
+                                type: "Get",
+                                data: { item_id: item_id },
+                                success: function (item_ret) {
+                                    if (item_ret.statusCode == 200) {
+                                        let desc = $(`#order_item_data${order_id}`);
+                                        desc.append(`<a href = /item/content/${item_id} >${item_ret.data.name}</a>`);
+                                        desc.append(`<p>${item_ret.data.description}</p>`);
+                                        if (current_user_id == item_ret.data.user_id)
+                                            //如果是商家
+                                            desc.append(`<a href=/chat/${ret.user_id}>联系对方</a>`);
+                                        else desc.append(`<a href=/chat/${item_ret.data.user_id}>联系对方</a>`);
+                                    }
+                                },
+                            });
 
-                    let item_id = ret.data.item_info[0].item_id; //目前还只有一个商品信息
-                    p_tr.append(`<td id="order_item_pic${order_id}"></td>`);
-                    p_tr.append(`<td id="order_item_data${order_id}"></td>`);
-                    p_tr.append(`<td><a href="/order/${order_id}">订单详情</a></td>`);
-                    let pic_url = "/api/get_item_head_pic";
-                    if (debug) pic_url = `http://127.0.0.1:4523/mock/927026${pic_url}`;
-                    $.ajax({
-                        url: pic_url,
-                        type: "GET",
-                        data: { item_id: item_id },
-                        success: function (pic_ret) {
-                            if (pic_ret.statusCode == 200) {
-                                $(`#order_item_pic${order_id}`).append(`<img src=${pic_ret.data.url} height=40 width=40>`);
-                            }
-                        },
-                    });
-                    let item_url = "/api/get_item_info";
-                    if (debug) item_url = `http://127.0.0.1:4523/mock/927026${item_url}`;
-                    $.ajax({
-                        url: item_url,
-                        type: "Get",
-                        data: { item_id: item_id },
-                        success: function (item_ret) {
-                            if (item_ret.statusCode == 200) {
-                                let desc = $(`#order_item_data${order_id}`);
-                                desc.append(`<a href = /item/content/${item_id} >${item_ret.data.name}</a>`);
-                                desc.append(`<p>${item_ret.data.description}</p>`);
-                                desc.append(`<a href=/chat/${item_ret.data.user_id}>联系商家</a>`);
-                            }
-                        },
-                    });
-
-                    let is_review_url = "/api/get_user_is_review";
-                    $.ajax({
-                        url: is_review_url,
-                        type: "GET",
-                        data: { order_id: order_id },
-                        success: function (review_ret) {
-                            if (review_ret.statusCode == 200) {
-                                if (review_ret["data"]["is_review"] == true) {
-                                    //评价过了
-                                    $("#review_post").attr("hidden", "hidden");
-                                    review_id = review_ret.data.review_id;
+                            let is_review_url = "/api/get_user_is_review";
+                            $.ajax({
+                                url: is_review_url,
+                                type: "GET",
+                                data: { order_id: order_id },
+                                success: function (review_ret) {
+                                    console.log(review_ret);
                                     feedback_url = "/api/get_review";
-                                    $.ajax({
-                                        url: feedback_url,
-                                        type: "GET",
-                                        data: { review_id: review_id },
-                                        success: function (feedback_ret) {
-                                            console.log(feedback_ret);
-                                            if (feedback_ret.statusCode == 200) {
-                                                $("#review").append(feedback_ret.data.feedback_content);
-                                            } else bootbox.alert(feedback_ret.message);
-                                        },
-                                    });
-                                }
-                            } else {
-                                bootbox.alert(review_ret.message);
-                            }
-                        },
-                    });
+                                    review_id = review_ret.data.review_id;
+                                    if ((ret.user_id == current_user_id && review_ret.data.is_review == true) || (ret.op_user_id == current_user_id && review_ret.data.op_is_review == true)) $("#review_post").attr("hidden", "hidden");
+
+                                    if (review_ret.statusCode == 200) {
+                                        if (review_ret["data"]["is_review"] == true) {
+                                            //评价过了
+                                            $.ajax({
+                                                url: feedback_url,
+                                                type: "GET",
+                                                data: { review_id: review_id },
+                                                success: function (feedback_ret) {
+                                                    console.log(feedback_ret);
+                                                    if (feedback_ret.statusCode == 200) {
+                                                        $("#review").append(review_ret.data.user_name + ": " + feedback_ret.data.feedback_content);
+                                                    } else bootbox.alert(feedback_ret.message);
+                                                },
+                                            });
+                                        }
+                                        op_review_id = review_ret.data.op_review_id;
+                                        if (review_ret.data.op_is_review == true) {
+                                            $.ajax({
+                                                url: feedback_url,
+                                                type: "GET",
+                                                data: { review_id: op_review_id },
+                                                success: function (feedback_ret) {
+                                                    console.log(feedback_ret);
+                                                    if (feedback_ret.statusCode == 200) {
+                                                        $("#op_review").append(review_ret.data.op_user_name + ": " + feedback_ret.data.feedback_content);
+                                                    } else bootbox.alert(feedback_ret.message);
+                                                },
+                                            });
+                                        }
+                                    } else {
+                                        bootbox.alert(review_ret.message);
+                                    }
+                                },
+                            });
+                        }
+                    }
                 }
             },
         });
