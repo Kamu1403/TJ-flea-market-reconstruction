@@ -266,6 +266,7 @@ def order_post():
     return make_response_json(201, "订单生成成功，请等待商家确认", data={"order_id": od.id})
 
 
+
 @api_blue.route("/address", methods=["POST", "PUT", "DELETE"])
 def address():
     if not current_user.is_authenticated:
@@ -407,6 +408,8 @@ def order_evaluate():
     data = request.get_json()
     if "feedback_content" not in data:
         return make_response_json(400, "请求格式不对")
+    if len(data["feedback_content"])>Review.feedback_content.max_length:
+        return make_response_json(400,"评论超过字数限制,请限制在100字以内")
     try:
         order_id = int(data["order_id"])
     except Exception as e:

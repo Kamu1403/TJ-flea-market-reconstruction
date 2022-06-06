@@ -96,6 +96,8 @@ def change_user_state():
                 ban_time = datetime.strptime(req["ban_time"], "%Y-%m-%d")
             except Exception as e:
                 return make_response_json(400, "请求格式错误")
+            if ban_time<datetime.now():
+                return make_response_json(400,"时间错误")
             if "ban_reason" not in req:
                 return make_response_json(400, "请求格式错误")
             try:
@@ -282,6 +284,8 @@ def reply_feedback():
     data = request.get_json()
     if "reply_content" not in data:
         return make_response_json(400, "请求格式错误")
+    if len(data["reply_content"])>100:
+        return make_response_json(400,"回复信息过长,不应超过100字符")
     try:
         feedback_id = int(data["feedback_id"])
     except Exception as e:

@@ -276,7 +276,7 @@ def change_item_num():
         return make_response_json(400, "请求格式不对")
     if data["num"] < 0:
         return make_response_json(400, "不允许负数物品存在")
-    if data["num"].bit_length() > 31:
+    if data["num"].bit_length() > Item.shelved_num.__size__()-1:
         return make_response_json(400, "数量越界")
     try:
         item = Item.get(Item.id == data["item_id"])
@@ -312,7 +312,7 @@ def change_item_data():
         return make_response_json(400, "请求格式错误")
     if len(data["name"])>40:
         return make_response_json(400,"名称过长")
-    if len(data["description"]) > 100:
+    if len(data["description"]) > Item.description.max_length:
         return make_response_json(400,"描述过长")
     try:
         data["id"] = int(data["id"])
@@ -328,8 +328,7 @@ def change_item_data():
         return make_response_json(400, "价格越界")
     if data["price"] <= 0:
         return make_response_json(400, "不允许非正数价格")
-    print(data["shelved_num"].bit_length())
-    if data["shelved_num"].bit_length() > 31:
+    if data["shelved_num"].bit_length() > Item.shelved_num.__size__()-1:
         return make_response_json(400, "数量越界")
     try:
         item = Item.get(Item.id == data["id"])
@@ -398,12 +397,10 @@ def post_item_info():
         return make_response_json(400, "仅能上传物品")
     if shelved_num <= 0:
         return make_response_json(400, "数量越界")
-    print(shelved_num.bit_length())
-    if shelved_num.bit_length() > 31:
+    if shelved_num.bit_length() > Item.shelved_num.__size__()-1:
         return make_response_json(400, "数量越界")
     data["user_id"] = current_user.id
     data["publish_time"] = datetime.now()
-    print(data)
     try:
         new = Item.create(**data)
     except Exception as e:
@@ -690,6 +687,8 @@ def report():
         reason = data["reason"]
     else:
         reason = ""
+    if len(reason) > Feedback.feedback_content.max_length:
+        return make_response_json(400,"反馈过长,需少于100字符")
     if kind == Feedback_kind.Item.value:
         try:
             item_id = int(data['item_id'])
