@@ -125,6 +125,7 @@ def send_message(sender: str | int, receiver: str | int, message: str, type: int
             last_sender_id=sender,
             msg_type=type).where(Room.room_id == room).execute()
 
+
         emit('message', {
             'sender': sender,
             'msg': message,
@@ -132,18 +133,29 @@ def send_message(sender: str | int, receiver: str | int, message: str, type: int
             'time': time,
             'type': type
         },
-             room=sender,
-             namespace='/chat')
-
-        emit('message', {
-            'sender': sender,
-            'msg': message,
-            'other_user': sender,
-            'time': time,
-            'type': type
-        },
-             room=receiver,
-             namespace='/chat')
+            room=sender,
+            namespace='/chat')
+        
+        if (read==1):
+            emit('message', {
+                'sender': sender,
+                'msg': message,
+                'other_user': sender,
+                'time': time,
+                'type': type
+            },
+                room=receiver,
+                namespace='/chat')
+        else:
+            emit('notice', {
+                'sender': sender,
+                'msg': message,
+                'other_user': sender,
+                'time': time,
+                'type': type
+            },
+                room=receiver,
+                namespace='/chat')
         return (200, "操作成功")
     except Exception as e:
         return (500, repr(e))
