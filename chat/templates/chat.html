@@ -135,11 +135,11 @@
                             </div>
                             <div class="content">
                                 <h6 class="title">
-                                    <a href="/chat/${name}" style="color:${color}">${sname}</a>
+                                    <a href="/chat/${sender}" style="color:${color}">${sname}</a>
                                 </h6>
-                                <span class="price" id="chat_${name}">${last_msg}</span>
+                                <span class="price" id="chat_${sender}">${last_msg}</span>
                             </div>
-                            <div class="remove" onclick="deldiv(${name})">x</div>
+                            <div class="remove" onclick="deldiv(${sender})">x</div>
                         </div>`;
                         $("#meet_list").append(str);
             }
@@ -233,7 +233,9 @@
                             $("#message_cnt").text(ret.data.unread);
                         if (parseInt($("#message_cnt").text()) != 0) $("#message_cnt").removeAttr('hidden');
                     });
-                    window.location.href = "{{ url_for('chat.index') }}";
+                    alert(receiver,name);
+
+                    //window.location.href = "{{ url_for('chat.index') }}";
                 } else alert(ret.message);
             },
         });
