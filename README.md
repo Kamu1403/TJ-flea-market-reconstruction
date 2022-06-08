@@ -19,7 +19,7 @@ conda create -n tj_market python==3.10.0
 conda activate tj_market
 pip install -r requirements.txt
 或
-conda env create -f environment.yml
+conda env create --file environment.yml
 ```
 
 ## 使用说明
