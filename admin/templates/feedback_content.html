@@ -1,0 +1,62 @@
+{% extends "base.html" %} {% block title %}
+<title>反馈详情</title>
+{% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block
+main %}
+<main>
+    <a href="{{url_for('admin.feedback_show')}}">返回</a>
+</main>
+{% endblock %} {% block footer %} {{ super() }} {% endblock %} {% block js %} {{ super() }}
+
+<script type="text/javascript" charset="utf-8">
+    var feedback_id = "{{ feedback_id|safe }}"; // 如果有python传过来的
+    var debug = 0;
+    $(document).ready(function () {
+        let url = "/api/admin_get_report";
+        if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
+        $.ajax({
+            // json形式
+            url: url,
+            type: "get",
+            data: { feedback_id: feedback_id },
+            success: function (ret) {
+                let main = $("main");
+                //console.log(ret.data);
+                main.append(`<p>反馈用户ID:${ret.data.user_id}</p>`);
+                main.append(`<p>反馈类型:${ret.data.kind}</p>`);
+                main.append(`<p>反馈时间:${ret.data.publish_time}</p>`);
+                main.append(`<p>反馈内容:${ret.data.feedback_content}</p>`);
+                main.append(`<p>反馈状态:${ret.data.state}</p>`);
+                if (ret.data.state == -1) {
+                    main.append(`<p>回复内容:${ret.data.reply_content}</p>`);
+                }
+                /*
+                for (i in ret.data) {
+                    main.append(`<p>${i}:${ret.data[i]}</p>`);
+                }*/
+
+                main.append(`<textarea row=12 col=40 maxlength=100></textarea>`);
+                main.append("<a href='#' class='btn'>回复反馈</a>");
+                let reply = main.children().eq(-2);
+                let submit = main.children().eq(-1);
+                submit.click(function () {
+                    let reply_url = "/api/reply_feedback";
+                    if (debug) reply_url = `http://127.0.0.1:4523/mock/927026${reply_url}`;
+                    $.ajax({
+                        url: reply_url,
+                        type: "put",
+                        data: JSON.stringify({ feedback_id: feedback_id, reply_content: reply.val() }),
+                        contentType: "application/json;charset=utf-8",
+                        processData: false,
+                        success: function (reply_ret) {
+                            //console.log(reply_ret);
+                            window.alert(reply_ret.message);
+                            window.location.href = "{{url_for('admin.feedback_show')}}";
+                        },
+                    });
+                });
+            },
+        });
+    });
+</script>
+
+{% endblock %}

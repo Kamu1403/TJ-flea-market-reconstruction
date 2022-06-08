@@ -1,8 +1,6 @@
-#!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
 
-from app import app
-
+from app import app, socketio
 
 if __name__ == '__main__':
-    app.run(port=4321, debug=True)
+    socketio.run(app, host='0.0.0.0', port=4321, debug=True)

@@ -1,0 +1,38 @@
+<aside class="shop-sidebar" style="padding-left: 45px">
+    <div class="widget shop-widget">
+        <div class="shop-widget-title">
+            <h6 class="title">订单管理</h6>
+        </div>
+        <div class="shop-cat-list">
+            <ul>
+                <li><a href="{{ url_for('user.order') }}">我的订单</a></li>
+                <li><a href="{{ url_for('user.publish') }}">我的发布</a></li>
+                <li><a href="{{ url_for('user.favor') }}">我的收藏</a></li>
+                <li><a href="{{ url_for('user.history') }}">我的足迹</a></li>
+            </ul>
+        </div>
+        <br />
+        <div class="shop-widget-title">
+            <h6 class="title">我的账户</h6>
+        </div>
+        <div class="shop-cat-list">
+            <ul>
+                <li><a href="{{ url_for('user.user_info',opt_userid=current_user.id) }}">个人资料</a></li>
+                <li><a href="{{ url_for('user.address') }}">地址管理</a></li>
+            </ul>
+        </div>
+        <br />
+        {% if current_user.state==1 %}
+        <div class="shop-widget-title">
+            <h6 class="title">用户管理</h6>
+        </div>
+        <div class="shop-cat-list">
+            <ul>
+                <li><a href="{{url_for('admin.feedback_show')}}">反馈管理</a></li>
+                <li><a href="{{url_for('admin.order_check')}}">订单管理</a></li>
+                <li><a href="{{url_for('admin.user_check')}}">用户管理</a></li>
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+</aside>

@@ -1,0 +1,61 @@
+{% extends "base.html" %} {% block title %}
+<title>反馈清单</title>
+{% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
+<main>
+    <div class="col-lg-9 col-md-8">
+        未阅<br />
+        <table>
+            <table id="unread"></table>
+        </table>
+        已阅未回复<br />
+        <table>
+            <table id="read"></table>
+        </table>
+        已回复<br />
+        <table>
+            <table id="replied"></table>
+        </table>
+    </div>
+</main>
+{% endblock %} {% block footer %} {{ super() }} {% endblock %} {% block js %} {{ super() }}
+
+<script type="text/javascript" charset="utf-8">
+    var debug = 0;
+    //var FeedbackstateTostr = { 0: "unread", 1: "read", "-1": "replied" };
+    $(document).ready(function () {
+        let url = "/api/get_reports";
+        if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
+        $.ajax({
+            // json形式
+            url: url,
+            type: "get",
+            success: function (ret) {
+                if (ret.statusCode == 200) {
+                    for (var i in ret.data) {
+                        let report_list = $(`#${i}`);
+                        report_list.append(`<thead><th>反馈内容</th><th>详情链接</th></thead>`);
+                        for (var j = 0; j < ret.data[i].length; j++) {
+                            feedback_id = ret.data[i][j];
+                            report_list.append(`<tr id="${feedback_id}"></tr>`);
+                            report = $(`#${feedback_id}`);
+                            $.ajax({
+                                // json形式
+                                url: "/api/admin_get_report",
+                                type: "get",
+                                data: { feedback_id: feedback_id },
+                                async: false,
+                                success: function (ret) {
+                                    console.log(ret);
+                                    report.append(`<td><p>${ret.data.feedback_content}</p></td>`);
+                                },
+                            });
+                            report.append(`<td><a href=/admin/feedback/${feedback_id}/>反馈详情</a></td>`);
+                        }
+                    }
+                }
+            },
+        });
+    });
+</script>
+
+{% endblock %}

@@ -1,12 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
+from email import message
+from http.client import responses
+from urllib import response
 from item import item_blue
 from app import database
-from item.models import Goods, Want, HistoryGoods, HistoryWant, FavorGoods, FavorWant
-from datetime import datetime
-from flask import render_template, flash, redirect, url_for, request
+from item.models import Item, History, Favor, Item_type,Item_state
+from datetime import date, datetime
+from flask import make_response, jsonify, render_template, flash, redirect, url_for, request
+from flask_login import current_user
 
-
+from user.models import User_state
+import json
 
 
 @item_blue.before_request
@@ -16,34 +21,47 @@ def before_request():
 
 
 @item_blue.teardown_request
-def teardown_request(exc):#exc必须写上
+def teardown_request(exc):  #exc必须写上
     if not database.is_closed():
         database.close()
 
 
-@item_blue.route("/", methods=['GET', 'POST'])
-def root_index():
-    return redirect(url_for('item.index'))  # 重定向到/index
+@item_blue.route('/content/<item_id>/', methods=['GET', 'POST'])
+def content(item_id: int):  #goods_id/want_id
+    try:
+        item = Item.get(Item.id == item_id)
+    except:
+        return render_template('404.html',error_code=404, message="该商品不存在")
+    else:
+        if not current_user.is_authenticated:
+            isAdmin = False
+            isPub = False
+        else:
+            isAdmin = (current_user.state == User_state.Admin.value)
+            isPub = (item.user_id.id == current_user.id)
+            if item.state != Item_state.Sale.value and not isAdmin and not isPub:
+                return render_template('404.html',error_code=401,message="该商品您现在无权访问")
+
+    if current_user.is_authenticated:  #已登录便加入历史
+        try:
+            last = History.get(History.user_id == current_user.id,
+                               History.item_id == item_id)
+        except Exception as e:
+            last = History(user_id=current_user.id,
+                           item_id=item_id,
+                           visit_time=datetime.now())
+        else:
+            last.visit_time = datetime.now()
+        finally:
+            last.save()
+        # 加入：当商品状态不为0时，只有卖家和管理员可见，其他人访问返回异常提示（或404页面）（或开一个默认的，代表被下架的商品）
+    return render_template('item_content.html',
+                           item=item,
+                           item_id=int(item_id))
 
 
-@item_blue.route('/index', methods=['GET', 'POST'])
-def index():
-    return 'Hello World!'
-
-@item_blue.route('/goods/<item_id>/', methods=['GET', 'POST'])
-def goods_content(item_id:int):#goods_id/want_id
-    print(item_id)
-    return render_template('item_content.html')
-
-@item_blue.route('/want/<item_id>/', methods=['GET', 'POST'])
-def want_content(item_id:int):#goods_id/want_id
-    print(item_id)
-    return render_template('item_content.html')
-
-@item_blue.route('/publish/goods/', methods=['GET', 'POST'])
-def goods_publish():
-    return render_template('item_publish.html')
-
-@item_blue.route('/publish/want/', methods=['GET', 'POST'])
-def want_publish():
+@item_blue.route('/publish/', methods=['GET', 'POST'])
+def publish():
+    if not current_user.is_authenticated:
+        return render_template('404.html', message="请先登录")
     return render_template('item_publish.html')

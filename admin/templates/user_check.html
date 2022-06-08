@@ -1,0 +1,42 @@
+{% extends "base.html" %} {% block title %}
+<title>用户管理</title>
+{% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
+<main>
+    <div class="col-lg-9 col-md-8">
+        <table>
+            <table id="user_manage"></table>
+        </table>
+    </div>
+</main>
+{% endblock %} {% block footer %} {{ super() }} {% endblock %} {% block js %} {{ super() }}
+
+<script type="text/javascript" charset="utf-8">
+    var debug = 0;
+
+    $(document).ready(function () {
+        let url = "/api/get_all_user";
+        if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
+        $.ajax({
+            // json形式
+            url: url,
+            type: "get",
+            success: function (ret) {
+                console.log(ret);
+                if (ret.statusCode == 200) {
+                    let user_list = $("#user_manage");
+                    user_list.append(`<thead><th>用户名</th><th>详情链接</th></thead>`);
+                    for (var i in ret.data) {
+                        console.log(ret.data[i]);
+                        user_info = ret.data[i];
+                        user_list.append(`<tr id="${user_info.id}"></tr>`);
+                        user = $(`#${user_info.id}`);
+                        user.append(`<td><p>${user_info.username}</p></td>`);
+                        user.append(`<td><a href="/user/${user_info.id}/user_info">用户详情</a></td>`);
+                    }
+                }
+            },
+        });
+    });
+</script>
+
+{% endblock %}

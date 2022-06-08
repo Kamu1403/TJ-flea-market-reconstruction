@@ -1,5 +1,276 @@
-<html>
-  <body>
-    <p>HTML:Hello world!</p>
-  </body>
-</html>
+{% extends "base.html" %} {% block title %}
+<title>发布悬赏或商品</title>
+{% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block
+main %}
+<!-- main-area -->
+<main>
+    <!-- cart-area -->
+    <div class="cart-area pt-90">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-7">
+                    <div class="checkout-form-wrap">
+                        <form action="javascript:void(0)">
+                            <div class="checkout-form-top">
+                                <h5 class="title">发布新物品</h5>
+                            </div>
+
+                            <div class="building-info-wrap">
+                                <input type="text" placeholder="物品名称" id="name" />
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <input type="text" placeholder="数量" id="quantity" />
+                                    </div>
+                                    <div class="col-md-6">
+                                        <input type="text" placeholder="价格" id="price" />
+                                    </div>
+                                </div>
+                                <label class="col-form-label">商品标签</label>
+                                <select id="tag" class="form-control" name="tag" required="required">
+                                </select>
+                            </div>
+                            <div class="different-address-wrap">
+                                <div class="header-super-store d-xl-block d-md-block">
+                                    <div class="dropdown">
+                                        <button class="dropdown-toggle" type="button" id="choice" data-toggle="dropdown"
+                                            aria-haspopup="true" aria-expanded="false">请选择发布类型</button>
+                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton4">
+                                            <a class="dropdown-item" onclick="change_choice(0)">发布商品</a>
+                                            <a class="dropdown-item" onclick="change_choice(1)">发布悬赏</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <br />
+                            <textarea name="message" id="message" placeholder="详细描述..."></textarea>
+                    </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-7">
+                <div class="cart-wrapper">
+                    <div class="table-responsive">
+                        <table class="table mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="product-thumbnail"></th>
+                                    <th class="product-name">图片</th>
+                                    <!-- <th class="product-price">Price</th> -->
+                                    <th class="product-quantity">设为头图</th>
+                                    <!-- <th class="product-subtotal">SUBTOTAL</th> -->
+                                    <th class="product-delete"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="auto_append"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-7">
+                <div class="shop-cart-bottom">
+                    <div class="cart-coupon">
+                        <form action="javascript:void(0)">
+                            <input type="file" id="file" style="display: none" />
+                            <input type="text" id="show_file_name" placeholder="" readonly="readonly"
+                                disabled="disabled" />
+                            <button href="javascript:void(0)" onclick="selectImg()" class="btn">选择图片</button>
+                        </form>
+                    </div>
+                    <div class="continue-shopping">
+                        <a href="javascript:void(0)" onclick="uploadImg()" class="btn">上传图片</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-7">
+                <div class="shop-cart-total" style="background-color: rgba(255, 255, 255, 0); border: none">
+                    <div class="shop-cart-widget">
+                        <a class="btn" onclick="submit()">提交发布</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- cart-area-end -->
+    <!-- checkout-area-end -->
+</main>
+<!-- main-area-end -->
+{% endblock %} {% block footer %} {{ super() }} {% endblock %} {% block js %} {{ super() }}
+
+<script>
+    $(document).ready(function () {
+        $.ajax({
+            url: "/api/get_class",
+            type: "get",
+            success: function (class_ret) {
+                for (var i = 0; i < class_ret.data.class.length; i++) {
+                    $(".form-control[name='tag']").append(`<option value='${class_ret.data.class[i]}'>${class_ret.data.class[i]}</option>`);
+                }
+            }
+        })
+    });
+    function submit() {
+        let name = $("#name").val();
+        let price = $("#price").val();
+        let tag = $("#tag").val();
+        let quantity = $("#quantity").val();
+        let type = $("#choice").val();
+        let message = $("#message").val();
+        let urls = new Array();
+
+        if (isNaN(price)) {
+            alert("价格格式有误!");
+            return;
+        }
+        if (isNaN(quantity)) {
+            alert("数量格式有误!");
+            return;
+        }
+        if (type == "") {
+            alert("未选择发布类型!");
+            return;
+        }
+
+        $("[id^=project_name]").each(function (index, obj) {
+            let cc = "#customCheck_" + $(this).text();
+            let obj1 = { MD5: $(this).text(), is_cover_pic: $(cc)[0].checked };
+            urls.push(obj1);
+        });
+        let formData = JSON.stringify({ name: name, price: parseFloat(price), tag: tag, type: parseInt(type), shelved_num: parseInt(quantity), description: message, urls: urls });
+        // console.log(formData);
+        $.ajax({
+            url: "/api/post_item_info",
+            type: "post",
+            data: formData,
+            contentType: "application/json;charset=utf-8",
+            processData: false,
+            success: function (ret) {
+                console.log(formData);
+                console.log(ret);
+                if (ret.statusCode == 200) {
+                    alert("商品发布成功，点击确认后将跳转至商品详情页。");
+                    window.location = ret.data.url;
+                } else
+                    suspend("alert-danger", "商品发布失败: " + ret.message + "\n请重试。");
+                //alert("商品发布失败：\n" + ret.message + "\n点击确认返回修改。");
+            },
+        });
+    }
+
+    function change_choice(type) {
+        if (type == 0) {
+            $(choice).text("发布商品");
+            $(choice).val(0);
+        } else {
+            $(choice).text("发布悬赏");
+            $(choice).val(1);
+        }
+    }
+
+    function check_other_box(robj) {
+        if (robj.checked == true)
+            $("[id^=customCheck]").each(function (index, obj) {
+                if (obj.id != robj.id) obj.checked = false;
+            });
+        else $("[id^=customCheck]")[0].checked = true;
+    }
+
+    function remove(robj) {
+        $(robj).parent().parent().remove();
+    }
+
+    function get_urls() {
+        var urls = { urls: [] };
+        $("[id^=tr_]").each(function (index, obj) {
+            urls["urls"].push({ url: $(obj).find("h4")[0].innerText, isdefault: $(obj).find("[id^=customCheck]")[0].checked });
+        });
+        console.log(urls);
+    }
+
+    function selectImg() {
+        $("#file").click(); // 相当于模拟点击一下选择图片按钮
+    }
+
+    $("#file").on("change", function () {
+        // console.log("选择了图片：" + this.files[0].name);
+        $("#show_file_name").val(this.files[0].name);
+    });
+
+    function getObjectURL(file) {
+        var url = null;
+        if (window.createObjectURL != undefined) url = window.createObjectURL(file); // basic
+        else if (window.URL != undefined) url = window.URL.createObjectURL(file); // mozilla(firefox)
+        else if (window.webkitURL != undefined) url = window.webkitURL.createObjectURL(file); // webkit or chrome
+        return url;
+    }
+
+    function updatePage(objUrl, md5) {
+        let f_repeat = false;
+        $("[id^=project_name]").each(function (index, obj) {
+            console.log($(this).text());
+            if ($(this).text() == md5) {
+                alert("请勿重复上传图片！");
+                f_repeat = true;
+                return;
+            }
+        });
+        if (!f_repeat) {
+            var str = `<tr id="tr_${md5}">
+            <td class="product-thumbnail" id="product_thumbnail_${md5}"><img src=${objUrl} alt="" /></td>
+            <td class="product-name"> <h4 id="project_name_${md5}">${md5}</h4></td>
+            <td class="product-quantity">
+                <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="customCheck_${md5}"
+                        onclick="check_other_box(this)" />
+                    <label class="custom-control-label" for="customCheck_${md5}"></label>
+                </div>
+            </td>
+            <td class="product-delete"><a href="#" onclick="remove(this)"><i class="far fa-trash-alt"></i></a></td>
+        </tr>`;
+            $(auto_append).append(str);
+        }
+    }
+
+    function uploadImg() {
+        var file = $("#file")[0].files[0];
+        objUrl = getObjectURL($("#file")[0].files[0]); // 展示用户选择的图片
+        if (file && objUrl) {
+            // console.log("开始上传图片：" + file.name);
+            var formData = new FormData();
+            formData.append("file", file);
+            var debug = 0;
+            if (debug == 0) {
+                $.ajax({
+                    url: "/api/post_item_pic",
+                    type: "post",
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function (ret) {
+                        if (ret.statusCode == 200) {
+                            console.log(ret.message);
+                            md5 = ret.data;
+                            updatePage(objUrl, md5);
+                        } else alert(ret.message);
+                    },
+                });
+            } else {
+                md5 = Math.random().toString(36).substr(2);
+                updatePage(objUrl, md5);
+            }
+        } else alert("未选择图片！");
+    }
+</script>
+
+{% endblock %}

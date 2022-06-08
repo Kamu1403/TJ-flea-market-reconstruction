@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="author" content="Kodinger" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <title>注册/登录页</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
+        <link rel="stylesheet" type="text/css" href="{{url_for('static',filename='css/my-login.css')}}" />
+    </head>
+
+    <body class="my-login-page">
+        <section class="h-100">
+            <div class="container h-100">
+                <div class="row justify-content-md-center h-100">
+                    <div class="card-wrapper">
+                        <div class="brand">
+                            <img src="{{url_for('static',filename='img/logo/logo.jpg')}}" alt="bootstrap 4 login page" />
+                        </div>
+                        <div class="card fat">
+                            <div class="card-body">
+                                <h4 class="card-title" id="title_verification_code_login_or_register">验证码登录/注册</h4>
+                                <form method="POST" class="my-login-validation" novalidate="">
+                                    <div class="form-group">
+                                        <label for="email">邮箱</label>
+                                        <input id="email" type="email" class="form-control" placeholder="5-7位学号@tongji.edu.cn" name="email" required />
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="verify"
+                                            >验证码
+                                            <div class="float-right">
+                                                <button type="button" class="btn btn-primary btn-sm" id="send_verify" onclick="send_email()">发送验证码</button>
+                                            </div>
+                                        </label>
+                                        <input id="code" type="text" class="form-control" placeholder="请输入验证码" name="verify" required />
+                                    </div>
+
+                                    <div id="hidden_passwd" hidden="hidden">
+                                        <div class="form-group">
+                                            <label for="password">密码</label>
+                                            <input id="password" type="password" class="form-control" placeholder="请设置6-32位密码，仅接受[a-zA-Z0-9_-]。" name="password" />
+                                        </div>
+                                    </div>
+
+                                    <button type="button" id="login_or_register_button" class="btn btn-primary btn-block" onclick="register_or_login()">登录/注册</button>
+
+                                    <div class="mt-4 text-center"><a href="{{url_for('login')}}">点击</a>使用密码登录</div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+        <script type="text/javascript">
+            function send_email() {
+                var email = $("#email").val(); //获取邮箱，学号;
+                console.log("send_email", email);
+                $("#send_verify").attr("disabled", true); // 禁用“发送验证码”按钮
+                var count_down = 60;
+                var timer = setInterval(function () {
+                    document.getElementById("send_verify").innerHTML = "" + count_down + "s";
+                    console.log("" + count_down + "s");
+                    count_down -= 1;
+                }, 1000);
+                setTimeout(function () {
+                    $("#send_verify").attr("disabled", false);
+                    clearInterval(timer);
+                    document.getElementById("send_verify").innerHTML = "发送验证码";
+                }, 1000 * count_down); // 过这么多秒后重新启用
+                $.post("/api/send_verification_code", { email: email }, function (ret) {
+                    console.log(ret);
+                    alert(ret.message);
+                    if (ret.statusCode >= 400) {
+                        $("#send_verify").attr("disabled", false); // 产生错误则不禁用“发送验证码”按钮
+                        clearInterval(timer);
+                        document.getElementById("send_verify").innerHTML = "发送验证码";
+                    }
+                    if (ret.statusCode == 201) {
+                        $("#hidden_passwd").removeAttr("hidden"); // 如果是新用户，开放注册按钮
+                        document.getElementById("login_or_register_button").innerHTML = "注册";
+                    }
+                });
+            }
+            function register_or_login() {
+                var email = $("#email").val(); //获取邮箱，学号
+                console.log(email);
+                var password = $("#password").val();
+                console.log(password);
+                var code = $("#code").val();
+                console.log(code);
+
+                $.post("/api/register_or_login_using_verification_code", { email: email, password: password, code: code }, function (ret) {
+                    if (typeof ret == "string") window.location.href = ret;
+                    if (ret.statusCode == 400 || ret.statusCode == 401) alert(ret.message); //打印
+                    if (ret.statusCode == 200) {
+                        if (ret.message != "") alert(ret.message);
+                        window.location.href = ret.data.url ? ret.data.url : "{{url_for('login')}}";
+                    }
+                });
+            }
+        </script>
+        <script type="text/javascript" charset="utf-8">
+            var forget = "{{ forget|safe }}";
+            if (forget == "True") {
+                $(document).ready(function () {
+                    $("#hidden_passwd").removeAttr("hidden");
+                    document.getElementById("login_or_register_button").innerHTML = "确认";
+                    document.getElementById("title_verification_code_login_or_register").innerHTML = "重置密码";
+                });
+            }
+        </script>
+    </body>
+</html>
