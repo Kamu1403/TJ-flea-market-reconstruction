@@ -166,8 +166,9 @@
             processData: false,
             success: function (ret) {
                 suspend("alert-danger", "修改物品信息失败: " + ret.message);
-                //window.alert(ret.message);
-                window.location.reload();
+                sleep(500).then(() => {
+                    window.location.reload();
+                });
             },
         });
     }
@@ -241,24 +242,27 @@
                 if (state == -1) {
                     if (ret.statusCode == 200) {
                         suspend("alert-success", "强制下架商品成功");
-                        //alert("强制下架商品成功")
-                        location.reload();
+                        sleep(500).then(() => {
+                            window.location.reload();
+                        });
                     } else suspend("alert-danger", "强制下架失败: " + ret.message);
                     //alert('强制下架失败：' + ret.message);
                 }
                 if (state == 0) {
                     if (ret.statusCode == 200) {
                         suspend("alert-success", "恢复商品上架成功");
-                        //alert("恢复商品上架成功");
-                        location.reload();
+                        sleep(500).then(() => {
+                            window.location.reload();
+                        });
                     } else suspend("alert-danger", "恢复商品上架失败: " + ret.message);
                     //alert('恢复商品上架失败：' + ret.message);
                 }
                 if (state == 1) {
                     if (ret.statusCode == 200) {
                         suspend("alert-success", "下架商品成功");
-                        //alert("下架商品成功");
-                        location.reload();
+                        sleep(500).then(() => {
+                            window.location.reload();
+                        });
                     } else suspend("alert-danger", "下架商品失败: " + ret.message);
                     //alert('下架商品失败：' + ret.message);
                 }

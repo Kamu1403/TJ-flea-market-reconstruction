@@ -56,7 +56,9 @@
             success: function (ret) {
                 if (ret.statusCode == 200) {
                     suspend("alert-success", "清空历史成功");
-                    location.reload();
+                    sleep(500).then(() => {
+                        window.location.reload();
+                    });
                 } else suspend("alert-danger", "清空历史失败：\n" + ret.message);
                 //alert("清空历史失败：\n" + ret.message);
             },

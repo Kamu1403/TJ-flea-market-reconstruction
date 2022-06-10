@@ -75,9 +75,8 @@
                     document.getElementById("send_verify").innerHTML = "发送验证码";
                 }, 1000 * count_down); // 过这么多秒后重新启用
                 $.post("/api/send_verification_code", { email: email }, function (ret) {
-                    //console.log(ret);
-                    suspend("alert-success", "已发送验证码: " + ret.message);
-                    //alert(ret.message);
+                    //suspend("alert-success", "已发送验证码: " + ret.message);
+                    alert(ret.message);
                     if (ret.statusCode >= 400) {
                         $("#send_verify").attr("disabled", false); // 产生错误则不禁用“发送验证码”按钮
                         clearInterval(timer);
@@ -99,9 +98,9 @@
 
                 $.post("/api/register_or_login_using_verification_code", { email: email, password: password, code: code }, function (ret) {
                     if (typeof ret == "string") window.location.href = ret;
-                    if (ret.statusCode == 400 || ret.statusCode == 401) suspend("alert-danger", ret.message); //打印
+                    if (ret.statusCode == 400 || ret.statusCode == 401) alert(ret.message); //suspend("alert-danger", ret.message);
                     if (ret.statusCode == 200) {
-                        if (ret.message != "") suspend("alert-danger", ret.message);
+                        if (ret.message != "") alert(ret.message); //suspend("alert-danger", ret.message);
                         window.location.href = ret.data.url ? ret.data.url : "{{url_for('login')}}";
                     }
                 });

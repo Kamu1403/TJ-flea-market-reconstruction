@@ -162,8 +162,10 @@
             processData: false,
             success: function (ret) {
                 if (ret.statusCode == 200) {
-                    suspend("alert-danger", ret.message);
-                    window.location.reload();
+                    suspend("alert-success", ret.message);
+                    sleep(500).then(() => {
+                        window.location.reload();
+                    });
                 } else {
                     suspend("alert-danger", ret.message);
                 }

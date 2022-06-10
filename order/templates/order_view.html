@@ -222,7 +222,7 @@
             success: function (ret) {
                 if (ret.statusCode == 200) {
                     suspend("alert-danger",  ret.message);
-                    window.location.reload();
+                    sleep(500).then(() => {window.location.reload();});
                 } else {
                     suspend("alert-danger",  ret.message);
                 }

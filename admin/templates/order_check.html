@@ -120,11 +120,11 @@
             success: function (ret) {
                 if (ret.statusCode == 200) {
                     suspend("alert-success", "修改订单状态成功: " + ret.message);
-                    //alert(ret.message);
-                    window.location.reload();
+                    sleep(500).then(() => {
+                        window.location.reload();
+                    });
                 } else {
                     suspend("alert-danger", "修改订单状态失败: " + ret.message);
-                    //alert(ret.message);
                 }
             },
         });

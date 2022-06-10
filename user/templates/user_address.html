@@ -239,8 +239,9 @@
                     suspend("alert-success", "修改保存成功");
                 } else {
                     suspend("alert-danger", "修改保存失败：" + ret.message);
-                    //alert("修改保存失败：" + ret.message);
-                    window.location.reload();
+                    sleep(500).then(() => {
+                        window.location.reload();
+                    });
                 }
             },
         });
