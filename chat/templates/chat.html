@@ -52,7 +52,8 @@
 
     $(document).ready(function () {
         if (sender != "" && sender == receiver) {
-            alert("不能给自己发消息哦~");
+            suspend("alert-danger","不能给自己发消息哦~ ");
+            //alert("不能给自己发消息哦~");
             window.location.href = "{{ url_for('chat.index') }}";
         }
         if (room == "") {
@@ -179,7 +180,7 @@
                         url: "/api/get_last_msg",
                         success: function (ret) {
                             if (ret.statusCode == 200) last_msg_dict = ret.data;
-                            else alert(ret.message);
+                            else suspend("alert-danger","获取最近消息失败: "+ret.message);
                         },
                     });
                     for (let i = 0; i < meet_list.length; i++) {
@@ -208,7 +209,7 @@
                         </div>`;
                         $("#meet_list").append(str);
                     }
-                } else alert(ret.message);
+                } else suspend("alert-danger","获取聊天列表失败: "+ret.message);
             },
         });
     });
@@ -226,7 +227,7 @@
                     showUnreadNews();
                     if (receiver==name)
                         window.location.href = "{{ url_for('chat.index') }}";
-                } else alert(ret.message);
+                } else suspend("alert-danger","删除聊天失败: "+ret.message);
             },
         });
     }
@@ -254,7 +255,8 @@
                 }
             }
             if (!isNext) {
-                alert("不接受此文件类型");
+                suspend("alert-danger","不接受此文件类型");
+                //alert("不接受此文件类型");
                 $("#file").val(""); //如果文件后缀名不符合，清空已选择文件
                 return false;
             }
@@ -278,14 +280,14 @@
                             md5 = ret.data;
                             $("#file").val("");
                             //updatePage(objUrl, md5);
-                        } else alert(ret.message);
+                        } else suspend("alert-danger","上传聊天图片失败: "+ret.message);
                     },
                 });
             } else {
                 md5 = Math.random().toString(36).substr(2);
                 //updatePage(objUrl, md5);
             }
-        } else alert("未选择图片！");
+        } else suspend("alert-danger","未选择图片！");
     }
     function leave_room() {
         socket.emit("left", { room: room }, function () {

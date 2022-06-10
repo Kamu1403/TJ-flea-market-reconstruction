@@ -193,7 +193,8 @@
             //async: false, // 当需要将值传给函数外部时需要强制同步
             success: function (ret) {
                 if (ret.statusCode == 200) {
-                    alert("删除成功");
+                    suspend("alert-success", "删除成功！");
+                    //alert("删除成功");
                     window.location.reload();
                 } else bootbox.alert(ret.message);
             },
@@ -223,7 +224,8 @@
                         $("#show_hint").prop("hidden", "hidden");
                     }, 1234);
                 } else {
-                    alert("修改保存失败：" + ret.message);
+                    suspend("alert-danger", "修改保存失败！");
+                    //alert("修改保存失败：" + ret.message);
                 }
             },
         });

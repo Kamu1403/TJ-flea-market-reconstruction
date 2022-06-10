@@ -68,7 +68,8 @@ main %}
                 contentType: "application/json",
                 processData: false,
                 success: function (ret) {
-                    window.alert(ret.message);
+                    suspend("alert-success", ret.message);
+                    //window.alert(ret.message);
                     if (ret.statusCode == 200) {
                         window.location.href = "{{url_for('user.index')}}";
                     }

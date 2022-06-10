@@ -40,7 +40,8 @@
             success: function (ret) {
                 console.log(ret);
                 if (ret.statusCode != 200) {
-                    window.alert(ret.message);
+                    suspend("alert-danger", "获取订单信息失败: " + ret.message);
+                    //window.alert(ret.message);
                     window.location.href = "{{url_for('index')}}";
                 } else {
                     let tbody = $("#my_order");
@@ -134,7 +135,8 @@
                 if (ret.statusCode == 200) {
                     window.location.href = ret.data.url;
                 } else {
-                    alert(ret.message);
+                    suspend("alert-danger",  ret.message);
+                    //alert(ret.message);
                 }
             },
         });

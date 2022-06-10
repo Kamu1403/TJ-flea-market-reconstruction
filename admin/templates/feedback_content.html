@@ -49,7 +49,8 @@ main %}
                         processData: false,
                         success: function (reply_ret) {
                             //console.log(reply_ret);
-                            window.alert(reply_ret.message);
+                            suspend("alert-success","回复成功: "+ret.message);
+                            //window.alert(reply_ret.message);
                             window.location.href = "{{url_for('admin.feedback_show')}}";
                         },
                     });

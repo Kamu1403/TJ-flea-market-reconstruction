@@ -182,7 +182,8 @@ main %}
             contentType: "application/json;charset=utf-8",
             processData: false,
             success: function (ret) {
-                window.alert(ret.message);
+                suspend("alert-danger","修改物品信息失败: "+ret.message);
+                //window.alert(ret.message);
                 window.location.reload();
             }
         })
@@ -199,7 +200,7 @@ main %}
             success: function (ret) {
                 if (debug) ret.statusCode = 200;
                 if (ret.statusCode == 200) user_name = ret.data.name;
-                else alert(ret.message);
+                else suspend("alert-danger","获取用户名失败: "+ret.message);
             },
         });
         return user_name;
@@ -223,7 +224,8 @@ main %}
                     $("[id=item_favor_]").append('<a href="javascript:void(0)" onclick="delete_favor()"  style="color:#C00000"><i class="fa fa-heart"></i> 取消收藏</a>');
                 }
                 else
-                    alert('添加收藏失败：' + ret.message);
+                    suspend("alert-danger","添加收藏失败: "+ret.message);
+                    //alert('添加收藏失败：' + ret.message);
             },
         });
     }
@@ -243,7 +245,8 @@ main %}
                     $("[id=item_favor_]").append('<a href="javascript:void(0)" onclick="add_favor()"><i class="far fa-heart"></i> 加入收藏</a>');
                 }
                 else
-                    alert('删除收藏失败：' + ret.message);
+                    suspend("alert-danger","删除收藏失败: "+ret.message);
+                    //alert('删除收藏失败：' + ret.message);
             },
         });
     }
@@ -396,7 +399,8 @@ main %}
                             <img src="${pic_url}" alt="" />
                         </div>
                     </div>`);
-                } else alert("获取商品头图失败:" + ret.message);
+                } else suspend("alert-danger","获取商品头图失败: "+ret.message);
+                //alert("获取商品头图失败:" + ret.message);
             },
         });
         url = "/api/get_item_pics";
@@ -424,7 +428,8 @@ main %}
                             </div>
                         </div>`);
                     }
-                } else alert("获取商品图片失败：" + ret.message);
+                } else suspend("alert-danger","获取商品图片失败: "+ret.message);
+                //alert("获取商品图片失败：" + ret.message);
             },
         });
     });

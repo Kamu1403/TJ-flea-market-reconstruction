@@ -57,7 +57,8 @@
                 if (ret.statusCode == 200) {
                     suspend("alert-success", "清空历史成功");
                     location.reload();
-                } else alert("清空历史失败：\n" + ret.message);
+                } else suspend("alert-danger", "清空历史失败：\n" + ret.message);
+                //alert("清空历史失败：\n" + ret.message);
             },
         });
     }
@@ -77,7 +78,8 @@
                     // 悬浮框提示删除成功
                     // 点击撤销
                     suspend("alert-success", "删除历史成功");
-                } else alert("删除历史失败：\n" + ret.message);
+                } else  suspend("alert-danger", "删除历史失败：\n" + ret.message);
+                //alert("删除历史失败：\n" + ret.message);
             },
         });
     }
@@ -90,7 +92,8 @@
             async: false,
             success: function (ret) {
                 if (ret.statusCode != 200) {
-                    window.alert(ret.message);
+                    suspend("alert-danger", ret.message);
+                    //window.alert(ret.message);
                     window.location.href = "{{url_for('index')}}";
                 } else {
                     data = ret.data.history_list;
