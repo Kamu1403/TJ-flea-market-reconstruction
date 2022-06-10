@@ -201,8 +201,8 @@
             //async: false, // 当需要将值传给函数外部时需要强制同步
             success: function (ret) {
                 if (ret.statusCode == 200) {
-                    alert("删除成功");
-                    window.location.reload();
+                    suspend("alert-success", "删除成功");
+                    $(`#delete_contact_id${id}`).parent().parent().remove();
                 } else bootbox.alert(ret.message);
             },
         });
