@@ -31,11 +31,13 @@ def before_request():
     if database.is_closed():
         database.connect()
 
+
 @app.before_request
 def state_check():
     if current_user.is_authenticated:
         if current_user.state == User_state.Under_ban.value:
             logout_user()
+
 
 # @app.before_request
 # def request_log():
@@ -119,6 +121,11 @@ def register():
 @app.route('/forget', methods=['GET'])
 def forget():
     return render_template('verify_login.html', forget=True)
+
+
+@app.route('/set_password', methods=['GET'])
+def set_password():
+    return render_template('verify_login.html', set_password=True)
 
 
 @app.route('/login', methods=['GET'])

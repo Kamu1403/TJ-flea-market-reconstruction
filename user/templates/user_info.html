@@ -18,6 +18,12 @@
                             {% if opt_userid == current_user.id %}
                             <div class="checkout-form-top">
                                 <h5 class="title">个人信息</h5>
+                                <div class="shop-cart-total"
+                                    style="background-color: rgba(255, 255, 255, 0); border: none">
+                                    <div class="shop-cart-widget">
+                                        <a class="btn" href='{{ url_for("set_password") }}'>修改密码</a>
+                                    </div>
+                                </div>
                             </div>
                             {% else %}
                             <div class="checkout-form-top">
