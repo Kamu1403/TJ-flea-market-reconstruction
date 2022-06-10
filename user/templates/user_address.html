@@ -71,7 +71,7 @@
                                     </form>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal ">关闭</button>
                                     <button type="button" class="btn" onclick="add_address()">提交</button>
                                 </div>
                             </div>
@@ -87,7 +87,7 @@
 <script type="text/javascript" charset="utf-8">
     var debug = 0;
 
-    $(document).ready(function () {
+    function draw_table() {
         let url = "/api/get_address";
         if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
         $.ajax({
@@ -95,6 +95,7 @@
             type: "get",
             success: function (ret) {
                 let ta_tab = $("#ta");
+                ta_tab.empty();
                 for (let i = 0; i < ret.data.length; i++) {
                     ta_tab.append(`<tr id="tr${i}"></tr>`); //添加一列
                     let tab = $(`#tr${i}`); //把这一列的内容添加上
@@ -132,6 +133,10 @@
                 });
             },
         });
+    }
+
+    $(document).ready(function () {
+        draw_table();
     });
 
     function checkboxOnblur(checkbox) {
@@ -196,9 +201,7 @@
                 if (ret.statusCode == 200) {
                     suspend("alert-success", "删除成功");
                     //$(`#delete_contact_id${id}`).parent().parent().remove();
-                    sleep(500).then(() => {
-                        window.location.reload();
-                    });
+                    draw_table();
                 } else bootbox.alert(ret.message);
             },
         });
@@ -275,8 +278,8 @@
             success: function (ret) {
                 if (ret.statusCode == 200) {
                     suspend("alert-success", "添加成功");
-                    //alert("添加成功");
-                    window.location.reload();
+                    draw_table();
+                    $("#address").modal("hide");
                 } else bootbox.alert(ret.message);
             },
         });
