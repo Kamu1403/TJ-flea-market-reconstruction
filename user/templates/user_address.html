@@ -32,13 +32,6 @@ main %}
                 </div>
             </div>
         </div>
-        <div class="container" id="show_hint" hidden>
-            <div class="row justify-content-center">
-                <div class="col-lg-9">
-                    <a href="javascript:void(0)"><i class="fa fa-check-circle"></i> 修改已自动保存！</a>
-                </div>
-            </div>
-        </div>
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-lg-7">
@@ -204,9 +197,11 @@ main %}
             //async: false, // 当需要将值传给函数外部时需要强制同步
             success: function (ret) {
                 if (ret.statusCode == 200) {
-                    suspend("alert-success", "删除成功！");
-                    //alert("删除成功");
-                    window.location.reload();
+                    suspend("alert-success", "删除成功");
+                    //$(`#delete_contact_id${id}`).parent().parent().remove();
+                    sleep(500).then(() => {
+                        window.location.reload();
+                    });
                 } else bootbox.alert(ret.message);
             },
         });
@@ -242,10 +237,6 @@ main %}
             success: function (ret) {
                 if (ret.statusCode == 200) {
                     suspend("alert-success", "修改保存成功");
-                    $("#show_hint").removeAttr("hidden");
-                    setTimeout(function () {
-                        $("#show_hint").prop("hidden", "hidden");
-                    }, 1234);
                 } else {
                     suspend("alert-danger", "修改保存失败：" + ret.message);
                     //alert("修改保存失败：" + ret.message);
