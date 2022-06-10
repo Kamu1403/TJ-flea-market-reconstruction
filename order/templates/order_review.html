@@ -41,7 +41,7 @@
                 if (full_order_ret.statusCode != 200) {
                     suspend("alert-danger", full_order_ret.message);
                     //window.alert(full_order_ret.message);
-                    window.location.href = "{{url_for('index')}}";
+                    sleep(500).then(() => {window.location.href = "{{url_for('index')}}";});
                 } else {
                     let tbody = $("#my_order");
                     tbody.append(`<tr id="my_order${order_id}"></tr>`);

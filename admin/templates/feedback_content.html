@@ -1,7 +1,6 @@
 {% extends "base.html" %} {% block title %}
 <title>反馈详情</title>
-{% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block
-main %}
+{% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
 <main>
     <a href="{{url_for('admin.feedback_show')}}">返回</a>
 </main>
@@ -48,10 +47,10 @@ main %}
                         contentType: "application/json;charset=utf-8",
                         processData: false,
                         success: function (reply_ret) {
-                            //console.log(reply_ret);
-                            suspend("alert-success","回复成功: "+ret.message);
-                            //window.alert(reply_ret.message);
-                            window.location.href = "{{url_for('admin.feedback_show')}}";
+                            suspend("alert-success", "回复成功: " + ret.message);
+                            sleep(500).then(() => {
+                                window.location.href = "{{url_for('admin.feedback_show')}}";
+                            });
                         },
                     });
                 });

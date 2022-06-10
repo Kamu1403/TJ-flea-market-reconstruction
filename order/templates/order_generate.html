@@ -212,7 +212,7 @@
                 //console.log(ret);
                 suspend("alert-success", "订单提交成功！");
                 //alert(ret.message);
-                window.location.href=`/order/${ret.data.order_id}`;
+                sleep(500).then(() => {window.location.href=`/order/${ret.data.order_id}`;});
             },
         });
     }

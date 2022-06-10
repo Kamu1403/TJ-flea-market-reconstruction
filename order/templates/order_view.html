@@ -117,7 +117,8 @@
                 if (ret.statusCode != 200) {
                     suspend("alert-danger", ret.message);
                     //window.alert(ret.message);
-                    window.location.href = "{{url_for('index')}}";
+                    sleep(500).then(() => {window.location.href = "{{url_for('index')}}";});
+                    
                 } else {
                     let data = ret.data;
                     //console.log(data);
@@ -221,7 +222,7 @@
             processData: false,
             success: function (ret) {
                 if (ret.statusCode == 200) {
-                    suspend("alert-danger",  ret.message);
+                    suspend("alert-success",  ret.message);
                     sleep(500).then(() => {window.location.reload();});
                 } else {
                     suspend("alert-danger",  ret.message);

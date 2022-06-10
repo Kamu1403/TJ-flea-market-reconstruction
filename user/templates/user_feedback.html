@@ -1,16 +1,12 @@
 {% extends "base.html" %} {% block title %}
 <title>同济大学跳蚤市场</title>
-{% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block
-main %}
+{% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
 
 <main>
     <div>
         <span> 反馈理由为: </span>
-        <input type="radio" class="feedback" name="kind" value="0" />举报用户 <input type="radio" class="feedback"
-            name="kind" value="1" />举报物品 <input type="radio" class="feedback" name="kind" value="2" />反馈网站bug <input
-            type="radio" class="feedback" name="kind" value="3" />个人提问
-        <input type="radio" class="feedback" name="kind" value="4" />交易维权 <input type="radio" class="feedback"
-            name="kind" value="5" />其他
+        <input type="radio" class="feedback" name="kind" value="0" />举报用户 <input type="radio" class="feedback" name="kind" value="1" />举报物品 <input type="radio" class="feedback" name="kind" value="2" />反馈网站bug <input type="radio" class="feedback" name="kind" value="3" />个人提问
+        <input type="radio" class="feedback" name="kind" value="4" />交易维权 <input type="radio" class="feedback" name="kind" value="5" />其他
     </div>
     <div id="next">
         <p id="input_prompt"></p>
@@ -71,7 +67,9 @@ main %}
                     suspend("alert-success", ret.message);
                     //window.alert(ret.message);
                     if (ret.statusCode == 200) {
-                        window.location.href = "{{url_for('user.index')}}";
+                        sleep(500).then(() => {
+                            window.location.href = "{{url_for('user.index')}}";
+                        });
                     }
                 },
             });

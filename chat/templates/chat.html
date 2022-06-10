@@ -53,8 +53,8 @@
     $(document).ready(function () {
         if (sender != "" && sender == receiver) {
             suspend("alert-danger","不能给自己发消息哦~ ");
-            //alert("不能给自己发消息哦~");
-            window.location.href = "{{ url_for('chat.index') }}";
+            sleep(500).then(() => {window.location.href = "{{ url_for('chat.index') }}";});
+            
         }
         if (room == "") {
             $("#textbox").after("<h4>您还未选中聊天室</h4>");
@@ -226,7 +226,7 @@
                     suspend("alert-success", "删除聊天成功");
                     showUnreadNews();
                     if (receiver==name)
-                        window.location.href = "{{ url_for('chat.index') }}";
+                        sleep(500).then(() => {window.location.href = "{{ url_for('chat.index') }}";});
                 } else suspend("alert-danger","删除聊天失败: "+ret.message);
             },
         });

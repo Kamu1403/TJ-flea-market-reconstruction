@@ -38,8 +38,7 @@
                 console.log(ret);
                 if (ret.statusCode != 200) {
                     suspend("alert-danger", "获取订单失败: " + ret.message);
-                    //window.alert(ret.message);
-                    window.location.href = "{{url_for('index')}}";
+                    sleep(500).then(() => {window.location.href = "{{url_for('index')}}";});
                 } else {
                     let mytbody;
 

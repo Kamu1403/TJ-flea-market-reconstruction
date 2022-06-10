@@ -57,9 +57,10 @@
             success: function (ret) {
                 console.log(ret);
                 if (ret.statusCode == 400) {
-                    suspend("alert-danger","搜索失败: "+ret.message);
-                    //window.alert(ret.message);
-                    window.location.href = "{{url_for('index')}}";
+                    suspend("alert-danger", "搜索失败: " + ret.message);
+                    sleep(500).then(() => {
+                        window.location.href = "{{url_for('index')}}";
+                    });
                 } else {
                     $("#display").children().remove();
                     var items = ret.data.item_list;

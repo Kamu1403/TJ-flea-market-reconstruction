@@ -182,7 +182,8 @@
                     success: function (ban_ret) {
                         suspend("alert-success", ban_ret.message);
                         //window.alert(ban_ret.message);
-                        window.location.href = "{{url_for('index')}}";
+                        sleep(500).then(() => {window.location.href = "{{url_for('index')}}";});
+                        
                     }
                 }
                 );
@@ -197,7 +198,8 @@
                 processData: false,
                 success: function (ban_ret) {
                     suspend("alert-success", ban_ret.message);
-                    window.location.href = "{{url_for('index')}}";
+                    sleep(500).then(() => {window.location.href = "{{url_for('index')}}";});
+                    
                 }
             });
         }

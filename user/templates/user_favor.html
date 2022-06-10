@@ -56,8 +56,10 @@
             async: false,
             success: function (ret) {
                 if (ret.statusCode != 200) {
-                    suspend("alert-success", ret.message);
-                    window.location.href = "{{url_for('index')}}";
+                    suspend("alert-danger", ret.message);
+                    sleep(500).then(() => {
+                        window.location.href = "{{url_for('index')}}";
+                    });
                 } else {
                     data = ret.data.favor_list;
                     if (data.length == 0) {
