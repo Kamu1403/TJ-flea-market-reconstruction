@@ -309,6 +309,9 @@ def address():
         for i, j in enumerate(data):
             # j["id"] = j["contact_id"]
             # j.pop("contact_id")
+            for k in j:
+                if isinstance(j[k],str) and len(j[k]) == 0:
+                    return make_response_json(400,"不允许提交空参数")
             if "campus_branch" in j:
                 if j["campus_branch"] not in User_Campus_state._value2member_map_:
                     return make_response_json(400, "校区填写错误")
@@ -367,6 +370,9 @@ def address():
         has_default, num = False, 0
         old_default = None
         for i, j in enumerate(data):
+            for k in j:
+                if isinstance(j[k],str) and len(j[k]) == 0:
+                    return make_response_json(400,"不允许提交空参数")
             if "campus_branch" in j:
                 if j["campus_branch"] not in User_Campus_state._value2member_map_:
                     return make_response_json(400, "校区填写错误")
