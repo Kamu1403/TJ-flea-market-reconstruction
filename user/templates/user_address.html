@@ -235,7 +235,8 @@
                 if (ret.statusCode == 200) {
                     suspend("alert-success", "修改保存成功");
                 } else {
-                    alert("修改保存失败：" + ret.message);
+                    suspend("alert-danger", "修改保存失败：" + ret.message);
+                    //alert("修改保存失败：" + ret.message);
                     window.location.reload();
                 }
             },

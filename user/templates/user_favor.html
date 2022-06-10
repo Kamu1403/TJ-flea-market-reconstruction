@@ -42,7 +42,8 @@
                     suspend("alert-success", "删除收藏成功");
                     // 悬浮框提示删除成功
                     // 点击撤销
-                } else alert("删除收藏失败：\n" + ret.message);
+                } else suspend("alert-danger", "删除收藏失败："+ ret.message);
+                //alert("删除收藏失败：\n" + ret.message);
             },
         });
     }
@@ -55,7 +56,7 @@
             async: false,
             success: function (ret) {
                 if (ret.statusCode != 200) {
-                    window.alert(ret.message);
+                    suspend("alert-success", ret.message);
                     window.location.href = "{{url_for('index')}}";
                 } else {
                     data = ret.data.favor_list;

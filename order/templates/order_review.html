@@ -39,7 +39,8 @@
             data: { order_id: order_id },
             success: function (full_order_ret) {
                 if (full_order_ret.statusCode != 200) {
-                    window.alert(full_order_ret.message);
+                    suspend("alert-danger", full_order_ret.message);
+                    //window.alert(full_order_ret.message);
                     window.location.href = "{{url_for('index')}}";
                 } else {
                     let tbody = $("#my_order");
@@ -159,7 +160,8 @@
                 if (ret.statusCode == 200) {
                     window.location.href = ret.data.url;
                 } else {
-                    alert(ret.message);
+                    suspend("alert-danger",  ret.message);
+                    //alert(ret.message);
                 }
             },
         });

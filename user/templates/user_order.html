@@ -45,7 +45,7 @@
             success: function (ret) {
                 console.log(ret);
                 if (ret.statusCode != 200) {
-                    window.alert(ret.message);
+                    suspend("alert-success", ret.message);
                     window.location.href = "{{url_for('index')}}";
                 } else {
                     let mytbody;
@@ -162,10 +162,10 @@
             processData: false,
             success: function (ret) {
                 if (ret.statusCode == 200) {
-                    alert(ret.message);
+                    suspend("alert-danger",  ret.message);
                     window.location.reload();
                 } else {
-                    alert(ret.message);
+                    suspend("alert-danger",  ret.message);
                 }
             },
         });
