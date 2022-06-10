@@ -307,8 +307,12 @@
                     case "alert_info2":	info_prompt(message!=""?message:"未查询到数据");break;
                     default:alert_prompt("未查询到数据");
                 }
-                
             }
+
+            function sleep (time) {
+                return new Promise((resolve) => setTimeout(resolve, time));
+            }
+
         </script>
         {% endblock %}
     </body>
