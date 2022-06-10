@@ -27,44 +27,43 @@
 
 
                             <div class="building-info-wrap">
-                                <div>
+                                <div class="col-9">
                                     <span>用户名</span>
                                     <input type="text" value="用户名" id="username" />
                                 </div>
 
-                                <div>
+                                <div class="col-9">
                                     <span>信誉分</span>
                                     <input type="text" value="100" disabled="disabled" id="score" />
                                 </div>
 
-                                <div>
+                                <div class="col-9">
                                     <span>邮箱</span>
                                     <input type="text" value="test@test" disabled="disabled" id="email" />
                                 </div>
 
                                 {% if opt_userid == current_user.id %}
 
-                                <div>
+                                <div class="col-12">
                                     <span>学号</span>
                                     <div class="row">
-                                        <div class="col-md-9">
+                                        <div class="col-8">
                                             <input type="text" value="" disabled="disabled" id="user_no" />
                                         </div>
-                                        <div class="col-md-1">
+                                        <div >
                                             <input style="padding: 12px 20px;" type="checkbox" class="switch"
                                                 checked="checked" id="user_no_is_published"
                                                 onclick="checkboxOnclick(this)" />
                                         </div>
-                                        <div class="col-md-2">
+                                        <div class="col-2">
                                             <p id="check_user_no_is_published">公开</p>
                                         </div>
                                     </div>
                                 </div>
-
-                                <div>
+                                <div class="col-12">
                                     <span>性别</span>
                                     <div class="row">
-                                        <div class="col-md-2">
+                                        <div class="col-8">
                                             <select id="gender" class="custom-select">
                                                 <option value='保密'>保密</option>
                                                 <option value='男'>男</option>
@@ -75,27 +74,27 @@
                                     </div>
                                 </div>
 
-                                <div>
+                                <div class="col-12">
                                     <span>姓名</span>
                                     <div class="row">
-                                        <div class="col-md-9">
+                                        <div class="col-8">
                                             <input type="text" placeholder="请填写你的姓名" value="" id="name" />
                                         </div>
-                                        <div class="col-md-1">
+                                        <div >
                                             <input style="padding: 12px 20px;" type="checkbox" class="switch"
                                                 checked="checked" id="name_is_published"
                                                 onclick="checkboxOnclick(this)" />
                                         </div>
-                                        <div class="col-md-2">
+                                        <div class="col-2">
                                             <p id="check_name_is_published">公开</p>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div>
+                                <div class="col-12">
                                     <span>校区</span>
                                     <div class="row">
-                                        <div class="col-md-9">
+                                        <div class="col-8">
                                             <select id="campus_branch" class="custom-select">
                                                 <option value='四平路校区'>四平路校区</option>
                                                 <option value='嘉定校区'>嘉定校区</option>
@@ -103,12 +102,12 @@
                                                 <option value='沪北校区' selected="selected">沪北校区</option>
                                             </select>
                                         </div>
-                                        <div class="col-md-1">
+                                        <div>
                                             <input style="padding: 12px 20px;" type="checkbox" class="switch"
                                                 checked="checked" id="campus_is_published"
                                                 onclick="checkboxOnclick(this)" />
                                         </div>
-                                        <div class="col-md-2">
+                                        <div class="col-2">
                                             <p id="check_campus_is_published">公开</p>
                                         </div>
                                     </div>

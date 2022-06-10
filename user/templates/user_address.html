@@ -10,20 +10,23 @@
                 <div class="col-3">{% include "cont_side.html" %}</div>
                 <div class="col-9">
                     <b>请双击表单内容进行修改</b>
-
-                    <table id="tab" width="100%" border="0" cellspacing="0" cellpadding="0" class="table">
-                        <thead class="thead-light">
-                            <tr>
-                                <th>收件人</th>
-                                <th>电话</th>
-                                <th>详细地址</th>
-                                <th>所在校区</th>
-                                <th>设为默认</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody id="ta"></tbody>
-                    </table>
+                    <div class="cart-wrapper">
+                        <div class="table-responsive">
+                            <table id="tab" border="0" cellspacing="0" cellpadding="0" class="table">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>收件人</th>
+                                        <th>电话</th>
+                                        <th>详细地址</th>
+                                        <th>所在校区</th>
+                                        <th>设为默认</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ta"></tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -177,11 +180,13 @@
         let res;
         if (is_default) res = `<input type="checkbox" class="switch" checked="checked" id='is_default${contact_id}' onclick="checkboxOnclick(this)" />`;
         else
-            res = `<input class="switch" type="checkbox" id='is_default${contact_id}' 
+            res = `<input class="switch" type="checkbox" id='is_default${contact_id}'
         onclick="checkboxOnclick(this)" />`;
         return res;
     }
     function delete_by_id(id) {
+        console.log($.("[id^=delete_contact_id]").length);
+
         let url = "/api/address";
         if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
         $.ajax({
