@@ -120,7 +120,7 @@
                 /* 给表格里面每一个带有edit_text的td添加一个dblclick事件 */
                 $(".edit_text").dblclick(function () {
                     /* 1.先拿到这个td原来的值，然后将这个td变成一个input:text,并且原来的值不动 */
-                    let tdVal = $(this).text();
+                    var tdVal = $(this).text();
                     let id = parseInt($(this).attr("id").replace(/[^\d]/g, " "));
                     let oInput = $("<input type='text' value='" + tdVal + "'/>");
                     $(this).html(oInput);
@@ -128,8 +128,13 @@
 
                     /* 2.失去焦点，这个td变为原来的text，value为修改过后的value */
                     oInput.blur(function () {
-                        oInput.parent().html(oInput.val());
-                        update_contact(id);
+                        if (oInput.val() == "") {
+                            suspend("alert-danger", "不可为空");
+                            oInput.parent().html(tdVal);
+                        } else {
+                            oInput.parent().html(oInput.val());
+                            if (oInput.val() != tdVal) update_contact(id);
+                        }
                     });
                 });
             },
@@ -185,8 +190,6 @@
         return res;
     }
     function delete_by_id(id) {
-        console.log($.("[id^=delete_contact_id]").length);
-
         let url = "/api/address";
         if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
         $.ajax({
@@ -210,10 +213,22 @@
         let url = "/api/address";
         if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
         let name = $(`#name${id}`).text();
+        if (name == "") {
+            alert("收件人不可为空");
+            window.location.reload();
+        }
         let telephone = $(`#telephone${id}`).text();
+        if (telephone == "") {
+            alert("电话不可为空");
+            window.location.reload();
+        }
         let campus_branch = $(`#select_campus_branch${id} option:selected`).text();
         let is_default = $(`#is_default${id}`).get(0).checked;
         let full_address = $(`#full_address${id}`).text();
+        if (full_address == "") {
+            alert("详细地址不可为空");
+            window.location.reload();
+        }
         $.ajax({
             url: url,
             type: "put",
@@ -229,8 +244,9 @@
                         $("#show_hint").prop("hidden", "hidden");
                     }, 1234);
                 } else {
-                    suspend("alert-danger", "修改保存失败！");
+                    suspend("alert-danger", "修改保存失败：" + ret.message);
                     //alert("修改保存失败：" + ret.message);
+                    window.location.reload();
                 }
             },
         });
@@ -241,8 +257,20 @@
         if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
 
         let name = $("#rname").val();
+        if (name == "") {
+            suspend("alert-danger", "收件人姓名不可为空");
+            return;
+        }
         let tel = $("#rtel").val();
+        if (tel == "") {
+            suspend("alert-danger", "电话不可为空");
+            return;
+        }
         let address = $("#raddress").val();
+        if (address == "") {
+            suspend("alert-danger", "详细地址不可为空");
+            return;
+        }
         let campus = $("#rcampus").val();
 
         $(".modal-input").val(""); //清空所有input的数据
