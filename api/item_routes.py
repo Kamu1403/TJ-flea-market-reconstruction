@@ -276,7 +276,7 @@ def change_item_num():
         return make_response_json(400, "请求格式不对")
     if data["num"] < 0:
         return make_response_json(400, "不允许负数物品存在")
-    if data["num"].bit_length() > Item.shelved_num.__size__()-1:
+    if data["num"].bit_length() > Item.shelved_num.__sizeof__()-1:
         return make_response_json(400, "数量越界")
     try:
         item = Item.get(Item.id == data["item_id"])
@@ -328,7 +328,7 @@ def change_item_data():
         return make_response_json(400, "价格越界")
     if data["price"] <= 0:
         return make_response_json(400, "不允许非正数价格")
-    if data["shelved_num"].bit_length() > Item.shelved_num.__size__()-1:
+    if data["shelved_num"].bit_length() > Item.shelved_num.__sizeof__()-1:
         return make_response_json(400, "数量越界")
     try:
         item = Item.get(Item.id == data["id"])
@@ -397,7 +397,7 @@ def post_item_info():
         return make_response_json(400, "仅能上传物品")
     if shelved_num <= 0:
         return make_response_json(400, "数量越界")
-    if shelved_num.bit_length() > Item.shelved_num.__size__()-1:
+    if shelved_num.bit_length() > Item.shelved_num.__sizeof__()-1:
         return make_response_json(400, "数量越界")
     data["user_id"] = current_user.id
     data["publish_time"] = datetime.now()
@@ -763,16 +763,17 @@ def item_to_show():
             j = i.__data__
             j.pop("locked_num")
             j["publish_time"] = str(j["publish_time"])
-            if ordered_num is not None:
-                if ordered_num < data["max_num"]:
+            if j["state"] == Item_state.Sale.value:
+                if ordered_num is not None:
+                    if ordered_num < data["max_num"]:
+                        if user_id is None or user_id != j["user_id"]:
+                            datas["show"].append(j)
+                            ordered_num += 1
+                    else:
+                        break
+                else:
                     if user_id is None or user_id != j["user_id"]:
                         datas["show"].append(j)
-                        ordered_num += 1
-                else:
-                    break
-            else:
-                if user_id is None or user_id != j["user_id"]:
-                    datas["show"].append(j)
     return make_response_json(200, "返回订单", datas)
 
 
