@@ -95,9 +95,9 @@ def get_address():
     ]
     try:
         datas = Contact.select(*need).where(
-            Contact.user_id == current_user.id).execute()
+            Contact.user_id == current_user.id).order_by(Contact.id.asc()).execute()
     except Exception as e:
-        return make_response_json(500, f"发生如下错误\n{repr(e)}")
+        return make_response_json(500, f"发生如下错误 {repr(e)}")
     else:
         data = list()
         for i in datas:
