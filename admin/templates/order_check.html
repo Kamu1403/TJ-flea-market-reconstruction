@@ -2,24 +2,31 @@
 <title>反馈清单</title>
 {% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
 <main>
-    <div class="col-lg-9 col-md-8">
-        <p>未确认订单</p>
-        <table>
-            <table id="unconfirmed"></table>
-        </table>
-        <br />
-        <br />
-        <p>未完成订单</p>
-        <table>
-            <table id="confirmed"></table>
-        </table>
-    </div>
+    <section class="shop--area shop-right-sidebar pt-90 pb-90">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-3">{% include "cont_side.html" %}</div>
+                <div class="col-9">
+                    <p>未确认订单</p>
+                    <table>
+                        <table id="unconfirmed"></table>
+                    </table>
+                    <br />
+                    <br />
+                    <p>未完成订单</p>
+                    <table>
+                        <table id="confirmed"></table>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
 </main>
 {% endblock %} {% block footer %} {{ super() }} {% endblock %} {% block js %} {{ super() }}
 
 <script type="text/javascript" charset="utf-8">
     var debug = 0;
-    var current_user_id="{{ current_user.id|safe }}";
+    var current_user_id = "{{ current_user.id|safe }}";
     $(document).ready(function () {
         let url = "/api/get_all_order";
         if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
@@ -30,7 +37,7 @@
             success: function (ret) {
                 console.log(ret);
                 if (ret.statusCode != 200) {
-                    suspend("alert-danger","获取订单失败: "+ret.message);
+                    suspend("alert-danger", "获取订单失败: " + ret.message);
                     //window.alert(ret.message);
                     window.location.href = "{{url_for('index')}}";
                 } else {
@@ -77,10 +84,10 @@
                                     let desc = $(`#order_item_data${order_id}`);
                                     desc.append(`<a href = /item/content/${item_id} >${item_ret.data.name}</a>`);
                                     desc.append(`<p>${item_ret.data.description}</p>`);
-                                    if (current_user_id==item_ret.data.user_id)//如果是商家
+                                    if (current_user_id == item_ret.data.user_id)
+                                        //如果是商家
                                         desc.append(`<a href=/chat/${ret.data[i].user_id}>联系买家</a>`);
-                                    else
-                                        desc.append(`<a href=/chat/${item_ret.data.user_id}>联系商家</a>`);
+                                    else desc.append(`<a href=/chat/${item_ret.data.user_id}>联系商家</a>`);
 
                                     //订单状态逻辑
                                     let state_message;
@@ -112,11 +119,11 @@
             processData: false,
             success: function (ret) {
                 if (ret.statusCode == 200) {
-                    suspend("alert-success","修改订单状态成功: "+ret.message);
+                    suspend("alert-success", "修改订单状态成功: " + ret.message);
                     //alert(ret.message);
                     window.location.reload();
                 } else {
-                    suspend("alert-danger","修改订单状态失败: "+ret.message);
+                    suspend("alert-danger", "修改订单状态失败: " + ret.message);
                     //alert(ret.message);
                 }
             },

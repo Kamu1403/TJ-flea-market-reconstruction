@@ -2,20 +2,27 @@
 <title>反馈清单</title>
 {% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
 <main>
-    <div class="col-lg-9 col-md-8">
-        未阅<br />
-        <table>
-            <table id="unread"></table>
-        </table>
-        已阅未回复<br />
-        <table>
-            <table id="read"></table>
-        </table>
-        已回复<br />
-        <table>
-            <table id="replied"></table>
-        </table>
-    </div>
+    <section class="shop--area shop-right-sidebar pt-90 pb-90">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-3">{% include "cont_side.html" %}</div>
+                <div class="col-9">
+                    未阅<br />
+                    <table>
+                        <table id="unread"></table>
+                    </table>
+                    已阅未回复<br />
+                    <table>
+                        <table id="read"></table>
+                    </table>
+                    已回复<br />
+                    <table>
+                        <table id="replied"></table>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
 </main>
 {% endblock %} {% block footer %} {{ super() }} {% endblock %} {% block js %} {{ super() }}
 

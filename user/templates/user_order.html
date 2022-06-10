@@ -4,7 +4,7 @@
 <link rel="stylesheet" type="text/css" href="{{url_for('user.static',filename='css/Switch.css')}}" />
 {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
 <main>
-    <section class="shop--area shop-right-sidebar pt-90 pb-90" data-background="{{url_for('static', filename='img/bg/slider_area_bg2.jpg')}}">
+    <section class="shop--area shop-right-sidebar pt-90 pb-90">
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-3">{% include "cont_side.html" %}</div>
@@ -162,10 +162,10 @@
             processData: false,
             success: function (ret) {
                 if (ret.statusCode == 200) {
-                    suspend("alert-danger",  ret.message);
+                    suspend("alert-danger", ret.message);
                     window.location.reload();
                 } else {
-                    suspend("alert-danger",  ret.message);
+                    suspend("alert-danger", ret.message);
                 }
             },
         });
