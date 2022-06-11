@@ -9,22 +9,82 @@
             <div class="row justify-content-center">
                 <div class="col-3">{% include "cont_side.html" %}</div>
                 <div class="col-9">
-                    待确认订单<br />
-                    <table>
-                        <tbody id="my_order_wait_confirm"></tbody>
-                    </table>
-                    待完成订单<br />
-                    <table>
-                        <tbody id="my_order_confirmed"></tbody>
-                    </table>
-                    已完成订单<br />
-                    <table>
-                        <tbody id="my_order_done"></tbody>
-                    </table>
-                    已取消订单<br />
-                    <table>
-                        <tbody id="my_order_cancel"></tbody>
-                    </table>
+                    
+                    <div class="cart-wrapper">
+                        <div class="table-responsive">
+                            <table class="table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th class="product-thumbnail"></th>
+                                        <th class="product-name">待确认订单</th>
+                                        <th class="product-price"></th>
+                                        <th class="product-quantity">订单状态</th>
+                                        <th class="product-subtotal"></th>
+                                        <th class="product-delete"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="my_order_wait_confirm">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="cart-wrapper">
+                        <div class="table-responsive">
+                            <table class="table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th class="product-thumbnail"></th>
+                                        <th class="product-name">待完成订单</th>
+                                        <th class="product-price"></th>
+                                        <th class="product-quantity">订单状态</th>
+                                        <th class="product-subtotal"></th>
+                                        <th class="product-delete"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="my_order_confirmed">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="cart-wrapper">
+                        <div class="table-responsive">
+                            <table class="table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th class="product-thumbnail"></th>
+                                        <th class="product-name">已完成订单</th>
+                                        <th class="product-price"></th>
+                                        <th class="product-quantity">订单状态</th>
+                                        <th class="product-subtotal"></th>
+                                        <th class="product-delete"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="my_order_done">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="cart-wrapper">
+                        <div class="table-responsive">
+                            <table class="table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th class="product-thumbnail"></th>
+                                        <th class="product-name">已取消订单</th>
+                                        <th class="product-price"></th>
+                                        <th class="product-quantity">订单状态</th>
+                                        <th class="product-subtotal"></th>
+                                        <th class="product-delete"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="my_order_cancel">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -57,38 +117,11 @@
                         else if (ret.data[i].state == 1) mytbody = $("#my_order_confirmed");
                         else if (ret.data[i].state == 2) mytbody = $("#my_order_done");
                         else if (ret.data[i].state == -1) mytbody = $("#my_order_cancel");
-
+                        
                         let order_id = ret.data[i].order_id;
-                        mytbody.append(`<tr id="my_order${order_id}"></tr>`);
-                        let p_tr = $(`#my_order${order_id}`);
-
                         let item_id = ret.data[i].item_id_list[0]; //目前还只有一个商品信息
-                        p_tr.append(`<td id="order_item_pic${order_id}"></td>`);
-                        p_tr.append(`<td id="order_item_data${order_id}"></td>`);
-                        p_tr.append(`<td><a href="/order/${order_id}">订单详情</a></td>`);
-
-                        p_tr.append(`<div id="state_message${order_id}"></div>`);
-                        p_tr.append(`<button id="confirm${order_id}" onclick="change_state('${order_id}',1)">确认订单</button>`);
-                        p_tr.append(`<button id="complete${order_id}" onclick="change_state('${order_id}',2)">完成订单</button>`);
-                        p_tr.append(`<button id="cancel${order_id}" onclick="change_state('${order_id}',-1)">取消订单</button>`);
-                        if (ret.data[i].state == 2) {
-                            let is_review_url = "/api/get_user_is_review";
-                            $.ajax({
-                                url: is_review_url,
-                                type: "GET",
-                                data: { order_id: order_id },
-                                success: function (review_ret) {
-                                    if (review_ret.statusCode == 200) {
-                                        console.log(review_ret);
-                                        if ((review_ret["data"]["is_review"] == false && current_user_id == ret.data[i].user_id) || (review_ret["data"]["op_is_review"] == false && current_user_id == ret.data[i].op_user_id)) p_tr.append(`<a href="/order/review/${order_id}">前往评价</a>`);
-                                        else p_tr.append(`<a href="/order/review/${order_id}">查看历史评价</a>`);
-                                    } else {
-                                        bootbox.alert(review_ret.message);
-                                    }
-                                },
-                            });
-                        }
                         let pic_url = "/api/get_item_head_pic";
+                        let purl=""
                         if (debug) pic_url = `http://127.0.0.1:4523/mock/927026${pic_url}`;
                         $.ajax({
                             url: pic_url,
@@ -96,12 +129,15 @@
                             data: { item_id: item_id },
                             async: false, // 当需要将值传给函数外部时需要强制同步
                             success: function (pic_ret) {
-                                if (pic_ret.statusCode == 200) {
-                                    $(`#order_item_pic${order_id}`).append(`<img src=${pic_ret.data.url} height=40 width=40>`);
-                                }
+                                if (pic_ret.statusCode == 200) 
+                                    purl=pic_ret.data.url;
                             },
                         });
                         let item_url = "/api/get_item_info";
+                        let item_name="";
+                        let item_desc="";
+                        let other_user_id="";
+                        let state_message="";
                         if (debug) item_url = `http://127.0.0.1:4523/mock/927026${item_url}`;
                         $.ajax({
                             url: item_url,
@@ -110,16 +146,36 @@
                             async: false, // 当需要将值传给函数外部时需要强制同步
                             success: function (item_ret) {
                                 if (item_ret.statusCode == 200) {
-                                    let desc = $(`#order_item_data${order_id}`);
-                                    desc.append(`<a href = /item/content/${item_id} >${item_ret.data.name}</a>`);
-                                    desc.append(`<p>${item_ret.data.description}</p>`);
-                                    if (current_user_id == item_ret.data.user_id)
-                                        //如果是商家
-                                        desc.append(`<a href=/chat/${ret.data[i].user_id}>联系对方</a>`);
-                                    else desc.append(`<a href=/chat/${item_ret.data.user_id}>联系对方</a>`);
+                                    item_name=item_ret.data.name;
+                                    item_desc=item_ret.data.description;
+                                    if (current_user_id == item_ret.data.user_id)//如果是商家
+                                        other_user_id=ret.data[i].user_id;
+                                    else
+                                        other_user_id=item_ret.data.user_id;
+                                    
+
+                                    let str=`<tr id="my_order${order_id}">
+                                        <td class="product-thumbnail" id="order_item_pic${order_id}">
+                                            <a href="/item/content/${item_id}"><img src="${purl}" alt=""></a>
+                                        </td>
+                                        <td class="product-name" id="order_item_data${order_id}">
+                                            <p><a href="/item/content/${item_id}">${item_name}</a></p>
+                                            <p><a href="/chat/${other_user_id}">联系对方</a></p>
+                                        </td>
+                                        <td class="product-price">
+                                            <p><a href="/order/${order_id}">订单详情</a></p>
+                                        </td>
+                                        <td class="product-quantity" id="state_message${order_id}">
+                                        </td>
+                                        <td class="product-delete">
+                                            <button class="btn" id="confirm${order_id}" onclick="change_state('${order_id}',1)">确认订单</button>
+                                            <button class="btn" id="complete${order_id}" onclick="change_state('${order_id}',2)">完成订单</button>
+                                            <button class="btn" id="cancel${order_id}" onclick="change_state('${order_id}',-1)">取消订单</button>
+                                        </td>
+                                    </tr>`;
+                                    mytbody.append(str);
 
                                     //订单状态逻辑
-                                    let state_message;
                                     if (ret.data[i].state == 0) {
                                         state_message = "等待商家确认";
                                         if (current_user_id != item_ret.data.user_id) {
@@ -145,10 +201,29 @@
                                         $(`#complete${order_id}`).attr("disabled", "disabled");
                                         $(`#confirm${order_id}`).attr("disabled", "disabled");
                                     }
-                                    $(`#state_message${order_id}`).append(`<span><p>订单状态:${state_message}</p></span>`);
+                                    $(`#state_message${order_id}`).append(`<span><p>${state_message}</p></span>`);
                                 }
                             },
                         });
+
+                        let p_tr = $(`#my_order${order_id}`);
+                        if (ret.data[i].state == 2) {
+                            let is_review_url = "/api/get_user_is_review";
+                            $.ajax({
+                                url: is_review_url,
+                                type: "GET",
+                                data: { order_id: order_id },
+                                success: function (review_ret) {
+                                    if (review_ret.statusCode == 200) {
+                                        console.log(review_ret);
+                                        if ((review_ret["data"]["is_review"] == false && current_user_id == ret.data[i].user_id) || (review_ret["data"]["op_is_review"] == false && current_user_id == ret.data[i].op_user_id)) p_tr.append(`<a href="/order/review/${order_id}">前往评价</a>`);
+                                        else p_tr.append(`<a href="/order/review/${order_id}">查看历史评价</a>`);
+                                    } else {
+                                        bootbox.alert(review_ret.message);
+                                    }
+                                },
+                            });
+                        }
                     }
                 }
             },
