@@ -135,7 +135,7 @@
                         });
                         let item_url = "/api/get_item_info";
                         let item_name="";
-                        let item_desc="";
+                        //let item_desc="";
                         let other_user_id="";
                         let state_message="";
                         if (debug) item_url = `http://127.0.0.1:4523/mock/927026${item_url}`;
@@ -147,7 +147,7 @@
                             success: function (item_ret) {
                                 if (item_ret.statusCode == 200) {
                                     item_name=item_ret.data.name;
-                                    item_desc=item_ret.data.description;
+                                    //item_desc=item_ret.data.description;
                                     if (current_user_id == item_ret.data.user_id)//如果是商家
                                         other_user_id=ret.data[i].user_id;
                                     else
@@ -161,6 +161,7 @@
                                         <td class="product-name" id="order_item_data${order_id}">
                                             <p><a href="/item/content/${item_id}">${item_name}</a></p>
                                             <p><a href="/chat/${other_user_id}">联系对方</a></p>
+                                            
                                         </td>
                                         <td class="product-price">
                                             <p><a href="/order/${order_id}">订单详情</a></p>
