@@ -55,7 +55,7 @@
                         else if (ret.data[i].state == 1) mytbody = $("#my_order_confirmed");
                         else if (ret.data[i].state == 2) mytbody = $("#my_order_done");
                         else if (ret.data[i].state == -1) mytbody = $("#my_order_cancel");
-
+                        
                         let order_id = ret.data[i].order_id;
                         mytbody.append(`<tr id="my_order${order_id}"></tr>`);
                         let p_tr = $(`#my_order${order_id}`);
