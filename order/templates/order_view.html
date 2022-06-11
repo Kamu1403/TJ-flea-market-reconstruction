@@ -169,23 +169,33 @@
                                     if (data.state == 0) {
                                         state_message = "等待商家确认";
                                         if (current_user_id != item_ret.data.user_id)//当前用户不是卖家
-                                            $("#confirm").attr("disabled", "disabled");
-                                        $("#complete").attr("disabled", "disabled");
+                                            $("#confirm").hide();
+                                            //$("#confirm").attr("disabled", "disabled");
+                                        $("#complete").hide();
+                                        //$("#complete").attr("disabled", "disabled");
                                     } else if (data.state == 1) {
                                         state_message = "等待收货方完成";
                                         if ((current_user_id == item_ret.data.user_id && item_ret.data.type == 0) || (current_user_id == data.user_id && item_ret.data.type == 1))//当前用户不是收货方
-                                            $("#complete").attr("disabled", "disabled");
-                                        $("#confirm").attr("disabled", "disabled");
+                                            $("#complete").hide();    
+                                            //$("#complete").attr("disabled", "disabled");
+                                        $("#confirm").hide();
+                                        //$("#confirm").attr("disabled", "disabled");
                                     } else if (data.state == -1) {
                                         state_message = "已被取消";
-                                        $("#cancel").attr("disabled", "disabled");
-                                        $("#complete").attr("disabled", "disabled");
-                                        $("#confirm").attr("disabled", "disabled");
+                                        $("#complete").hide();
+                                        $("#confirm").hide();
+                                        $("#cancel").hide();
+                                        //$("#cancel").attr("disabled", "disabled");
+                                        //$("#complete").attr("disabled", "disabled");
+                                        //$("#confirm").attr("disabled", "disabled");
                                     } else {
                                         state_message = "已完成";
-                                        $("#cancel").attr("disabled", "disabled");
-                                        $("#complete").attr("disabled", "disabled");
-                                        $("#confirm").attr("disabled", "disabled");
+                                        $("#complete").hide();
+                                        $("#confirm").hide();
+                                        $("#cancel").hide();
+                                        //$("#cancel").attr("disabled", "disabled");
+                                        //$("#complete").attr("disabled", "disabled");
+                                        //$("#confirm").attr("disabled", "disabled");
                                     }
                                     $("#orderState").append(`${state_message}`);
                                 }
@@ -202,8 +212,8 @@
                                 if (pic_ret.statusCode != 200) {
                                     $("#itemPic").append(`${pic_ret.message}`);
                                 } else {
-                                    $("#itemPic").append(`<a href="/item/content/
-                                    ${data.item_info[i].item_id}"><img src=${pic_ret.data.url} width=40 height=40></a>`);
+                                    $("#itemPic").append(`<a href="/item/content/${data.item_info[i].item_id}">
+                                        <img src=${pic_ret.data.url} width=40 height=40></a>`);
                                 }
                             },
                         });
