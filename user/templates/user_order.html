@@ -201,8 +201,8 @@
                                 success: function (review_ret) {
                                     if (review_ret.statusCode == 200) {
                                         console.log(review_ret);
-                                        if ((review_ret["data"]["is_review"] == false && current_user_id == ret.data[i].user_id) || (review_ret["data"]["op_is_review"] == false && current_user_id == ret.data[i].op_user_id)) p_tr.append(`<a href="/order/review/${order_id}">前往评价</a>`);
-                                        else p_tr.append(`<a href="/order/review/${order_id}">查看历史评价</a>`);
+                                        if ((review_ret["data"]["is_review"] == false && current_user_id == ret.data[i].user_id) || (review_ret["data"]["op_is_review"] == false && current_user_id == ret.data[i].op_user_id)) p_tr.append(`<td><a href="/order/review/${order_id}">前往评价</a></td>`);
+                                        else p_tr.append(`<td><a href="/order/review/${order_id}">查看历史评价</a></td>`);
                                     } else {
                                         bootbox.alert(review_ret.message);
                                     }
