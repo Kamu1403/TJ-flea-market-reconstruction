@@ -74,7 +74,7 @@
                                 data: { feedback_id: feedback_id },
                                 async: false,
                                 success: function (ret) {
-                                    console.log(ret);
+                                    // console.log(ret);
                                     report.append(`<td class="product-name"><p>${ret.data.publish_time}</p></td>`);
                                     report.append(`<td class="product-name"><h4>${ret.data.user_id}</h4></td>`);
                                     report.append(`<td class="product-name"><p>${ret.data.feedback_content}</p></td>`);

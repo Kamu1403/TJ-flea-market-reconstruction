@@ -60,12 +60,12 @@
 <script type="text/javascript">
     function send_email() {
         var email = $("#email").val(); //获取邮箱，学号;
-        console.log("send_email", email);
+        // console.log("send_email", email);
         $("#send_verify").attr("disabled", true); // 禁用“发送验证码”按钮
         var count_down = 60;
         var timer = setInterval(function () {
             document.getElementById("send_verify").innerHTML = "" + count_down + "s";
-            console.log("" + count_down + "s");
+            // console.log("" + count_down + "s");
             count_down -= 1;
         }, 1000);
         setTimeout(function () {
@@ -89,11 +89,11 @@
     }
     function register_or_login() {
         var email = $("#email").val(); //获取邮箱，学号
-        console.log(email);
+        // console.log(email);
         var password = $("#password").val();
-        console.log(password);
+        // console.log(password);
         var code = $("#code").val();
-        console.log(code);
+        // console.log(code);
 
         $.post("/api/register_or_login_using_verification_code", { email: email, password: password, code: code }, function (ret) {
             if (typeof ret == "string") window.location.href = ret;

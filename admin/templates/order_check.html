@@ -50,7 +50,7 @@
             type: "GET",
             async: false, // 当需要将值传给函数外部时需要强制同步
             success: function (ret) {
-                console.log(ret);
+                // console.log(ret);
                 if (ret.statusCode != 200) {
                     suspend("alert-danger", "获取订单失败: " + ret.message);
                     sleep(500).then(() => {

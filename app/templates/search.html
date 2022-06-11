@@ -87,7 +87,7 @@
             contentType: "application/json;charset=utf-8",
             processData: false,
             success: function (ret) {
-                console.log(ret);
+                // console.log(ret);
                 if (ret.statusCode == 400) {
                     suspend("alert-danger", "搜索失败: " + ret.message);
                     sleep(500).then(() => {

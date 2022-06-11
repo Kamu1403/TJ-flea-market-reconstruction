@@ -42,12 +42,12 @@
             url: url,
             type: "get",
             success: function (ret) {
-                console.log(ret);
+                // console.log(ret);
                 if (ret.statusCode == 200) {
                     let user_list = $("#user_manage");
                     //user_list.append(`<thead><th>用户名</th><th>详情链接</th></thead>`);
                     for (var i in ret.data) {
-                        console.log(ret.data[i]);
+                        // console.log(ret.data[i]);
                         user_info = ret.data[i];
                         user_list.append(`<tr id="${user_info.id}"></tr>`);
                         user = $(`#${user_info.id}`);

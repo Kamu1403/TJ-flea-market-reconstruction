@@ -48,7 +48,7 @@
             url: url,
             type: "GET",
             success: function (ret) {
-                console.log(ret);
+                // console.log(ret);
                 if (ret.statusCode != 200) {
                     suspend("alert-danger", ret.message);
                     sleep(500).then(() => {

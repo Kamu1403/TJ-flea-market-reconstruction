@@ -138,8 +138,8 @@
             url: "/api/get_class",
             type: "get",
             success: function (class_ret) {
-                console.log(class_ret);
-                console.log($(".form-control[name='price']")[0]);
+                // console.log(class_ret);
+                // console.log($(".form-control[name='price']")[0]);
                 for (var i = 0; i < class_ret.data.class.length; i++) {
                     $(".form-control[name='tag']").append(`<option value='${class_ret.data.class[i]}'>\
                         ${class_ret.data.class[i]}</option>`);
@@ -238,7 +238,7 @@
             contentType: "application/json;charset=utf-8",
             processData: false,
             success: function (ret) {
-                console.log(ret);
+                // console.log(ret);
                 if (state == -1) {
                     if (ret.statusCode == 200) {
                         suspend("alert-success", "强制下架商品成功");

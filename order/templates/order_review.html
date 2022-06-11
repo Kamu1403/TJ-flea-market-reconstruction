@@ -92,7 +92,7 @@
                                 type: "GET",
                                 data: { order_id: order_id },
                                 success: function (review_ret) {
-                                    console.log(review_ret);
+                                    // console.log(review_ret);
                                     feedback_url = "/api/get_review";
                                     review_id = review_ret.data.review_id;
                                     if ((ret.user_id == current_user_id && review_ret.data.is_review == true) || (ret.op_user_id == current_user_id && review_ret.data.op_is_review == true)) $("#review_post").attr("hidden", "hidden");
@@ -105,7 +105,7 @@
                                                 type: "GET",
                                                 data: { review_id: review_id },
                                                 success: function (feedback_ret) {
-                                                    console.log(feedback_ret);
+                                                    // console.log(feedback_ret);
                                                     if (feedback_ret.statusCode == 200) {
                                                         $("#review").append(review_ret.data.user_name + ": " + feedback_ret.data.feedback_content);
                                                     } else bootbox.alert(feedback_ret.message);
@@ -119,7 +119,7 @@
                                                 type: "GET",
                                                 data: { review_id: op_review_id },
                                                 success: function (feedback_ret) {
-                                                    console.log(feedback_ret);
+                                                    // console.log(feedback_ret);
                                                     if (feedback_ret.statusCode == 200) {
                                                         $("#op_review").append(review_ret.data.op_user_name + ": " + feedback_ret.data.feedback_content);
                                                     } else bootbox.alert(feedback_ret.message);
