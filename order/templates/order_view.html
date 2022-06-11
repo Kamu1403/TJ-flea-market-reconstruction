@@ -5,8 +5,8 @@
     <section class="shop--area shop-right-sidebar pt-90 pb-90">
         <div class="container">
             <div class="row justify-content-center">
-                <div class="col-3">{% include "cont_side.html" %}</div>
-                <div class="col-xl-7 ">
+                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">{% include "cont_side.html" %}</div>
+                <div class="col-xl-9 col-lg-9 col-md-9 col-sm-12">
                     <div class="shop-cart-total">
                         <h3 class="title">确认订单</h3>
                         <div class="shop-cart-widget">
@@ -148,90 +148,43 @@
                                         if (current_user_id != item_ret.data.user_id)
                                             //当前用户不是卖家
                                             $("#confirm").hide();
+                                        //$("#confirm").attr("disabled", "disabled");
                                         $("#complete").hide();
+                                        //$("#complete").attr("disabled", "disabled");
                                     } else if (data.state == 1) {
                                         state_message = "等待收货方完成";
-                                        if ((current_user_id == item_ret.data.user_id && item_ret.data.type == 0) || (current_user_id == data.user_id && item_ret.data.type == 1))//当前用户不是收货方
-                                            $("#complete").hide();    
+                                        if ((current_user_id == item_ret.data.user_id && item_ret.data.type == 0) || (current_user_id == data.user_id && item_ret.data.type == 1))
+                                            //当前用户不是收货方
+                                            $("#complete").hide();
+                                        //$("#complete").attr("disabled", "disabled");
                                         $("#confirm").hide();
+                                        //$("#confirm").attr("disabled", "disabled");
                                     } else if (data.state == -1) {
                                         state_message = "已被取消";
                                         $("#complete").hide();
                                         $("#confirm").hide();
                                         $("#cancel").hide();
+                                        //$("#cancel").attr("disabled", "disabled");
+                                        //$("#complete").attr("disabled", "disabled");
+                                        //$("#confirm").attr("disabled", "disabled");
                                     } else {
                                         state_message = "已完成";
                                         $("#complete").hide();
                                         $("#confirm").hide();
                                         $("#cancel").hide();
-                                        let remark=`
+                                        //$("#cancel").attr("disabled", "disabled");
+                                        //$("#complete").attr("disabled", "disabled");
+                                        //$("#confirm").attr("disabled", "disabled");
+                                        let remark = `
                                         <li class="shop-check-wrap" id="review_post">
                                             <span>订单评价</span>
-                                            <div class="shop-check-wrap">
-                                                <div class="custom-control" id="cur_user_remark">
-                                                    
-                                                </div>
-                                                <div class="custom-control" id="opt_user_remark">
-                                                    
-                                                </div>
-                                            </div>
+                                            <textarea  placeholder="请输入你的评价..."style="resize: none;" maxlength="150" cols="50" rows="3" id="order_note" /></textarea>
                                         </li>`;
-                                        let textarea=` <textarea  placeholder="请输入你的评价..."style="resize: none;" maxlength="150" cols="30" rows="3" id="order_note" /></textarea>`;
-                                        let button_sub=`<a class="btn col-xl-3" onclick="submit_review()" id="submit_remark">提交评价</a>`;
-                                        if ($("#review_post").length==0){
+                                        let button_sub = `<a class="btn col-xl-3" onclick="submit_review()">提交评价</a>`;
+                                        if ($("#review_post").length == 0) {
                                             $("#wrapper").append(remark);
-                                            let is_review_url = "/api/get_user_is_review";
-                                            $.ajax({
-                                                url: is_review_url,
-                                                type: "GET",
-                                                data: { order_id: order_id },
-                                                success: function (review_ret) {
-                                                    console.log(review_ret);
-                                                    feedback_url = "/api/get_review";
-                                                    review_id = review_ret.data.review_id;
-                                                    if (!(data.user_id == current_user_id && review_ret.data.is_review == true)&&
-                                                    !(item_ret.data.user_id == current_user_id && review_ret.data.op_is_review == true)) 
-                                                    {
-                                                        $("#cur_user_remark").append(textarea);
-                                                        $('#buttongroup').append(button_sub);
-                                                    }
-                                                    if (review_ret.statusCode == 200) {
-                                                        if (review_ret["data"]["is_review"] == true) {
-                                                            //评价过了
-                                                            $.ajax({
-                                                                url: feedback_url,
-                                                                type: "GET",
-                                                                data: { review_id: review_id },
-                                                                success: function (feedback_ret) {
-                                                                    console.log(feedback_ret);
-                                                                    if (feedback_ret.statusCode == 200) {
-                                                                        let remark1=`<h6>${review_ret.data.user_name}:${feedback_ret.data.feedback_content}</h6>`;
-                                                                        $("#cur_user_remark").append(remark1);
-                                                                    } else bootbox.alert(feedback_ret.message);
-                                                                },
-                                                            });
-                                                        }
-                                                        op_review_id = review_ret.data.op_review_id;
-                                                        if (review_ret.data.op_is_review == true) {
-                                                            $.ajax({
-                                                                url: feedback_url,
-                                                                type: "GET",
-                                                                data: { review_id: op_review_id },
-                                                                success: function (feedback_ret) {
-                                                                    console.log(feedback_ret);
-                                                                    if (feedback_ret.statusCode == 200) {
-                                                                        let remark2=`<h6>${review_ret.data.op_user_name}:${feedback_ret.data.feedback_content}</h6>`;
-                                                                        $("#opt_user_remark").append(remark2);
-                                                                    } else bootbox.alert(feedback_ret.message);
-                                                                },
-                                                            });
-                                                        }
-                                                    } else {
-                                                        bootbox.alert(review_ret.message);
-                                                    }
-                                                },
-                                            });
-                                        }           
+                                            $("#buttongroup").append(button_sub);
+                                        }
                                     }
                                     if ($("#order_state").length == 0) $("#orderState").append(`<h6 id="order_state">${state_message}</h6>`);
                                 }

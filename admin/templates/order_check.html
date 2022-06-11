@@ -5,9 +5,8 @@
     <section class="shop--area shop-right-sidebar pt-90 pb-90">
         <div class="container">
             <div class="row justify-content-center">
-                <div class="col-3">{% include "cont_side.html" %}</div>
-                <div class="col-9">
-
+                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">{% include "cont_side.html" %}</div>
+                <div class="col-xl-9 col-lg-9 col-md-9 col-sm-12">
                     <div class="cart-wrapper">
                         <div class="table-responsive">
                             <table class="table mb-0">
@@ -60,7 +59,9 @@
                 console.log(ret);
                 if (ret.statusCode != 200) {
                     suspend("alert-danger", "获取订单失败: " + ret.message);
-                    sleep(500).then(() => {window.location.href = "{{url_for('index')}}";});
+                    sleep(500).then(() => {
+                        window.location.href = "{{url_for('index')}}";
+                    });
                 } else {
                     let mytbody;
 
@@ -106,7 +107,7 @@
                                     desc.append(`<h4><a href = /item/content/${item_id} >${item_ret.data.name}</a></h4><br/>`);
 
                                     //desc.append(`<p>${item_ret.data.description}</p>`);
-                                    
+
                                     desc.append(`<h4><a href="/user/${item_ret.data.user_id}/user_info">${item_ret.data.user_id}</a></h4>`);
                                     //订单状态逻辑
                                     //let state_message;

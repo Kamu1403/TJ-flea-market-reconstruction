@@ -7,8 +7,8 @@
     <section class="shop--area shop-right-sidebar pt-90 pb-90">
         <div class="container">
             <div class="row justify-content-center">
-                <div class="col-3">{% include "cont_side.html" %}</div>
-                <div class="col-9">
+                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">{% include "cont_side.html" %}</div>
+                <div class="col-xl-9 col-lg-9 col-md-9 col-sm-12">
                     <div id="my_order"></div>
                     <div id="review"></div>
                     <div id="op_review"></div>
@@ -41,7 +41,9 @@
                 if (full_order_ret.statusCode != 200) {
                     suspend("alert-danger", full_order_ret.message);
                     //window.alert(full_order_ret.message);
-                    sleep(500).then(() => {window.location.href = "{{url_for('index')}}";});
+                    sleep(500).then(() => {
+                        window.location.href = "{{url_for('index')}}";
+                    });
                 } else {
                     let tbody = $("#my_order");
                     tbody.append(`<tr id="my_order${order_id}"></tr>`);

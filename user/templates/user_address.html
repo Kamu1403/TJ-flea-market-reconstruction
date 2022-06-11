@@ -7,8 +7,8 @@
     <section class="shop--area shop-right-sidebar pt-90 pb-90">
         <div class="container">
             <div class="row justify-content-center">
-                <div class="col-3">{% include "cont_side.html" %}</div>
-                <div class="col-9">
+                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">{% include "cont_side.html" %}</div>
+                <div class="col-xl-9 col-lg-9 col-md-9 col-sm-12">
                     <b>请双击表单内容进行修改</b>
                     <div class="cart-wrapper">
                         <div class="table-responsive">
@@ -27,18 +27,17 @@
                             </table>
                         </div>
                     </div>
+                    <div class="shop-cart-total" style="margin-top: 0px; background-color: rgba(255, 255, 255, 0); border: none">
+                        <div class="shop-cart-widget">
+                            <a class="btn" data-toggle="modal" data-target="#address">添加新地址</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-lg-7">
-                    <div class="shop-cart-total" style="margin-top: 0px; background-color: rgba(255, 255, 255, 0); border: none">
-                        <div class="shop-cart-widget">
-                            <a class="btn" data-toggle="modal" data-target="#address">添加新地址</a>
-                        </div>
-                    </div>
-
                     <div class="modal fade" id="address" tabindex="-1" role="dialog" aria-hidden="true">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
@@ -71,7 +70,7 @@
                                     </form>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal ">关闭</button>
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
                                     <button type="button" class="btn" onclick="add_address()">提交</button>
                                 </div>
                             </div>
