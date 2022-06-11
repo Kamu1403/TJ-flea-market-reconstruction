@@ -346,3 +346,28 @@ def get_all_order():
                 datas[order_set[j.order_id.id]]["item_id_list"].append(
                     j.item_id.id)
     return make_response_json(200, "返回订单", datas)
+
+@api_blue.route("/get_ban_data",methods=["GET"])
+def get_ban_data():
+    if not current_user.is_authenticated or current_user.state != User_state.Admin.value:
+        return make_response_json(401,"权限不足")
+    req = dict(request.args)
+    try:
+        user_id = int(req["user_id"])
+    except Exception as e:
+        return make_response_json(400,"请求格式不对")
+    try:
+        user = User.get(User.id == user_id)
+    except Exception as e:
+        return make_response_json(404,"该用户不存在")
+    if user.state != User_state.Under_ban.value:
+        return make_response_json(400,"请求用户未被封禁")
+    try:
+        ban = User_Management.get(User_Management.user_id == user_id)
+    except Exception as e:
+        return make_response_json(500,"数据库中未存储封禁信息却已被封禁")
+    data = ban.__data__
+    data.pop("id")
+    data.pop("user_id")
+    data["ban_time"] = str(data["ban_time"])
+    return make_response_json(200,"查询成功",data)
