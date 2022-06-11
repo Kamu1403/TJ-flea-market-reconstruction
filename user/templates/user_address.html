@@ -4,7 +4,7 @@
 
 {% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
 <main>
-    <section class="shop--area shop-right-sidebar pt-90 pb-90" data-background="{{url_for('static', filename='img/bg/slider_area_bg2.jpg')}}">
+    <section class="shop--area shop-right-sidebar pt-90 pb-90">
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-3">{% include "cont_side.html" %}</div>
@@ -27,13 +27,6 @@
                             </table>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-        <div class="container" id="show_hint" hidden>
-            <div class="row justify-content-center">
-                <div class="col-lg-9">
-                    <a href="javascript:void(0)"><i class="fa fa-check-circle"></i> 修改已自动保存！</a>
                 </div>
             </div>
         </div>
@@ -78,7 +71,7 @@
                                     </form>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal ">关闭</button>
                                     <button type="button" class="btn" onclick="add_address()">提交</button>
                                 </div>
                             </div>
@@ -94,7 +87,7 @@
 <script type="text/javascript" charset="utf-8">
     var debug = 0;
 
-    $(document).ready(function () {
+    function draw_table() {
         let url = "/api/get_address";
         if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
         $.ajax({
@@ -102,6 +95,7 @@
             type: "get",
             success: function (ret) {
                 let ta_tab = $("#ta");
+                ta_tab.empty();
                 for (let i = 0; i < ret.data.length; i++) {
                     ta_tab.append(`<tr id="tr${i}"></tr>`); //添加一列
                     let tab = $(`#tr${i}`); //把这一列的内容添加上
@@ -139,6 +133,10 @@
                 });
             },
         });
+    }
+
+    $(document).ready(function () {
+        draw_table();
     });
 
     function checkboxOnblur(checkbox) {
@@ -201,9 +199,9 @@
             //async: false, // 当需要将值传给函数外部时需要强制同步
             success: function (ret) {
                 if (ret.statusCode == 200) {
-                    suspend("alert-success", "删除成功！");
-                    //alert("删除成功");
-                    window.location.reload();
+                    suspend("alert-success", "删除成功");
+                    //$(`#delete_contact_id${id}`).parent().parent().remove();
+                    draw_table();
                 } else bootbox.alert(ret.message);
             },
         });
@@ -239,14 +237,11 @@
             success: function (ret) {
                 if (ret.statusCode == 200) {
                     suspend("alert-success", "修改保存成功");
-                    $("#show_hint").removeAttr("hidden");
-                    setTimeout(function () {
-                        $("#show_hint").prop("hidden", "hidden");
-                    }, 1234);
                 } else {
                     suspend("alert-danger", "修改保存失败：" + ret.message);
-                    //alert("修改保存失败：" + ret.message);
-                    window.location.reload();
+                    sleep(500).then(() => {
+                        window.location.reload();
+                    });
                 }
             },
         });
@@ -284,8 +279,8 @@
             success: function (ret) {
                 if (ret.statusCode == 200) {
                     suspend("alert-success", "添加成功");
-                    //alert("添加成功");
-                    window.location.reload();
+                    draw_table();
+                    $("#address").modal("hide");
                 } else bootbox.alert(ret.message);
             },
         });

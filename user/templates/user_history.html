@@ -2,7 +2,7 @@
 <title>我的历史</title>
 {% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
 <main>
-    <section class="shop--area shop-right-sidebar pt-90 pb-90" data-background="{{url_for('static', filename='img/bg/slider_area_bg2.jpg')}}">
+    <section class="shop--area shop-right-sidebar pt-90 pb-90">
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-3">{% include "cont_side.html" %}</div>
@@ -56,7 +56,9 @@
             success: function (ret) {
                 if (ret.statusCode == 200) {
                     suspend("alert-success", "清空历史成功");
-                    location.reload();
+                    sleep(500).then(() => {
+                        window.location.reload();
+                    });
                 } else suspend("alert-danger", "清空历史失败：\n" + ret.message);
                 //alert("清空历史失败：\n" + ret.message);
             },
@@ -78,7 +80,7 @@
                     // 悬浮框提示删除成功
                     // 点击撤销
                     suspend("alert-success", "删除历史成功");
-                } else  suspend("alert-danger", "删除历史失败：\n" + ret.message);
+                } else suspend("alert-danger", "删除历史失败：\n" + ret.message);
                 //alert("删除历史失败：\n" + ret.message);
             },
         });
@@ -94,7 +96,8 @@
                 if (ret.statusCode != 200) {
                     suspend("alert-danger", ret.message);
                     //window.alert(ret.message);
-                    window.location.href = "{{url_for('index')}}";
+                    sleep(500).then(() => {window.location.href = "{{url_for('index')}}";});
+                    
                 } else {
                     data = ret.data.history_list;
                     if (data.length == 0) {

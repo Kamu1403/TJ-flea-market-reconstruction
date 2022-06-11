@@ -53,8 +53,8 @@
     $(document).ready(function () {
         if (sender != "" && sender == receiver) {
             suspend("alert-danger","不能给自己发消息哦~ ");
-            //alert("不能给自己发消息哦~");
-            window.location.href = "{{ url_for('chat.index') }}";
+            sleep(500).then(() => {window.location.href = "{{ url_for('chat.index') }}";});
+            
         }
         if (room == "") {
             $("#textbox").after("<h4>您还未选中聊天室</h4>");
@@ -102,7 +102,7 @@
                         <div class="os-products-item">
                             <div class="thumb">
                                 <a href="/user/${name}/user_info">
-                                    <img src="/user/static/resource/user-pic/${name}/avatar.jpg" alt="" /></a>
+                                    <img src="/user/static/resource/user-pic/${name}/avatar_128.WEBP" alt="" /></a>
                             </div>
                             <div class="content">
                                 <h6 class="title">
@@ -132,7 +132,7 @@
                         <div class="os-products-item" id="meet_${sender}">
                             <div class="thumb">
                                 <a href="/user/${sender}/user_info">
-                                    <img src="/user/static/resource/user-pic/${sender}/avatar.jpg" alt="" /></a>
+                                    <img src="/user/static/resource/user-pic/${sender}/avatar_128.WEBP" alt="" /></a>
                             </div>
                             <div class="content">
                                 <h6 class="title">
@@ -197,7 +197,7 @@
                         <div class="os-products-item" id="meet_${name}">
                             <div class="thumb">
                                 <a href="/user/${name}/user_info">
-                                    <img src="/user/static/resource/user-pic/${name}/avatar.jpg" alt="" /></a>
+                                    <img src="/user/static/resource/user-pic/${name}/avatar_128.WEBP" alt="" /></a>
                             </div>
                             <div class="content">
                                 <h6 class="title">
@@ -226,7 +226,7 @@
                     suspend("alert-success", "删除聊天成功");
                     showUnreadNews();
                     if (receiver==name)
-                        window.location.href = "{{ url_for('chat.index') }}";
+                        sleep(500).then(() => {window.location.href = "{{ url_for('chat.index') }}";});
                 } else suspend("alert-danger","删除聊天失败: "+ret.message);
             },
         });

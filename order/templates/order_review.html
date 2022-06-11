@@ -4,7 +4,7 @@
 <link rel="stylesheet" type="text/css" href="{{url_for('user.static',filename='css/Switch.css')}}" />
 {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
 <main>
-    <section class="shop--area shop-right-sidebar pt-90 pb-90" data-background="{{url_for('static', filename='img/bg/slider_area_bg2.jpg')}}">
+    <section class="shop--area shop-right-sidebar pt-90 pb-90">
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-3">{% include "cont_side.html" %}</div>
@@ -41,7 +41,7 @@
                 if (full_order_ret.statusCode != 200) {
                     suspend("alert-danger", full_order_ret.message);
                     //window.alert(full_order_ret.message);
-                    window.location.href = "{{url_for('index')}}";
+                    sleep(500).then(() => {window.location.href = "{{url_for('index')}}";});
                 } else {
                     let tbody = $("#my_order");
                     tbody.append(`<tr id="my_order${order_id}"></tr>`);
@@ -160,7 +160,7 @@
                 if (ret.statusCode == 200) {
                     window.location.href = ret.data.url;
                 } else {
-                    suspend("alert-danger",  ret.message);
+                    suspend("alert-danger", ret.message);
                     //alert(ret.message);
                 }
             },
