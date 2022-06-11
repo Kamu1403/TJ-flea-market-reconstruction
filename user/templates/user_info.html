@@ -18,13 +18,15 @@
                             <div class="checkout-form-top">
                                 <h5 class="title">个人信息</h5>
                                 <img src="/user/static/resource/user-pic/{{ opt_userid }}/avatar_128.WEBP" alt="" />
-                                <div class="shop-cart-total" style="background-color: rgba(255, 255, 255, 0); border: none" >
+                                <div class="shop-cart-total"
+                                    style="background-color: rgba(255, 255, 255, 0); border: none">
                                     <div class="shop-cart-widget"><a class="btn" hidden>站位</a></div>
                                 </div>
                                 <div class="shop-cart-total"
-                                    style="background-color: rgba(255, 255, 255, 0); border: none" >
+                                    style="background-color: rgba(255, 255, 255, 0); border: none">
                                     <div class="shop-cart-widget">
-                                        <a class="btn" href='{{ url_for("set_password") }}' id="set_password_button" hidden>修改密码</a>
+                                        <a class="btn" href='{{ url_for("set_password") }}' id="set_password_button"
+                                            hidden>修改密码</a>
                                     </div>
                                 </div>
 
@@ -54,7 +56,7 @@
                                         <div class="col-xl-9 col-8">
                                             <input type="text" value="" disabled="disabled" id="user_no" />
                                         </div>
-                                        <div >
+                                        <div>
                                             <input style="padding: 12px 20px;" type="checkbox" class="switch"
                                                 checked="checked" id="user_no_is_published"
                                                 onclick="checkboxOnclick(this)" />
@@ -84,7 +86,7 @@
                                         <div class="col-xl-9 col-8">
                                             <input type="text" placeholder="请填写你的姓名" value="" id="name" />
                                         </div>
-                                        <div >
+                                        <div>
                                             <input style="padding: 12px 20px;" type="checkbox" class="switch"
                                                 checked="checked" id="name_is_published"
                                                 onclick="checkboxOnclick(this)" />
@@ -138,6 +140,14 @@
                     {% endif %}
                     {% if current_user.state == 1 %}
                     <div id="change_user">
+                        <div class="col-12">
+                            <span>封禁理由</span>
+                            <span id="ban_reason"></span>
+                        </div>
+                        <div class="col-12">
+                            <span>封禁终止时间</span>
+                            <span id="ban_time"></span>
+                        </div>
                         <div id="ban_table" hidden>
                             <div>
                                 <input class="ban" type="date" />
@@ -161,7 +171,7 @@
     //var opt_userid = "{{ opt_userid|safe }}"; // 如果有python传过来的
     var opt_userid = "{{ opt_userid|safe }}";
     var current_user_id = "{{ current_user.id|safe }}";
-    
+
     var debug = 0;
     function change_user_state(state) {
         let change_url = "/api/change_user_state";
@@ -182,8 +192,8 @@
                     success: function (ban_ret) {
                         suspend("alert-success", ban_ret.message);
                         //window.alert(ban_ret.message);
-                        sleep(500).then(() => {window.location.href = "{{url_for('index')}}";});
-                        
+                        sleep(500).then(() => { window.location.href = "{{url_for('index')}}"; });
+
                     }
                 }
                 );
@@ -198,8 +208,8 @@
                 processData: false,
                 success: function (ban_ret) {
                     suspend("alert-success", ban_ret.message);
-                    sleep(500).then(() => {window.location.href = "{{url_for('index')}}";});
-                    
+                    sleep(500).then(() => { window.location.href = "{{url_for('index')}}"; });
+
                 }
             });
         }
@@ -252,7 +262,7 @@
             type: "get",
             data: { user_id: opt_userid },
             success: function (ret) {
-                console.log(ret);
+                //console.log(ret);
                 if (opt_userid != current_user_id) {
                     $("#pname").text(ret.data.username + "的个人信息");
                     $("#username").attr('disabled', "disabled");
@@ -296,6 +306,7 @@
                     $("#check_name_is_published").text("不公开");
                 if (ret.data.campus_is_published == false)
                     $("#check_campus_is_published").text("不公开");
+
                 if (ret.data.state == 1) {
                     $("#change_user").remove();
                 }
@@ -304,6 +315,18 @@
                     $("#ban").click(function () { change_user_state(-1) });
                 }
                 else {
+                    if ("{{current_user.state|safe}}" == "1") {
+                        $.ajax({
+                            url: "/api/get_ban_data",
+                            type: "get",
+                            data: { user_id: opt_userid },
+                            success: function (ban_data_ret) {
+                                $("#ban_reason").text(ban_data_ret.data.ban_reason);
+                                $("#ban_time").text(ban_data_ret.data.ban_time);
+                            }
+                        })
+                    }
+
                     $("#ban").text("修改封禁信息");
                     $("#ban").click(function () { change_user_state(-1) });
                     $("#change_user").append("<a class='btn' id='normal'>为该用户解封</a>");
