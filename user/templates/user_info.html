@@ -22,6 +22,9 @@
                                     style="background-color: rgba(255, 255, 255, 0); border: none">
                                     <div class="shop-cart-widget"><a class="btn" id="ban" data-toggle="modal" data-target="#address" hidden>封禁该用户</a></div>
                                     <div class="shop-cart-widget"><a class="btn" id="unban" onclick="change_user_state(0)" hidden>解封该用户</a></div>
+                                    {% if opt_userid == current_user.id %}
+                                    <div class="shop-cart-widget"><a class="btn" id="unban" onclick="#" hidden>修改头像（尚未实现）</a></div>
+                                    {% endif %}
                                 </div>
                                 <div class="shop-cart-total"
                                     style="background-color: rgba(255, 255, 255, 0); border: none">
@@ -303,7 +306,7 @@
 
                 if ("{{current_user.state|safe}}" == "1") {
                     if (ret.data.state == 0) $(ban).removeAttr('hidden');
-                    else {
+                    else if (ret.data.state == -1) {
                         $(unban).removeAttr('hidden');
                         $.ajax({
                             url: "/api/get_ban_data",
