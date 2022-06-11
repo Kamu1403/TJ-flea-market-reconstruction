@@ -11,7 +11,7 @@
                         <h3 class="title">确认订单</h3>
                         <div class="shop-cart-widget">
                             <form action="javascript:void(0)">
-                                <ul>
+                                <ul id="wrapper">
                                     <li class="shop-check-wrap" id="user1">
                                         <span>发起人</span>
                                     </li>
@@ -69,12 +69,14 @@
                                     <li class="shop-check-wrap" id="orderState">
                                         <span>订单状态</span>
                                     </li>
+
                                 </ul>
-                                <div class="row justify-content-center">
+                                <div class="row justify-content-center" id="buttongroup">
                                 <button class="btn col-xl-3" id="confirm" onclick="change_state('{{order_id}}',1)">确认订单</button>&nbsp;&nbsp;
                                 <button class="btn col-xl-3" id="complete" onclick="change_state('{{order_id}}',2)">完成订单</button>&nbsp;&nbsp;
                                 <button class="btn col-xl-3" id="cancel" onclick="change_state('{{order_id}}',-1)">取消订单</button>
                                 </div>
+                                
                             </div>
                     </div>
                 </div>
@@ -175,6 +177,17 @@
                                         //$("#cancel").attr("disabled", "disabled");
                                         //$("#complete").attr("disabled", "disabled");
                                         //$("#confirm").attr("disabled", "disabled");
+                                        let remark=`
+                                        <li class="shop-check-wrap" id="review_post">
+                                            <span>订单评价</span>
+                                            <textarea  placeholder="请输入你的评价..."style="resize: none;" maxlength="150" cols="50" rows="3" id="order_note" /></textarea>
+                                        </li>`;
+                                        let button_sub=`<a class="btn col-xl-3" onclick="submit_review()">提交评价</a>`;
+                                        if ($("#review_post").length==0){
+                                            $("#wrapper").append(remark);
+                                            $('#buttongroup').append(button_sub);
+                                        }
+                                        
                                     }
                                     if ($("#order_state").length==0)
                                         $("#orderState").append(`<h6 id="order_state">${state_message}</h6>`);
@@ -235,6 +248,36 @@
                     sleep(500).then(() => {window.location.reload();});
                 } else {
                     suspend("alert-danger",  ret.message);
+                }
+            },
+        });
+    }
+
+    function submit_review() {
+        url = "/api/order_evaluate";
+        if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
+
+        let note = $("#order_note").val();
+        console.log(note);
+        //let number=$("#number").val();
+
+        $.ajax({
+            // query形式
+            url: url,
+            type: "post",
+            contentType: "application/json;charset=utf-8",
+            processData: false,
+            data: JSON.stringify({
+                order_id: order_id,
+                feedback_content: note,
+            }),
+            async: false, // 当需要将值传给函数外部时需要强制同步
+            success: function (ret) {
+                if (ret.statusCode == 200) {
+                    window.location.href = ret.data.url;
+                } else {
+                    suspend("alert-danger", ret.message);
+                    //alert(ret.message);
                 }
             },
         });
