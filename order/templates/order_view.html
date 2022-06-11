@@ -64,7 +64,7 @@
                                         <span>总价</span>
                                     </li>
 
-                                    <li class="shop-check-wrap" id="orderState">
+                                    <li class="shop-check-wrap" id="orderState" value="0">
                                         <span>订单状态</span>
                                     </li>
                                 </ul>
@@ -178,7 +178,7 @@
                                         let remark = `
                                         <li class="shop-check-wrap" id="review_post">
                                             <span>订单评价</span>
-                                            <textarea  placeholder="请输入你的评价..."style="resize: none;" maxlength="150" cols="50" rows="3" id="order_note" /></textarea>
+                                            <textarea  placeholder="请输入你的评价..."style="resize: none;" cols="50" rows="3" id="order_note" /></textarea>
                                         </li>`;
                                         let button_sub = `<a class="btn col-xl-3" onclick="submit_review()">提交评价</a>`;
                                         if ($("#review_post").length == 0) {
@@ -186,7 +186,10 @@
                                             $("#buttongroup").append(button_sub);
                                         }
                                     }
-                                    if ($("#order_state").length == 0) $("#orderState").append(`<h6 id="order_state">${state_message}</h6>`);
+                                    if ($("#orderState").val() == "0") {
+                                        $("#orderState").append(`${state_message}`);
+                                        $("#orderState").val("1");
+                                    } 
                                 }
                             },
                         });
