@@ -7,15 +7,15 @@
             <div class="row justify-content-center">
                 <div class="col-3">{% include "cont_side.html" %}</div>
                 <div class="col-9">
-                    未阅<br />
+                    <br /><br />未读 | 未回复<br />
                     <table>
                         <table id="unread"></table>
                     </table>
-                    已阅未回复<br />
+                    <br /><br />已读 | 未回复<br />
                     <table>
                         <table id="read"></table>
                     </table>
-                    已回复<br />
+                    <br /><br />已读 | 已回复<br />
                     <table>
                         <table id="replied"></table>
                     </table>
@@ -52,7 +52,7 @@
                                 data: { feedback_id: feedback_id },
                                 async: false,
                                 success: function (ret) {
-                                    console.log(ret);
+                                    // console.log(ret);
                                     report.append(`<td><p>${ret.data.feedback_content}</p></td>`);
                                 },
                             });

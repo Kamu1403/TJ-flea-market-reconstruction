@@ -2,7 +2,14 @@
 <title>反馈详情</title>
 {% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
 <main>
-    <a href="{{url_for('admin.feedback_show')}}">返回</a>
+    <section class="shop--area shop-right-sidebar pt-90 pb-90">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-3">{% include "cont_side.html" %}</div>
+                <div class="col-9" id="testt"></div>
+            </div>
+        </div>
+    </section>
 </main>
 {% endblock %} {% block footer %} {{ super() }} {% endblock %} {% block js %} {{ super() }}
 
@@ -18,23 +25,22 @@
             type: "get",
             data: { feedback_id: feedback_id },
             success: function (ret) {
-                let main = $("main");
-                //console.log(ret.data);
-                main.append(`<p>反馈用户ID:${ret.data.user_id}</p>`);
-                main.append(`<p>反馈类型:${ret.data.kind}</p>`);
-                main.append(`<p>反馈时间:${ret.data.publish_time}</p>`);
-                main.append(`<p>反馈内容:${ret.data.feedback_content}</p>`);
-                main.append(`<p>反馈状态:${ret.data.state}</p>`);
-                if (ret.data.state == -1) {
-                    main.append(`<p>回复内容:${ret.data.reply_content}</p>`);
-                }
-                /*
-                for (i in ret.data) {
-                    main.append(`<p>${i}:${ret.data[i]}</p>`);
-                }*/
+                let main = $(testt);
 
-                main.append(`<textarea row=12 col=40 maxlength=100></textarea>`);
-                main.append("<a href='#' class='btn'>回复反馈</a>");
+                //console.log(ret.data);
+                kind2str = { 0: "举报用户", 1: "举报物品", 2: "反馈网站bug", 3: "个人提问", 4: "交易维权", 5: "其他" };
+                state2str = { 0: "未读 | 未回复", 1: "已读 | 未回复", "-1": "已读 | 已回复" };
+                main.append(`
+                    <p>反馈用户ID：${ret.data.user_id}</p>
+                    <p>反馈类型：${kind2str[ret.data.kind]}</p>
+                    <p>反馈时间：${ret.data.publish_time}</p>
+                    <p>反馈内容：${ret.data.feedback_content}</p>
+                    <p>反馈状态：${state2str[ret.data.state]}</p>
+                `);
+                if (ret.data.state == -1) main.append(`<p>回复内容：${ret.data.reply_content}</p>`);
+
+                main.append(`<textarea placeholder="请输入回复..."></textarea>`);
+                main.append("<br /><a href='#' class='btn'>回复反馈</a>");
                 let reply = main.children().eq(-2);
                 let submit = main.children().eq(-1);
                 submit.click(function () {
