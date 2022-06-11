@@ -7,18 +7,53 @@
             <div class="row justify-content-center">
                 <div class="col-3">{% include "cont_side.html" %}</div>
                 <div class="col-9">
-                    <br /><br />未读 | 未回复<br />
-                    <table>
-                        <table id="unread"></table>
-                    </table>
-                    <br /><br />已读 | 未回复<br />
-                    <table>
-                        <table id="read"></table>
-                    </table>
-                    <br /><br />已读 | 已回复<br />
-                    <table>
-                        <table id="replied"></table>
-                    </table>
+                    <div class="cart-wrapper">
+                        <div class="table-responsive">
+                            <table class="table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th class="product-thumbnail">未阅</th>
+                                        <th class="product-name"></th>
+                                        <th class="product-name"></th>
+                                        <th class="product-name"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="unread"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="cart-wrapper">
+                        <div class="table-responsive">
+                            <table class="table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th class="product-thumbnail">已阅未回复</th>
+                                        <th class="product-name"></th>
+                                        <th class="product-name"></th>
+                                        <th class="product-name"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="read"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="cart-wrapper">
+                        <div class="table-responsive">
+                            <table class="table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th class="product-thumbnail">已回复</th>
+                                        <th class="product-name"></th>
+                                        <th class="product-name"></th>
+                                        <th class="product-name"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="replied"></tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -40,7 +75,6 @@
                 if (ret.statusCode == 200) {
                     for (var i in ret.data) {
                         let report_list = $(`#${i}`);
-                        report_list.append(`<thead><th>反馈内容</th><th>详情链接</th></thead>`);
                         for (var j = 0; j < ret.data[i].length; j++) {
                             feedback_id = ret.data[i][j];
                             report_list.append(`<tr id="${feedback_id}"></tr>`);
@@ -52,11 +86,13 @@
                                 data: { feedback_id: feedback_id },
                                 async: false,
                                 success: function (ret) {
-                                    // console.log(ret);
-                                    report.append(`<td><p>${ret.data.feedback_content}</p></td>`);
+                                    console.log(ret);
+                                    report.append(`<td class="product-thumbnail"><p>${ret.data.publish_time}</p></td>`);
+                                    report.append(`<td class="product-name"><h4>${ret.data.user_id}</h4></td>`);
+                                    report.append(`<td class="product-name"><p>${ret.data.feedback_content}</p></td>`);
                                 },
                             });
-                            report.append(`<td><a href=/admin/feedback/${feedback_id}/>反馈详情</a></td>`);
+                            report.append(`<td class="product-name"><h4><a href=/admin/feedback/${feedback_id}/>反馈详情</a></h4></td>`);
                         }
                     }
                 }

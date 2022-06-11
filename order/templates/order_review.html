@@ -46,12 +46,9 @@
                     let tbody = $("#my_order");
                     tbody.append(`<tr id="my_order${order_id}"></tr>`);
                     let p_tr = $(`#my_order${order_id}`);
-                    console.log(full_order_ret.data.length);
                     for (var i = 0; i < full_order_ret.data.length; ++i) {
-                        console.log(i);
                         if (full_order_ret.data[i].order_id == order_id) {
                             ret = full_order_ret.data[i];
-                            console.log(ret);
                             let item_id = ret.item_id_list[0]; //目前还只有一个商品信息
                             p_tr.append(`<td id="order_item_pic${order_id}"></td>`);
                             p_tr.append(`<td id="order_item_data${order_id}"></td>`);
