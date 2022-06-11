@@ -9,7 +9,6 @@
             <div class="row justify-content-center">
                 <div class="col-3">{% include "cont_side.html" %}</div>
                 <div class="col-9">
-                    
                     <div class="cart-wrapper">
                         <div class="table-responsive">
                             <table class="table mb-0">
@@ -17,14 +16,11 @@
                                     <tr>
                                         <th class="product-thumbnail"></th>
                                         <th class="product-name">待确认订单</th>
-                                        <th class="product-price"></th>
-                                        <th class="product-quantity">订单状态</th>
-                                        <th class="product-subtotal"></th>
+                                        <th class="product-name"></th>
                                         <th class="product-delete"></th>
                                     </tr>
                                 </thead>
-                                <tbody id="my_order_wait_confirm">
-                                </tbody>
+                                <tbody id="my_order_wait_confirm"></tbody>
                             </table>
                         </div>
                     </div>
@@ -36,14 +32,11 @@
                                     <tr>
                                         <th class="product-thumbnail"></th>
                                         <th class="product-name">待完成订单</th>
-                                        <th class="product-price"></th>
-                                        <th class="product-quantity">订单状态</th>
-                                        <th class="product-subtotal"></th>
+                                        <th class="product-name"></th>
                                         <th class="product-delete"></th>
                                     </tr>
                                 </thead>
-                                <tbody id="my_order_confirmed">
-                                </tbody>
+                                <tbody id="my_order_confirmed"></tbody>
                             </table>
                         </div>
                     </div>
@@ -55,14 +48,11 @@
                                     <tr>
                                         <th class="product-thumbnail"></th>
                                         <th class="product-name">已完成订单</th>
-                                        <th class="product-price"></th>
-                                        <th class="product-quantity">订单状态</th>
-                                        <th class="product-subtotal"></th>
+                                        <th class="product-name"></th>
                                         <th class="product-delete"></th>
                                     </tr>
                                 </thead>
-                                <tbody id="my_order_done">
-                                </tbody>
+                                <tbody id="my_order_done"></tbody>
                             </table>
                         </div>
                     </div>
@@ -74,14 +64,11 @@
                                     <tr>
                                         <th class="product-thumbnail"></th>
                                         <th class="product-name">已取消订单</th>
-                                        <th class="product-price"></th>
-                                        <th class="product-quantity">订单状态</th>
-                                        <th class="product-subtotal"></th>
+                                        <th class="product-name"></th>
                                         <th class="product-delete"></th>
                                     </tr>
                                 </thead>
-                                <tbody id="my_order_cancel">
-                                </tbody>
+                                <tbody id="my_order_cancel"></tbody>
                             </table>
                         </div>
                     </div>
@@ -117,11 +104,11 @@
                         else if (ret.data[i].state == 1) mytbody = $("#my_order_confirmed");
                         else if (ret.data[i].state == 2) mytbody = $("#my_order_done");
                         else if (ret.data[i].state == -1) mytbody = $("#my_order_cancel");
-                        
+
                         let order_id = ret.data[i].order_id;
                         let item_id = ret.data[i].item_id_list[0]; //目前还只有一个商品信息
                         let pic_url = "/api/get_item_head_pic";
-                        let purl=""
+                        let purl = "";
                         if (debug) pic_url = `http://127.0.0.1:4523/mock/927026${pic_url}`;
                         $.ajax({
                             url: pic_url,
@@ -129,15 +116,14 @@
                             data: { item_id: item_id },
                             async: false, // 当需要将值传给函数外部时需要强制同步
                             success: function (pic_ret) {
-                                if (pic_ret.statusCode == 200) 
-                                    purl=pic_ret.data.url;
+                                if (pic_ret.statusCode == 200) purl = pic_ret.data.url;
                             },
                         });
                         let item_url = "/api/get_item_info";
-                        let item_name="";
-                        let item_desc="";
-                        let other_user_id="";
-                        let state_message="";
+                        let item_name = "";
+                        let item_desc = "";
+                        let other_user_id = "";
+                        let state_message = "";
                         if (debug) item_url = `http://127.0.0.1:4523/mock/927026${item_url}`;
                         $.ajax({
                             url: item_url,
@@ -146,26 +132,25 @@
                             async: false, // 当需要将值传给函数外部时需要强制同步
                             success: function (item_ret) {
                                 if (item_ret.statusCode == 200) {
-                                    item_name=item_ret.data.name;
-                                    item_desc=item_ret.data.description;
-                                    if (current_user_id == item_ret.data.user_id)//如果是商家
-                                        other_user_id=ret.data[i].user_id;
-                                    else
-                                        other_user_id=item_ret.data.user_id;
-                                    
+                                    item_name = item_ret.data.name;
+                                    item_desc = item_ret.data.description;
+                                    if (current_user_id == item_ret.data.user_id)
+                                        //如果是商家
+                                        other_user_id = ret.data[i].user_id;
+                                    else other_user_id = item_ret.data.user_id;
 
-                                    let str=`<tr id="my_order${order_id}">
+                                    let str = `
+                                    <tr id="my_order${order_id}">
                                         <td class="product-thumbnail" id="order_item_pic${order_id}">
                                             <a href="/item/content/${item_id}"><img src="${purl}" alt=""></a>
                                         </td>
                                         <td class="product-name" id="order_item_data${order_id}">
-                                            <p><a href="/item/content/${item_id}">${item_name}</a></p>
-                                            <p><a href="/chat/${other_user_id}">联系对方</a></p>
+                                            <h4><a href="/item/content/${item_id}">${item_name}</a></h4>
+                                            <br/>
+                                            <h4><a href="/user/${other_user_id}/user_info">${other_user_id}</a></h4>
                                         </td>
-                                        <td class="product-price">
-                                            <p><a href="/order/${order_id}">订单详情</a></p>
-                                        </td>
-                                        <td class="product-quantity" id="state_message${order_id}">
+                                        <td class="product-name">
+                                            <h4><a href="/order/${order_id}">订单详情</a></h4>
                                         </td>
                                         <td class="product-delete">
                                             <button class="btn" id="confirm${order_id}" onclick="change_state('${order_id}',1)">确认订单</button>
@@ -180,33 +165,33 @@
                                         state_message = "等待商家确认";
                                         if (current_user_id != item_ret.data.user_id) {
                                             //当前用户不是卖家
-                                            $(`#confirm${order_id}`).attr("disabled", "disabled");
+                                            $(`#confirm${order_id}`).prop("hidden", "hidden");
                                         }
-                                        $(`#complete${order_id}`).attr("disabled", "disabled");
+                                        $(`#complete${order_id}`).prop("hidden", "hidden");
                                     } else if (ret.data[i].state == 1) {
                                         state_message = "等待收货方完成";
                                         if ((current_user_id == item_ret.data.user_id && item_ret.data.type == 0) || (current_user_id == ret.data[i].user_id && item_ret.data.type == 1)) {
                                             //当前用户不是收货方
-                                            $(`#complete${order_id}`).attr("disabled", "disabled");
+                                            $(`#complete${order_id}`).prop("hidden", "hidden");
                                         }
-                                        $(`#confirm${order_id}`).attr("disabled", "disabled");
+                                        $(`#confirm${order_id}`).prop("hidden", "hidden");
                                     } else if (ret.data[i].state == -1) {
                                         state_message = "已被取消";
-                                        $(`#cancel${order_id}`).attr("disabled", "disabled");
-                                        $(`#complete${order_id}`).attr("disabled", "disabled");
-                                        $(`#confirm${order_id}`).attr("disabled", "disabled");
+                                        $(`#cancel${order_id}`).prop("hidden", "hidden");
+                                        $(`#complete${order_id}`).prop("hidden", "hidden");
+                                        $(`#confirm${order_id}`).prop("hidden", "hidden");
                                     } else if (ret.data[i].state == 2) {
                                         state_message = "已完成";
-                                        $(`#cancel${order_id}`).attr("disabled", "disabled");
-                                        $(`#complete${order_id}`).attr("disabled", "disabled");
-                                        $(`#confirm${order_id}`).attr("disabled", "disabled");
+                                        $(`#cancel${order_id}`).prop("hidden", "hidden");
+                                        $(`#complete${order_id}`).prop("hidden", "hidden");
+                                        $(`#confirm${order_id}`).prop("hidden", "hidden");
                                     }
-                                    $(`#state_message${order_id}`).append(`<span><p>${state_message}</p></span>`);
                                 }
                             },
                         });
 
                         let p_tr = $(`#my_order${order_id}`);
+                        /*
                         if (ret.data[i].state == 2) {
                             let is_review_url = "/api/get_user_is_review";
                             $.ajax({
@@ -224,6 +209,7 @@
                                 },
                             });
                         }
+                        */
                     }
                 }
             },

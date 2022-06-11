@@ -20,13 +20,14 @@
                                 <img src="/user/static/resource/user-pic/{{ opt_userid }}/avatar_128.WEBP" alt="" />
                                 <div class="shop-cart-total"
                                     style="background-color: rgba(255, 255, 255, 0); border: none">
-                                    <div class="shop-cart-widget"><a class="btn" hidden>站位</a></div>
+                                    <div class="shop-cart-widget"><a class="btn" id="ban" data-toggle="modal" data-target="#address" hidden>封禁该用户</a></div>
+                                    <div class="shop-cart-widget"><a class="btn" id="unban" onclick="change_user_state(0)" hidden>解封该用户</a></div>
                                 </div>
                                 <div class="shop-cart-total"
                                     style="background-color: rgba(255, 255, 255, 0); border: none">
                                     <div class="shop-cart-widget">
-                                        <a class="btn" href='{{ url_for("set_password") }}' id="set_password_button"
-                                            hidden>修改密码</a>
+                                        <a class="btn" href='{{ url_for("set_password") }}' id="set_password_button" hidden>修改密码</a>
+                                        <a class="btn" href="/chat/{{ opt_userid }}" id="chatroom_redirect_button" hidden>与对方聊天</a>
                                     </div>
                                 </div>
 
@@ -138,28 +139,37 @@
                         </div>
                     </div>
                     {% endif %}
-                    {% if current_user.state == 1 %}
-                    <div id="change_user">
-                        <div class="col-12">
-                            <span>封禁理由</span>
-                            <span id="ban_reason"></span>
-                        </div>
-                        <div class="col-12">
-                            <span>封禁终止时间</span>
-                            <span id="ban_time"></span>
-                        </div>
-                        <div id="ban_table" hidden>
-                            <div>
-                                <input class="ban" type="date" />
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-7">
+                    <div class="modal fade" id="address" tabindex="-1" role="dialog" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">封禁用户</h5>
+                                </div>
+                                <div class="modal-body">
+                                    <form action="javascript:void(0);">
+                                        <div class="form-group">
+                                            <label class="col-form-label">解封时间</label>
+                                            <input type="date" class="form-control" id="ban_date" />
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-form-label">封禁原因</label>
+                                            <input type="text" class="form-control" id="ban_reason" />
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                                    <button type="button" class="btn" onclick="change_user_state(-1)">提交</button>
+                                </div>
                             </div>
-                            <div>
-                                <textarea class="ban">
-                    </textarea>
-                            </div>
                         </div>
-                        <a class="btn" id="ban"></a>
                     </div>
-                    {% endif %}
                 </div>
             </div>
         </div>
@@ -176,43 +186,26 @@
     function change_user_state(state) {
         let change_url = "/api/change_user_state";
         if (debug) change_url = `http://127.0.0.1:4523/mock/927026${change_url}`;
+        let data = { user_id: opt_userid, user_state: state };
         if (state == -1) {
-            if ($("#ban_table").is(':hidden')) {
-                $("#ban_table").removeAttr('hidden');
-                $("#ban").text("封禁");
-            }
-            else {
-                let ban_content = $(".ban");
-                $.ajax({
-                    url: change_url,
-                    type: "put",
-                    data: JSON.stringify({ user_id: opt_userid, user_state: state, ban_time: $(".ban")[0].value, ban_reason: $(".ban")[1].value }),
-                    contentType: "application/json;charset=utf-8",
-                    processData: false,
-                    success: function (ban_ret) {
-                        suspend("alert-success", ban_ret.message);
-                        //window.alert(ban_ret.message);
-                        sleep(500).then(() => { window.location.href = "{{url_for('index')}}"; });
-
-                    }
-                }
-                );
-            }
+            data["ban_time"] = $(ban_date).val();
+            data["ban_reason"] = $(ban_reason).val();
         }
-        else {
-            $.ajax({
-                url: change_url,
-                type: "put",
-                data: JSON.stringify({ user_id: opt_userid, user_state: state }),
-                contentType: "application/json;charset=utf-8",
-                processData: false,
-                success: function (ban_ret) {
+        $.ajax({
+            url: change_url,
+            type: "put",
+            data: JSON.stringify(data),
+            contentType: "application/json;charset=utf-8",
+            processData: false,
+            success: function (ban_ret) {
+                if (ban_ret.statusCode == 200) {
                     suspend("alert-success", ban_ret.message);
-                    sleep(500).then(() => { window.location.href = "{{url_for('index')}}"; });
-
+                    sleep(500).then(() => {window.location.reload();});
+                } else {
+                    suspend("alert-danger", ban_ret.message);
                 }
-            });
-        }
+            }
+        });
     }
     function checkboxOnclick(checkbox) {
         if (checkbox.checked == false)
@@ -256,7 +249,8 @@
     $(document).ready(function () {
         let url = "/api/get_user_info";
         if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
-        if (opt_userid == current_user_id) $(set_password_button).removeAttr('hidden')
+        if (opt_userid == current_user_id) $(set_password_button).removeAttr('hidden');
+        else $(chatroom_redirect_button).removeAttr('hidden');
         $.ajax({
             url: url,
             type: "get",
@@ -267,21 +261,21 @@
                     $("#pname").text(ret.data.username + "的个人信息");
                     $("#username").attr('disabled', "disabled");
                     if (ret.data.user_no_is_published) {
-                        let str = `<div>
+                        let str = `<div class="col-12">
                             <span>学号</span>
                             <input type="text" value="用户名" id="user_no" disabled="disabled"/>
                             </div>`;
                         $(".building-info-wrap").append(str);
                     }
                     if (ret.data.name_is_published) {
-                        let str = `<div>
+                        let str = `<div class="col-12">
                             <span>姓名</span>
                             <input type="text" value="姓名" id="name" disabled="disabled"/>
                             </div>`;
                         $(".building-info-wrap").append(str);
                     }
                     if (ret.data.campus_is_published) {
-                        let str = `<div>
+                        let str = `<div class="col-12">
                             <span>校区</span>
                             <input type="text" value="校区" id="campus_branch" disabled="disabled"/>
                             </div>`;
@@ -307,30 +301,31 @@
                 if (ret.data.campus_is_published == false)
                     $("#check_campus_is_published").text("不公开");
 
-                if (ret.data.state == 1) {
-                    $("#change_user").remove();
-                }
-                else if (ret.data.state == 0) {
-                    $("#ban").text("封禁该用户");
-                    $("#ban").click(function () { change_user_state(-1) });
-                }
-                else {
-                    if ("{{current_user.state|safe}}" == "1") {
+                if ("{{current_user.state|safe}}" == "1") {
+                    if (ret.data.state == 0) $(ban).removeAttr('hidden');
+                    else {
+                        $(unban).removeAttr('hidden');
                         $.ajax({
                             url: "/api/get_ban_data",
                             type: "get",
                             data: { user_id: opt_userid },
                             success: function (ban_data_ret) {
-                                $("#ban_reason").text(ban_data_ret.data.ban_reason);
-                                $("#ban_time").text(ban_data_ret.data.ban_time);
+                                $(".building-info-wrap").append(`
+                                <div class="col-12">
+                                    <span>封禁原因</span>
+                                    <input type="text" value="${ban_data_ret.data.ban_reason}" id="campus_branch" disabled="disabled"/>
+                                </div>
+                                `);
+
+                                $(".building-info-wrap").append(`
+                                <div class="col-12">
+                                    <span>封禁时间</span>
+                                    <input type="text" value="${ban_data_ret.data.ban_time}" id="campus_branch" disabled="disabled"/>
+                                </div>
+                                `);
                             }
                         })
                     }
-
-                    $("#ban").text("修改封禁信息");
-                    $("#ban").click(function () { change_user_state(-1) });
-                    $("#change_user").append("<a class='btn' id='normal'>为该用户解封</a>");
-                    $("#normal").click(function () { change_user_state(0) });
                 }
             },
         });
