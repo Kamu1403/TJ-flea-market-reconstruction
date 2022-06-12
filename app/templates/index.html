@@ -114,20 +114,6 @@
                     });
 
                     let value = 0;
-                    let url3 = "/api/get_item_favor";
-                    if (debug) url3 = `http://127.0.0.1:4523/mock/927026${url3}`;
-                    $.ajax({
-                        url: url3,
-                        type: "get",
-                        async: false,
-                        data: { item_id: id },
-                        success: function (ret) {
-                            if (ret.statusCode == 200) {
-                                if (ret.data == false) value = 0;
-                                else value = 1;
-                            }
-                        },
-                    });
 
                     let str = `                                
                         <div class="col-xl-3 col-md-4 col-sm-6 grid-item grid-sizer cat-two">
@@ -144,54 +130,12 @@
 
                     let style_sheet = ["background-color:#ffffff;color:#4eb92d", "background-color:#4eb92d;color:#ffffff"];
                     let style = style_sheet[value];
-                    let app = `<a id="item_${id}" value=${value} style=${style} onclick="add_favor(this)" class="wishlist"><i class="flaticon-heart-shape-outline"></i></a>
-                    <a href="/item/content/${id}"><img src="${purl}" alt=""></a>`;
+                    let app = `<a href="/item/content/${id}"><img src="${purl}" alt=""></a>`;
                     if (type == 0) $("#sgoods").append(str);
                     else $("#swants").append(str);
                     $(`#pre_item_${id}`).append(app);
                 }
             },
-        });
-
-        $.get(url2, function (ret) {
-            if (debug == 1) ret.statusCode = 200;
-            if (ret.statusCode == 401 || ret.statusCode == 404) {
-                suspend("alert-danger", ret.message);
-            } else {
-                let items = ret.data;
-                for (let i = 0; i < items.length; i++) {
-                    let item = items[i];
-                    let id = item.id;
-                    let name = item.name;
-                    let price = item.price;
-                    let time = item.publish_time;
-                    let type = item.type;
-                    let purl = "";
-                    $.ajax({
-                        url: "/api/get_item_head_pic",
-                        async: false,
-                        data: { item_id: id },
-                        type: "get",
-                        success: function (ret) {
-                            purl = ret.data.url;
-                        },
-                    });
-                    let str = `<div class="row">
-                            <div class="media" style="margin-top: 15px;">
-                                <a href="/item/content/${id}"><img src="${purl}" class="align-self-start mr-2" style="width:64px;height:64px">
-                                </a>
-                            <div class="media-body" style="margin-left: 8px;">
-                                <h6 class="media-heading">${name}
-                                </h6>
-                                <p>${time}</p>
-                                <a href="/item/content/${id}"><strong>查看详情</strong> </a>
-                            </div>
-                            </div>
-                        </div>`;
-                    if (type == 0) $("#mygoods").append(str);
-                    else $("#mywants").append(str);
-                }
-            }
         });
     });
 </script>
