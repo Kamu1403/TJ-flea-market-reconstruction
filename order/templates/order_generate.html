@@ -6,7 +6,8 @@
         float: right;
     }
 </style>
-{% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
+{% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block
+main %}
 <main>
     <!-- <a href="{{url_for('item.content',item_id=item.id)}}">返回商品页</a>
     <br />
@@ -30,7 +31,8 @@
                     <div class="breadcrumb-content">
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="{{url_for('item.content',item_id=item.id)}}">返回商品页</a></li>
+                                <li class="breadcrumb-item"><a
+                                        href="{{url_for('item.content',item_id=item.id)}}">返回商品页</a></li>
                                 <li class="breadcrumb-item active" aria-current="page">生成订单</li>
                             </ol>
                         </nav>
@@ -65,7 +67,8 @@
                                         <td class="product-quantity">
                                             <div class="cart--plus--minus">
                                                 <form action="javascript:void(0)" class="num-block">
-                                                    <input type="text" class="in-num" value="1" style="width: 100px" onblur="check_buy_num()" id="buy_num" />
+                                                    <input type="text" class="in-num" value="1" style="width: 100px"
+                                                        onblur="check_buy_num()" id="buy_num" />
                                                     <div class="qtybutton-box">
                                                         <span class="plus"><i class="fas fa-angle-up"></i></span>
                                                         <span class="minus dis"><i class="fas fa-angle-down"></i></span>
@@ -93,7 +96,8 @@
                                     <li class="shop-check-wrap"></li>
                                     <h6>备注</h6>
                                     <div class="shop-check-wrap">
-                                        <textarea id="order_note" placeholder="请输入你的备注..." style="resize: none" maxlength="150" cols="50" rows="3"></textarea>
+                                        <textarea id="order_note" placeholder="请输入你的备注..." style="resize: none"
+                                            maxlength="150" cols="50" rows="3"></textarea>
                                     </div>
                                     <li></li>
                                     <li class="cart-total-amount">
@@ -184,7 +188,12 @@
         let contact_id = $("#address option:selected").val();
         let note = $("#order_note").val();
         let number = $("#buy_num").val();
-
+        let data = {
+            item_info: [{ num: number, item_id: item_id }],
+            contact_id: contact_id,
+            note: note,
+        };
+        console.log(data);
         $.ajax({
             // query形式
             url: url,
@@ -199,11 +208,16 @@
             async: false, // 当需要将值传给函数外部时需要强制同步
             success: function (ret) {
                 //console.log(ret);
-                suspend("alert-success", "订单提交成功！");
-                //alert(ret.message);
-                sleep(500).then(() => {
-                    window.location.href = `/order/${ret.data.order_id}`;
-                });
+                if (ret.success == true) {
+                    suspend("alert-success", "订单提交成功！");
+                    //alert(ret.message);
+                    sleep(500).then(() => {
+                        window.location.href = `/order/${ret.data.order_id}`;
+                    });
+                }
+                else {
+                    suspend("alert-danger", ret.message);
+                }
             },
         });
     }

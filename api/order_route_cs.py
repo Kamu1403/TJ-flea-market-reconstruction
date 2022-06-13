@@ -141,7 +141,7 @@ def order_post():
     try:
         contact_id = int(data["contact_id"])
     except Exception as e:
-        return make_response_json(400, "请求格式不对")
+        return make_response_json(400, "地址未填写")
     if "note" not in data:
         return make_response_json(400, "请求格式不对")
     op, tp = None, None
