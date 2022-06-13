@@ -224,7 +224,7 @@ def get_user_is_review():
     try:
         order_id = int(data['order_id'])
     except:
-        return make_response(400, "请求格式不对")
+        return make_response_json(400, "请求格式不对")
 
     res = dict()
     try:
