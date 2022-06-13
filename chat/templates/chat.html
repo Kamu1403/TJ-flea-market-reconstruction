@@ -85,7 +85,7 @@
             if (data.msg.length>50)
             {
                 dmsg="</br>";
-                let n = 50;
+                let n = 30;
                 let a="";
                 for (let i = 0, l = data.msg.length; i < l/n; i++) {
                     a=data.msg.substring(i*n,(i+1)*n);
@@ -96,7 +96,6 @@
             {
                 dmsg+=data.msg+'</br>';
             }
-            console.log(dmsg);
             if (data.type == 0) {
                 let str = `<span> ${data.time}</br>${sender}:${dmsg}</br></span>`;
                 $("#chat").append(str);
