@@ -81,8 +81,23 @@
                 sender = "系统通知";
                 color = "#C00000";
             }
+            let dmsg=""
+            if (data.msg.length>50)
+            {
+                let n = 50;
+                let a="";
+                for (let i = 0, l = data.msg.length; i < l/n; i++) {
+                    a=data.msg.substring(i*n,(i+1)*n);
+                    dmsg+=a+'</br>';
+                }
+            }
+            else
+            {
+                dmsg+=data.msg+'</br>';
+            }
+            console.log(dmsg);
             if (data.type == 0) {
-                let str = `<span> ${data.time}</br>${sender}:${data.msg}</br></span>`;
+                let str = `<span> ${data.time}</br>${sender}:${dmsg}</br></span>`;
                 $("#chat").append(str);
             } else {
                 let str = `
@@ -195,6 +210,7 @@
                         }
                         let last_msg = last_msg_dict[name]["last_msg"];
                         if (last_msg_dict[name]["type"] == 1) last_msg = "[图片]";
+                        if(last_msg.length>10)last_msg=last_msg.substr(0,10)+"...";
                         let str = `  
                         <div class="os-products-item" id="meet_${name}">
                             <div class="thumb">
