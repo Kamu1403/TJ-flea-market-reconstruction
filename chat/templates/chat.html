@@ -96,6 +96,7 @@
             $("#chat").scrollTop($("#chat")[0].scrollHeight);
             let last_msg = data.msg;
             if (data.type == 1) last_msg = "[图片]";
+            if(last_msg.length>10)last_msg=last_msg.substr(0,10)+"...";
             if (`#chat_${name}`.length > 0) $(`#chat_${name}`).html(last_msg);
             else {
                 let str = `  
@@ -126,6 +127,7 @@
             }
             let last_msg = data.msg;
             if (data.type == 1) last_msg = "[图片]";
+            if(last_msg.length>10)last_msg=last_msg.substr(0,10)+"...";
             if ($(`#meet_${sender}`).length==0)
             {
                 let str = `  
