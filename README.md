@@ -2,10 +2,6 @@
 
 同济跳蚤市场课程项目
 
-## 成员须知
-
-这里是develop分支，每次较小的迭代过程中请基于此分支创建临时分支进行开发，然后merge到此分支
-
 ## 运行环境说明
 
 python版本3.10.0
@@ -27,5 +23,3 @@ conda env create --file environment.yml
 ```
 
 python main.py
-
-```
