@@ -4,11 +4,11 @@
 <link rel="stylesheet" type="text/css" href="{{url_for('user.static',filename='css/Switch.css')}}" />
 {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
 <main>
-    <section class="shop--area shop-right-sidebar pt-90 pb-90" data-background="{{url_for('static', filename='img/bg/slider_area_bg2.jpg')}}">
+    <section class="shop--area shop-right-sidebar pt-90 pb-90">
         <div class="container">
             <div class="row justify-content-center">
-                <div class="col-3">{% include "cont_side.html" %}</div>
-                <div class="col-9">
+                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">{% include "cont_side.html" %}</div>
+                <div class="col-xl-9 col-lg-9 col-md-9 col-sm-12">
                     <div id="my_order"></div>
                     <div id="review"></div>
                     <div id="op_review"></div>
@@ -39,18 +39,18 @@
             data: { order_id: order_id },
             success: function (full_order_ret) {
                 if (full_order_ret.statusCode != 200) {
-                    window.alert(full_order_ret.message);
-                    window.location.href = "{{url_for('index')}}";
+                    suspend("alert-danger", full_order_ret.message);
+                    //window.alert(full_order_ret.message);
+                    sleep(500).then(() => {
+                        window.location.href = "{{url_for('index')}}";
+                    });
                 } else {
                     let tbody = $("#my_order");
                     tbody.append(`<tr id="my_order${order_id}"></tr>`);
                     let p_tr = $(`#my_order${order_id}`);
-                    console.log(full_order_ret.data.length);
                     for (var i = 0; i < full_order_ret.data.length; ++i) {
-                        console.log(i);
                         if (full_order_ret.data[i].order_id == order_id) {
                             ret = full_order_ret.data[i];
-                            console.log(ret);
                             let item_id = ret.item_id_list[0]; //目前还只有一个商品信息
                             p_tr.append(`<td id="order_item_pic${order_id}"></td>`);
                             p_tr.append(`<td id="order_item_data${order_id}"></td>`);
@@ -92,7 +92,7 @@
                                 type: "GET",
                                 data: { order_id: order_id },
                                 success: function (review_ret) {
-                                    console.log(review_ret);
+                                    // console.log(review_ret);
                                     feedback_url = "/api/get_review";
                                     review_id = review_ret.data.review_id;
                                     if ((ret.user_id == current_user_id && review_ret.data.is_review == true) || (ret.op_user_id == current_user_id && review_ret.data.op_is_review == true)) $("#review_post").attr("hidden", "hidden");
@@ -105,7 +105,7 @@
                                                 type: "GET",
                                                 data: { review_id: review_id },
                                                 success: function (feedback_ret) {
-                                                    console.log(feedback_ret);
+                                                    // console.log(feedback_ret);
                                                     if (feedback_ret.statusCode == 200) {
                                                         $("#review").append(review_ret.data.user_name + ": " + feedback_ret.data.feedback_content);
                                                     } else bootbox.alert(feedback_ret.message);
@@ -119,7 +119,7 @@
                                                 type: "GET",
                                                 data: { review_id: op_review_id },
                                                 success: function (feedback_ret) {
-                                                    console.log(feedback_ret);
+                                                    // console.log(feedback_ret);
                                                     if (feedback_ret.statusCode == 200) {
                                                         $("#op_review").append(review_ret.data.op_user_name + ": " + feedback_ret.data.feedback_content);
                                                     } else bootbox.alert(feedback_ret.message);
@@ -159,7 +159,8 @@
                 if (ret.statusCode == 200) {
                     window.location.href = ret.data.url;
                 } else {
-                    alert(ret.message);
+                    suspend("alert-danger", ret.message);
+                    //alert(ret.message);
                 }
             },
         });

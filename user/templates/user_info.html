@@ -8,63 +8,72 @@
 
 {% block header %} {{ super() }} {% endblock %} {% block main %}
 <main>
-    <section class="shop--area shop-right-sidebar pt-90 pb-90" data-background="{{url_for('static', filename='img/bg/slider_area_bg2.jpg')}}">
+    <section class="shop--area shop-right-sidebar pt-90 pb-90">
         <div class="container">
             <div class="row justify-content-center">
-                <div class="col-3">{% include "cont_side.html" %}</div>
-                <div class="col-9">
+                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">{% include "cont_side.html" %}</div>
+                <div class="col-xl-9 col-lg-9 col-md-9 col-sm-12">
                     <div class="checkout-form-wrap">
                         <form action="javascript:void(0)">
-                            {% if opt_userid == current_user.id %}
                             <div class="checkout-form-top">
                                 <h5 class="title">个人信息</h5>
-                            </div>
-                            {% else %}
-                            <div class="checkout-form-top">
-                                <h5 id="pname" class="title">个人信息</h5>
-                            </div>
-                            {% endif %}
+                                <img src="/user/static/resource/user-pic/{{ opt_userid }}/avatar_128.WEBP" alt="" />
+                                <div class="shop-cart-total"
+                                    style="background-color: rgba(255, 255, 255, 0); border: none">
+                                    <div class="shop-cart-widget"><a class="btn" id="ban" data-toggle="modal" data-target="#address" hidden>封禁该用户</a></div>
+                                    <div class="shop-cart-widget"><a class="btn" id="unban" onclick="change_user_state(0)" hidden>解封该用户</a></div>
+                                    {% if opt_userid == current_user.id %}
+                                    <div class="shop-cart-widget"><a class="btn" id="unban" onclick="#" hidden>修改头像（尚未实现）</a></div>
+                                    {% endif %}
+                                </div>
+                                <div class="shop-cart-total"
+                                    style="background-color: rgba(255, 255, 255, 0); border: none">
+                                    <div class="shop-cart-widget">
+                                        <a class="btn" href='{{ url_for("set_password") }}' id="set_password_button" hidden>修改密码</a>
+                                        <a class="btn" href="/chat/{{ opt_userid }}" id="chatroom_redirect_button" hidden>与对方聊天</a>
+                                    </div>
+                                </div>
 
+                            </div>
 
                             <div class="building-info-wrap">
-                                <div>
+                                <div class="col-12">
                                     <span>用户名</span>
                                     <input type="text" value="用户名" id="username" />
                                 </div>
 
-                                <div>
+                                <div class="col-12">
                                     <span>信誉分</span>
                                     <input type="text" value="100" disabled="disabled" id="score" />
                                 </div>
 
-                                <div>
+                                <div class="col-12">
                                     <span>邮箱</span>
                                     <input type="text" value="test@test" disabled="disabled" id="email" />
                                 </div>
 
                                 {% if opt_userid == current_user.id %}
 
-                                <div>
+                                <div class="col-12">
                                     <span>学号</span>
                                     <div class="row">
-                                        <div class="col-md-9">
+                                        <div class="col-xl-9 col-8">
                                             <input type="text" value="" disabled="disabled" id="user_no" />
                                         </div>
-                                        <div class="col-md-1">
+                                        <div>
                                             <input style="padding: 12px 20px;" type="checkbox" class="switch"
                                                 checked="checked" id="user_no_is_published"
                                                 onclick="checkboxOnclick(this)" />
                                         </div>
-                                        <div class="col-md-2">
+                                        <div class="col-2">
                                             <p id="check_user_no_is_published">公开</p>
                                         </div>
                                     </div>
                                 </div>
-
-                                <div>
+                                <div class="col-12">
                                     <span>性别</span>
                                     <div class="row">
-                                        <div class="col-md-2">
+                                        <div class="col-xl-9 col-8">
                                             <select id="gender" class="custom-select">
                                                 <option value='保密'>保密</option>
                                                 <option value='男'>男</option>
@@ -75,27 +84,27 @@
                                     </div>
                                 </div>
 
-                                <div>
+                                <div class="col-12">
                                     <span>姓名</span>
                                     <div class="row">
-                                        <div class="col-md-9">
+                                        <div class="col-xl-9 col-8">
                                             <input type="text" placeholder="请填写你的姓名" value="" id="name" />
                                         </div>
-                                        <div class="col-md-1">
+                                        <div>
                                             <input style="padding: 12px 20px;" type="checkbox" class="switch"
                                                 checked="checked" id="name_is_published"
                                                 onclick="checkboxOnclick(this)" />
                                         </div>
-                                        <div class="col-md-2">
+                                        <div class="col-2">
                                             <p id="check_name_is_published">公开</p>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div>
+                                <div class="col-12">
                                     <span>校区</span>
                                     <div class="row">
-                                        <div class="col-md-9">
+                                        <div class="col-xl-9 col-8">
                                             <select id="campus_branch" class="custom-select">
                                                 <option value='四平路校区'>四平路校区</option>
                                                 <option value='嘉定校区'>嘉定校区</option>
@@ -103,12 +112,12 @@
                                                 <option value='沪北校区' selected="selected">沪北校区</option>
                                             </select>
                                         </div>
-                                        <div class="col-md-1">
+                                        <div>
                                             <input style="padding: 12px 20px;" type="checkbox" class="switch"
                                                 checked="checked" id="campus_is_published"
                                                 onclick="checkboxOnclick(this)" />
                                         </div>
-                                        <div class="col-md-2">
+                                        <div class="col-2">
                                             <p id="check_campus_is_published">公开</p>
                                         </div>
                                     </div>
@@ -133,20 +142,37 @@
                         </div>
                     </div>
                     {% endif %}
-                    {% if current_user.state == 1 %}
-                    <div id="change_user">
-                        <div id="ban_table" hidden>
-                            <div>
-                                <input class="ban" type="date" />
-                            </div>
-                            <div>
-                                <textarea class="ban">
-                    </textarea>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-7">
+                    <div class="modal fade" id="address" tabindex="-1" role="dialog" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">封禁用户</h5>
+                                </div>
+                                <div class="modal-body">
+                                    <form action="javascript:void(0);">
+                                        <div class="form-group">
+                                            <label class="col-form-label">解封时间</label>
+                                            <input type="date" class="form-control" id="ban_date" />
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-form-label">封禁原因</label>
+                                            <input type="text" class="form-control" id="ban_reason" />
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                                    <button type="button" class="btn" onclick="change_user_state(-1)">提交</button>
+                                </div>
                             </div>
                         </div>
-                        <a class="btn" id="ban"></a>
                     </div>
-                    {% endif %}
                 </div>
             </div>
         </div>
@@ -158,44 +184,31 @@
     //var opt_userid = "{{ opt_userid|safe }}"; // 如果有python传过来的
     var opt_userid = "{{ opt_userid|safe }}";
     var current_user_id = "{{ current_user.id|safe }}";
+
     var debug = 0;
     function change_user_state(state) {
         let change_url = "/api/change_user_state";
         if (debug) change_url = `http://127.0.0.1:4523/mock/927026${change_url}`;
+        let data = { user_id: opt_userid, user_state: state };
         if (state == -1) {
-            if ($("#ban_table").is(':hidden')) {
-                $("#ban_table").removeAttr('hidden');
-                $("#ban").text("封禁");
-            }
-            else {
-                let ban_content = $(".ban");
-                $.ajax({
-                    url: change_url,
-                    type: "put",
-                    data: JSON.stringify({ user_id: opt_userid, user_state: state, ban_time: $(".ban")[0].value, ban_reason: $(".ban")[1].value }),
-                    contentType: "application/json;charset=utf-8",
-                    processData: false,
-                    success: function (ban_ret) {
-                        window.alert(ban_ret.message);
-                        window.location.href = "{{url_for('index')}}";
-                    }
-                }
-                );
-            }
+            data["ban_time"] = $(ban_date).val();
+            data["ban_reason"] = $(ban_reason).val();
         }
-        else {
-            $.ajax({
-                url: change_url,
-                type: "put",
-                data: JSON.stringify({ user_id: opt_userid, user_state: state }),
-                contentType: "application/json;charset=utf-8",
-                processData: false,
-                success: function (ban_ret) {
-                    window.alert(ban_ret.message);
-                    window.location.href = "{{url_for('index')}}";
+        $.ajax({
+            url: change_url,
+            type: "put",
+            data: JSON.stringify(data),
+            contentType: "application/json;charset=utf-8",
+            processData: false,
+            success: function (ban_ret) {
+                if (ban_ret.statusCode == 200) {
+                    suspend("alert-success", ban_ret.message);
+                    sleep(500).then(() => {window.location.reload();});
+                } else {
+                    suspend("alert-danger", ban_ret.message);
                 }
-            });
-        }
+            }
+        });
     }
     function checkboxOnclick(checkbox) {
         if (checkbox.checked == false)
@@ -239,31 +252,33 @@
     $(document).ready(function () {
         let url = "/api/get_user_info";
         if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
+        if (opt_userid == current_user_id) $(set_password_button).removeAttr('hidden');
+        else $(chatroom_redirect_button).removeAttr('hidden');
         $.ajax({
             url: url,
             type: "get",
             data: { user_id: opt_userid },
             success: function (ret) {
-                console.log(ret);
+                //console.log(ret);
                 if (opt_userid != current_user_id) {
                     $("#pname").text(ret.data.username + "的个人信息");
                     $("#username").attr('disabled', "disabled");
                     if (ret.data.user_no_is_published) {
-                        let str = `<div>
+                        let str = `<div class="col-12">
                             <span>学号</span>
                             <input type="text" value="用户名" id="user_no" disabled="disabled"/>
                             </div>`;
                         $(".building-info-wrap").append(str);
                     }
                     if (ret.data.name_is_published) {
-                        let str = `<div>
+                        let str = `<div class="col-12">
                             <span>姓名</span>
                             <input type="text" value="姓名" id="name" disabled="disabled"/>
                             </div>`;
                         $(".building-info-wrap").append(str);
                     }
                     if (ret.data.campus_is_published) {
-                        let str = `<div>
+                        let str = `<div class="col-12">
                             <span>校区</span>
                             <input type="text" value="校区" id="campus_branch" disabled="disabled"/>
                             </div>`;
@@ -288,18 +303,32 @@
                     $("#check_name_is_published").text("不公开");
                 if (ret.data.campus_is_published == false)
                     $("#check_campus_is_published").text("不公开");
-                if (ret.data.state == 1) {
-                    $("#change_user").remove();
-                }
-                else if (ret.data.state == 0) {
-                    $("#ban").text("封禁该用户");
-                    $("#ban").click(function () { change_user_state(-1) });
-                }
-                else {
-                    $("#ban").text("修改封禁信息");
-                    $("#ban").click(function () { change_user_state(-1) });
-                    $("#change_user").append("<a class='btn' id='normal'>为该用户解封</a>");
-                    $("#normal").click(function () { change_user_state(0) });
+
+                if ("{{current_user.state|safe}}" == "1") {
+                    if (ret.data.state == 0) $(ban).removeAttr('hidden');
+                    else if (ret.data.state == -1) {
+                        $(unban).removeAttr('hidden');
+                        $.ajax({
+                            url: "/api/get_ban_data",
+                            type: "get",
+                            data: { user_id: opt_userid },
+                            success: function (ban_data_ret) {
+                                $(".building-info-wrap").append(`
+                                <div class="col-12">
+                                    <span>封禁原因</span>
+                                    <input type="text" value="${ban_data_ret.data.ban_reason}" id="campus_branch" disabled="disabled"/>
+                                </div>
+                                `);
+
+                                $(".building-info-wrap").append(`
+                                <div class="col-12">
+                                    <span>封禁时间</span>
+                                    <input type="text" value="${ban_data_ret.data.ban_time}" id="campus_branch" disabled="disabled"/>
+                                </div>
+                                `);
+                            }
+                        })
+                    }
                 }
             },
         });

@@ -46,7 +46,39 @@
 <script type="text/javascript" charset="utf-8">
     var keyword = "{{ keyword|safe }}";
     var search_type = "{{ search_type|safe }}";
-    var start_num = 0;
+    var now_page = 1;
+    var total_page = 1;
+    function gene_page_nave_bar_text(i) {
+        $("#page_nav_bar").append(`<li id="page_nav_bar_${i}"><a onclick="send_search_with_filter(${i})">${i}</a></li>`);
+    }
+
+    function draw_page_nav_bar() {
+        $("#page_nav_bar").empty();
+        if (now_page > 1) $("#page_nav_bar").append(`<li class="prev"><a onclick="send_search_with_filter(${now_page - 1})">Prev</a></li>`);
+        if (total_page <= 1);
+        else if (total_page <= 7) for (i = 1; i <= total_page; ++i) $("#page_nav_bar").append(`<li id="page_nav_bar_${i}"><a onclick="send_search_with_filter(${i})">${i}</a></li>`);
+        else {
+            if (now_page <= 4) {
+                for (i = 1; i <= 5; ++i) gene_page_nave_bar_text(i);
+                $("#page_nav_bar").append(`<li><a>...</a></li>`);
+                gene_page_nave_bar_text(total_page);
+            } else if (now_page >= total_page - 3) {
+                gene_page_nave_bar_text(1);
+                $("#page_nav_bar").append(`<li><a>...</a></li>`);
+                for (i = total_page - 4; i <= total_page; ++i) gene_page_nave_bar_text(i);
+            } else {
+                gene_page_nave_bar_text(1);
+                $("#page_nav_bar").append(`<li><a>...</a></li>`);
+                for (i = now_page - 1; i <= now_page + 1; ++i) gene_page_nave_bar_text(i);
+                $("#page_nav_bar").append(`<li><a>...</a></li>`);
+                gene_page_nave_bar_text(total_page);
+            }
+        }
+        $(`#page_nav_bar_${now_page}`).html(`<a>${now_page}</a>`);
+        $(`#page_nav_bar_${now_page}`).addClass("active");
+        if (now_page < total_page) $("#page_nav_bar").append(`<li class="next"><a onclick="send_search_with_filter(${now_page + 1})">Next</a></li>`);
+    }
+
     function send_search(data) {
         $.ajax({
             url: "/api/search",
@@ -55,10 +87,12 @@
             contentType: "application/json;charset=utf-8",
             processData: false,
             success: function (ret) {
-                console.log(ret);
+                // console.log(ret);
                 if (ret.statusCode == 400) {
-                    window.alert(ret.message);
-                    window.location.href = "{{url_for('index')}}";
+                    suspend("alert-danger", "搜索失败: " + ret.message);
+                    sleep(500).then(() => {
+                        window.location.href = "{{url_for('index')}}";
+                    });
                 } else {
                     $("#display").children().remove();
                     var items = ret.data.item_list;
@@ -96,23 +130,21 @@
                             </div>`;
                         $("#display").append(str);
                     }
-                    // 渲染地址跳转栏
-                    //<li class="prev"><a href="shop.html">Prev</a></li>
-                    //<li class="active"><a href="shop.html">1</a></li>
-                    //<li><a href="shop.html">2</a></li>
-                    //<li><a href="shop.html">3</a></li>
-                    //<li><a href="shop.html">4</a></li>
-                    //<li><a href="shop.html">...</a></li>
-                    //<li><a href="shop.html">10</a></li>
-                    //<li class="next"><a href="shop.html">Next</a></li>
-                    $("#page_nav_bar").empty();
-                    $("#page_nav_bar").append();
+                    total_page = parseInt((ret.data.total_count - 1) / 50 + 1);
+                    //total_page = 10; // test
+                    draw_page_nav_bar();
                 }
             },
         });
     }
-    function send_search_with_filter() {
+    function send_search_with_filter(search_page = null) {
         var data = { search_type: search_type, start_time: "", end_time: "", key_word: keyword };
+        if (search_page != null) {
+            now_page = search_page;
+            data["range_min"] = search_page * 50 - 50;
+            data["range_max"] = search_page * 50;
+            // 请求x,y 实际返回[x, y)
+        }
         if ($(".shop-top-left[name='tag']").val() != "全部商品类型") {
             data["tag"] = $(".shop-top-left[name='tag']").val();
         }
@@ -122,7 +154,6 @@
 
     $(document).ready(function () {
         $("#item_name").val(keyword);
-        console.log(search_type);
         $("#type.custom-select ").val(parseInt(search_type));
         send_search({ search_type: search_type, start_time: "", end_time: "", order_type: "", key_word: keyword });
         $.ajax({

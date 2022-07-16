@@ -77,48 +77,8 @@
                                         </li>
                                         <li class="header-cart-action">
                                             <div class="header-cart-wrap">
-                                                <a href="{{url_for('user.space')}}"><i class="flaticon-user"></i></a>
-                                                <!--<span class="item-count">2</span>-->
-                                                <ul class="minicart" id="menu">
-                                                    <!--
-                                                    <li class="d-flex align-items-start">
-                                                        <div class="cart-img">
-                                                            <a href="shop-details.html"><img src="img/product/cart_p01.jpg" alt="" /></a>
-                                                        </div>
-                                                        <div class="cart-content">
-                                                            <h4><a href="shop-details.html">Organic Farm Fresh Nuts</a></h4>
-                                                            <div class="cart-price">
-                                                                <span class="new">$229.9</span>
-                                                                <span><del>$229.9</del></span>
-                                                            </div>
-                                                        </div>
-                                                        <div class="del-icon">
-                                                            <a href="#"><i class="far fa-trash-alt"></i></a>
-                                                        </div>
-                                                    </li>
-                                                    <li class="d-flex align-items-start">
-                                                        <div class="cart-img">
-                                                            <a href="shop-details.html"><img src="img/product/cart_p02.jpg" alt="" /></a>
-                                                        </div>
-                                                        <div class="cart-content">
-                                                            <h4><a href="shop-details.html">Organic Fresh Nuts Vanla Butter</a></h4>
-                                                            <div class="cart-price">
-                                                                <span class="new">$229.9</span>
-                                                                <span><del>$229.9</del></span>
-                                                            </div>
-                                                        </div>
-                                                        <div class="del-icon">
-                                                            <a href="#"><i class="far fa-trash-alt"></i></a>
-                                                        </div>
-                                                    </li>
-                                                    <li>
-                                                        <div class="total-price">
-                                                            <span class="f-left">Total:</span>
-                                                            <span class="f-right">$239.9</span>
-                                                        </div>
-                                                    </li>
-                                                    -->
-                                                </ul>
+                                                <a href="{{url_for('user.space')}}" id="bar_icon_user"><i class="flaticon-user"></i></a>
+                                                <ul class="minicart" id="menu"></ul>
                                             </div>
                                             <!--<div class="cart-amount">$0.00</div>-->
                                         </li>
@@ -204,11 +164,12 @@
             $(document).ready(function () {
                 //$.get("/api/get_user_id", function (ret) {
                     // console.log(ret);
-                    if ("{{current_user}}".indexOf("Anonymous") != -1) { // 未登录true 登录false
+                    if ("{{current_user}}".indexOf("Anonymous") != -1) { // 未登录
                         $(bar_icon_post).remove();
                         $(bar_icon_chatroom).remove();
                         $(bar_icon_history).remove();
                         $(bar_icon_favor).remove();
+                        $(bar_icon_user).attr('href', '{{url_for("login")}}')
                         $(menu).append(`<li>
                             <div class="checkout-link">
                                 <a class="black-color" href="{{ url_for("login") }}">登录</a>
@@ -296,14 +257,19 @@
                 document.scrollingElement.scrollTop = 0;//让页面滚动到最顶部
                 switch(str){
                     case "alert-success": success_prompt(message!=""?message:"提交成功");break;
-                    case "alert_warning": warning_prompt(message!=""?message:"错误警告");break;
+                    case "alert-warning": warning_prompt(message!=""?message:"错误警告");break;
                     case "alert-danger": fail_prompt(message!=""?message:"提交失败");break;
-                    case "alert_info":	info_prompt(message!=""?message:"未查询到数据");break;
-                    case "alert_info2":	info_prompt(message!=""?message:"未查询到数据");break;
+                    case "alert-info":	info_prompt(message!=""?message:"未查询到数据");break;
+                    case "alert-info2":	info_prompt(message!=""?message:"未查询到数据");break;
                     default:alert_prompt("未查询到数据");
                 }
-                
             }
+
+            function sleep (time) {
+                return new Promise((resolve) => setTimeout(resolve, time));
+            }
+            // sleep(500).then(() => {window.location.reload();}); // 使用例
+
         </script>
         {% endblock %}
     </body>

@@ -52,8 +52,9 @@
 
     $(document).ready(function () {
         if (sender != "" && sender == receiver) {
-            alert("不能给自己发消息哦~");
-            window.location.href = "{{ url_for('chat.index') }}";
+            suspend("alert-danger","不能给自己发消息哦~ ");
+            sleep(500).then(() => {window.location.href = "{{ url_for('chat.index') }}";});
+            
         }
         if (room == "") {
             $("#textbox").after("<h4>您还未选中聊天室</h4>");
@@ -80,8 +81,23 @@
                 sender = "系统通知";
                 color = "#C00000";
             }
+            let dmsg=""
+            if (data.msg.length>50)
+            {
+                dmsg="</br>";
+                let n = 30;
+                let a="";
+                for (let i = 0, l = data.msg.length; i < l/n; i++) {
+                    a=data.msg.substring(i*n,(i+1)*n);
+                    dmsg+=a+'</br>';
+                }
+            }
+            else
+            {
+                dmsg+=data.msg+'</br>';
+            }
             if (data.type == 0) {
-                let str = `<span> ${data.time}</br>${sender}:${data.msg}</br></span>`;
+                let str = `<span> ${data.time}</br>${sender}:${dmsg}</br></span>`;
                 $("#chat").append(str);
             } else {
                 let str = `
@@ -95,13 +111,14 @@
             $("#chat").scrollTop($("#chat")[0].scrollHeight);
             let last_msg = data.msg;
             if (data.type == 1) last_msg = "[图片]";
+            if(last_msg.length>10)last_msg=last_msg.substr(0,10)+"...";
             if (`#chat_${name}`.length > 0) $(`#chat_${name}`).html(last_msg);
             else {
                 let str = `  
                         <div class="os-products-item">
                             <div class="thumb">
                                 <a href="/user/${name}/user_info">
-                                    <img src="/user/static/resource/user-pic/${name}/avatar.jpg" alt="" /></a>
+                                    <img src="/user/static/resource/user-pic/${name}/avatar_128.WEBP" alt="" /></a>
                             </div>
                             <div class="content">
                                 <h6 class="title">
@@ -125,13 +142,14 @@
             }
             let last_msg = data.msg;
             if (data.type == 1) last_msg = "[图片]";
+            if(last_msg.length>10)last_msg=last_msg.substr(0,10)+"...";
             if ($(`#meet_${sender}`).length==0)
             {
                 let str = `  
                         <div class="os-products-item" id="meet_${sender}">
                             <div class="thumb">
                                 <a href="/user/${sender}/user_info">
-                                    <img src="/user/static/resource/user-pic/${sender}/avatar.jpg" alt="" /></a>
+                                    <img src="/user/static/resource/user-pic/${sender}/avatar_128.WEBP" alt="" /></a>
                             </div>
                             <div class="content">
                                 <h6 class="title">
@@ -179,7 +197,7 @@
                         url: "/api/get_last_msg",
                         success: function (ret) {
                             if (ret.statusCode == 200) last_msg_dict = ret.data;
-                            else alert(ret.message);
+                            else suspend("alert-danger","获取最近消息失败: "+ret.message);
                         },
                     });
                     for (let i = 0; i < meet_list.length; i++) {
@@ -192,11 +210,12 @@
                         }
                         let last_msg = last_msg_dict[name]["last_msg"];
                         if (last_msg_dict[name]["type"] == 1) last_msg = "[图片]";
+                        if(last_msg.length>10)last_msg=last_msg.substr(0,10)+"...";
                         let str = `  
                         <div class="os-products-item" id="meet_${name}">
                             <div class="thumb">
                                 <a href="/user/${name}/user_info">
-                                    <img src="/user/static/resource/user-pic/${name}/avatar.jpg" alt="" /></a>
+                                    <img src="/user/static/resource/user-pic/${name}/avatar_128.WEBP" alt="" /></a>
                             </div>
                             <div class="content">
                                 <h6 class="title">
@@ -208,7 +227,7 @@
                         </div>`;
                         $("#meet_list").append(str);
                     }
-                } else alert(ret.message);
+                } else suspend("alert-danger","获取聊天列表失败: "+ret.message);
             },
         });
     });
@@ -225,8 +244,8 @@
                     suspend("alert-success", "删除聊天成功");
                     showUnreadNews();
                     if (receiver==name)
-                        window.location.href = "{{ url_for('chat.index') }}";
-                } else alert(ret.message);
+                        sleep(500).then(() => {window.location.href = "{{ url_for('chat.index') }}";});
+                } else suspend("alert-danger","删除聊天失败: "+ret.message);
             },
         });
     }
@@ -254,7 +273,8 @@
                 }
             }
             if (!isNext) {
-                alert("不接受此文件类型");
+                suspend("alert-danger","不接受此文件类型");
+                //alert("不接受此文件类型");
                 $("#file").val(""); //如果文件后缀名不符合，清空已选择文件
                 return false;
             }
@@ -278,14 +298,14 @@
                             md5 = ret.data;
                             $("#file").val("");
                             //updatePage(objUrl, md5);
-                        } else alert(ret.message);
+                        } else suspend("alert-danger","上传聊天图片失败: "+ret.message);
                     },
                 });
             } else {
                 md5 = Math.random().toString(36).substr(2);
                 //updatePage(objUrl, md5);
             }
-        } else alert("未选择图片！");
+        } else suspend("alert-danger","未选择图片！");
     }
     function leave_room() {
         socket.emit("left", { room: room }, function () {

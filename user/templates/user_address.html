@@ -4,45 +4,40 @@
 
 {% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
 <main>
-    <section class="shop--area shop-right-sidebar pt-90 pb-90" data-background="{{url_for('static', filename='img/bg/slider_area_bg2.jpg')}}">
+    <section class="shop--area shop-right-sidebar pt-90 pb-90">
         <div class="container">
             <div class="row justify-content-center">
-                <div class="col-3">{% include "cont_side.html" %}</div>
-                <div class="col-9">
+                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">{% include "cont_side.html" %}</div>
+                <div class="col-xl-9 col-lg-9 col-md-9 col-sm-12">
                     <b>请双击表单内容进行修改</b>
-
-                    <table id="tab" width="100%" border="0" cellspacing="0" cellpadding="0" class="table">
-                        <thead class="thead-light">
-                            <tr>
-                                <th>收件人</th>
-                                <th>电话</th>
-                                <th>详细地址</th>
-                                <th>所在校区</th>
-                                <th>设为默认</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody id="ta"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-        <div class="container" id="show_hint" hidden>
-            <div class="row justify-content-center">
-                <div class="col-lg-9">
-                    <a href="javascript:void(0)"><i class="fa fa-check-circle"></i> 修改已自动保存！</a>
+                    <div class="cart-wrapper">
+                        <div class="table-responsive">
+                            <table id="tab" border="0" cellspacing="0" cellpadding="0" class="table">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>收件人</th>
+                                        <th>电话</th>
+                                        <th>详细地址</th>
+                                        <th>所在校区</th>
+                                        <th>设为默认</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ta"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="shop-cart-total" style="margin-top: 0px; background-color: rgba(255, 255, 255, 0); border: none">
+                        <div class="shop-cart-widget">
+                            <a class="btn" data-toggle="modal" data-target="#address">添加新地址</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-lg-7">
-                    <div class="shop-cart-total" style="margin-top: 0px; background-color: rgba(255, 255, 255, 0); border: none">
-                        <div class="shop-cart-widget">
-                            <a class="btn" data-toggle="modal" data-target="#address">添加新地址</a>
-                        </div>
-                    </div>
-
                     <div class="modal fade" id="address" tabindex="-1" role="dialog" aria-hidden="true">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
@@ -91,7 +86,7 @@
 <script type="text/javascript" charset="utf-8">
     var debug = 0;
 
-    $(document).ready(function () {
+    function draw_table() {
         let url = "/api/get_address";
         if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
         $.ajax({
@@ -99,6 +94,7 @@
             type: "get",
             success: function (ret) {
                 let ta_tab = $("#ta");
+                ta_tab.empty();
                 for (let i = 0; i < ret.data.length; i++) {
                     ta_tab.append(`<tr id="tr${i}"></tr>`); //添加一列
                     let tab = $(`#tr${i}`); //把这一列的内容添加上
@@ -117,7 +113,7 @@
                 /* 给表格里面每一个带有edit_text的td添加一个dblclick事件 */
                 $(".edit_text").dblclick(function () {
                     /* 1.先拿到这个td原来的值，然后将这个td变成一个input:text,并且原来的值不动 */
-                    let tdVal = $(this).text();
+                    var tdVal = $(this).text();
                     let id = parseInt($(this).attr("id").replace(/[^\d]/g, " "));
                     let oInput = $("<input type='text' value='" + tdVal + "'/>");
                     $(this).html(oInput);
@@ -125,12 +121,21 @@
 
                     /* 2.失去焦点，这个td变为原来的text，value为修改过后的value */
                     oInput.blur(function () {
-                        oInput.parent().html(oInput.val());
-                        update_contact(id);
+                        if (oInput.val() == "") {
+                            suspend("alert-danger", "不可为空");
+                            oInput.parent().html(tdVal);
+                        } else {
+                            oInput.parent().html(oInput.val());
+                            if (oInput.val() != tdVal) update_contact(id);
+                        }
                     });
                 });
             },
         });
+    }
+
+    $(document).ready(function () {
+        draw_table();
     });
 
     function checkboxOnblur(checkbox) {
@@ -177,7 +182,7 @@
         let res;
         if (is_default) res = `<input type="checkbox" class="switch" checked="checked" id='is_default${contact_id}' onclick="checkboxOnclick(this)" />`;
         else
-            res = `<input class="switch" type="checkbox" id='is_default${contact_id}' 
+            res = `<input class="switch" type="checkbox" id='is_default${contact_id}'
         onclick="checkboxOnclick(this)" />`;
         return res;
     }
@@ -193,8 +198,9 @@
             //async: false, // 当需要将值传给函数外部时需要强制同步
             success: function (ret) {
                 if (ret.statusCode == 200) {
-                    alert("删除成功");
-                    window.location.reload();
+                    suspend("alert-success", "删除成功");
+                    //$(`#delete_contact_id${id}`).parent().parent().remove();
+                    draw_table();
                 } else bootbox.alert(ret.message);
             },
         });
@@ -204,10 +210,22 @@
         let url = "/api/address";
         if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
         let name = $(`#name${id}`).text();
+        if (name == "") {
+            alert("收件人不可为空");
+            window.location.reload();
+        }
         let telephone = $(`#telephone${id}`).text();
+        if (telephone == "") {
+            alert("电话不可为空");
+            window.location.reload();
+        }
         let campus_branch = $(`#select_campus_branch${id} option:selected`).text();
         let is_default = $(`#is_default${id}`).get(0).checked;
         let full_address = $(`#full_address${id}`).text();
+        if (full_address == "") {
+            alert("详细地址不可为空");
+            window.location.reload();
+        }
         $.ajax({
             url: url,
             type: "put",
@@ -218,12 +236,11 @@
             success: function (ret) {
                 if (ret.statusCode == 200) {
                     suspend("alert-success", "修改保存成功");
-                    $("#show_hint").removeAttr("hidden");
-                    setTimeout(function () {
-                        $("#show_hint").prop("hidden", "hidden");
-                    }, 1234);
                 } else {
-                    alert("修改保存失败：" + ret.message);
+                    suspend("alert-danger", "修改保存失败：" + ret.message);
+                    sleep(500).then(() => {
+                        window.location.reload();
+                    });
                 }
             },
         });
@@ -234,8 +251,20 @@
         if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
 
         let name = $("#rname").val();
+        if (name == "") {
+            suspend("alert-danger", "收件人姓名不可为空");
+            return;
+        }
         let tel = $("#rtel").val();
+        if (tel == "") {
+            suspend("alert-danger", "电话不可为空");
+            return;
+        }
         let address = $("#raddress").val();
+        if (address == "") {
+            suspend("alert-danger", "详细地址不可为空");
+            return;
+        }
         let campus = $("#rcampus").val();
 
         $(".modal-input").val(""); //清空所有input的数据
@@ -249,8 +278,8 @@
             success: function (ret) {
                 if (ret.statusCode == 200) {
                     suspend("alert-success", "添加成功");
-                    //alert("添加成功");
-                    window.location.reload();
+                    draw_table();
+                    $("#address").modal("hide");
                 } else bootbox.alert(ret.message);
             },
         });

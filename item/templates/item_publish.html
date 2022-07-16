@@ -8,7 +8,7 @@ main %}
     <div class="cart-area pt-90">
         <div class="container">
             <div class="row justify-content-center">
-                <div class="col-lg-7">
+                <div class="col-xl-7 col-lg-9 col-12">
                     <div class="checkout-form-wrap">
                         <form action="javascript:void(0)">
                             <div class="checkout-form-top">
@@ -51,7 +51,7 @@ main %}
     </div>
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-lg-7">
+            <div class="col-xl-7 col-lg-9 col-12">
                 <div class="cart-wrapper">
                     <div class="table-responsive">
                         <table class="table mb-0">
@@ -130,15 +130,18 @@ main %}
         let urls = new Array();
 
         if (isNaN(price)) {
-            alert("价格格式有误!");
+            suspend("alert-danger","价格格式有误! ");
+            //alert("价格格式有误!");
             return;
         }
         if (isNaN(quantity)) {
-            alert("数量格式有误!");
+            suspend("alert-danger","数量格式有误! ");
+            //alert("数量格式有误!");
             return;
         }
         if (type == "") {
-            alert("未选择发布类型!");
+            suspend("alert-danger","未选择发布类型! ");
+            //alert("未选择发布类型!");
             return;
         }
 
@@ -156,8 +159,8 @@ main %}
             contentType: "application/json;charset=utf-8",
             processData: false,
             success: function (ret) {
-                console.log(formData);
-                console.log(ret);
+                // console.log(formData);
+                // console.log(ret);
                 if (ret.statusCode == 200) {
                     alert("商品发布成功，点击确认后将跳转至商品详情页。");
                     window.location = ret.data.url;
@@ -195,7 +198,7 @@ main %}
         $("[id^=tr_]").each(function (index, obj) {
             urls["urls"].push({ url: $(obj).find("h4")[0].innerText, isdefault: $(obj).find("[id^=customCheck]")[0].checked });
         });
-        console.log(urls);
+        // console.log(urls);
     }
 
     function selectImg() {
@@ -218,9 +221,10 @@ main %}
     function updatePage(objUrl, md5) {
         let f_repeat = false;
         $("[id^=project_name]").each(function (index, obj) {
-            console.log($(this).text());
+            // console.log($(this).text());
             if ($(this).text() == md5) {
-                alert("请勿重复上传图片！");
+                suspend("alert-danger", "请勿重复上传图片！");
+                //alert("请勿重复上传图片！");
                 f_repeat = true;
                 return;
             }
@@ -259,17 +263,17 @@ main %}
                     processData: false,
                     success: function (ret) {
                         if (ret.statusCode == 200) {
-                            console.log(ret.message);
+                            // console.log(ret.message);
                             md5 = ret.data;
                             updatePage(objUrl, md5);
-                        } else alert(ret.message);
+                        } else suspend("alert-danger", "上传商品图片失败: " + ret.message);
                     },
                 });
             } else {
                 md5 = Math.random().toString(36).substr(2);
                 updatePage(objUrl, md5);
             }
-        } else alert("未选择图片！");
+        } else suspend("alert-danger", "未选择图片！");
     }
 </script>
 

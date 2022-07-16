@@ -95,9 +95,9 @@ def get_address():
     ]
     try:
         datas = Contact.select(*need).where(
-            Contact.user_id == current_user.id).execute()
+            Contact.user_id == current_user.id).order_by(Contact.id.asc()).execute()
     except Exception as e:
-        return make_response_json(500, f"发生如下错误\n{repr(e)}")
+        return make_response_json(500, f"发生如下错误 {repr(e)}")
     else:
         data = list()
         for i in datas:
@@ -141,7 +141,7 @@ def order_post():
     try:
         contact_id = int(data["contact_id"])
     except Exception as e:
-        return make_response_json(400, "请求格式不对")
+        return make_response_json(400, "地址未填写")
     if "note" not in data:
         return make_response_json(400, "请求格式不对")
     op, tp = None, None
@@ -309,6 +309,9 @@ def address():
         for i, j in enumerate(data):
             # j["id"] = j["contact_id"]
             # j.pop("contact_id")
+            for k in j:
+                if isinstance(j[k],str) and len(j[k]) == 0:
+                    return make_response_json(400,"不允许提交空参数")
             if "campus_branch" in j:
                 if j["campus_branch"] not in User_Campus_state._value2member_map_:
                     return make_response_json(400, "校区填写错误")
@@ -367,6 +370,9 @@ def address():
         has_default, num = False, 0
         old_default = None
         for i, j in enumerate(data):
+            for k in j:
+                if isinstance(j[k],str) and len(j[k]) == 0:
+                    return make_response_json(400,"不允许提交空参数")
             if "campus_branch" in j:
                 if j["campus_branch"] not in User_Campus_state._value2member_map_:
                     return make_response_json(400, "校区填写错误")

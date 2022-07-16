@@ -4,19 +4,34 @@
 <link rel="stylesheet" type="text/css" href="{{url_for('user.static',filename='css/Switch.css')}}" />
 {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
 <main>
-    <section class="shop--area shop-right-sidebar pt-90 pb-90" data-background="{{url_for('static', filename='img/bg/slider_area_bg2.jpg')}}">
+    <section class="shop--area shop-right-sidebar pt-90 pb-90">
         <div class="container">
             <div class="row justify-content-center">
-                <div class="col-3">{% include "cont_side.html" %}</div>
-                <div class="col-9">
-                    我发布的商品：
-                    <table>
-                        <tbody id="my_goods"></tbody>
-                    </table>
-                    我发布的悬赏：
-                    <table>
-                        <tbody id="my_want"></tbody>
-                    </table>
+                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">{% include "cont_side.html" %}</div>
+                <div class="col-xl-9 col-lg-9 col-md-9 col-sm-12">
+                    <div class="cart-wrapper">
+                        <div class="table-responsive">
+                            <table class="table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th class="product-thumbnail"></th>
+                                        <th class="product-name">我发布的商品</th>
+                                        <th class="product-name"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="my_goods"></tbody>
+
+                                <thead>
+                                    <tr>
+                                        <th class="product-thumbnail"></th>
+                                        <th class="product-name">我发布的悬赏</th>
+                                        <th class="product-name"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="my_wants"></tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -33,10 +48,12 @@
             url: url,
             type: "GET",
             success: function (ret) {
-                console.log(ret);
+                // console.log(ret);
                 if (ret.statusCode != 200) {
-                    window.alert(ret.message);
-                    window.location.href = "{{url_for('index')}}";
+                    suspend("alert-danger", ret.message);
+                    sleep(500).then(() => {
+                        window.location.href = "{{url_for('index')}}";
+                    });
                 } else {
                     let tbody_goods = $("#my_goods");
                     let tbody_want = $("#my_want");
@@ -54,9 +71,9 @@
                         tbody.append(`<tr id="my_item${id}"></tr>`);
                         let p_tr = $(`#my_item${id}`);
                         let item_id = id;
-                        p_tr.append(`<td id="item_pic${id}"></td>`);
-                        p_tr.append(`<td id="item_data${id}">${ret.data[i].name}</td>`);
-                        p_tr.append(`<td><a href="/item/content/${id}">物品详情</a></td>`);
+                        p_tr.append(`<td class="product-thumbnail" id="item_pic${id}"></td>`);
+                        p_tr.append(`<td class="product-name" id="item_data${id}"><h6>${ret.data[i].name} </h6></td>`);
+                        p_tr.append(`<td class="product-name"><h4><a href="/item/content/${id}">物品详情</a></h4></td>`);
                         let pic_url = "/api/get_item_head_pic";
                         if (debug) pic_url = `http://127.0.0.1:4523/mock/927026${pic_url}`;
                         $.ajax({
@@ -65,7 +82,7 @@
                             data: { item_id: item_id },
                             success: function (pic_ret) {
                                 if (pic_ret.statusCode == 200) {
-                                    $(`#item_pic${id}`).append(`<img src=${pic_ret.data.url} height=40 width=40>`);
+                                    $(`#item_pic${id}`).append(`<img src=${pic_ret.data.url}>`);
                                 }
                             },
                         });
