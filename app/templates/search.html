@@ -1,0 +1,171 @@
+{% extends "base.html" %} {% block title %}
+<title>同济大学跳蚤市场--搜索结果</title>
+{% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
+<main>
+    <!-- shop-area -->
+    <section class="shop--area pt-90 pb-90">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-9">
+                    <div class="shop-top-meta mb-30">
+                        <div class="row">
+                            <div class="col-md-6 col-sm-7">
+                                <div class="shop-top-left">
+                                    <form action="#">
+                                        <select class="shop-top-left" name="tag" onchange="send_search_with_filter()"></select>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-sm-5">
+                                <div class="shop-top-right">
+                                    <form action="#">
+                                        <select name="sort" onchange="send_search_with_filter()">
+                                            <option value="name" selected="selected">按搜索结果相似度排序</option>
+                                            <option value="price">按价格从低到高排序</option>
+                                            <option value="time">按发布时间从近到远排序</option>
+                                        </select>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="shop-products-wrap">
+                        <div id="display" class="row justify-content-center"></div>
+                    </div>
+                    <div class="pagination-wrap">
+                        <ul id="page_nav_bar"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- shop-area-end -->
+</main>
+
+{% endblock %} {% block footer %} {{ super() }} {% endblock %} {% block js %} {{ super() }}
+<script type="text/javascript" charset="utf-8">
+    var keyword = "{{ keyword|safe }}";
+    var search_type = "{{ search_type|safe }}";
+    var now_page = 1;
+    var total_page = 1;
+    function gene_page_nave_bar_text(i) {
+        $("#page_nav_bar").append(`<li id="page_nav_bar_${i}"><a onclick="send_search_with_filter(${i})">${i}</a></li>`);
+    }
+
+    function draw_page_nav_bar() {
+        $("#page_nav_bar").empty();
+        if (now_page > 1) $("#page_nav_bar").append(`<li class="prev"><a onclick="send_search_with_filter(${now_page - 1})">Prev</a></li>`);
+        if (total_page <= 1);
+        else if (total_page <= 7) for (i = 1; i <= total_page; ++i) $("#page_nav_bar").append(`<li id="page_nav_bar_${i}"><a onclick="send_search_with_filter(${i})">${i}</a></li>`);
+        else {
+            if (now_page <= 4) {
+                for (i = 1; i <= 5; ++i) gene_page_nave_bar_text(i);
+                $("#page_nav_bar").append(`<li><a>...</a></li>`);
+                gene_page_nave_bar_text(total_page);
+            } else if (now_page >= total_page - 3) {
+                gene_page_nave_bar_text(1);
+                $("#page_nav_bar").append(`<li><a>...</a></li>`);
+                for (i = total_page - 4; i <= total_page; ++i) gene_page_nave_bar_text(i);
+            } else {
+                gene_page_nave_bar_text(1);
+                $("#page_nav_bar").append(`<li><a>...</a></li>`);
+                for (i = now_page - 1; i <= now_page + 1; ++i) gene_page_nave_bar_text(i);
+                $("#page_nav_bar").append(`<li><a>...</a></li>`);
+                gene_page_nave_bar_text(total_page);
+            }
+        }
+        $(`#page_nav_bar_${now_page}`).html(`<a>${now_page}</a>`);
+        $(`#page_nav_bar_${now_page}`).addClass("active");
+        if (now_page < total_page) $("#page_nav_bar").append(`<li class="next"><a onclick="send_search_with_filter(${now_page + 1})">Next</a></li>`);
+    }
+
+    function send_search(data) {
+        $.ajax({
+            url: "/api/search",
+            type: "post",
+            data: JSON.stringify(data),
+            contentType: "application/json;charset=utf-8",
+            processData: false,
+            success: function (ret) {
+                // console.log(ret);
+                if (ret.statusCode == 400) {
+                    suspend("alert-danger", "搜索失败: " + ret.message);
+                    sleep(500).then(() => {
+                        window.location.href = "{{url_for('index')}}";
+                    });
+                } else {
+                    $("#display").children().remove();
+                    var items = ret.data.item_list;
+                    for (let i = 0; i < items.length; i++) {
+                        let item = items[i];
+                        let id = item.id;
+                        let tag = item.tag;
+                        let name = item.name;
+                        let price = item.price;
+                        let time = item.publish_time;
+                        let purl = "";
+                        $.ajax({
+                            url: "/api/get_item_head_pic",
+                            async: false,
+                            data: { item_id: id },
+                            type: "get",
+                            success: function (ret) {
+                                purl = ret.data.url;
+                            },
+                        });
+                        let str = `<div class="col-xl-3 col-md-4 col-sm-6">
+                                <div class="sp-product-item">
+                                    <div class="sp-product-thumb">
+                                        <!--<span class="batch">New</span>-->
+                                        <a href="/item/content/${id}">
+                                            <img src="${purl}" alt=""></a>
+                                    </div>
+                                </br>
+                                    <div class="sp--product--content">
+                                        <h6 class="title"><a href="/item/content/${id}">${name}</a></h6>
+                                        <div class="rating">${tag}</div>
+                                        <div class="price">￥${price}</div>
+                                    </div>
+                                </div>
+                            </div>`;
+                        $("#display").append(str);
+                    }
+                    total_page = parseInt((ret.data.total_count - 1) / 50 + 1);
+                    //total_page = 10; // test
+                    draw_page_nav_bar();
+                }
+            },
+        });
+    }
+    function send_search_with_filter(search_page = null) {
+        var data = { search_type: search_type, start_time: "", end_time: "", key_word: keyword };
+        if (search_page != null) {
+            now_page = search_page;
+            data["range_min"] = search_page * 50 - 50;
+            data["range_max"] = search_page * 50;
+            // 请求x,y 实际返回[x, y)
+        }
+        if ($(".shop-top-left[name='tag']").val() != "全部商品类型") {
+            data["tag"] = $(".shop-top-left[name='tag']").val();
+        }
+        data["order_type"] = $("select[name='sort']").val();
+        send_search(data);
+    }
+
+    $(document).ready(function () {
+        $("#item_name").val(keyword);
+        $("#type.custom-select ").val(parseInt(search_type));
+        send_search({ search_type: search_type, start_time: "", end_time: "", order_type: "", key_word: keyword });
+        $.ajax({
+            url: "/api/get_class",
+            type: "get",
+            success: function (class_ret) {
+                $(".shop-top-left[name='tag']").append(`<option value='全部商品类型' selected='selected'>全部商品类型</option>`);
+                for (var i = 0; i < class_ret.data.class.length; i++) {
+                    $(".shop-top-left[name='tag']").append(`<option value='${class_ret.data.class[i]}'>${class_ret.data.class[i]}</option>`);
+                }
+            },
+        });
+    });
+</script>
+{% endblock %}

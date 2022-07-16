@@ -1,0 +1,169 @@
+{% extends "base.html" %} {% block title %}
+<title>我的订单</title>
+{% endblock %} {% block css %} {{ super() }}
+<link rel="stylesheet" type="text/css" href="{{url_for('user.static',filename='css/Switch.css')}}" />
+{% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
+<main>
+    <section class="shop--area shop-right-sidebar pt-90 pb-90">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">{% include "cont_side.html" %}</div>
+                <div class="col-xl-9 col-lg-9 col-md-9 col-sm-12">
+                    <div id="my_order"></div>
+                    <div id="review"></div>
+                    <div id="op_review"></div>
+                    <div id="review_post" class="building-info-wrap">
+                        <!--请输入评价星数
+                        <input type="text" value="5" placeholder="5" id="number" />-->
+                        请输入评价内容
+                        <input type="text" value="" placeholder="请输入你的评价..." maxlength="600" id="order_note" />
+                        <a class="btn" onclick="submit_review()">提交</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock %} {% block footer %} {{ super() }} {% endblock %} {% block js %} {{ super() }}
+
+<script type="text/javascript" charset="utf-8">
+    var debug = 0;
+    var order_id = "{{ order_id|safe }}";
+    var current_user_id = "{{current_user.id|safe}}";
+    $(document).ready(function () {
+        let url = "/api/get_order";
+        if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
+        $.ajax({
+            url: url,
+            type: "GET",
+            data: { order_id: order_id },
+            success: function (full_order_ret) {
+                if (full_order_ret.statusCode != 200) {
+                    suspend("alert-danger", full_order_ret.message);
+                    //window.alert(full_order_ret.message);
+                    sleep(500).then(() => {
+                        window.location.href = "{{url_for('index')}}";
+                    });
+                } else {
+                    let tbody = $("#my_order");
+                    tbody.append(`<tr id="my_order${order_id}"></tr>`);
+                    let p_tr = $(`#my_order${order_id}`);
+                    for (var i = 0; i < full_order_ret.data.length; ++i) {
+                        if (full_order_ret.data[i].order_id == order_id) {
+                            ret = full_order_ret.data[i];
+                            let item_id = ret.item_id_list[0]; //目前还只有一个商品信息
+                            p_tr.append(`<td id="order_item_pic${order_id}"></td>`);
+                            p_tr.append(`<td id="order_item_data${order_id}"></td>`);
+                            p_tr.append(`<td><a href="/order/${order_id}">订单详情</a></td>`);
+                            let pic_url = "/api/get_item_head_pic";
+                            if (debug) pic_url = `http://127.0.0.1:4523/mock/927026${pic_url}`;
+                            $.ajax({
+                                url: pic_url,
+                                type: "GET",
+                                data: { item_id: item_id },
+                                success: function (pic_ret) {
+                                    if (pic_ret.statusCode == 200) {
+                                        $(`#order_item_pic${order_id}`).append(`<img src=${pic_ret.data.url} height=40 width=40>`);
+                                    }
+                                },
+                            });
+                            let item_url = "/api/get_item_info";
+                            if (debug) item_url = `http://127.0.0.1:4523/mock/927026${item_url}`;
+                            $.ajax({
+                                url: item_url,
+                                type: "Get",
+                                data: { item_id: item_id },
+                                success: function (item_ret) {
+                                    if (item_ret.statusCode == 200) {
+                                        let desc = $(`#order_item_data${order_id}`);
+                                        desc.append(`<a href = /item/content/${item_id} >${item_ret.data.name}</a>`);
+                                        desc.append(`<p>${item_ret.data.description}</p>`);
+                                        if (current_user_id == item_ret.data.user_id)
+                                            //如果是商家
+                                            desc.append(`<a href=/chat/${ret.user_id}>联系对方</a>`);
+                                        else desc.append(`<a href=/chat/${item_ret.data.user_id}>联系对方</a>`);
+                                    }
+                                },
+                            });
+
+                            let is_review_url = "/api/get_user_is_review";
+                            $.ajax({
+                                url: is_review_url,
+                                type: "GET",
+                                data: { order_id: order_id },
+                                success: function (review_ret) {
+                                    // console.log(review_ret);
+                                    feedback_url = "/api/get_review";
+                                    review_id = review_ret.data.review_id;
+                                    if ((ret.user_id == current_user_id && review_ret.data.is_review == true) || (ret.op_user_id == current_user_id && review_ret.data.op_is_review == true)) $("#review_post").attr("hidden", "hidden");
+
+                                    if (review_ret.statusCode == 200) {
+                                        if (review_ret["data"]["is_review"] == true) {
+                                            //评价过了
+                                            $.ajax({
+                                                url: feedback_url,
+                                                type: "GET",
+                                                data: { review_id: review_id },
+                                                success: function (feedback_ret) {
+                                                    // console.log(feedback_ret);
+                                                    if (feedback_ret.statusCode == 200) {
+                                                        $("#review").append(review_ret.data.user_name + ": " + feedback_ret.data.feedback_content);
+                                                    } else bootbox.alert(feedback_ret.message);
+                                                },
+                                            });
+                                        }
+                                        op_review_id = review_ret.data.op_review_id;
+                                        if (review_ret.data.op_is_review == true) {
+                                            $.ajax({
+                                                url: feedback_url,
+                                                type: "GET",
+                                                data: { review_id: op_review_id },
+                                                success: function (feedback_ret) {
+                                                    // console.log(feedback_ret);
+                                                    if (feedback_ret.statusCode == 200) {
+                                                        $("#op_review").append(review_ret.data.op_user_name + ": " + feedback_ret.data.feedback_content);
+                                                    } else bootbox.alert(feedback_ret.message);
+                                                },
+                                            });
+                                        }
+                                    } else {
+                                        bootbox.alert(review_ret.message);
+                                    }
+                                },
+                            });
+                        }
+                    }
+                }
+            },
+        });
+    });
+    function submit_review() {
+        url = "/api/order_evaluate";
+        if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
+
+        let note = $("#order_note").val();
+        //let number=$("#number").val();
+
+        $.ajax({
+            // query形式
+            url: url,
+            type: "post",
+            contentType: "application/json;charset=utf-8",
+            processData: false,
+            data: JSON.stringify({
+                order_id: order_id,
+                feedback_content: note,
+            }),
+            async: false, // 当需要将值传给函数外部时需要强制同步
+            success: function (ret) {
+                if (ret.statusCode == 200) {
+                    window.location.href = ret.data.url;
+                } else {
+                    suspend("alert-danger", ret.message);
+                    //alert(ret.message);
+                }
+            },
+        });
+    }
+</script>
+{% endblock %}

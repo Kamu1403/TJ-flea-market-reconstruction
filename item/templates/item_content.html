@@ -1,0 +1,411 @@
+{% extends "base.html" %} {% block title %}
+<title>同济大学跳蚤市场--商品详情</title>
+{% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
+<!-- main-area -->
+<main>
+    <!-- shop-details-area -->
+    <section class="shop-details-area pt-90 pb-90">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-7">
+                    <div class="shop-details-flex-wrap">
+                        <div class="shop-details-nav-wrap">
+                            <ul class="nav nav-tabs" id="myTab" role="tablist"></ul>
+                        </div>
+                        <div class="shop-details-img-wrap">
+                            <div class="tab-content" id="myTabContent"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-5">
+                    <div class="shop-details-content">
+                        <h4 class="title" id="item_name_">商品名</h4>
+                        <div class="shop-details-meta">
+                            <ul>
+                                <li>卖家 : <a href="#" id="user_name"> <卖家名>[点击进入卖家个人空间] </a></li>
+                                <!--
+                                <li class="shop-details-review">
+                                    <div class="rating">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                    <span><卖家用户分数></span>
+                                </li>
+                                -->
+                                <li>物品ID : <span id="item_id_"> <商品ID> </span></li>
+                            </ul>
+                        </div>
+                        <div class="shop-details-price">
+                            <h2>￥</h2>
+                            <h2 class="price" id="price_"><价格></h2>
+                            <h5 class="stock-status" id="stock_"></h5>
+                        </div>
+                        <p id="description_"><商品详情描述></p>
+                        <div class="shop-details-list">
+                            <ul>
+                                <li>发布类型 : <span id="item_type_">[悬赏/售卖]</span></li>
+                                <li>发布时间 : <span id="publish_time_">[2022.05.29]</span></li>
+                            </ul>
+                        </div>
+                        <div class="shop-perched-info" id="non_seller_visible" hidden>
+                            <a href="{{url_for('order.generate',item_id=item_id)}}" class="btn" id="detail_fillin_"></a>
+                            <p>&nbsp;&nbsp;&nbsp;</p>
+                            <a href="#" class="btn" id="contact_publisher_">联系卖家</a>
+                        </div>
+                        <div class="shop-perched-info" id="seller_visible" hidden>
+                            <a href="#" class="btn" data-toggle="modal" data-target="#change_item" onclick="add_data()">修改商品信息</a>
+                            <div class="modal fade" id="change_item" tabindex="-1" role="dialog" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">修改商品信息</h5>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form action="javascript:void(0);">
+                                                <div class="form-group">
+                                                    <label class="col-form-label">商品名</label>
+                                                    <input type="text" class="form-control" name="name" />
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-form-label">商品单价</label>
+                                                    <input type="text" class="form-control" name="price" />
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-form-label">商品标签</label>
+                                                    <select class="form-control" name="tag" required="required"></select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-form-label">商品数量</label>
+                                                    <input type="text" class="form-control" name="shelved_num" />
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-form-label">商品描述</label>
+                                                    <input type="text" class="form-control" name="description" />
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                                            <button type="button" class="btn" onclick="test_submit()">提交</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <p>&nbsp;&nbsp;&nbsp;</p>
+                            <div id="item_down_shelf_"></div>
+                        </div>
+                        <div class="shop-perched-info" id="manager_visible" hidden></div>
+                        <div class="shop-perched-info" id="visitor_visible" hidden>
+                            <a href="{{ url_for('login')}}" class="btn">请先登录</a>
+                        </div>
+                        <div class="shop-details-bottom">
+                            <h5 class="title" id="item_favor_"></h5>
+                            <ul>
+                                <li>
+                                    <span>Tag : </span>
+                                    <a href="#" id="item_tag_">[商品标签]</a>
+                                </li>
+                                <li>
+                                    <span>商品状态 :</span>
+                                    <a href="#" id="item_state_">[商品状态]</a>
+                                    <!-- <a href="#">tops for,</a> -->
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- best-sellers-area-end -->
+</main>
+<!-- main-area-end -->
+{% endblock %} {% block footer %} {{ super() }} {% endblock %} {% block js %} {{ super() }}
+<script type="text/javascript" charset="utf-8">
+    var debug = 0;
+    var item_id = parseInt("{{ item_id|safe }}");
+    var shelved_num = 0;
+    $("#item_id_").text(item_id);
+    function add_data() {
+        $(".form-control[name='name']")[0].value = $("#item_name_").text();
+        $(".form-control[name='price']")[0].value = $("#price_").text();
+        $(".form-control[name='shelved_num']")[0].value = $("#shelved_num_").text();
+        $(".form-control[name='description']")[0].value = $("#description_").text();
+        $.ajax({
+            url: "/api/get_class",
+            type: "get",
+            success: function (class_ret) {
+                // console.log(class_ret);
+                // console.log($(".form-control[name='price']")[0]);
+                for (var i = 0; i < class_ret.data.class.length; i++) {
+                    $(".form-control[name='tag']").append(`<option value='${class_ret.data.class[i]}'>\
+                        ${class_ret.data.class[i]}</option>`);
+                    if (class_ret.data.class[i] == $("#item_tag_").text()) {
+                        $(`option[value='${class_ret.data.class[i]}']`).attr("selected", "selected");
+                    }
+                }
+            },
+        });
+    }
+    function test_submit() {
+        let form_data = $(".form-control");
+        let data = { id: item_id };
+        for (var i = 0; i < form_data.length; i++) {
+            data[form_data[i].name] = form_data[i].value;
+        }
+        let change_url = "/api/change_item_data";
+        if (debug) change_url = `http://127.0.0.1:4523/mock/927026${change_url}`;
+        $.ajax({
+            url: change_url,
+            type: "put",
+            data: JSON.stringify(data),
+            contentType: "application/json;charset=utf-8",
+            processData: false,
+            success: function (ret) {
+                suspend("alert-danger", "修改物品信息失败: " + ret.message);
+                sleep(500).then(() => {
+                    window.location.reload();
+                });
+            },
+        });
+    }
+    function get_user_name(user_id) {
+        let url = "/api/get_user_username";
+        if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
+        user_name = `#${user_id}`;
+        $.ajax({
+            url: url,
+            type: "get",
+            async: false,
+            data: { user_id: user_id },
+            success: function (ret) {
+                if (debug) ret.statusCode = 200;
+                if (ret.statusCode == 200) user_name = ret.data.name;
+                else suspend("alert-danger", "获取用户名失败: " + ret.message);
+            },
+        });
+        return user_name;
+    }
+
+    function add_favor() {
+        let url = "/api/add_favor";
+        if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
+        $.ajax({
+            url: url,
+            type: "post",
+            data: JSON.stringify({ item_id_list: [item_id] }),
+            contentType: "application/json;charset=utf-8",
+            processData: false,
+            success: function (ret) {
+                if (ret.statusCode == 201) {
+                    suspend("alert-success", "添加收藏成功");
+                    $("[id=item_favor_]").empty();
+                    $("[id=item_favor_]").append('<a href="javascript:void(0)" onclick="delete_favor()"  style="color:#C00000"><i class="fa fa-heart"></i> 取消收藏</a>');
+                } else suspend("alert-danger", "添加收藏失败: " + ret.message);
+                //alert('添加收藏失败：' + ret.message);
+            },
+        });
+    }
+    function delete_favor() {
+        let url = "/api/delete_favor";
+        if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
+        $.ajax({
+            url: url,
+            type: "delete",
+            data: JSON.stringify({ item_id_list: [item_id] }),
+            contentType: "application/json;charset=utf-8",
+            processData: false,
+            success: function (ret) {
+                if (ret.statusCode == 200) {
+                    suspend("alert-success", "删除收藏成功");
+                    $("[id=item_favor_]").empty();
+                    $("[id=item_favor_]").append('<a href="javascript:void(0)" onclick="add_favor()"><i class="far fa-heart"></i> 加入收藏</a>');
+                } else suspend("alert-danger", "删除收藏失败: " + ret.message);
+                //alert('删除收藏失败：' + ret.message);
+            },
+        });
+    }
+    function change_item_state(state) {
+        let url = "/api/change_item_state";
+        if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
+        $.ajax({
+            url: url,
+            type: "put",
+            data: JSON.stringify({ item_id: item_id, state: state }),
+            contentType: "application/json;charset=utf-8",
+            processData: false,
+            success: function (ret) {
+                // console.log(ret);
+                if (state == -1) {
+                    if (ret.statusCode == 200) {
+                        suspend("alert-success", "强制下架商品成功");
+                        sleep(500).then(() => {
+                            window.location.reload();
+                        });
+                    } else suspend("alert-danger", "强制下架失败: " + ret.message);
+                    //alert('强制下架失败：' + ret.message);
+                }
+                if (state == 0) {
+                    if (ret.statusCode == 200) {
+                        suspend("alert-success", "恢复商品上架成功");
+                        sleep(500).then(() => {
+                            window.location.reload();
+                        });
+                    } else suspend("alert-danger", "恢复商品上架失败: " + ret.message);
+                    //alert('恢复商品上架失败：' + ret.message);
+                }
+                if (state == 1) {
+                    if (ret.statusCode == 200) {
+                        suspend("alert-success", "下架商品成功");
+                        sleep(500).then(() => {
+                            window.location.reload();
+                        });
+                    } else suspend("alert-danger", "下架商品失败: " + ret.message);
+                    //alert('下架商品失败：' + ret.message);
+                }
+            },
+        });
+    }
+    $(document).ready(function () {
+        let url = "/api/get_item_info";
+        if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
+        $.ajax({
+            url: url,
+            type: "get",
+            data: { item_id: item_id },
+            success: function (ret) {
+                if ("{{current_user}}".indexOf("Anonymous") == -1) {
+                    // 用户已登录
+
+                    if (ret.isPub) $("[id=seller_visible]").removeAttr("hidden");
+                    else if (ret.data.state == 0) $("[id=non_seller_visible]").removeAttr("hidden");
+                    if (ret.isAdmin) {
+                        if ($("#seller_visible").is(":hidden")) {
+                            $("[id=seller_visible]").removeAttr("hidden");
+                        }
+                        $("[id=manager_visible]").removeAttr("hidden");
+                    }
+                } else {
+                    $("[id=visitor_visible]").removeAttr("hidden");
+                }
+                let data = ret.data;
+                shelved_num = data.shelved_num;
+                $("#item_name_").text(data.name);
+                $("#user_name").text(get_user_name(data.user_id));
+                let url = `/user/${data.user_id}/user_info`;
+                $("#user_name").attr("href", url);
+
+                $("#price_").text(`${data.price}`);
+                $("#stock_").append(`- ` + (data.type == 0 ? "剩余" : "需要") + `<span id='shelved_num_'>${data.shelved_num}</span>件`);
+                $("#description_").text(data.description);
+                $("#description_").text(data.description);
+                $("#item_type_").text(data.type == 0 ? "售卖" : "悬赏");
+                $("#detail_fillin_").text(data.type == 0 ? "我要购买" : "接取悬赏");
+                $("#publish_time_").text(data.publish_time);
+                $("#item_tag_").text(data.tag);
+                $("#contact_publisher_").attr("href", `/chat/${data.user_id}`);
+
+                state_str = data.state;
+                switch (data.state) {
+                    case 0:
+                        state_str = "正常发布";
+                        if (ret.isPub) {
+                            $("#item_down_shelf_").append('<a href="#" class="btn" onclick="change_item_state(1)">下架商品</a>');
+                        }
+                        $("#manager_visible").append('<a href="#" class="btn" onclick="change_item_state(-1)">强制下架商品</a>');
+                        break;
+                    case -1:
+                        state_str = "被管理员强制下架";
+                        if (ret.isPub && !ret.isAdmin) {
+                            $("#item_down_shelf_").append('<a href="{{url_for("user.feedback")}}" class="btn">申请恢复商品上架</a>');
+                        }
+                        $("#manager_visible").append('<a href="#" class="btn" onclick="change_item_state(0)">恢复商品上架（管理员）</a>');
+                        break;
+                    case 1:
+                        state_str = "被发布方下架";
+                        $("#item_down_shelf_").append('<a href="#" class="btn" onclick="change_item_state(0)">重新上架商品</a>');
+                        $("#manager_visible").append('<a href="#" class="btn" onclick="change_item_state(-1)">强制下架商品</a>');
+                        break;
+                }
+                $("#item_state_").text(state_str);
+            },
+        });
+
+        url = "/api/get_item_favor";
+        if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
+        $.ajax({
+            url: url,
+            type: "get",
+            data: { item_id: item_id },
+            success: function (ret) {
+                if (ret.statusCode == 200) {
+                    if (ret.data == false) $("[id=item_favor_]").append('<a href="javascript:void(0)" onclick="add_favor()"><i class="far fa-heart"></i> 加入收藏</a>');
+                    else $("[id=item_favor_]").append('<a href="javascript:void(0)" onclick="delete_favor()"  style="color:#C00000"><i class="fa fa-heart"></i> 取消收藏</a>');
+                }
+            },
+        });
+
+        url = "/api/get_item_head_pic";
+        if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
+        let pic_name = null;
+        $.ajax({
+            url: url,
+            type: "get",
+            data: { item_id: item_id },
+            async: false, // 不加的话，头图会出现两次哦
+            success: function (ret) {
+                if (ret.statusCode == 200) {
+                    let pic_url = ret.data.url;
+                    pic_name = pic_url.split("/");
+                    pic_name = pic_name[pic_name.length - 1];
+                    let md5 = 0;
+                    $(myTab).append(`<li class="nav-item" role="presentation">
+                        <a class="nav-link active" id="item-${md5}-tab" data-toggle="tab" href="#item-${md5}" role="tab" aria-controls="item-${md5}" aria-selected="true">
+                            <img src="${pic_url}" alt="" />
+                        </a>
+                    </li>`);
+                    $(myTabContent).append(`<div class="tab-pane fade show active" id="item-${md5}" role="tabpanel" aria-labelledby="item-${md5}-tab">
+                        <div class="shop-details-img">
+                            <img src="${pic_url}" alt="" />
+                        </div>
+                    </div>`);
+                } else suspend("alert-danger", "获取商品头图失败: " + ret.message);
+                //alert("获取商品头图失败:" + ret.message);
+            },
+        });
+        url = "/api/get_item_pics";
+        if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
+        $.ajax({
+            url: url,
+            type: "get",
+            data: { item_id: item_id },
+            success: function (ret) {
+                if (ret.statusCode == 200) {
+                    let md5 = 0;
+                    for (pic_url_ of ret.data.url) {
+                        pic_name_ = pic_url_.split("/");
+                        pic_name_ = pic_name_[pic_name_.length - 1];
+                        if (pic_name_ == pic_name) continue;
+                        md5 += 1;
+                        $(myTab).append(`<li class="nav-item" role="presentation">
+                            <a class="nav-link" id="item-${md5}-tab" data-toggle="tab" href="#item-${md5}" role="tab" aria-controls="item-${md5}" aria-selected="false">
+                                <img src="${pic_url_}" alt="" />
+                            </a>
+                        </li>`);
+                        $(myTabContent).append(`<div class="tab-pane fade" id="item-${md5}" role="tabpanel" aria-labelledby="item-${md5}-tab">
+                            <div class="shop-details-img">
+                                <img src="${pic_url_}" alt="" />
+                            </div>
+                        </div>`);
+                    }
+                } else suspend("alert-danger", "获取商品图片失败: " + ret.message);
+                //alert("获取商品图片失败：" + ret.message);
+            },
+        });
+    });
+</script>
+
+{% endblock %}

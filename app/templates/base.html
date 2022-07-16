@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="x-ua-compatible" content="ie=edge" />
+        {% block title %}
+        <title>tj-flea-market - 同济大学跳蚤市场（主页）</title>
+        {% endblock %}
+        <meta name="description" content="" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+        <link rel="shortcut icon" type="image/x-icon" href="{{url_for('static',filename='img/icon/favicon.png')}}" />
+
+        <!-- CSS here -->
+        {% block css %}
+        <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap.min.css')}}" />
+        <link rel="stylesheet" href="{{url_for('static', filename='css/animate.min.css')}}" />
+        <link rel="stylesheet" href="{{url_for('static', filename='css/magnific-popup.css')}}" />
+        <link rel="stylesheet" href="{{url_for('static', filename='css/fontawesome-all.min.css')}}" />
+        <link rel="stylesheet" href="{{url_for('static', filename='css/jquery-ui.css')}}" />
+        <link rel="stylesheet" href="{{url_for('static', filename='css/flaticon.css')}}" />
+        <link rel="stylesheet" href="{{url_for('static', filename='css/aos.css')}}" />
+        <link rel="stylesheet" href="{{url_for('static', filename='css/slick.css')}}" />
+        <link rel="stylesheet" href="{{url_for('static', filename='css/default.css')}}" />
+        <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}" />
+        <link rel="stylesheet" href="{{url_for('static', filename='css/responsive.css')}}" />
+        <!--
+        <link rel="stylesheet" href="{{url_for('static', filename='css/dropdown.css')}}">
+        <link rel="stylesheet" href="{{url_for('static', filename='css/member-main.css')}}">
+        <link rel="stylesheet" href="{{url_for('static', filename='css/init.css')}}">
+        <link rel="stylesheet" href="{{url_for('static', filename='css/base.css')}}">
+        -->
+        {% endblock %}
+    </head>
+
+    <body>
+        <!-- header-area -->
+        {% block header %}
+        <header>
+            <!-- header-search-area -->
+            <div class="header-search-area">
+                <div class="container custom-container">
+                    <div class="row align-items-center">
+                        <div class="col-xl-2 col-lg-3 d-none d-lg-block">
+                            <div class="logo">
+                                <a href="{{url_for('user.index')}}"><img src="{{url_for('static',filename='img/logo/icon_new_small.png')}}" alt="Logo" /></a>
+                            </div>
+                        </div>
+                        <div class="col-xl-10 col-lg-9">
+                            <div class="d-block d-sm-flex align-items-center justify-content-end">
+                                <div class="header-search-wrap">
+                                    <form onsubmit="return false;">
+                                        <select id="type" class="custom-select">
+                                            <!--<option value=2>商品或悬赏</option>-->
+                                            <option selected="" value=0>搜商品</option>
+                                            <option value=1>搜悬赏</option>
+                                        </select>
+                                        <input id="item_name" type="text" placeholder="搜索..." />
+                                        <button id="search" type="button" onclick="search_item()"><i class="flaticon-loupe-1"></i></button>
+                                    </form>
+                                </div>
+                                <div class="header-action">
+                                    <ul>
+                                        <li class="header-wishlist" id="bar_icon_post">
+                                            <a href="/item/publish" title="发布悬赏或商品"><i class="fa fa-plus"></i></a>
+                                        </li>
+                                        <li class="header-cart-wrap" id="bar_icon_chatroom">
+                                            <a href="/chat/" title="聊天室"><i class="flaticon-mail"></i></a>
+                                            <span class="item-count" id="message_cnt" hidden>0</span>
+                                        </li>
+                                        <li class="header-user" id="bar_icon_history">
+                                            <a href="/user/history" title="历史记录"><i class="flaticon-wall-clock"></i></a>
+                                        </li>
+                                        <li class="header-wishlist" id="bar_icon_favor">
+                                            <a href="/user/favor" title="我的收藏"><i class="flaticon-heart-shape-outline"></i></a>
+                                            
+                                        </li>
+                                        <li class="header-cart-action">
+                                            <div class="header-cart-wrap">
+                                                <a href="{{url_for('user.space')}}" id="bar_icon_user"><i class="flaticon-user"></i></a>
+                                                <ul class="minicart" id="menu"></ul>
+                                            </div>
+                                            <!--<div class="cart-amount">$0.00</div>-->
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        {% endblock %}
+        <!-- header-area-end -->
+
+        <!-- main-area -->
+        {% block main %}
+        <main></main>
+        {% endblock %}
+        <!-- main-area-end -->
+
+        <!-- footer-area -->
+        {% block footer %}
+        <footer>
+            <div class="copyright-wrap">
+                <div class="container custom-container">
+                    <div class="row align-items-center">
+                        <div class="col-md-7">
+                            <div class="header-top-left">
+                                <ul>
+                                    <li>
+                                        <img src="{{url_for('static',filename='img/logo/logo_footer.png')}}" height='30'></img>
+                                    </li>
+                                    <li>
+                                        <b>软件工程项目  啊不对不队</b>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="header-top-right">
+                                <ul>
+                                    <li><a href="https://gitlab.com/tj-cs-swe/cs10102302-2022/Relativity/tj-flea-market">GitLab</a></li>
+                                    <li><a href="{{url_for('user.feedback')}}">反馈</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        {% endblock %}
+        <!-- footer-area-end -->
+
+        <!-- JS here -->
+        {% block js %}
+        <script src="  {{url_for('static', filename='js/vendor/jquery-3.6.0.min.js')}}"></script>
+        <script src="  {{url_for('static', filename='js/bootstrap.min.js')}}"></script>
+        <script src="  {{url_for('static', filename='js/isotope.pkgd.min.js')}}"></script>
+        <script src="  {{url_for('static', filename='js/imagesloaded.pkgd.min.js')}}"></script>
+        <script src="  {{url_for('static', filename='js/jquery.magnific-popup.min.js')}}"></script>
+        <script src="  {{url_for('static', filename='js/jquery.countdown.min.js')}}"></script>
+        <script src="  {{url_for('static', filename='js/jquery-ui.min.js')}}"></script>
+        <script src="  {{url_for('static', filename='js/slick.min.js')}}"></script>
+        <script src="  {{url_for('static', filename='js/ajax-form.js')}}"></script>
+        <script src="  {{url_for('static', filename='js/wow.min.js')}}"></script>
+        <script src="  {{url_for('static', filename='js/aos.js')}}"></script>
+        <script src="  {{url_for('static', filename='js/plugins.js')}}"></script>
+        <script src="  {{url_for('static', filename='js/main.js')}}"></script>
+        <script src="  {{url_for('static', filename='js/bootbox.min.js')}}"></script>
+        <!--<script src="  {{url_for('static', filename='js/dropdown.js')}}"></script>-->
+        <script type="text/javascript">
+            function showUnreadNews()
+            {
+                $.get("/api/get_message_cnt", function (ret) {
+                    if (ret.statusCode != 401) 
+                        $("#message_cnt").text(ret.data.unread);
+                    if (parseInt($("#message_cnt").text()) != 0) $("#message_cnt").removeAttr('hidden');
+                });
+            }
+            setInterval('showUnreadNews()',3000);//轮询执行，3000ms一次
+
+
+            $(document).ready(function () {
+                //$.get("/api/get_user_id", function (ret) {
+                    // console.log(ret);
+                    if ("{{current_user}}".indexOf("Anonymous") != -1) { // 未登录
+                        $(bar_icon_post).remove();
+                        $(bar_icon_chatroom).remove();
+                        $(bar_icon_history).remove();
+                        $(bar_icon_favor).remove();
+                        $(bar_icon_user).attr('href', '{{url_for("login")}}')
+                        $(menu).append(`<li>
+                            <div class="checkout-link">
+                                <a class="black-color" href="{{ url_for("login") }}">登录</a>
+                            </div>
+                        </li>`);
+                    } else {
+                        $(menu).append(`<li>
+                            <div class="checkout-link">
+                                <a href="{{url_for("user.space")}}">个人中心</a>
+                                <a class="black-color" href="{{url_for("logout")}}">退出登录</a>
+                            </div>
+                        </li>`);
+                        showUnreadNews();
+                    }
+            });
+            
+            $("#item_name").keyup(function(event){
+                if (event.keyCode==13){
+                    $("#search").trigger("click");
+                    return false; 
+                }
+            });
+            function search_item() {
+                let item = $("#item_name").val();
+                let type=$("#type.custom-select").val();
+                if (item=="")
+                    location.reload(true);
+                else
+                    window.location.href = "/search?keyword=" + item+"&search_type="+type;
+            }
+        
+            var prompt = function (message, style, time) {
+                style = style === undefined ? "alert-success" : style;
+                time = time === undefined ? 1200 : time;
+                $('<div id="promptModal">')
+                    .appendTo("body")
+                    .addClass("alert " + style)
+                    .css({
+                        display: "block",
+                        "z-index": 99999,
+                        width:"75%",
+                        left: ($(document.body).outerWidth(true) - 120) / 8,
+                        top: "10px",
+                        position: "absolute",
+                        padding: "20px",
+                        "border-radius": "5px",
+                    })
+                    .html(message)
+                    .hide()
+                    .fadeIn(200,function()
+                    {
+                        $("#promptModal").show();
+                    })
+                    .delay(time)
+                    .fadeOut(200, function () {
+                        $("#promptModal").remove();
+                    });
+            };
+            // 成功提示
+            var success_prompt = function (message, time) {
+                prompt(message, "alert-success", time);
+            };
+
+            // 失败提示
+            var fail_prompt = function (message, time) {
+                prompt(message, "alert-danger", time);
+            };
+            
+            // 提醒
+            var warning_prompt = function (message, time) {
+                prompt(message, "alert-warning", time);
+            };
+            
+            // 信息提示
+            var info_prompt = function (message, time) {
+                prompt(message, "alert-info", time);
+            };
+            
+            // 信息提示
+            var alert_prompt = function (message, time) {
+                prompt(message, "alert-primary", time);
+            };
+            
+            function suspend(str,message=""){
+                document.scrollingElement.scrollTop = 0;//让页面滚动到最顶部
+                switch(str){
+                    case "alert-success": success_prompt(message!=""?message:"提交成功");break;
+                    case "alert-warning": warning_prompt(message!=""?message:"错误警告");break;
+                    case "alert-danger": fail_prompt(message!=""?message:"提交失败");break;
+                    case "alert-info":	info_prompt(message!=""?message:"未查询到数据");break;
+                    case "alert-info2":	info_prompt(message!=""?message:"未查询到数据");break;
+                    default:alert_prompt("未查询到数据");
+                }
+            }
+
+            function sleep (time) {
+                return new Promise((resolve) => setTimeout(resolve, time));
+            }
+            // sleep(500).then(() => {window.location.reload();}); // 使用例
+
+        </script>
+        {% endblock %}
+    </body>
+</html>

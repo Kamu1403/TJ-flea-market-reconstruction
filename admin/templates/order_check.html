@@ -1,0 +1,148 @@
+{% extends "base.html" %} {% block title %}
+<title>反馈清单</title>
+{% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
+<main>
+    <section class="shop--area shop-right-sidebar pt-90 pb-90">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">{% include "cont_side.html" %}</div>
+                <div class="col-xl-9 col-lg-9 col-md-9 col-sm-12">
+                    <div class="cart-wrapper">
+                        <div class="table-responsive">
+                            <table class="table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th class="product-thumbnail"></th>
+                                        <th class="product-name">待确认订单</th>
+                                        <th class="product-name"></th>
+                                        <th class="product-delete"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="unconfirmed"></tbody>
+
+                                <thead>
+                                    <tr>
+                                        <th class="product-thumbnail"></th>
+                                        <th class="product-name">待完成订单</th>
+                                        <th class="product-name"></th>
+                                        <th class="product-delete"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="confirmed"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock %} {% block footer %} {{ super() }} {% endblock %} {% block js %} {{ super() }}
+
+<script type="text/javascript" charset="utf-8">
+    var debug = 0;
+    var current_user_id = "{{ current_user.id|safe }}";
+    $(document).ready(function () {
+        let url = "/api/get_all_order";
+        if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
+        $.ajax({
+            url: url,
+            type: "GET",
+            async: false, // 当需要将值传给函数外部时需要强制同步
+            success: function (ret) {
+                // console.log(ret);
+                if (ret.statusCode != 200) {
+                    suspend("alert-danger", "获取订单失败: " + ret.message);
+                    sleep(500).then(() => {
+                        window.location.href = "{{url_for('index')}}";
+                    });
+                } else {
+                    let mytbody;
+
+                    for (let i = 0; i < ret.data.length; i++) {
+                        if (ret.data[i].state == 0) mytbody = $("#unconfirmed");
+                        else if (ret.data[i].state == 1) mytbody = $("#confirmed");
+                        else continue;
+                        let order_id = ret.data[i].order_id;
+                        mytbody.append(`<tr id="my_order${order_id}"></tr>`);
+                        let p_tr = $(`#my_order${order_id}`);
+
+                        let item_id = ret.data[i].item_id_list[0]; //目前还只有一个商品信息
+                        p_tr.append(`<td class="product-thumbnail" id="order_item_pic${order_id}"></td>`);
+                        p_tr.append(`<td class="product-name" id="order_item_data${order_id}"></td>`);
+                        p_tr.append(`<td class="product-name"><h4><a href="/order/${order_id}">订单详情</a></h4></td>`);
+
+                        p_tr.append(`<div id="state_message${order_id}"></div>`);
+                        p_tr.append(`<td class="product-delete"> <button class="btn" id="cancel${order_id}" onclick="change_state('${order_id}',-1)">取消订单</button></td>`);
+
+                        let pic_url = "/api/get_item_head_pic";
+                        if (debug) pic_url = `http://127.0.0.1:4523/mock/927026${pic_url}`;
+                        $.ajax({
+                            url: pic_url,
+                            type: "GET",
+                            data: { item_id: item_id },
+                            async: false, // 当需要将值传给函数外部时需要强制同步
+                            success: function (pic_ret) {
+                                if (pic_ret.statusCode == 200) {
+                                    $(`#order_item_pic${order_id}`).append(`<img src=${pic_ret.data.url}>`);
+                                }
+                            },
+                        });
+                        let item_url = "/api/get_item_info";
+                        if (debug) item_url = `http://127.0.0.1:4523/mock/927026${item_url}`;
+                        $.ajax({
+                            url: item_url,
+                            type: "Get",
+                            data: { item_id: item_id },
+                            async: false, // 当需要将值传给函数外部时需要强制同步
+                            success: function (item_ret) {
+                                if (item_ret.statusCode == 200) {
+                                    let desc = $(`#order_item_data${order_id}`);
+                                    desc.append(`<h4><a href = /item/content/${item_id} >${item_ret.data.name}</a></h4><br/>`);
+
+                                    //desc.append(`<p>${item_ret.data.description}</p>`);
+
+                                    desc.append(`<h4><a href="/user/${item_ret.data.user_id}/user_info">${item_ret.data.user_id}</a></h4>`);
+                                    //订单状态逻辑
+                                    //let state_message;
+                                    //if (ret.data[i].state == 0) {
+                                    //    state_message = "等待商家确认";
+                                    //} else if (ret.data[i].state == 1) {
+                                    //    state_message = "等待收货方完成";
+                                    //} else if (ret.data[i].state == -1) {
+                                    //    state_message = "已被取消";
+                                    //} else if (ret.data[i].state == 2) {
+                                    //    state_message = "已完成";
+                                    //}
+                                    //$(`#state_message${order_id}`).append(`<span><p>订单状态:${state_message}</p></span>`);
+                                }
+                            },
+                        });
+                    }
+                }
+            },
+        });
+    });
+    function change_state(order_id, state) {
+        //修改订单状态
+        $.ajax({
+            url: "/api/change_order_state",
+            type: "put",
+            data: JSON.stringify({ order_id: order_id, state: state }),
+            contentType: "application/json;charset=utf-8",
+            processData: false,
+            success: function (ret) {
+                if (ret.statusCode == 200) {
+                    suspend("alert-success", "修改订单状态成功: " + ret.message);
+                    sleep(500).then(() => {
+                        window.location.reload();
+                    });
+                } else {
+                    suspend("alert-danger", "修改订单状态失败: " + ret.message);
+                }
+            },
+        });
+    }
+</script>
+
+{% endblock %}

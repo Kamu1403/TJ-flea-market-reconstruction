@@ -1,0 +1,243 @@
+{% extends "base.html" %} {% block title %}
+<title>同济大学跳蚤市场</title>
+{% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
+
+<main class="gray-bg">
+    <section class="special-products-area pt-20 pb-20">
+        <div class="container">
+            <div class="special-products-wrap">
+                <div class="row">
+                    <div class="col-3 d-none d-lg-block">
+                        <div class="product-desc-wrap" style="padding-top:15px">
+                            <ul class="nav nav-tabs" id="myTabTwo" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="mywants-tab" data-toggle="tab" href="#mywants"
+                                        role="tab" aria-controls="mywants" aria-selected="true">我的悬赏</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="mygoods-tab" data-toggle="tab" href="#mygoods" role="tab"
+                                        aria-controls="mygoods" aria-selected="false">我的待售</a>
+                                </li>
+                            </ul>
+                            <div class="tab-content">
+                                <div class="tab-pane fade show active" role="tabpanel" id="mywants"
+                                    aria-labelledby="details-tab">
+                                    <div class="product-desc-content">
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" role="tabpanel" id="mygoods" aria-labelledby="val-tab">
+                                    <div class="product-desc-content">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-9">
+                        <div class="row align-items-end mb-20">
+                            <div class="col-md-8 col-sm-9">
+                                <div class="section-title mt-20">
+                                    <h2 class="title" style="margin-left:20px;">推荐</h2>
+                                </div>
+                            </div>
+                            <!-- category-area -->
+                            <div class="container custom-container">
+                                <div class="slider-category-wrap">
+                                    <div class="product-desc-wrap" style="padding-top:15px">
+                                        <ul class="nav nav-tabs" id="myTabTwo" role="tablist">
+                                            <li class="nav-item">
+                                                <a class="nav-link active" id="wants-tab" data-toggle="tab"
+                                                    href="#wants" role="tab" aria-controls="wants"
+                                                    aria-selected="true">悬赏</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" id="goods-tab" data-toggle="tab" href="#goods"
+                                                    role="tab" aria-controls="goods" aria-selected="false">商品</a>
+                                            </li>
+                                        </ul>
+                                        <div class="tab-content" id="myTabContentTwo">
+                                            <div class="tab-pane fade show active" id="wants" role="tabpanel"
+                                                aria-labelledby="wants-tab">
+                                                <div class="product-desc-content">
+                                                    <div class="row" id="swants">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="tab-pane fade" id="goods" role="tabpanel"
+                                                aria-labelledby="goods-tab">
+                                                <div class="product-desc-content">
+                                                    <div class="row" id="sgoods">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- category-area-end -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </section>
+</main>
+
+{% endblock %} {% block footer %} {{ super() }} {% endblock %} {% block js %} {{ super() }}
+<script type="text/javascript">
+    var debug = 0;
+    function add_favor(item) {
+        let id = parseInt(item.id.replace(/[^\d]/g, ' '));
+        let item_id_list = new Array();
+        item_id_list.push(id);
+        let url = "/api/add_favor";
+        let type = "post";
+        if ($("#" + item.id).attr('value') == 1) {
+            url = "/api/delete_favor";
+            type = "delete"
+        }
+        if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`
+        $.ajax({
+            url: url,
+            type: type,
+            data: JSON.stringify({ item_id_list: item_id_list }),
+            contentType: "application/json;charset=utf-8",
+            processData: false,
+            success: function (ret) {
+                if (ret.statusCode == 201 || ret.statusCode == 200) {
+                    if ($("#" + item.id).attr('value') == 0) {
+                        $("#" + item.id).css({ "background-color": "#4eb92d", "color": "#ffffff" });
+                        $("#" + item.id).attr("value", 1);
+                        suspend("alert-success", "添加收藏成功")
+                    }
+                    else {
+                        $("#" + item.id).css({ "background-color": "#ffffff", "color": "#4eb92d" });
+                        $("#" + item.id).attr("value", 0);
+                        suspend("alert-success", "删除收藏成功")
+                    }
+                }
+                else
+                    suspend("alert-danger", ret.message);
+            }
+        });
+    }
+    $(document).ready(function () {
+        let url1 = "/api/item_to_show";
+        if (debug) url1 = `	http://127.0.0.1:4523/mock/927026/${url1}`;
+
+        var url2 = "http://127.0.0.1:4523/mock/927026/api/get_user_item";
+        var url2 = "/api/get_user_item";
+        if (debug) url2 = `http://127.0.0.1:4523/mock/927026${url2}`;
+        $.ajax({
+            url: url1,
+            type: "get",
+            success: function (ret) {
+                for (let i = 0; i < ret.data.show.length; i++) {
+                    let item = ret.data.show[i];
+                    let id = item.id;
+                    let tag = item.tag;
+                    let name = item.name;
+                    let price = item.price;
+                    let time = item.publish_time;
+                    let type = item.type
+                    let purl = ""
+                    $.ajax({
+                        url: "/api/get_item_head_pic",
+                        async: false,
+                        data: { item_id: id },
+                        type: "get",
+                        success: function (ret) {
+                            purl = ret.data.url;
+                        }
+                    });
+
+                    let value = 0;
+                    let url3 = "/api/get_item_favor";
+                    if (debug) url3 = `http://127.0.0.1:4523/mock/927026${url3}`;
+                    $.ajax({
+                        url: url3,
+                        type: "get",
+                        async: false,
+                        data: { item_id: id },
+                        success: function (ret) {
+                            if (ret.statusCode == 200) {
+                                if (ret.data == false)
+                                    value = 0;
+                                else
+                                    value = 1;
+                            }
+                        }
+                    });
+
+
+                    let str = `
+                        <div class="col-xl-3 col-md-4 col-sm-6 grid-item grid-sizer cat-two">
+                            <div class="sp--product--item mb-50">
+                                <div class="sp--product--thumb" id="pre_item_${id}">
+                                </div>
+                                <div class="sp--product--content">
+                                    <h6 class="title"><a href="/item/content/${id}">${name}</a></h6>
+                                    <div class="rating">${tag}</div>
+                                    <div class="price">￥${price}</div>
+                                </div>
+                            </div>
+                        </div>`;
+
+                    let style_sheet = ["background-color:#ffffff;color:#4eb92d", "background-color:#4eb92d;color:#ffffff"]
+                    let style = style_sheet[value];
+                    let app = `<a id="item_${id}" value=${value} style=${style} onclick="add_favor(this)" class="wishlist"><i class="flaticon-heart-shape-outline"></i></a>
+                    <a href="/item/content/${id}"><img src="${purl}" alt=""></a>`
+                    if (type == 0)
+                        $("#sgoods").append(str);
+                    else
+                        $("#swants").append(str);
+                    $(`#pre_item_${id}`).append(app);
+                }
+            }
+        });
+
+        $.get(url2, function (ret) {
+            if (debug == 1)
+                ret.statusCode = 200;
+            if (ret.statusCode == 401 || ret.statusCode == 404) {
+                suspend("alert-danger", ret.message);
+            } else {
+                let items = ret.data;
+                for (let i = 0; i < items.length; i++) {
+                    let item = items[i];
+                    let id = item.id;
+                    let name = item.name;
+                    let price = item.price;
+                    let time = item.publish_time;
+                    let type = item.type
+                    let purl = ""
+                    $.ajax({
+                        url: "/api/get_item_head_pic",
+                        async: false,
+                        data: { item_id: id },
+                        type: "get",
+                        success: function (ret) {
+                            purl = ret.data.url;
+                        }
+                    });
+                    let str = `<div class="row">
+                            <div class="media" style="margin-top: 15px;">
+                                <a href="/item/content/${id}"><img src="${purl}" class="align-self-start mr-2" style="width:64px;height:64px">
+                                </a>
+                            <div class="media-body" style="margin-left: 8px;">
+                                <h6 class="media-heading">${name}
+                                </h6>
+                                <p>${time}</p>
+                                <a href="/item/content/${id}"><strong>查看详情</strong> </a>
+                            </div>
+                            </div>
+                        </div>`;
+                    if (type == 0)
+                        $("#mygoods").append(str);
+                    else
+                        $("#mywants").append(str);
+                }
+            }
+        });
+    });
+
+</script>
+{% endblock %}

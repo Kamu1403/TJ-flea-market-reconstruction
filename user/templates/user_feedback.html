@@ -1,0 +1,124 @@
+{% extends "base.html" %} {% block title %}
+<title>反馈</title>
+{% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
+<!-- main-area -->
+<main>
+    <!-- cart-area -->
+    <div class="cart-area pt-90">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-xl-7 col-lg-9 col-12">
+                    <div class="checkout-form-wrap">
+                        <form action="javascript:void(0)">
+                            <div class="checkout-form-top">
+                                <h5 class="title">反馈单</h5>
+                            </div>
+
+                            <div class="different-address-wrap">
+                                <div class="header-super-store d-xl-block d-md-block">
+                                    <div class="dropdown">
+                                        <button class="dropdown-toggle" type="button" id="choice" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" value="-1">请选择反馈类型</button>
+                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton4">
+                                            <a class="dropdown-item" onclick="change_choice(0)">举报用户</a>
+                                            <a class="dropdown-item" onclick="change_choice(1)">举报物品</a>
+                                            <a class="dropdown-item" onclick="change_choice(2)">反馈网站bug</a>
+                                            <a class="dropdown-item" onclick="change_choice(3)">个人提问</a>
+                                            <a class="dropdown-item" onclick="change_choice(4)">交易维权</a>
+                                            <a class="dropdown-item" onclick="change_choice(5)">其他</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="building-info-wrap">
+                                <input type="text" placeholder="请输入想举报的用户ID" id="choice_0" hidden />
+                                <input type="text" placeholder="请输入想举报的物品ID" id="choice_1" hidden />
+                            </div>
+
+                            <br />
+
+                            <textarea id="reason" placeholder="详细反馈..."></textarea>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-7">
+                <div class="shop-cart-total" style="background-color: rgba(255, 255, 255, 0); border: none">
+                    <div class="shop-cart-widget">
+                        <a class="btn" onclick="submit()">提交反馈</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<!-- main-area-end -->
+{% endblock %} {% block footer %} {{ super() }} {% endblock %} {% block js %} {{ super() }}
+
+<script>
+    var debug = 0;
+
+    function submit() {
+        kind = parseInt($(choice).val());
+        if (kind == -1) {
+            suspend("alert-danger", "请选择反馈类型");
+            return;
+        }
+
+        let data = { kind: kind, reason: $("#reason").val() };
+        if (kind == 0) data["user_id"] = $(choice_0).val();
+        if (kind == 1) data["item_id"] = $(choice_1).val();
+        let url = "/api/report";
+        if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
+        $.ajax({
+            url: url,
+            type: "post",
+            data: JSON.stringify(data),
+            contentType: "application/json",
+            processData: false,
+            success: function (ret) {
+                if (ret.statusCode == 200) {
+                    suspend("alert-success", ret.message);
+                    sleep(500).then(() => {
+                        window.location.reload();
+                    });
+                } else suspend("alert-danger", ret.message);
+            },
+        });
+    }
+
+    function change_choice(id) {
+        $(choice).val(id);
+        $(choice_0).prop("hidden", "hidden");
+        $(choice_1).prop("hidden", "hidden");
+        switch (id) {
+            case 0:
+                $(choice).text("举报用户");
+                $(choice_0).removeAttr("hidden");
+                break;
+            case 1:
+                $(choice).text("举报物品");
+                $(choice_1).removeAttr("hidden");
+                break;
+            case 2:
+                $(choice).text("反馈网站bug");
+                break;
+            case 3:
+                $(choice).text("个人提问");
+                break;
+            case 4:
+                $(choice).text("交易维权");
+                break;
+            case 5:
+                $(choice).text("其他");
+                break;
+        }
+    }
+</script>
+
+{% endblock %}

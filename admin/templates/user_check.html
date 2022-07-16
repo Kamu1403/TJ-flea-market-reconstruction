@@ -1,0 +1,67 @@
+{% extends "base.html" %} {% block title %}
+<title>用户管理</title>
+{% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
+<main>
+    <section class="shop--area shop-right-sidebar pt-90 pb-90">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">{% include "cont_side.html" %}</div>
+                <div class="col-xl-9 col-lg-9 col-md-9 col-sm-12">
+
+                    <div class="cart-wrapper">
+                        <div class="table-responsive">
+                            <table class="table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th class="product-thumbnail"></th>
+                                        <th class="product-name">用户信息</th> 
+                                        <th class="product-name" style="text-align:center">校区</span></th>
+                                        <th class="product-name" style="text-align:center">信誉分</th>
+                                        <th class="product-name"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="user_manage"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock %} {% block footer %} {{ super() }} {% endblock %} {% block js %} {{ super() }}
+
+<script type="text/javascript" charset="utf-8">
+    var debug = 0;
+
+    $(document).ready(function () {
+        let url = "/api/get_all_user";
+        if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
+        $.ajax({
+            // json形式
+            url: url,
+            type: "get",
+            success: function (ret) {
+                // console.log(ret);
+                if (ret.statusCode == 200) {
+                    let user_list = $("#user_manage");
+                    //user_list.append(`<thead><th>用户名</th><th>详情链接</th></thead>`);
+                    for (var i in ret.data) {
+                        // console.log(ret.data[i]);
+                        user_info = ret.data[i];
+                        user_list.append(`<tr id="${user_info.id}"></tr>`);
+                        user = $(`#${user_info.id}`);
+                        user.append(`<td class="product-thumbnail"><img src="/user/static/resource/user-pic/${user_info.id}/avatar_128.WEBP" alt="" /></td>`)
+                        user.append(`<td class="product-name"><h4>${user_info.id}</h4></br>
+                            <h4>${user_info.username}</h4></td>`);
+                        user.append(`<td class="product-name"><h4>${user_info.campus_branch}</h4></td>`);
+                        user.append(`<td class="product-name"><h4>${user_info.score}</h4></td>`);
+                        user.append(`<td class="product-name"><h4><a href="/user/${user_info.id}/user_info">用户详情</a></h4></td>`);
+                    }
+                }
+            },
+        });
+    });
+</script>
+
+{% endblock %}

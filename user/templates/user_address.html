@@ -1,0 +1,288 @@
+{% extends "base.html" %} {% block title %}
+<title>编辑地址</title>
+<link rel="stylesheet" type="text/css" href="{{url_for('user.static',filename='css/Switch.css')}}" />
+
+{% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
+<main>
+    <section class="shop--area shop-right-sidebar pt-90 pb-90">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">{% include "cont_side.html" %}</div>
+                <div class="col-xl-9 col-lg-9 col-md-9 col-sm-12">
+                    <b>请双击表单内容进行修改</b>
+                    <div class="cart-wrapper">
+                        <div class="table-responsive">
+                            <table id="tab" border="0" cellspacing="0" cellpadding="0" class="table">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>收件人</th>
+                                        <th>电话</th>
+                                        <th>详细地址</th>
+                                        <th>所在校区</th>
+                                        <th>设为默认</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ta"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="shop-cart-total" style="margin-top: 0px; background-color: rgba(255, 255, 255, 0); border: none">
+                        <div class="shop-cart-widget">
+                            <a class="btn" data-toggle="modal" data-target="#address">添加新地址</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-7">
+                    <div class="modal fade" id="address" tabindex="-1" role="dialog" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">添加新地址</h5>
+                                </div>
+                                <div class="modal-body">
+                                    <form action="javascript:void(0);">
+                                        <div class="form-group">
+                                            <label class="col-form-label">收件人姓名:</label>
+                                            <input type="text" class="form-control" id="rname" />
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-form-label">电话:</label>
+                                            <input type="text" class="form-control" id="rtel" />
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-form-label">详细地址:</label>
+                                            <input type="text" class="form-control" id="raddress" />
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-form-label">所在校区:</label>
+                                            <select class="custom-select" id="rcampus">
+                                                <option>四平路校区</option>
+                                                <option>嘉定校区</option>
+                                                <option>沪西校区</option>
+                                                <option>沪北校区</option>
+                                            </select>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                                    <button type="button" class="btn" onclick="add_address()">提交</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock %} {% block footer %} {{ super() }} {% endblock %} {% block js %} {{ super() }}
+
+<script type="text/javascript" charset="utf-8">
+    var debug = 0;
+
+    function draw_table() {
+        let url = "/api/get_address";
+        if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
+        $.ajax({
+            url: url,
+            type: "get",
+            success: function (ret) {
+                let ta_tab = $("#ta");
+                ta_tab.empty();
+                for (let i = 0; i < ret.data.length; i++) {
+                    ta_tab.append(`<tr id="tr${i}"></tr>`); //添加一列
+                    let tab = $(`#tr${i}`); //把这一列的内容添加上
+                    let contact_id = ret.data[i].id;
+                    let campus_branch_select_text = get_branch_select_text(contact_id, ret.data[i].campus_branch);
+                    let default_button_text = get_default_button_text(contact_id, ret.data[i].default);
+                    //console.log(campus_branch_select_text);
+                    tab.append(`<td class='edit_text' id='name${contact_id}'>${ret.data[i].name}</td>`);
+                    tab.append(`<td class='edit_text' id='telephone${contact_id}'>${ret.data[i].telephone}</td>`);
+                    tab.append(`<td class='edit_text' id='full_address${contact_id}'>${ret.data[i].full_address}</td>`);
+                    tab.append(`<td id='campus_branch${contact_id}'>${campus_branch_select_text}</td>`);
+                    tab.append(`<td>${default_button_text}</td>`);
+                    tab.append(`<td><input type='button' class='btn btn-success' id='delete_contact_id${contact_id}' onclick='delete_by_id(${contact_id})' value='删除'</td>`);
+                }
+
+                /* 给表格里面每一个带有edit_text的td添加一个dblclick事件 */
+                $(".edit_text").dblclick(function () {
+                    /* 1.先拿到这个td原来的值，然后将这个td变成一个input:text,并且原来的值不动 */
+                    var tdVal = $(this).text();
+                    let id = parseInt($(this).attr("id").replace(/[^\d]/g, " "));
+                    let oInput = $("<input type='text' value='" + tdVal + "'/>");
+                    $(this).html(oInput);
+                    oInput.focus();
+
+                    /* 2.失去焦点，这个td变为原来的text，value为修改过后的value */
+                    oInput.blur(function () {
+                        if (oInput.val() == "") {
+                            suspend("alert-danger", "不可为空");
+                            oInput.parent().html(tdVal);
+                        } else {
+                            oInput.parent().html(oInput.val());
+                            if (oInput.val() != tdVal) update_contact(id);
+                        }
+                    });
+                });
+            },
+        });
+    }
+
+    $(document).ready(function () {
+        draw_table();
+    });
+
+    function checkboxOnblur(checkbox) {
+        let id = parseInt(checkbox.id.replace(/[^\d]/g, " "));
+        update_contact(id);
+    }
+    function selectOnblur(select) {
+        let id = parseInt(select.id.replace(/[^\d]/g, " "));
+        update_contact(id);
+    }
+
+    function checkboxOnclick(checkbox) {
+        if (checkbox.checked == true) {
+            $(".switch").each(function (index, obj) {
+                obj.checked = false;
+            });
+            $("#" + checkbox.id)[0].checked = true;
+            checkboxOnblur(checkbox);
+        } else {
+            let f_has_true = false;
+            $(".switch").each(function (index, obj) {
+                if (obj.checked) f_has_true = true;
+            });
+            if (f_has_true) {
+                $("#" + checkbox.id)[0].checked = false;
+                checkboxOnblur(checkbox);
+            } else {
+                checkbox.checked = true;
+                //alert("必须要有一个默认地址！");
+            }
+        }
+    }
+    function get_branch_select_text(id, campus_branch) {
+        let res = `<select  class="custom-select" id=select_campus_branch${id} onchange="selectOnblur(this)">`;
+        let branchs = ["四平路校区", "嘉定校区", "沪西校区", "沪北校区"];
+        for (let i = 0; i < branchs.length; i++) {
+            if (campus_branch == branchs[i]) res += `<option value='select${i}' selected>${branchs[i]}</option>`;
+            else res += `<option value='select${i}'>${branchs[i]}</option>`;
+        }
+        res += "</select>";
+        return res;
+    }
+    function get_default_button_text(contact_id, is_default) {
+        let res;
+        if (is_default) res = `<input type="checkbox" class="switch" checked="checked" id='is_default${contact_id}' onclick="checkboxOnclick(this)" />`;
+        else
+            res = `<input class="switch" type="checkbox" id='is_default${contact_id}'
+        onclick="checkboxOnclick(this)" />`;
+        return res;
+    }
+    function delete_by_id(id) {
+        let url = "/api/address";
+        if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
+        $.ajax({
+            url: url,
+            type: "delete",
+            data: JSON.stringify([{ contact_id: id }]),
+            contentType: "application/json;charset=utf-8",
+            processData: false,
+            //async: false, // 当需要将值传给函数外部时需要强制同步
+            success: function (ret) {
+                if (ret.statusCode == 200) {
+                    suspend("alert-success", "删除成功");
+                    //$(`#delete_contact_id${id}`).parent().parent().remove();
+                    draw_table();
+                } else bootbox.alert(ret.message);
+            },
+        });
+    }
+
+    function update_contact(id) {
+        let url = "/api/address";
+        if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
+        let name = $(`#name${id}`).text();
+        if (name == "") {
+            alert("收件人不可为空");
+            window.location.reload();
+        }
+        let telephone = $(`#telephone${id}`).text();
+        if (telephone == "") {
+            alert("电话不可为空");
+            window.location.reload();
+        }
+        let campus_branch = $(`#select_campus_branch${id} option:selected`).text();
+        let is_default = $(`#is_default${id}`).get(0).checked;
+        let full_address = $(`#full_address${id}`).text();
+        if (full_address == "") {
+            alert("详细地址不可为空");
+            window.location.reload();
+        }
+        $.ajax({
+            url: url,
+            type: "put",
+            data: JSON.stringify([{ id: id, name: name, telephone: telephone, campus_branch: campus_branch, default: is_default, full_address: full_address }]),
+            contentType: "application/json;charset=utf-8",
+            processData: false,
+            //async: false, // 当需要将值传给函数外部时需要强制同步
+            success: function (ret) {
+                if (ret.statusCode == 200) {
+                    suspend("alert-success", "修改保存成功");
+                } else {
+                    suspend("alert-danger", "修改保存失败：" + ret.message);
+                    sleep(500).then(() => {
+                        window.location.reload();
+                    });
+                }
+            },
+        });
+    }
+
+    function add_address() {
+        let url = "/api/address";
+        if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
+
+        let name = $("#rname").val();
+        if (name == "") {
+            suspend("alert-danger", "收件人姓名不可为空");
+            return;
+        }
+        let tel = $("#rtel").val();
+        if (tel == "") {
+            suspend("alert-danger", "电话不可为空");
+            return;
+        }
+        let address = $("#raddress").val();
+        if (address == "") {
+            suspend("alert-danger", "详细地址不可为空");
+            return;
+        }
+        let campus = $("#rcampus").val();
+
+        $(".modal-input").val(""); //清空所有input的数据
+        $.ajax({
+            url: url,
+            type: "post",
+            data: JSON.stringify([{ name: name, telephone: tel, campus_branch: campus, default: false, full_address: address }]),
+            contentType: "application/json;charset=utf-8",
+            processData: false,
+            //async: false, // 当需要将值传给函数外部时需要强制同步
+            success: function (ret) {
+                if (ret.statusCode == 200) {
+                    suspend("alert-success", "添加成功");
+                    draw_table();
+                    $("#address").modal("hide");
+                } else bootbox.alert(ret.message);
+            },
+        });
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,113 @@
+{% extends "base.html" %} {% block title %}
+<title>反馈详情</title>
+{% endblock %} {% block css %} {{ super() }} {% endblock %} {% block header %} {{ super() }} {% endblock %} {% block main %}
+<main>
+    <section class="shop--area shop-right-sidebar pt-90 pb-90">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">{% include "cont_side.html" %}</div>
+                <div class="col-xl-9 col-lg-9 col-md-9 col-sm-12">
+                    <div id="testt"></div>
+
+                    <div class="shop-cart-total">
+                        <h3 class="title">反馈详情</h3>
+                        <div class="shop-cart-widget">
+                            <form action="javascript:void(0)">
+                                <ul id="wrapper">
+                                    <li class="shop-check-wrap" id="feedback_user_id">
+                                        <span>反馈用户ID</span>
+                                    </li>
+
+                                    <li class="shop-check-wrap" id="feedback_type">
+                                        <span>反馈类型</span>
+                                    </li>
+                                    <li class="shop-check-wrap" id="feedback_time">
+                                        <span>反馈时间</span>
+                                    </li>
+
+                                    <li class="shop-check-wrap" id="feedback_status">
+                                        <span>反馈状态</span>
+                                    </li>
+
+                                    <li class="shop-check-wrap" id="feedback_content">
+                                        <span>反馈内容</span>
+                                    </li>
+
+                                    <li class="shop-check-wrap" id="feedback_reply_old">
+                                        <span>当前回复</span>
+                                    </li>
+
+                                    <li class="shop-check-wrap">
+                                        <span id="feedback_reply_new"></span>
+                                        <textarea placeholder="请输入你的回复..."style="resize: none;" cols="50" rows="3" id="feedback_reply_text" /></textarea>
+                                    </li>
+                                </ul>
+                                <div class="row justify-content-center" id="buttongroup">
+                                    <button class="btn col-xl-3 col-lg-4" onclick="feedback_reply_submit()">提交回复</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock %} {% block footer %} {{ super() }} {% endblock %} {% block js %} {{ super() }}
+
+<script type="text/javascript" charset="utf-8">
+    var feedback_id = "{{ feedback_id|safe }}"; // 如果有python传过来的
+    var debug = 0;
+
+    function feedback_reply_submit() {
+        let reply_url = "/api/reply_feedback";
+        if (debug) reply_url = `http://127.0.0.1:4523/mock/927026${reply_url}`;
+        $.ajax({
+            url: reply_url,
+            type: "put",
+            data: JSON.stringify({ feedback_id: feedback_id, reply_content: $(feedback_reply_text).val() }),
+            contentType: "application/json;charset=utf-8",
+            processData: false,
+            success: function (reply_ret) {
+                if (reply_ret.statusCode == 200) {
+                    suspend("alert-success", "回复成功: " + reply_ret.message);
+                    sleep(500).then(() => {
+                        window.location.href = "{{url_for('admin.feedback_show')}}";
+                    });
+                } else {
+                    suspend("alert-danger", "回复失败: " + reply_ret.message);
+                }
+            },
+        });
+    }
+
+    $(document).ready(function () {
+        let url = "/api/admin_get_report";
+        if (debug) url = `http://127.0.0.1:4523/mock/927026${url}`;
+        $.ajax({
+            url: url,
+            type: "get",
+            data: { feedback_id: feedback_id },
+            success: function (ret) {
+                kind2str = { 0: "举报用户", 1: "举报物品", 2: "反馈网站bug", 3: "个人提问", 4: "交易维权", 5: "其他" };
+                state2str = { 0: "未读 | 未回复", 1: "已读 | 未回复", "-1": "已读 | 已回复" };
+                $(feedback_user_id).append(ret.data.user_id);
+                $(feedback_type).append(kind2str[ret.data.kind]);
+                $(feedback_time).append(ret.data.publish_time);
+                $(feedback_content).append(ret.data.feedback_content);
+                $(feedback_status).append(state2str[ret.data.state]);
+
+                if (ret.data.state == -1) {
+                    $(feedback_reply_old).append(ret.data.reply_content);
+                    $(feedback_reply_new).append("更新回复")
+                }
+                else {
+                    $(feedback_reply_old).append("*该反馈未被任何管理员回复过*");
+                    $(feedback_reply_new).append("输入回复");
+                }
+            },
+        });
+    });
+</script>
+
+{% endblock %}
