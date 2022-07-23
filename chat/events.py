@@ -47,7 +47,7 @@ def joined(message):
 
     #Room表中标记用户在线
     Room.update(room_state=Room.room_state+1).where(Room.room_id==roomid).execute()
-    print("+")
+    #print("+")
     
     #将最近列表中的未读信息数清空
     Recent_Chat_List.update(unread=0).where(
