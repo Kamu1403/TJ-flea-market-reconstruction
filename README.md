@@ -4,9 +4,10 @@
 
 ## 运行环境说明
 
-python版本3.10.0
+Windows10
+python 版本 3.10.0
 
-依赖库见requirements.txt
+依赖库见 requirements.txt
 
 安装方法：
 
@@ -23,3 +24,4 @@ conda env create --file environment.yml
 ```
 
 python main.py
+```
