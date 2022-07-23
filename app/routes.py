@@ -139,3 +139,8 @@ def login():
 @app.errorhandler(404)
 def page_not_found(error):
     return render_template("404.html", message=error, error_code=404)
+"""
+@app.errorhandler(500)
+def page_not_found(error):
+    return render_template("404.html", message=error, error_code=500)
+"""
