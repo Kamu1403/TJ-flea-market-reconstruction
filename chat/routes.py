@@ -4,6 +4,7 @@ from chat import chat_blue
 from flask_socketio import join_room,emit
 from flask import jsonify
 from chat.models import Room,Meet_List
+from user.models import User
 from api.utils import *
 from app import database
 import datetime
@@ -63,6 +64,10 @@ def chat(opt_userid:int):
                 Room.create(room_id=room,last_sender_id=sender)
             elif reroomid!=None:
                 room=reroom
+            
+            exist=User.get_or_none(User.id==receiver)
+            if (exist==None):
+                return render_template('404.html', message="该用户不存在")
                 
             create_or_update_meet_list(sender,receiver)
             create_or_update_meet_list(receiver,sender)
