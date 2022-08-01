@@ -5,7 +5,34 @@ from api import api_blue
 
 MINUS_SCORE = 5  #取消一个已经确认了的订单，扣五分
 
+""" 订单状态更改
+此操作需前置登录操作
 
+后端逻辑：
+当订单的当前状态和希望更改的状态相同：
+401：message="未授权“ (未登录,或current user不是订单双方或管理员)
+或者current user不是管理员时发生以下情形，也返回401：
+1、订单还没确认就想完成订单
+2、尝试修改已完成/已关闭的订单状态
+3、非悬赏发布者完成悬赏订单，非商品购买者完成商品订单
+
+400：message="请求格式不对"(state出现了三种状态以外的其它状态或要修改的状态与原状态相同）
+404：message="没有找到此订单"
+当修改状态成功：200，message="操作成功"
+
+前端逻辑：
+4xx：弹出alert框，显示返回的message信息。
+200：弹出alert框，随后刷新页面
+
+state仅有三种状态：
+{
+"1": "已确认（双方）",
+"2": "已完成",
+"-1": "已关闭"
+}
+
+对于已确认的订单，取消者需要扣除5分信誉分
+ """
 @api_blue.route("/change_order_state", methods=["PUT"])
 def change_order_state():
     req = request.get_json()
@@ -141,7 +168,14 @@ def change_order_state():
         else:
             return make_response_json(500, "req_state订单状态错误！")
 
+""" 根据订单获取商品id
+根据订单id获取商品id和对应商品的购买数量
+从而得到商品信息
 
+如果当前登录的不是订单双方或者管理员，返回401
+如果没有找到订单，返回404
+否则200
+ """
 @api_blue.route("/get_item_id_by_order", methods=["GET"])
 def get_item_id_by_order():
     if not current_user.is_authenticated:
@@ -171,7 +205,7 @@ def get_item_id_by_order():
             res.append(tep)
         return make_response_json(200, "获取成功", res)
 
-
+""" 获取review内容 """
 @api_blue.route("/get_review_by_order", methods=["GET"])
 def get_review_by_order():
     if not current_user.is_authenticated:
@@ -215,7 +249,7 @@ def get_review_by_order():
             return make_response_json(500, f"程序错误repr{e}")
         return make_response_json(200, "操作成功", res)
 
-
+""" 获取某订单是否被评价 """
 @api_blue.route("/get_user_is_review", methods=["GET"])
 def get_user_is_review():
     if not current_user.is_authenticated:
@@ -254,7 +288,7 @@ def get_user_is_review():
         res['op_review_id'] = _order_state_item.op_user_review_id.id
     return make_response_json(200, "查找成功", res)
 
-
+""" 获取review内容 """
 @api_blue.route("/get_review", methods=["GET"])
 def get_review():
     if not current_user.is_authenticated:

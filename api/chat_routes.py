@@ -55,6 +55,7 @@ def save_pic(path,data):
     else:
         return make_response_json(200, "上传图片成功", md5_str)
 
+
 @api_blue.route("/post_chat_pic", methods=["POST"])
 def post_chat_pic():
     if not current_user.is_authenticated:
@@ -71,7 +72,12 @@ def post_chat_pic():
         send_message(sender,receiver,md5_str,1)
     return ret
 
+""" 获取未读消息条数 
+此操作需前置登录操作（应当是所有页面的head都需要获取，可以考虑放在session中）
+获取当前用户的所有未读信息条数
 
+200 返回count  401 用户未授权登录
+"""
 @api_blue.route('/get_message_cnt',methods=['GET'])
 def get_message_cnt():
     if (current_user.is_authenticated):
@@ -85,7 +91,13 @@ def get_message_cnt():
         return make_response_json(200, "获取未读条数成功",res)
     else:
         return make_response_json(401, "当前用户未登录")
-    
+
+""" 获取会话列表 
+此操作需前置登录操作
+功能：获取当前用户的会话列表
+
+200 返回 json  401 用户未授权登录
+"""   
 @api_blue.route('/get_meet_list',methods=['GET'])
 def get_meet_list():
     if (current_user.is_authenticated):
@@ -99,7 +111,12 @@ def get_meet_list():
         return make_response_json(200, "获取会话列表成功",res)
     else:
         return make_response_json(401, "当前用户未登录")
-    
+""" 此操作需前置登录操作
+获取当前用户的会话列表
+
+200 返回 json格式的信息：{ 'user_id': {'last_msg':lastmsg,'sender':sender},...}
+401 用户未授权登录 
+"""      
 @api_blue.route('/get_last_msg',methods=['GET'])
 def get_last_msg():
     if (current_user.is_authenticated):
@@ -124,7 +141,7 @@ def get_last_msg():
         return make_response_json(200, "获取最后消息成功",res)
     else:
         return make_response_json(401, "当前用户未登录")
-    
+
 @api_blue.route('/del_meet',methods=['DELETE'])
 def del_meet():
     if (current_user.is_authenticated):

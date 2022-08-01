@@ -45,8 +45,11 @@ def GetUserDict(i, is_self=False) -> dict:
 
     return user
 
-
-#管理员获取所有用户信息
+""" 
+管理员获取所有用户信息
+401 非管理员
+200 操作成功 
+"""
 @api_blue.route('/get_all_user', methods=['GET'])
 def get_all_user():
     if not current_user.is_authenticated:
@@ -66,7 +69,17 @@ def get_all_user():
     return make_response_json(200, "所有用户信息获取成功", data_list)
 
 
-#管理员封号
+""" 
+功能：管理员封号
+401 非管理员
+200 成功
+
+支持传入的状态：
+"0": "普通用户",
+"1": "管理员",
+"-1": "封号用户"
+当且仅当封号时需要有封号截止时间以及封号理由
+ """
 @api_blue.route('/change_user_state', methods=['PUT'])
 def change_user_state():
     if not current_user.is_authenticated:
@@ -134,7 +147,19 @@ def change_user_state():
         #query.execute()
 
 
-#访问其它用户
+""" 获取某用户信息
+某用户进入他人主页，获取信息
+若该用户是游客，返回401；否则开始查找用户
+传入user_id格式错误则返回400
+若该用户未注册（传入user_id有误)，返回404
+若找到用户信息，返回200
+
+如果是传入的user_id参数是current_user.id，则全盘返回；否则返回可见的部分
+例如，major_is_published为False时，后端不返回major项，应不显示在前端
+name_is_published等等同理
+
+如果不传入user_id参数，则返回current_user的信息s
+ """
 @api_blue.route('/get_user_info', methods=['GET'])
 def get_user_info():
     if not current_user.is_authenticated:
@@ -157,7 +182,15 @@ def get_user_info():
                                   GetUserDict(tep, current_user.id == user_id))
 
 
-#访问其它用户
+""" 获取某用户昵称
+某用户获取其他用户姓名
+查找用户
+传入user_id格式错误则返回400
+若该用户未注册（传入user_id有误)，返回404
+若找到用户信息，返回200
+
+仅返回用户姓名
+ """
 @api_blue.route('/get_user_username', methods=['GET'])
 def get_user_username():
     data = dict(request.args)
@@ -173,14 +206,27 @@ def get_user_username():
     else:
         return make_response_json(200, "获取用户数据姓名", {"name": tep.username})
 
-
+""" 获取用户id 
+401 用户未登录
+200 操作成功
+"""
 @api_blue.route('/get_user_id', methods=["GET"])
 def get_user_id():
     if not current_user.is_authenticated:
         return make_response_json(401, "该用户未通过验证")
     return make_response_json(200, "操作成功", {"user_id": current_user.id})
 
+""" 管理员修改用户信息 
+个人中心页面，完成用户个人信息更改
 
+此操作需前置登录操作
+不允许修改邮箱、学号。
+后端逻辑：
+401：message="未授权“ (未登录,或current user不是本人或管理员)
+400：message="请求格式不对"（与他人重复的qq 微信 电话）
+404：message="没有找到此用户"
+当修改状态成功：200，message="操作成功"
+"""
 @api_blue.route('/change_user_info', methods=["PUT"])
 def change_user_info():
     if not current_user.is_authenticated:
@@ -246,7 +292,7 @@ def change_user_info():
         else:
             return make_response_json(200, "操作成功")
 
-
+""" 管理员获取所有反馈 """
 @api_blue.route("/get_reports", methods=["GET"])
 def get_reports():
     if not current_user.is_authenticated or current_user.state != User_state.Admin.value:
@@ -273,7 +319,7 @@ def get_reports():
         data[FeedbackstateTostr(i.state)].append(i.id)
     return make_response_json(200, "查询结果如下", data=data)
 
-
+""" 管理员获取单条反馈 """
 @api_blue.route("/admin_get_report", methods=["GET"])
 def admin_get_report():
     if not current_user.is_authenticated or current_user.state != User_state.Admin.value:
@@ -293,7 +339,7 @@ def admin_get_report():
     datas["publish_time"] = str(datas["publish_time"])
     return make_response_json(200, "此反馈信息如下", data=datas)
 
-
+""" 管理员回复反馈 """
 @api_blue.route("/reply_feedback", methods=["PUT"])
 def reply_feedback():
     if not current_user.is_authenticated or current_user.state != User_state.Admin.value:
@@ -318,7 +364,7 @@ def reply_feedback():
                  f'管理员已回复你的反馈，回复内容：\n{data["reply_content"]}')
     return make_response_json(200, "回复完成")
 
-
+""" 管理员获取所有订单 """
 @api_blue.route("/get_all_order", methods=["GET"])
 def get_all_order():
     if not current_user.is_authenticated:
@@ -347,6 +393,10 @@ def get_all_order():
                     j.item_id.id)
     return make_response_json(200, "返回订单", datas)
 
+""" 获取被封禁用户的信息 
+401 非管理员
+200 操作成功 
+"""
 @api_blue.route("/get_ban_data",methods=["GET"])
 def get_ban_data():
     if not current_user.is_authenticated or current_user.state != User_state.Admin.value:

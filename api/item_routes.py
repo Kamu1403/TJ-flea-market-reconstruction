@@ -24,7 +24,9 @@ def createPath(path: str) -> None:
         os.remove(path)
         os.makedirs(path)
 
-
+""" 获取物品图片
+传入商品id，返回图片url列表
+ """
 @api_blue.route("/get_item_pics", methods=['GET'])
 def get_item_pics():
     data = dict(request.args)
@@ -52,7 +54,7 @@ def get_item_pics():
                     filename=f'resource/item_pic/{item_id}/pic/{pic_name}'))
     return make_response_json(200, "图片查找成功", data={"url": pics})
 
-
+""" 获取物品头图 """
 @api_blue.route("/get_item_head_pic", methods=['GET'])
 def get_item_head_pic():
     data = dict(request.args)
@@ -77,7 +79,7 @@ def get_item_head_pic():
                   filename=f'resource/item_pic/{item_id}/head/{pic_list[0]}')
     return make_response_json(200, "图片查找成功", data={"url": pic})
 
-
+""" 用户获取单个物品信息 """
 @api_blue.route('/get_item_info', methods=['GET'])
 def get_item_info():
     try:
@@ -110,7 +112,11 @@ def get_item_info():
         res["isPub"] = isPub
     return make_response(jsonify(res))
 
-
+""" 
+获取用户所发布的物品
+获取user_id所发布的物品
+若不指定，则获取current_user的
+"""
 @api_blue.route("/get_user_item", methods=["GET"])
 def get_user_item():
     if not current_user.is_authenticated:
@@ -139,7 +145,10 @@ def get_user_item():
         datas.append(j)
     return make_response_json(200, "查询成功", data=datas)
 
-
+""" 
+物品搜索
+search_type 悬赏还是商品
+order_type 排列方式 """
 @api_blue.route('/search', methods=['POST'])
 def get_search():
     data = request.get_json()
@@ -217,7 +226,13 @@ def get_search():
         }
         return make_response_json(200, "搜索结果如下", data=final_data)
 
-
+""" 商品状态更改
+当商品的当前状态和希望更改的状态相同：400，商品当前状态和希望更改的状态相同
+当操作人为管理员：200，操作成功
+当操作人非商品发起用户：401，不可修改其他人的商品状态
+若希望修改item_status为-1：401，权限不足
+200，操作成功
+ """
 @api_blue.route("/change_item_state", methods=["PUT"])
 def change_item_state():
     if not current_user.is_authenticated:
@@ -263,7 +278,10 @@ def change_item_state():
                         item.save()
                         return make_response_json(200, "操作成功")
 
-
+""" 商品数量更改
+当操作人非商品发起用户：401，不可修改其他人的商品数量
+200，操作成功
+ """
 @api_blue.route("/change_item_num", methods=["PUT"])
 def change_item_num():
     if not current_user.is_authenticated:
@@ -300,7 +318,10 @@ def change_item_num():
                     item.save()
                     return make_response_json(200, "操作成功")
 
-
+""" 修改物品信息
+仅有管理员可修改所有人发布的物品信息
+单个用户仅能修改自己所发布的物品信息
+ """
 @api_blue.route("/change_item_data", methods=["PUT"])
 def change_item_data():
     if not current_user.is_authenticated:
@@ -366,7 +387,19 @@ def trans_square(image):
     background.paste(image, box)
     return background
 
-
+""" 发布物品信息
+后端逻辑：
+try:
+生成新物品id，填入传入的信息（除图片MD5）到数据库
+根据图片MD5从临时文件夹找到图片，移入物品对应文件夹中
+物品相关联的图片urls: [[MD5, 0/1(是否为头图)], [MD5, 0/1], ...]
+如果没有1：默认第一张为头图
+如果没有图：一张默认图
+201, 发布成功
+except e:
+400, 发布失败：{repr(e)}
+401,未登录，无发布权限
+ """
 @api_blue.route("/post_item_info", methods=["POST"])
 def post_item_info():
     if not current_user.is_authenticated:
@@ -491,14 +524,29 @@ def get_pillow_img_form_data_stream(data):
     else:
         return make_response_json(200, "上传图片成功", md5_str)
 
-
+""" 发布物品图片
+传张图片到服务器
+后端逻辑：
+try:
+服务器成功收到图片：
+将图片放在某个文件夹下，强转成jpg格式，根据其MD5重命名。
+200，图片上传成功，data=str(图片MD5码)。
+except e:
+400，e
+后期可以考虑加入流量控制，防止恶意堵塞服务器。
+ """
 @api_blue.route("/post_item_pic", methods=["POST"])
 def post_item_pic():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
     return get_pillow_img_form_data_stream(request.files.get('file'))
 
-
+""" 收藏物品
+404 不存在对应物品（有一个不存在，所有的物品都不添加）
+400 重复添加（重复的那个不添加，其它的正常添加）
+201 全部添加成功
+401 未登录
+ """
 @api_blue.route("/add_favor", methods=["POST"])
 def add_favor():
     if not current_user.is_authenticated:
@@ -551,7 +599,11 @@ def delete_favor():
     except Exception as e:
         return make_response_json(500, f"发生错误 {repr(e)}")
 
-
+""" 获取用户的收藏
+默认用current_user
+401 未登录
+200 操作成功
+ """
 @api_blue.route("/get_favor", methods=["GET"])
 def get_favor():
     if not current_user.is_authenticated:
@@ -585,7 +637,11 @@ def get_favor():
     }
     return make_response_json(200, "操作成功", data)
 
-
+""" 获取当前用户是否收藏了某商品
+默认用current_user
+401 未登录
+200 操作成功
+ """
 @api_blue.route("/get_item_favor", methods=["GET"])
 def get_item_favor():
     if not current_user.is_authenticated:
@@ -602,7 +658,11 @@ def get_item_favor():
     else:
         return make_response_json(200, "操作成功", True)
 
-
+""" 获取用户的历史
+默认用current_user
+401 未登录
+200 操作成功
+ """
 @api_blue.route("/get_history", methods=["GET"])
 def get_history():
     if not current_user.is_authenticated:
@@ -636,7 +696,12 @@ def get_history():
     }
     return make_response_json(200, "操作成功", data)
 
-
+""" 删除用户历史
+直接删current_user的收藏
+200 操作成功
+404 没找到对应的收藏（剩下的其它找到了的历史会删除）
+401 没登录
+ """
 @api_blue.route("/delete_history", methods=["DELETE"])
 def item_delete_history():
     if not current_user.is_authenticated:
@@ -722,7 +787,15 @@ def report():
         return make_response_json(500, f"存储时发生错误 {repr(e)}")
     return make_response_json(200, "举报完成,请等待管理员处理...")
 
+""" 
+功能：主页物品展示
+首页展示部分物品
+请求参数为时间范围(即距今range天内)和最大展示数目(即最多max_num)
+两个参数都是若空则选择全部
 
+响应为200，各个物品的详细信息
+对于未注册用户也支持，因为适用于主页 
+"""
 @api_blue.route("/item_to_show", methods=["GET"])
 def item_to_show():
     data = dict(request.args)

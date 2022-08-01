@@ -9,7 +9,18 @@ from datetime import datetime, timedelta
 
 
 
+""" 获取用户最近所有订单
+获取当前登录用户最近range天的订单（订单双方均要考虑）
+range不指定则为全时段
 
+返回参数：订单id列表(即data是一个array，里面全是订单的id)
+
+statusCode
+#200
+正常返回，等待对方确认和自己确认订单均正常显示
+message:"返回订单"
+data是一个列表，里面存储着所有需要的信息
+ """
 @api_blue.route("/get_order", methods=["GET"])
 def get_order():
     if not current_user.is_authenticated:
@@ -48,7 +59,14 @@ def get_order():
                     j.item_id.id)
     return make_response_json(200, "返回订单", datas)
 
-
+""" 获取订单详细信息
+401
+未登录，或登录用户不是管理员或者不是订单双方
+404
+找不到订单
+200
+返回订单信息
+ """
 @api_blue.route("/get_order_info", methods=['GET'])
 def get_order_info():
     if not current_user.is_authenticated:
@@ -82,7 +100,13 @@ def get_order_info():
         order_data["item_info"].append(j)
     return make_response_json(200, "请求成功", order_data)
 
-
+""" 获取当前用户的所有地址信息
+获取当前登录用户的所有地址信息
+添加多个默认地址，则默认指定最后一个添加的为默认地址。
+201：添加成功
+401：未登录
+404:未设置任何联系地址
+ """
 @api_blue.route("/get_address", methods=['GET'])
 def get_address():
     if not current_user.is_authenticated:
@@ -124,7 +148,34 @@ def generate_order():
     url = {"url": url_for('order.generate', item_id=data["item_id"])}
     return make_response_json(200, "跳转到订单生成页面", data=url)
 
+""" 提交订单
+从生成订单页面(/order/generate/item_id/)调用该api
 
+通过此api(/api/get_address)获取当前用户的所有地址信息
+若返回404则让用户添加地址信息（弹出一个框添加）
+get_address返回200继续：
+
+201
+成功后跳转到/order/manage 页面
+message="订单生成成功，请等待商家确认"
+(也可做一个中间页面，要么跳manage页面，要么跳原商品页面）
+此时data返回url
+
+400
+请求格式不对
+比如没有选定自己的联系地址（此时前端最好应该阻止提交）
+通过发包等操作使得num,item_id,contact_id非法也返回400
+
+约定一个订单的所有物品都应该属于一个商家，否则应该拆分成多个订单
+或者 列表中item_id所对应的发布者不是同一个人，此时也返回400
+（即，我们不允许不同的商家的物品集合出现在一个订单中）
+message="请求格式不对"
+
+404
+A下单后，B接着下单了，此时库存已清空
+而A的订单还未得到双方确认
+此时message="您想要的商品正被锁定，可添加至收藏或与商家联系"
+ """
 @api_blue.route("/order_post", methods=["POST"])
 def order_post():
     if not current_user.is_authenticated:
@@ -266,7 +317,12 @@ def order_post():
     return make_response_json(201, "订单生成成功，请等待商家确认", data={"order_id": od.id})
 
 
-
+""" 用户收货地址修改
+前端支持用户添加地址信息。
+添加多个默认地址，则默认指定最后一个添加的为默认地址。
+200：操作成功
+401：未登录
+ """
 @api_blue.route("/address", methods=["POST", "PUT", "DELETE"])
 def address():
     if not current_user.is_authenticated:
@@ -406,7 +462,22 @@ def address():
 
     return make_response_json(200, "完成")
 
+""" 订单评价
+对于已经完成的订单，在确认完成后，已完成订单会显示一个订单评价按钮，点击跳转到填写评价界面。
 
+用户在该页面填写评价并提交
+后端：
+200：评价提交成功 message="评价提交成功"
+401：未授权（未登录) message=
+400：请求格式不对（id不合理，只有已完成订单才可评价）
+404：不存在的订单（id是整数但是不在数据库）
+
+前端：
+4xx:alert弹窗输出message
+200: 跳转到订单管理页面
+
+评价是不是还需要删除，修改追评之类的
+ """
 @api_blue.route("/order_evaluate", methods=["POST"])
 def order_evaluate():
     if not current_user.is_authenticated:

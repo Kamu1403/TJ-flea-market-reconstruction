@@ -128,7 +128,21 @@ def create_string_number(n):
     b = "".join([random.choice(string.ascii_letters) for _ in range(n - m)])
     return ''.join(random.sample(list(a + b), n))
 
+""" 发送验证码
+验证邮箱格式（见 验证码登录或注册 的说明）
 
+验证该邮箱上次发送验证码时间（若存在）。
+若大于900s：删除该记录
+若小于60s：400，请求过于频繁
+
+若该邮箱在已注册用户中：200，验证码发送成功
+
+201，验证码发送成功
+
+前端收到200,201,400：浮窗展示对应的返回消息
+前端收到200,201：发送验证码栏变为灰色（60s倒计时）
+前端收到201：显示密码栏，placeholder为“请设置用于登录的密码”，按钮变为“注册”。
+ """
 @api_blue.route('/send_verification_code', methods=['POST'])
 def send_verification_code():
     user_id = request.form.get('email')
@@ -180,7 +194,16 @@ def _login(user_id, password=None):
 
     return make_response_json(data={"url": url_for('user.index')})
 
+""" 密码登录
+验证user_id格式（见 验证码登录或注册 的说明）
+验证password格式（见 验证码登录或注册 的说明）
 
+if user_id 不存在：400，用户不存在
+if password错误：400，密码错误
+
+(登录成功)跳转到index
+
+ """
 @api_blue.route('/login_using_password', methods=['POST'])
 def login_using_password():
     user_id = request.form.get('email')
@@ -195,6 +218,29 @@ def login_using_password():
     return _login(user_id, password)
 
 
+""" 验证码登录或注册
+对传入的user_id：若不含"@"，则自动加上 "@tongji.edu.cn"
+验证user_id：
+if user_id 符合 r"^\d{7}@tongji.edu.cn$"：验证通过。
+elif user_id 符合 r"@tongji.edu.cn$"：400，必须通过学号注册或登录。
+else：400，邮箱格式错误。
+
+验证code：
+if 该用户下不存在验证码：400，验证码不存在，请点击发送验证码
+elif 验证码过期：400，验证码已过期，请重新点击发送验证码
+elif 验证码错误：400，验证码错误，请重新点击发送验证码
+
+验证password（若不为空）：
+密码格式错误：400，密码格式错误。仅允许6~32位密码。仅允许字母数字下划线横杠。
+
+当user_id和code均正确，且password不为空：
+if user_id不在数据库中：200，注册成功
+else: 200，密码修改成功
+
+当user_id和code均正确，且password为空：
+if user_id在数据库中：(登陆成功）跳转到主页
+else: 401，请输入密码以完成注册。
+ """
 @api_blue.route('/register_or_login_using_verification_code', methods=['POST'])
 def register_or_login_using_verification_code():
     user_id = request.form.get('email')

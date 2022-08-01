@@ -19,7 +19,9 @@ def teardown_request(exc):  #exc必须写上
     if not database.is_closed():
         database.close()
 
-
+"""
+管理员查看所有用户 
+ """
 @admin_blue.route('/user_check', methods=['GET', 'POST'])
 def user_check():
     if current_user.is_authenticated and current_user.state == User_state.Admin.value:
@@ -27,7 +29,7 @@ def user_check():
     else:
         return render_template('404.html', error_code=401, message="您无权访问此页面")
 
-
+""" 管理员获取所有订单 """
 @admin_blue.route('/order_check', methods=['GET', 'POST'])
 def order_check():
     if current_user.is_authenticated and current_user.state == User_state.Admin.value:
@@ -35,7 +37,7 @@ def order_check():
     else:
         return render_template('404.html', error_code=401, message="您无权访问此页面")
 
-
+""" 管理员获取所有反馈 """
 @admin_blue.route('/feedback_show', methods=['GET', 'POST'])
 def feedback_show():
     if current_user.is_authenticated and current_user.state == User_state.Admin.value:
@@ -43,7 +45,7 @@ def feedback_show():
     else:
         return render_template('404.html', error_code=401, message="您无权访问此页面")
 
-
+""" 管理员获取单条反馈 """
 @admin_blue.route("/feedback/<int:feedback_id>/", methods=["GET", "POST"])
 def feedback(feedback_id: int):
     if current_user.is_authenticated and current_user.state == User_state.Admin.value:
