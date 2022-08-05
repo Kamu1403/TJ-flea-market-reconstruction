@@ -35,19 +35,18 @@ state仅有三种状态：
  """
 @api_blue.route("/change_order_state", methods=["PUT"])
 def change_order_state():
-    req = request.get_json()
-
-    req_state = int(req['state'])
-    if req_state not in Order_state._value2member_map_:
-        return make_response_json(400, "请求格式不对")
-
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
     elif current_user.state == User_state.Under_ban.value:
         return make_response_json(401, "当前用户已被封禁")
-
+    req = request.get_json()
+    #数据检查
+    req_state = int(req['state'])
+    if req_state not in Order_state._value2member_map_:
+        return make_response_json(400, "请求格式不对")
+    #api执行
     try:
-        order = Order.get(Order.id == req['order_id'])
+        order = Order.get_by_id(req['order_id'])
     except Exception as e:
         return make_response_json(404, f"没有找到此订单")
     try:
@@ -180,11 +179,13 @@ def change_order_state():
 def get_item_id_by_order():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
+    #数据检查
     data = dict(request.args)
     try:
         order_id = int(data['order_id'])
     except:
         return make_response_json(400, "请求格式不对")
+    #api执行
     need = [Order_Item.quantity, Order_Item.item_id]
     try:
         datas = Order_Item.select(*need).where(Order_Item.order_id == order_id)
@@ -211,11 +212,13 @@ def get_review_by_order():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
     data = dict(request.args)
+    #数据检查
     try:
         order_id = int(data['order_id'])
     except:
         return make_response(400, "请求格式不对")
     res = dict()
+    #api执行
     try:
         _order_state_item = Order_State_Item.get(
             Order_State_Item.order_id == order_id)
@@ -255,11 +258,12 @@ def get_user_is_review():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
     data = dict(request.args)
+    #数据检查
     try:
         order_id = int(data['order_id'])
     except:
         return make_response_json(400, "请求格式不对")
-
+    #api执行
     res = dict()
     try:
         _order_state_item = Order_State_Item.get(
@@ -294,13 +298,14 @@ def get_review():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
     data = dict(request.args)
+    #数据检查
     try:
         review_id = int(data['review_id'])
     except:
         return make_response_json(400, "请求格式不对")
-
+    #api执行
     try:
-        review = Review.get(Review.id == review_id)
+        review = Review.get_by_id(review_id)
     except:
         return make_response_json(404, "为找到对应评价")
     else:

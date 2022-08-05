@@ -29,13 +29,15 @@ def createPath(path: str) -> None:
  """
 @api_blue.route("/get_item_pics", methods=['GET'])
 def get_item_pics():
+    #数据检查
     data = dict(request.args)
     try:
         item_id = int(data["item_id"])
     except Exception as e:
         return make_response_json(400, f"请求格式错误 {repr(e)}")
+    #api执行
     try:
-        item = Item.get(Item.id == item_id)
+        item = Item.get_by_id(item_id)
     except Exception as e:
         return make_response_json(400, "此物品不存在")
     pic_path = os.path.join(item_blue.static_folder,
@@ -57,13 +59,15 @@ def get_item_pics():
 """ 获取物品头图 """
 @api_blue.route("/get_item_head_pic", methods=['GET'])
 def get_item_head_pic():
+    #数据检查
     data = dict(request.args)
     try:
         item_id = int(data["item_id"])
     except Exception as e:
         return make_response_json(400, f"请求格式错误 {repr(e)}")
+    #api执行
     try:
-        item = Item.get(Item.id == item_id)
+        item = Item.get_by_id(item_id)
     except Exception as e:
         return make_response_json(400, "此物品不存在")
     pic_path = os.path.join(item_blue.static_folder,
@@ -82,13 +86,15 @@ def get_item_head_pic():
 """ 用户获取单个物品信息 """
 @api_blue.route('/get_item_info', methods=['GET'])
 def get_item_info():
+    #数据检查
     try:
         item_id = int(request.args.get('item_id'))
     except Exception as e:
         return make_response_json(400, "请求格式错误")
+    #api执行
     res = copy.deepcopy(default_res)
     try:
-        it = Item.get(Item.id == item_id)
+        it = Item.get_by_id(item_id)
     except Exception as e:
         return make_response_json(404, "未找到此商品")
     else:
@@ -112,7 +118,7 @@ def get_item_info():
         res["isPub"] = isPub
     return make_response(jsonify(res))
 
-""" 
+"""
 获取用户所发布的物品
 获取user_id所发布的物品
 若不指定，则获取current_user的
@@ -121,6 +127,7 @@ def get_item_info():
 def get_user_item():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
+    #数据检查
     data = dict(request.args)
     try:
         user_id = int(data["user_id"])
@@ -128,9 +135,10 @@ def get_user_item():
         user_id = current_user.id
     else:
         try:
-            user = User.get(User.id == user_id)
+            user = User.get_by_id(user_id)
         except Exception as e:
             return make_response_json(404, "该用户不存在")
+    #api执行
     try:
         item_list = Item.select().where(Item.user_id == user_id).execute()
     except Exception as e:
@@ -145,12 +153,13 @@ def get_user_item():
         datas.append(j)
     return make_response_json(200, "查询成功", data=datas)
 
-""" 
+"""
 物品搜索
 search_type 悬赏还是商品
 order_type 排列方式 """
 @api_blue.route('/search', methods=['POST'])
 def get_search():
+    #数据检查
     data = request.get_json()
     if "range_min" in data or "range_max" in data:
         if "range_min" in data and "range_max" in data:
@@ -177,7 +186,7 @@ def get_search():
     else:
         order_type = "name"
     #get_data = Item.select().where().exectue()
-
+    #api执行
     need = (Item.id, Item.name, Item.user_id, Item.publish_time, Item.price,
             Item.tag)
     select_need = [Item.name.contains(key_word)]
@@ -238,13 +247,15 @@ def change_item_state():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
     data = request.get_json()
+    #数据检查
     try:
         data["item_id"] = int(data["item_id"])
         data["state"] = int(data["state"])
     except Exception as e:
         return make_response_json(400, "请求格式不对")
+    #api执行
     try:
-        item = Item.get(Item.id == data["item_id"])
+        item = Item.get_by_id(data["item_id"])
     except Exception as e:
         return make_response_json(404, "此商品不存在")
     else:
@@ -287,6 +298,7 @@ def change_item_num():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
     data = request.get_json()
+    #数据检查
     try:
         data["item_id"] = int(data["item_id"])
         data["num"] = int(data["num"])
@@ -296,8 +308,9 @@ def change_item_num():
         return make_response_json(400, "不允许负数物品存在")
     if data["num"].bit_length() > Item.shelved_num.__sizeof__()-1:
         return make_response_json(400, "数量越界")
+    #api执行
     try:
-        item = Item.get(Item.id == data["item_id"])
+        item = Item.get_by_id(data["item_id"])
     except Exception as e:
         return make_response_json(404, "此商品不存在")
     else:
@@ -327,6 +340,7 @@ def change_item_data():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
     data = request.get_json()
+    #数据检查
     if "tag" not in data:
         return make_response_json(400, "请选择物品类型")
     if data["tag"] not in Item_tag_type._value2member_map_:
@@ -351,15 +365,18 @@ def change_item_data():
         return make_response_json(400, "不允许非正数价格")
     if data["shelved_num"].bit_length() > Item.shelved_num.__sizeof__()-1:
         return make_response_json(400, "数量越界")
+
+    #api执行
     try:
-        item = Item.get(Item.id == data["id"])
+        item = Item.get_by_id(data["id"])
     except Exception as e:
         return make_response_json(404, "此商品不存在")
     else:
         if current_user.state == User_state.Admin.value:
             for i in data:
                 if i in item.__data__:
-                    exec(f"item.{i} = data['{i}']")
+                    #exec(f"item.{i} = data['{i}']")
+                    setattr(item,i,data[i])
             item.save()
             return make_response_json(200, "操作成功")
         elif current_user.state == User_state.Under_ban.value:
@@ -370,7 +387,8 @@ def change_item_data():
             else:
                 for i in data:
                     if i in item.__data__:
-                        exec(f"item.{i} = data['{i}']")
+                        #exec(f"item.{i} = data['{i}']")
+                        setattr(item,i,data[i])
                 item.save()
                 return make_response_json(200, "操作成功")
 
@@ -407,6 +425,7 @@ def post_item_info():
     if current_user.state == User_state.Under_ban.value:
         return make_response_json(401, "当前用户已被封号")
     data = request.get_json()
+    #数据检查
     if len(data["name"])>40:
         return make_response_json(400,"名称过长")
     if len(data["description"]) > Item.description.max_length:
@@ -432,6 +451,7 @@ def post_item_info():
         return make_response_json(400, "数量越界")
     if shelved_num.bit_length() > Item.shelved_num.__sizeof__()-1:
         return make_response_json(400, "数量越界")
+    #api执行
     data["user_id"] = current_user.id
     data["publish_time"] = datetime.now()
     try:
@@ -551,6 +571,7 @@ def post_item_pic():
 def add_favor():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
+    #api执行
     req = request.get_json()["item_id_list"]
 
     tep = Item.select().where(Item.id << req)  #在一个列表中查询
@@ -576,7 +597,8 @@ def add_favor():
 def delete_favor():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
-    print(request.get_json())
+    #print(request.get_json())
+    #api执行
     req = request.get_json()["item_id_list"]
 
     #tep = Item.select().where(Item.id << req)  #在一个列表中查询
@@ -608,6 +630,7 @@ def delete_favor():
 def get_favor():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
+    #数据检查
     req = dict(request.args)
     if "range_min" in req or "range_max" in req:
         if "range_min" in req and "range_max" in req:
@@ -621,6 +644,7 @@ def get_favor():
     else:
         range_min = 0
         range_max = 50
+    #api执行
     tep = Favor.select().where(Favor.user_id == current_user.id).order_by(
         Favor.collect_time.desc())
     fav_data = []
@@ -646,10 +670,12 @@ def get_favor():
 def get_item_favor():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
+    #数据检查
     try:
         item_id = int(request.args["item_id"])
     except:
         return make_response_json(400, "格式错误")
+    #api执行
     try:
         tep = Favor.get(Favor.user_id == current_user.id,
                         Favor.item_id == item_id)
@@ -667,6 +693,7 @@ def get_item_favor():
 def get_history():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
+    #数据检查
     req = dict(request.args)
     if "range_min" in req or "range_max" in req:
         if "range_min" in req and "range_max" in req:
@@ -680,6 +707,7 @@ def get_history():
     else:
         range_min = 0
         range_max = 50
+    #api执行
     tep = History.select().where(History.user_id == current_user.id).order_by(
         History.visit_time.desc())
     his_data = []
@@ -706,8 +734,9 @@ def get_history():
 def item_delete_history():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
-    print(request.get_json())
+    #print(request.get_json())
     req = request.get_json()["item_id_list"]
+    #api执行
 
     #tep = Item.select().where(Item.id << req)  #在一个列表中查询
     #if tep.count() != len(req):  #长度对不上
@@ -739,13 +768,12 @@ def report():
     feedback_data["user_id"] = current_user.id
     feedback_data["publish_time"] = datetime.now()
     feedback_data["state"] = Feedback_state.Unread.value
+    #数据检查
     try:
         kind = int(data['kind'])
     except Exception as e:
         return make_response_json(400, "请求格式不对")
-    if kind not in [
-            eval(f"Feedback_kind.{i}.value") for i in Feedback_kind.__members__
-    ]:
+    if kind not in Feedback_kind._value2member_map_:
         return make_response_json(400, "请求格式不对")
     feedback_data["kind"] = kind
     if 'reason' in data:
@@ -754,13 +782,15 @@ def report():
         reason = ""
     if len(reason) > Feedback.feedback_content.max_length//2:
         return make_response_json(400,f"反馈过长,应限制在{Feedback.feedback_content.max_length//2}字以内")
+    #api执行
+    #此部分混杂了数据检查，可以分离
     if kind == Feedback_kind.Item.value:
         try:
             item_id = int(data['item_id'])
         except Exception as e:
             return make_response_json(400, "请求格式不对")
         try:
-            item = Item.get(Item.id == item_id)
+            item = Item.get_by_id(item_id)
         except Exception as e:
             return make_response_json(404, "您举报的物品不存在")
         if item.user_id.id == current_user.id:
@@ -772,7 +802,7 @@ def report():
         except Exception as e:
             return make_response_json(400, "请求格式不对")
         try:
-            user = User.get(User.id == user_id)
+            user = User.get_by_id(user_id)
         except Exception as e:
             return make_response_json(404, "您举报的用户不存在")
         if user.id == current_user.id:
@@ -787,14 +817,14 @@ def report():
         return make_response_json(500, f"存储时发生错误 {repr(e)}")
     return make_response_json(200, "举报完成,请等待管理员处理...")
 
-""" 
+"""
 功能：主页物品展示
 首页展示部分物品
 请求参数为时间范围(即距今range天内)和最大展示数目(即最多max_num)
 两个参数都是若空则选择全部
 
 响应为200，各个物品的详细信息
-对于未注册用户也支持，因为适用于主页 
+对于未注册用户也支持，因为适用于主页
 """
 @api_blue.route("/item_to_show", methods=["GET"])
 def item_to_show():
@@ -805,6 +835,7 @@ def item_to_show():
         user_id = current_user.id
     else:
         user_id = None
+    #数据检查
     if "max_num" in data:
         try:
             data["max_num"] = int(data["max_num"])
@@ -821,6 +852,7 @@ def item_to_show():
             td = timedelta(days=data["range"])
             last_time = datetime.now() - td
             need.append(Item.publish_time >= last_time)
+    #api执行
     try:
         if len(need):
             need_od = Item.select().where(*need).order_by(

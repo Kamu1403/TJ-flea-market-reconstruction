@@ -29,6 +29,7 @@ def get_order():
     my_order = [
         (Order.user_id == current_user) | (Item.user_id == current_user.id)
     ]
+    #数据检查
     if "range" in data:
         try:
             data["range"] = int(data["range"])
@@ -38,6 +39,7 @@ def get_order():
             td = timedelta(days=data["range"])
             last_time = datetime.now() - td
             my_order.append(Order_Item.order_id.create_time >= last_time)
+    #api执行
     try:
         my_od_item = Order_Item.select(Order_Item.order_id,Order_Item.item_id)\
         .join(Order,on=(Order.id==Order_Item.order_id)).join(Item,on=(Item.id==Order_Item.item_id))\
@@ -72,10 +74,12 @@ def get_order_info():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
     data = dict(request.args)
+    #数据检查
     try:
         order_id = int(data["order_id"])
     except Exception as e:
         return make_response_json(400, "请求格式不对")
+    #api执行
     try:
         temp: Order_Item = Order_Item.get(Order_Item.order_id == order_id)
     except Exception as e:
@@ -113,6 +117,7 @@ def get_address():
         return make_response_json(401, "当前用户未登录")
     elif current_user.state == User_state.Under_ban.value:
         return make_response_json(401, "当前用户已被封禁")
+    #api执行
     need = [
         Contact.id, Contact.name, Contact.telephone, Contact.full_address,
         Contact.default, Contact.campus_branch
@@ -136,13 +141,18 @@ def generate_order():
     data = request.get_json()
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
+    #数据检查
     if "item_id" not in data:
         return make_response_json(400, "请求格式不对")
     try:
         data["item_id"] = int(data["item_id"])
-        p = Item.get(Item.id == data["item_id"])
     except Exception as e:
         return make_response_json(400, "请求格式不对")
+    #api执行
+    try:
+        p = Item.get_by_id(data["item_id"])
+    except Exception as e:
+        return make_response_json(404,"不存在的商品")
     if p.shelved_num == 0:
         return make_response_json(404, "您请求的物品暂无库存")
     url = {"url": url_for('order.generate', item_id=data["item_id"])}
@@ -183,6 +193,7 @@ def order_post():
     if current_user.state == User_state.Under_ban.value:
         return make_response_json(401, "当前用户被封禁中")
     data = request.get_json()
+    #数据检查
     if "item_info" not in data:
         return make_response_json(400, "请求格式不对")
     if not isinstance(data["item_info"], list):
@@ -195,6 +206,7 @@ def order_post():
         return make_response_json(400, "地址未填写")
     if "note" not in data:
         return make_response_json(400, "请求格式不对")
+    #api执行
     op, tp = None, None
     item_list = list()
     call_back, start_num = (200, None), 0
@@ -217,7 +229,7 @@ def order_post():
             call_back = (400, "请求格式不对")
             break
         try:
-            item = Item.get(Item.id == item_id)
+            item = Item.get_by_id(item_id)
         except Exception as e:
             call_back = (404, f"请求的{item.name}不存在")
             break
@@ -252,7 +264,7 @@ def order_post():
             item_list[t].save()
         return make_response_json(call_back[0], call_back[1])
     try:
-        contact = Contact.get(Contact.id == contact_id)
+        contact = Contact.get_by_id(contact_id)
     except Exception as e:
         for t in range(len(data["item_info"])):
             item_list[t].shelved_num += data["item_info"][t]["num"]
@@ -328,12 +340,13 @@ def address():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
     data = request.get_json()
+    #api执行
     temp = [None for i in range(len(data))]
     if request.method == "DELETE":
         data = list(set(map(lambda x: x["contact_id"], data)))
         for i, j in enumerate(data):
             try:
-                temp[i] = Contact.get(Contact.id == int(j))
+                temp[i] = Contact.get_by_id(int(j))
             except Exception as e:
                 return make_response_json(401, "不存在的联络地址")
             else:
@@ -374,7 +387,7 @@ def address():
             try:
                 # j["id"] = j["contact_id"]
                 # j.pop("contact_id")
-                temp[i] = Contact.get(Contact.id == int(j["id"]))
+                temp[i] = Contact.get_by_id(int(j["id"]))
             except Exception as e:
                 return make_response_json(401, "不存在的联络地址")
             else:
@@ -409,9 +422,10 @@ def address():
             try:
                 for j in data[i]:
                     if j in update_data[i].__data__:
-                        exec(f"""if update_data[{i}].{j} != data[{i}]["{j}"]:
-    update_data[{i}].{j} = data[{i}]["{j}"]
-                        """)
+                        setattr(update_data[i],j,data[i][j])
+                        #exec(f"""if update_data[{i}].{j} != data[{i}]["{j}"]:
+    #update_data[{i}].{j} = data[{i}]["{j}"]
+     #                   """)
                         #new_data[j] = data[i][j]
                 #update_data[i] = Contact(**new_data)
                 update_data[i].save()
@@ -483,6 +497,7 @@ def order_evaluate():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
     data = request.get_json()
+    #数据检查
     if "feedback_content" not in data:
         return make_response_json(400, "请求格式不对")
     if len(data["feedback_content"])>Review.feedback_content.max_length:
@@ -491,8 +506,9 @@ def order_evaluate():
         order_id = int(data["order_id"])
     except Exception as e:
         return make_response_json(400, "请求格式不对")
+    #api执行
     try:
-        order = Order.get(Order.id == order_id)
+        order = Order.get_by_id(order_id)
     except Exception as e:
         return make_response_json(404, "请求订单不存在")
     if order.state != Order_state.End.value:
@@ -544,17 +560,3 @@ def order_evaluate():
     order_state_item.save()
     return make_response_json(200, "评价完成", {"url": url_for('user.order')})
 
-
-"""
-@api_blue.route("/test",methods=["GET"])
-def test():
-    a = Contact.select().execute()
-    b = [Contact.get(Contact.id == i.id) for i in a]
-    c = Contact.get(Contact.user_id==1951705)
-    print(c in b)
-    for i in b:
-        if i.user_id.id==1951705:
-            i.default = not i.default
-    print(c in b)
-    return make_response_json()
-"""
