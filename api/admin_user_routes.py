@@ -100,7 +100,7 @@ def change_user_state():
         return make_response_json(400, "请求格式不对")
 
     try:
-        tep = User.get(User.id == user_id)
+        tep = User.get_object_by_id(user_id)
     except:
         return make_response_json(404, "未找到用户")
     else:
@@ -174,7 +174,7 @@ def get_user_info():
         user_id = current_user.id
     #user_id = int(request.get_json()["user_id"])
     try:
-        tep = User.get(User.id == user_id)
+        tep = User.get_object_by_id(user_id)
     except:
         return make_response_json(404, "未找到用户")
     else:
@@ -200,7 +200,7 @@ def get_user_username():
         return make_response_json(400, "请求格式错误")
     #user_id = int(request.get_json()["user_id"])
     try:
-        tep = User.get(User.id == user_id)
+        tep = User.get_object_by_id(user_id)
     except:
         return make_response_json(404, "未找到用户")
     else:
@@ -234,7 +234,7 @@ def change_user_info():
     req = request.get_json()
     #print(req)
     try:
-        tep = User.get(User.id == current_user.id)
+        tep = User.get_object_by_id(current_user.id)
     except:
         return make_response_json(404, "未找到用户")
     else:
@@ -407,7 +407,7 @@ def get_ban_data():
     except Exception as e:
         return make_response_json(400,"请求格式不对")
     try:
-        user = User.get(User.id == user_id)
+        user = User.get_object_by_id(user_id)
     except Exception as e:
         return make_response_json(404,"该用户不存在")
     if user.state != User_state.Under_ban.value:

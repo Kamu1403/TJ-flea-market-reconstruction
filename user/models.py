@@ -107,3 +107,41 @@ class User(UserMixin, BaseModel):
         for size in sizes:
             img2 = img.resize((size, size))
             img2.save(os.path.join(curpath, f'{self.id}/avatar_{size}.WEBP'), "WEBP")
+
+    @classmethod
+    def get_object_by_id(cls,id:int):
+        """根据主键获取对象
+
+        Args:
+            id (int): 主键
+
+        Returns:
+            cls名字所对应类的对象。找不到会抛出异常
+        """
+        return cls.get(cls.id == id)
+    
+    
+    @classmethod
+    def delete_object_by_id(cls,id:int):
+        """根据主键获取对象
+
+        Args:
+            id (int): 主键
+
+        Returns:
+            cls名字所对应类的对象。找不到会抛出异常
+        """
+        return cls.get_object_by_id(id).delete_instance()
+    
+    @classmethod
+    def insert_object(cls,id:int):
+        """根据主键获取对象
+
+        Args:
+            id (int): 主键
+
+        Returns:
+            cls名字所对应类的对象。找不到会抛出异常
+        """
+        return cls.get(cls.id == id)
+    
