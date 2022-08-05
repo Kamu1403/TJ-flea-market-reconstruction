@@ -5,12 +5,6 @@ from chat.models import Room,Recent_Chat_List,Meet_List,Message
 from PIL import Image
 from hashlib import md5
 
-def createPath(path: str) -> None:
-    if not os.path.exists(path):
-        os.makedirs(path)
-    elif not os.path.isdir(path):
-        os.remove(path)
-        os.makedirs(path)
 
 def save_pic(path,data):
     '''
@@ -72,7 +66,7 @@ def post_chat_pic():
         send_message(sender,receiver,md5_str,1)
     return ret
 
-""" 获取未读消息条数 
+""" 获取未读消息条数
 此操作需前置登录操作（应当是所有页面的head都需要获取，可以考虑放在session中）
 获取当前用户的所有未读信息条数
 
@@ -86,18 +80,18 @@ def get_message_cnt():
         for chat in Recent_Chat_List.select().where(Recent_Chat_List.receiver_id==user):
             unread+=chat.unread
         res={'unread':unread}
-        
+
         #send_message("80000000",user,"获取成功",'text')
         return make_response_json(200, "获取未读条数成功",res)
     else:
         return make_response_json(401, "当前用户未登录")
 
-""" 获取会话列表 
+""" 获取会话列表
 此操作需前置登录操作
 功能：获取当前用户的会话列表
 
 200 返回 json  401 用户未授权登录
-"""   
+"""
 @api_blue.route('/get_meet_list',methods=['GET'])
 def get_meet_list():
     if (current_user.is_authenticated):
@@ -115,8 +109,8 @@ def get_meet_list():
 获取当前用户的会话列表
 
 200 返回 json格式的信息：{ 'user_id': {'last_msg':lastmsg,'sender':sender},...}
-401 用户未授权登录 
-"""      
+401 用户未授权登录
+"""
 @api_blue.route('/get_last_msg',methods=['GET'])
 def get_last_msg():
     if (current_user.is_authenticated):
@@ -158,8 +152,8 @@ def del_meet():
         Recent_Chat_List.update(unread=0).where(
                 Recent_Chat_List.receiver_id==suser
                 and Recent_Chat_List.sender_id==del_user).execute()
-        
-        
+
+
         room = suser + '-' + del_user
         reroom = del_user + '-' + suser
         #查询是否存在该聊天,发送接收双方此时共享一个聊天室(聊天记录)
@@ -169,7 +163,7 @@ def del_meet():
             Room.create(room_id=room,last_sender_id=suser)
         elif reroomid!=None:
             room=reroom
-            
+
         Message.update(msg_read=1).where(Message.room_id==roomid).execute()
         return make_response_json(200, "获取会话列表成功")
     else:

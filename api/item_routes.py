@@ -17,12 +17,7 @@ from PIL import Image
 from numpy import float32 as Float
 
 
-def createPath(path: str) -> None:
-    if not os.path.exists(path):
-        os.makedirs(path)
-    elif not os.path.isdir(path):
-        os.remove(path)
-        os.makedirs(path)
+
 
 """ 获取物品图片
 传入商品id，返回图片url列表

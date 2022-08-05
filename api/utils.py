@@ -59,6 +59,12 @@ def make_response_json(statusCode: int = 200,
         success = True if statusCode // 100 == 2 else False
     return make_response(jsonify({'success': success, 'statusCode': statusCode, 'message': message, 'data': data}))
 
+def createPath(path: str) -> None:
+    if not os.path.exists(path):
+        os.makedirs(path)
+    elif not os.path.isdir(path):
+        os.remove(path)
+        os.makedirs(path)
 
 def send_message(sender: str | int, receiver: str | int, message: str, type: int = 0):
     '''
@@ -135,7 +141,7 @@ def send_message(sender: str | int, receiver: str | int, message: str, type: int
         },
             room=sender,
             namespace='/chat')
-        
+
         if (read==1):
             emit('message', {
                 'sender': sender,
