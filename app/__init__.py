@@ -7,11 +7,12 @@ import config
 database_name = config.database_name
 password = config.password
 user = config.user
+ipaddr=config.ipaddr
 
 #用pymysql创建数据库
 from . import create_database
 if config.drop_database == True:
-    create_database.create_database(database_name, password, user)
+    create_database.create_database(database_name, password, user,ipaddr)
 
 #创建app
 from flask import Flask
@@ -30,7 +31,7 @@ import peewee as pw
 # py_peewee连接的数据库名:database
 database = pw.MySQLDatabase(
     database=database_name,
-    host='127.0.0.1',
+    host=ipaddr,
     user=user,
     passwd=password,  #记得改密码，不然你可能调试不了
     charset='utf8',

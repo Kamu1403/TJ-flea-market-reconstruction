@@ -2,11 +2,11 @@
 # -*- coding: UTF-8 -*-
 
 import pymysql
-def create_database(database_name="tj_market",password='tj_market',user="root"):
+def create_database(database_name="tj_market",password='tj_market',user="root",ipaddr='localhost'):
     """python + pymysql 创建数据库"""
     
     # 创建连接
-    conn = pymysql.connect(host='localhost',
+    conn = pymysql.connect(host=ipaddr,
                         user=user,
                         password=password,
                         charset='utf8mb4')

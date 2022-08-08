@@ -323,4 +323,4 @@ def init_database(drop_database: bool):
     if drop_database == True:
         drop_tables()
         create_tables()
-        fake_data()
+        #fake_data()
