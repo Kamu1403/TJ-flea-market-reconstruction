@@ -14,7 +14,7 @@ import requests
 from io import BytesIO
 from PIL import Image
 
-from .config import User_state,User_Campus_state,GENDER_CHECK,STATE_CHECK,CAMPUS_BRANCH_CHECK
+from .const import User_state,User_Campus_state,GENDER_CHECK,STATE_CHECK,CAMPUS_BRANCH_CHECK
 '''
 软件重构改动：将以下常量类移到config.py文件中
 '''
