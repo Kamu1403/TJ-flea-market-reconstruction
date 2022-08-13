@@ -101,13 +101,13 @@ def get_item_info():
         dic['publish_time'] = str(dic['publish_time'])
         dic['price'] = float(dic['price'])
         if not current_user.is_authenticated:
-            isAdmin = False
-            isPub = False
+            is_admin = False
+            is_pub = False
         else:
-            isAdmin = (current_user.state == User_state.Admin.value)
-            isPub = (it.user_id.id == current_user.id)
-        res["isAdmin"] = isAdmin
-        res["isPub"] = isPub
+            is_admin = (current_user.state == User_state.Admin.value)
+            is_pub = (it.user_id.id == current_user.id)
+        res["is_admin"] = is_admin
+        res["is_pub"] = is_pub
     return make_response(jsonify(res))
 
 

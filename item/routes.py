@@ -34,12 +34,12 @@ def content(item_id: int):  #goods_id/want_id
         return render_template('404.html',error_code=404, message="该商品不存在")
     else:
         if not current_user.is_authenticated:
-            isAdmin = False
-            isPub = False
+            is_admin = False
+            is_pub = False
         else:
-            isAdmin = (current_user.state == User_state.Admin.value)
-            isPub = (item.user_id.id == current_user.id)
-            if item.state != Item_state.Sale.value and not isAdmin and not isPub:
+            is_admin = (current_user.state == User_state.Admin.value)
+            is_pub = (item.user_id.id == current_user.id)
+            if item.state != Item_state.Sale.value and not is_admin and not is_pub:
                 return render_template('404.html',error_code=401,message="该商品您现在无权访问")
 
     if current_user.is_authenticated:  #已登录便加入历史
