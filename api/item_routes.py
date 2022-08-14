@@ -16,15 +16,6 @@ from difflib import SequenceMatcher
 from PIL import Image
 from numpy import float32 as Float
 
-
-def createPath(path: str) -> None:
-    if not os.path.exists(path):
-        os.makedirs(path)
-    elif not os.path.isdir(path):
-        os.remove(path)
-        os.makedirs(path)
-
-
 @api_blue.route("/get_item_pics", methods=['GET'])
 def get_item_pics():
     data = dict(request.args)
@@ -418,32 +409,8 @@ def get_pillow_img_form_data_stream(data):
         #url_for('item.static', filename=f'resource/item_pic/{item_id}/[head|pic]')
         curpath = os.path.join(item_blue.static_folder, f'resource/temp')
         createPath(curpath)
-
-        path_name = os.path.join(curpath, data.filename)
-        createPath(curpath)
-        data.save(path_name)
-
-        img = Image.open(path_name)
-        w, h = img.size
-        ratio = max(w, h) / 1920
-        if ratio > 1:
-            img = img.resize((int(w / ratio), int(h / ratio)))
-        ratio = 250 / min(w, h)
-        if ratio > 1:
-            img = img.resize((int(w * ratio), int(h * ratio)))
-        md5_str = md5(img.tobytes()).hexdigest()
-        os.remove(path_name)
-
-        path_name_new = os.path.join(curpath, f'{md5_str}')
-        img.save(path_name_new, 'WEBP')
-        img = Image.open(path_name_new)
-        md5_str = md5(img.tobytes()).hexdigest()
-        os.remove(path_name_new)
-
-        path_name_new = os.path.join(curpath, f'{md5_str}')
-        #if os.path.exists(path_name_new):
-        #    return make_response_json(400, f"上传图片失败：请勿重复上传图片")
-        img.save(path_name_new, 'WEBP')
+        #保存图片
+        md5_str=savePic(data,curpath)
     except Exception as e:
         print(e)
         return make_response_json(400, f"上传图片失败：文件格式错误或损坏")

@@ -27,6 +27,9 @@ import time
 import random
 from werkzeug.security import generate_password_hash
 from numpy import float32 as Float
+from PIL import Image
+from hashlib import md5
+
 '''
 statusCode:
 •	200：操作成功返回。
@@ -204,8 +207,8 @@ def checkItemData(data):
             item_type = int(data["type"])
         shelved_num = int(data["shelved_num"])
     except Exception as e:
-        #return (-1,400, "数据类型错误")
-        return (-1,400, str(e))
+        return (-1,400, "数据类型错误")
+        #return (-1,400, str(e))
     if price == Float("inf") or price == Float("nan"):
         return (-1,400, "价格越界")
     if price <= 1e-8:
@@ -218,3 +221,43 @@ def checkItemData(data):
     if shelved_num.bit_length() > Item.shelved_num.__sizeof__()-1:
         return (-1,400, "数量越界")
     return (0,0,"")
+
+
+def createPath(path: str) -> None:
+    # 当前路径不存在，直接建立文件夹
+    if not os.path.exists(path):
+        os.makedirs(path)
+    # 路径存在但不是文件夹，将其删除后创建新的文件夹
+    elif not os.path.isdir(path):
+        os.remove(path)
+        os.makedirs(path)
+
+def savePic(data,curpath):
+    path_name = os.path.join(curpath, data.filename)
+    createPath(curpath)
+    data.save(path_name)
+    img = Image.open(path_name)
+    w, h = img.size
+    # 长宽中较大的/1920作为比率
+    ratio = max(w, h) / 1920
+    #比率达于1，按照比率缩放,使得最大的到达1920
+    if ratio > 1:
+        img = img.resize((int(w / ratio), int(h / ratio)))
+    ratio = 250 / min(w, h)
+    #按比例缩放使得图片长宽较小者大于等于250
+    if ratio > 1:
+        img = img.resize((int(w * ratio), int(h * ratio)))
+    md5_str = md5(img.tobytes()).hexdigest()
+    os.remove(path_name)
+    #创建新的图片路径并保存
+    path_name_new = os.path.join(curpath, f'{md5_str}')
+    img.save(path_name_new, 'WEBP')
+    img = Image.open(path_name_new)
+    md5_str = md5(img.tobytes()).hexdigest()
+    os.remove(path_name_new)
+
+    path_name_new = os.path.join(curpath, f'{md5_str}')
+    #if os.path.exists(path_name_new):
+    #    return make_response_json(400, f"上传图片失败：请勿重复上传图片")
+    img.save(path_name_new, 'WEBP')
+    return md5_str
