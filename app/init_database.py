@@ -72,8 +72,7 @@ def create_tables():
 from datetime import datetime
 from werkzeug.security import generate_password_hash
 
-
-def fake_data():  #填一些假数据进去
+def fake_data_user():  #用户初始数据
     User.create(id=80000000,
                 username="系统管理员",
                 state=1,
@@ -117,20 +116,21 @@ def fake_data():  #填一些假数据进去
                 user_no="1951859",
                 username="杨可盈",
                 password_hash=generate_password_hash("1951859"),
-                email=str(1951859) + "@tongji.edu.cn")
+                email=str(1951859) + "@tongji.edu.cn")  
 
-    #反馈
+def fake_data_feedback():  #反馈初始数据
     Feedback.create(user_id=1951705, feedback_content="哈哈哈哈")
     Feedback.create(user_id=1953493,
                     state=-1,
                     feedback_content="有bug啊",
                     reply_content="bug在哪?")
 
-    #封号 程森被封到2022.6.1
+def fake_data_userManagement():  #封号初始数据
     User_Management.create(user_id=1953493,
                            ban_reason="恶意利用网站bug",
                            ban_time=datetime(2022, 6, 1))
 
+def fake_data_item():  #商品初始数据
     #商品、悬赏  0是商品--123，1是悬赏--45
     Item.create(id=1,
                 name="苹果",
@@ -191,20 +191,23 @@ def fake_data():  #填一些假数据进去
                 locked_num=10,
                 type=0)
 
-    #浏览 收藏
+def fake_data_history():  #历史记录初始数据
     History.create(user_id=1951705, item_id=2, visit_time=datetime(2022, 4, 1))
     History.create(user_id=1951566, item_id=2)
     History.create(user_id=1950084, item_id=1)
-    Favor.create(user_id=1951705, item_id=2)
-    Favor.create(user_id=1951566, item_id=3)
-    Favor.create(user_id=1950084, item_id=1)
-
     History.create(user_id=1951705, item_id=5, visit_time=datetime(2022, 4, 3))
     History.create(user_id=1951566, item_id=5)
     History.create(user_id=1950084, item_id=4)
+
+def fake_data_favor():  #收藏记录初始数据    
+    Favor.create(user_id=1951705, item_id=2)
+    Favor.create(user_id=1951566, item_id=3)
+    Favor.create(user_id=1950084, item_id=1)
     Favor.create(user_id=1951705, item_id=5)
     Favor.create(user_id=1951566, item_id=5)
     Favor.create(user_id=1950084, item_id=4)
+
+def fake_data_contact():  #收件人初始数据  
     Contact.create(id=10,
                    user_id=1951705,
                    name="高曾谊",
@@ -246,14 +249,15 @@ def fake_data():  #填一些假数据进去
                    name="杨可盈",
                    telephone="+86 11123111131",
                    full_address="address2",
-                   default=True)
+                   default=True)    
 
+def fake_data_review():  #评价初始数据  
     Review.create(id=1, user_id=1951705, feedback_content="默认好评")
     Review.create(id=2, user_id=1950084, feedback_content="默认好评")
     Review.create(id=3, user_id=1953493, feedback_content="默认好评")
     Review.create(id=4, user_id=1951566, feedback_content="默认好评")
 
-    # 商品
+def fake_data_order():  #订单初始数据  
     Order.create(id=1,
                  user_id=1951566,
                  payment=2,
@@ -267,29 +271,7 @@ def fake_data():  #填一些假数据进去
         confirm_time=datetime.now(),
         note="我来帮你写sj！")
     Order.create(id=3, user_id=1951566, payment=12, state=0)  #3份方便面
-
     Order.create(id=4, user_id=1951566, payment=10.5, state=1)  #3份方便面
-
-    # 订单状态明细
-    Order_State_Item.create(order_id=1, user_review_id=1, op_user_review_id=4)
-    Order_State_Item.create(order_id=2,
-                            cancel_user=1950084,
-                            cancel_reason="沈坚作业不能作为悬赏！")
-    Order_State_Item.create(order_id=3)
-    Order_State_Item.create(order_id=4)
-    # 商品
-    #订单4中包含 3份方便面
-    Order_Item.create(order_id=4, quantity=3, price=3.5, item_id=2)  #方便面
-
-    #订单3中包含 3份方便面
-    Order_Item.create(order_id=3, quantity=3, price=4, item_id=2)  #方便面
-
-    #订单2中包含 1份苹果
-    Order_Item.create(order_id=2, quantity=1, price=1.5, item_id=1)  #苹果
-
-    #订单1中包含 1份苹果  商品
-    Order_Item.create(order_id=1, quantity=1, price=1, item_id=1)  #苹果
-
     Order.create(id=5, user_id=1951566, payment=1.11, state=0)
     Order.create(
         id=6,  # 悬赏
@@ -301,26 +283,54 @@ def fake_data():  #填一些假数据进去
     Order.create(id=7, user_id=1951566, payment=9.99, state=2)  #3份方便面
     Order.create(id=8, user_id=1951566, payment=9.99, state=2)  #3份方便面
 
+def fake_data_orderState():  #订单状态初始数据  
+    Order_State_Item.create(order_id=1, user_review_id=1, op_user_review_id=4)
+    Order_State_Item.create(order_id=2,
+                            cancel_user=1950084,
+                            cancel_reason="沈坚作业不能作为悬赏！")
+    Order_State_Item.create(order_id=3)
+    Order_State_Item.create(order_id=4)    
     Order_State_Item.create(order_id=5)
     Order_State_Item.create(order_id=6)
     Order_State_Item.create(order_id=7)
     Order_State_Item.create(order_id=8)
 
+def fake_data_orderItem():  #订单状态初始数据  
+    # 商品
+    #订单4中包含 3份方便面
+    Order_Item.create(order_id=4, quantity=3, price=3.5, item_id=2)  #方便面
+    #订单3中包含 3份方便面
+    Order_Item.create(order_id=3, quantity=3, price=4, item_id=2)  #方便面
+    #订单2中包含 1份苹果
+    Order_Item.create(order_id=2, quantity=1, price=1.5, item_id=1)  #苹果
+    #订单1中包含 1份苹果  商品
+    Order_Item.create(order_id=1, quantity=1, price=1, item_id=1)  #苹果
     # 悬赏
     #订单5中包含 3份耳机
     Order_Item.create(order_id=5, quantity=3, price=200, item_id=5)  #耳机
-
     #订单6中包含 1份作业
     Order_Item.create(order_id=6, quantity=1, price=5, item_id=4)  #sj作业
-
     # 商品
     Order_Item.create(order_id=7, quantity=3, price=3.33, item_id=2)  #方便面
-
     Order_Item.create(order_id=7, quantity=3, price=3.33, item_id=2)  #方便面
+
+
+def fake_data():  #填一些假数据进去
+    fake_data_user()
+    fake_data_feedback()
+    fake_data_userManagement()
+    fake_data_item()
+    fake_data_history()
+    fake_data_favor()
+    fake_data_contact()
+    fake_data_review()
+    fake_data_order()
+    fake_data_orderState()
+    fake_data_orderItem()
 
 
 def init_database(drop_database: bool):
     if drop_database == True:
         drop_tables()
         create_tables()
-        #fake_data()
+        fake_data()
