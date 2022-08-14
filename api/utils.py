@@ -1,4 +1,5 @@
 #返回值规范
+from asyncio.windows_events import NULL
 from typing import Dict, List
 #flask
 from flask_socketio import emit, join_room, leave_room
@@ -12,7 +13,7 @@ from order.models import Order_state
 from user.models import User
 from admin.models import Feedback, User_Management
 from order.models import Contact, Review, Order, Order_State_Item, Order_Item
-from item.models import Item, History, Favor, Item_type, Item_state
+from item.models import Item, History, Favor, Item_type, Item_state, Item_tag_type
 from chat.models import Room, Message, Recent_Chat_List
 
 from chat.routes import create_or_update_meet_list
@@ -25,6 +26,7 @@ import datetime
 import time
 import random
 from werkzeug.security import generate_password_hash
+from numpy import float32 as Float
 '''
 statusCode:
 •	200：操作成功返回。
@@ -159,3 +161,60 @@ def send_message(sender: str | int, receiver: str | int, message: str, type: int
         return (200, "操作成功")
     except Exception as e:
         return (500, repr(e))
+
+
+
+def getItem(data,name):
+    try:
+        data["item_id"] = int(data["item_id"])
+        data[name] = int(data[name])
+    except Exception as e:
+        return (-1,400, "请求格式不对",NULL)
+    try:
+        item = Item.get(Item.id == data["item_id"])
+    except Exception as e:
+        return (-1,404, "此商品不存在",NULL)
+    #全都成功
+    return (0,0,"" ,item)
+
+def checkWrongItemOperation(current_user,data,item):
+    if current_user.state == User_state.Under_ban.value:
+        return (-1,401, "您当前已被封号,请联系管理员解封")
+    else:
+        if current_user.id != item.user_id_id:
+            return (-1,401, "不可改变其他人的商品状态")
+        else:
+            if data["state"] == Item_state.Freeze.value:
+                return (-1,401, "权限不足")
+            else:
+                return (0,0,"操作成功")
+
+def checkItemData(data):
+    if len(data["name"])>40:
+        return (-1,400,"名称过长")
+    if len(data["description"]) > Item.description.max_length:
+        return (-1,400,f"描述过长,应限制在{Item.description.max_length}字以内")
+    if "tag" not in data:
+        return (-1,400, "请选择物品类型")
+    if data["tag"] not in Item_tag_type._value2member_map_:
+        return (-1,400, "请求格式错误")
+    try:
+        price = Float(data["price"])
+        if "type" in data:
+            item_type = int(data["type"])
+        shelved_num = int(data["shelved_num"])
+    except Exception as e:
+        #return (-1,400, "数据类型错误")
+        return (-1,400, str(e))
+    if price == Float("inf") or price == Float("nan"):
+        return (-1,400, "价格越界")
+    if price <= 1e-8:
+        return (-1,400, "价格越界")
+    if "type" in data:
+        if item_type != Item_type.Goods.value and item_type != Item_type.Want.value:
+            return (-1,400, "仅能上传物品")
+    if shelved_num <= 0:
+        return (-1,400, "数量越界")
+    if shelved_num.bit_length() > Item.shelved_num.__sizeof__()-1:
+        return (-1,400, "数量越界")
+    return (0,0,"")

@@ -223,45 +223,38 @@ def change_item_state():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
     data = request.get_json()
-    try:
-        data["item_id"] = int(data["item_id"])
-        data["state"] = int(data["state"])
-    except Exception as e:
-        return make_response_json(400, "请求格式不对")
-    try:
-        item = Item.get(Item.id == data["item_id"])
-    except Exception as e:
-        return make_response_json(404, "此商品不存在")
+    #读取item_id和state，并获得item
+    result=getItem(data,"state")
+    print(result)
+    if result[0]==-1:
+        return make_response_json(result[1], result[2])            
+    item=result[3]
+    #继续
+    if item.state == data["state"]:
+        return make_response_json(400, "商品当前状态和希望更改的状态相同")
     else:
-        if item.state == data["state"]:
-            return make_response_json(400, "商品当前状态和希望更改的状态相同")
+        if current_user.state == User_state.Admin.value:
+            item.state = data["state"]
+            # if data["state"] == User_state.Freeze.value:
+            #     向物品所有者发布一条消息
+            #       pass
+            if data["state"] == Item_state.Freeze.value:
+                if item.type == Item_type.Goods.value:
+                    send_message(SYS_ADMIN_NO, item.user_id.id,
+                                 f"您的商品<{item.name}>被系统管理员下架")
+                elif item.type == Item_type.Want.value:
+                    send_message(SYS_ADMIN_NO, item.user_id.id,
+                                 f"您的悬赏<{item.name}>被系统管理员下架")
+            item.save()
+            return make_response_json(200, "操作成功")
         else:
-            if current_user.state == User_state.Admin.value:
+            ret=checkWrongItemOperation(current_user,data,item)
+            if ret[0]==-1:
+                return make_response_json(ret[1],ret[2])
+            else:
                 item.state = data["state"]
-                # if data["state"] == User_state.Freeze.value:
-                #     向物品所有者发布一条消息
-                #       pass
-                if data["state"] == Item_state.Freeze.value:
-                    if item.type == Item_type.Goods.value:
-                        send_message(SYS_ADMIN_NO, item.user_id.id,
-                                     f"您的商品<{item.name}>被系统管理员下架")
-                    elif item.type == Item_type.Want.value:
-                        send_message(SYS_ADMIN_NO, item.user_id.id,
-                                     f"您的悬赏<{item.name}>被系统管理员下架")
                 item.save()
                 return make_response_json(200, "操作成功")
-            elif current_user.state == User_state.Under_ban.value:
-                return make_response_json(401, "您当前已被封号,请联系管理员解封")
-            else:
-                if current_user.id != item.user_id.id:
-                    return make_response_json(401, "不可改变其他人的商品状态")
-                else:
-                    if data["state"] == Item_state.Freeze.value:
-                        return make_response_json(401, "权限不足")
-                    else:
-                        item.state = data["state"]
-                        item.save()
-                        return make_response_json(200, "操作成功")
 
 
 @api_blue.route("/change_item_num", methods=["PUT"])
@@ -269,36 +262,32 @@ def change_item_num():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
     data = request.get_json()
-    try:
-        data["item_id"] = int(data["item_id"])
-        data["num"] = int(data["num"])
-    except Exception as e:
-        return make_response_json(400, "请求格式不对")
+    #读取item_id和state，并获得item
+    result=getItem(data,"num")
+    if result[0]==-1:
+        return make_response_json(result[1], result[2])            
+    item=result[3]
+    #继续
     if data["num"] < 0:
         return make_response_json(400, "不允许负数物品存在")
     if data["num"].bit_length() > Item.shelved_num.__sizeof__()-1:
         return make_response_json(400, "数量越界")
-    try:
-        item = Item.get(Item.id == data["item_id"])
-    except Exception as e:
-        return make_response_json(404, "此商品不存在")
+
+    if current_user.state == User_state.Admin.value:
+        item.shelved_num = data["num"]
+        item.save()
+        return make_response_json(200, "操作成功")
     else:
-        if current_user.state == User_state.Admin.value:
+        ret=checkWrongItemOperation(current_user,data,item)
+        print(ret)
+        if ret[0]==-1:
+            return make_response_json(ret[1],ret[2])
+        else:
             item.shelved_num = data["num"]
             item.save()
             return make_response_json(200, "操作成功")
-        elif current_user.state == User_state.Under_ban.value:
-            return make_response_json(401, "您当前已被封号,请联系管理员解封")
-        else:
-            if current_user.id != item.user_id_id:
-                return make_response_json(401, "不可改变其他人的商品状态")
-            else:
-                if data["state"] == Item_state.Freeze.value:
-                    return make_response_json(401, "权限不足")
-                else:
-                    item.shelved_num = data["num"]
-                    item.save()
-                    return make_response_json(200, "操作成功")
+
+                
 
 
 @api_blue.route("/change_item_data", methods=["PUT"])
@@ -306,30 +295,11 @@ def change_item_data():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
     data = request.get_json()
-    if "tag" not in data:
-        return make_response_json(400, "请选择物品类型")
-    if data["tag"] not in Item_tag_type._value2member_map_:
-        return make_response_json(400, "请求格式错误")
-    if len(data["name"])>40:
-        return make_response_json(400,"名称过长")
-    if len(data["description"]) > Item.description.max_length:
-        return make_response_json(400,"描述过长")
-    try:
-        data["id"] = int(data["id"])
-        if "shelved_num" in data:
-            data["shelved_num"] = int(data["shelved_num"])
-        if "price" in data:
-            data["price"] = Float(data["price"])
-    except Exception as e:
-        return make_response_json(400, "请求格式不对")
-    if data["shelved_num"] < 0:
-        return make_response_json(400, "不允许负数商品个数")
-    if data["price"] == Float("inf") or data["price"] == Float("nan"):
-        return make_response_json(400, "价格越界")
-    if data["price"] <= 0:
-        return make_response_json(400, "不允许非正数价格")
-    if data["shelved_num"].bit_length() > Item.shelved_num.__sizeof__()-1:
-        return make_response_json(400, "数量越界")
+    #检查商品格式
+    result=checkItemData(data)
+    if result[0]==-1:
+        return make_response_json(result[1],result[2])
+    #继续
     try:
         item = Item.get(Item.id == data["id"])
     except Exception as e:
@@ -374,31 +344,11 @@ def post_item_info():
     if current_user.state == User_state.Under_ban.value:
         return make_response_json(401, "当前用户已被封号")
     data = request.get_json()
-    if len(data["name"])>40:
-        return make_response_json(400,"名称过长")
-    if len(data["description"]) > Item.description.max_length:
-        return make_response_json(400,f"描述过长,应限制在{Item.description.max_length}字以内")
-    if "tag" not in data:
-        return make_response_json(400, "请选择物品类型")
-    if data["tag"] not in Item_tag_type._value2member_map_:
-        return make_response_json(400, "请求格式错误")
-    try:
-
-        price = Float(data["price"])
-        item_type = int(data["type"])
-        shelved_num = int(data["shelved_num"])
-    except Exception as e:
-        return make_response_json(400, "数据类型错误")
-    if price == Float("inf") or price == Float("nan"):
-        return make_response_json(400, "价格越界")
-    if price <= 1e-8:
-        return make_response_json(400, "价格越界")
-    if item_type != Item_type.Goods.value and item_type != Item_type.Want.value:
-        return make_response_json(400, "仅能上传物品")
-    if shelved_num <= 0:
-        return make_response_json(400, "数量越界")
-    if shelved_num.bit_length() > Item.shelved_num.__sizeof__()-1:
-        return make_response_json(400, "数量越界")
+    #检查商品格式
+    result=checkItemData(data)
+    if result[0]==-1:
+        return make_response_json(result[1], result[2])
+    #继续
     data["user_id"] = current_user.id
     data["publish_time"] = datetime.now()
     try:
