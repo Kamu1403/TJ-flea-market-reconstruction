@@ -312,3 +312,24 @@ def getFS(myclass,req,listname):
         listname: fav_data[range_min:range_max]
     }
     return (0,data)
+
+def delFS(myclass,req):
+    try:
+        NotFound = False
+        for i in req:
+            tep = myclass.select().where((myclass.user_id == current_user.id)
+                                         & (myclass.item_id == i))
+
+            if tep.count() <= 0:
+                NotFound = True
+            else:
+                myclass.delete().where((myclass.user_id == current_user.id)
+                                       & (myclass.item_id == i)).execute()
+        if NotFound == True:
+            if myclass==History:
+                return (404, "不存在对应的历史")
+            else:
+                return (404, "不存在对应的收藏")
+        return (200, "删除成功")
+    except Exception as e:
+        return(500, f"发生错误 {repr(e)}")

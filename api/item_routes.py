@@ -457,25 +457,9 @@ def delete_favor():
     print(request.get_json())
     req = request.get_json()["item_id_list"]
 
-    #tep = Item.select().where(Item.id << req)  #在一个列表中查询
-    #if tep.count() != len(req):  #长度对不上
-    #    return make_response_json(404, "不存在对应物品")
-    try:
-        NotFound = False
-        for i in req:
-            tep = Favor.select().where((Favor.user_id == current_user.id)
-                                       & (Favor.item_id == i))
-
-            if tep.count() <= 0:
-                NotFound = True
-            else:
-                Favor.delete().where((Favor.user_id == current_user.id)
-                                     & (Favor.item_id == i)).execute()
-        if NotFound == True:
-            return make_response_json(404, "不存在对应的收藏")
-        return make_response_json(200, "删除成功")
-    except Exception as e:
-        return make_response_json(500, f"发生错误 {repr(e)}")
+    #删除
+    retid,retinfo=delFS(History,req)
+    return make_response_json(retid,retinfo) 
 
 
 @api_blue.route("/get_favor", methods=["GET"])
@@ -525,26 +509,11 @@ def item_delete_history():
         return make_response_json(401, "当前用户未登录")
     print(request.get_json())
     req = request.get_json()["item_id_list"]
+    #删除
+    retid,retinfo=delFS(History,req)
+    return make_response_json(retid,retinfo) 
 
-    #tep = Item.select().where(Item.id << req)  #在一个列表中查询
-    #if tep.count() != len(req):  #长度对不上
-    #    return make_response_json(404, "不存在对应物品")
-    try:
-        NotFound = False
-        for i in req:
-            tep = History.select().where((History.user_id == current_user.id)
-                                         & (History.item_id == i))
 
-            if tep.count() <= 0:
-                NotFound = True
-            else:
-                History.delete().where((History.user_id == current_user.id)
-                                       & (History.item_id == i)).execute()
-        if NotFound == True:
-            return make_response_json(404, "不存在对应的历史")
-        return make_response_json(200, "删除成功")
-    except Exception as e:
-        return make_response_json(500, f"发生错误 {repr(e)}")
 
 
 @api_blue.route("/report", methods=["POST"])
