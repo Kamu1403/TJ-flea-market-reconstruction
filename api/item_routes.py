@@ -336,25 +336,7 @@ def trans_square(image):
     background.paste(image, box)
     return background
 
-
-@api_blue.route("/post_item_info", methods=["POST"])
-def post_item_info():
-    if not current_user.is_authenticated:
-        return make_response_json(401, "当前用户未登录")
-    if current_user.state == User_state.Under_ban.value:
-        return make_response_json(401, "当前用户已被封号")
-    data = request.get_json()
-    #检查商品格式
-    result=checkItemData(data)
-    if result[0]==-1:
-        return make_response_json(result[1], result[2])
-    #继续
-    data["user_id"] = current_user.id
-    data["publish_time"] = datetime.now()
-    try:
-        new = Item.create(**data)
-    except Exception as e:
-        return make_response_json(500, f"上传失败：{repr(e)}")
+def createPicPath(new):
     createPath(
         os.path.join(item_blue.static_folder,
                      f'resource/item_pic/{new.id}/head'))
@@ -366,11 +348,13 @@ def post_item_info():
     curpath = os.path.join(item_blue.static_folder,
                            f'resource/item_pic/{new.id}/')
     tempath = os.path.join(item_blue.static_folder, f'resource/temp/')
+    return default_pic,curpath,tempath
+
+def Uploadpic(data,default_pic,curpath,tempath):
     if len(data["urls"]) == 0:
         #给一个默认图
         shutil.copy(default_pic, os.path.join(curpath, 'head/'))
         shutil.copy(default_pic, os.path.join(curpath, 'pic/'))
-
     else:
         head_pics = [i["MD5"] for i in data["urls"] if i["is_cover_pic"]]
         if len(head_pics) == 0:
@@ -391,7 +375,32 @@ def post_item_info():
 
         for j in data["urls"]:
             shutil.move(os.path.join(tempath, j["MD5"]),
-                        os.path.join(curpath, 'pic/'))
+                        os.path.join(curpath, 'pic/'))    
+
+@api_blue.route("/post_item_info", methods=["POST"])
+def post_item_info():
+    if not current_user.is_authenticated:
+        return make_response_json(401, "当前用户未登录")
+    if current_user.state == User_state.Under_ban.value:
+        return make_response_json(401, "当前用户已被封号")
+
+    data = request.get_json()
+    #检查商品格式
+    result=checkItemData(data)
+    if result[0]==-1:
+        return make_response_json(result[1], result[2])
+    #继续添加信息
+    data["user_id"] = current_user.id
+    data["publish_time"] = datetime.now()
+    #创建item
+    try:
+        new = Item.create(**data)
+    except Exception as e:
+        return make_response_json(500, f"上传失败：{repr(e)}")
+    #创建图片目录
+    default_pic,curpath,tempath=createPicPath(new)
+    #上传图片
+    Uploadpic(data,default_pic,curpath,tempath)
         #将所有的图片转到用户对应文件夹
     return make_response_json(200, "上传成功",
                               {"url": url_for('item.content', item_id=new.id)})
