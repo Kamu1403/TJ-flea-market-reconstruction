@@ -36,7 +36,12 @@ def get_pic(data, select_pics):
         item = Item.get(Item.id == item_id)
     except Exception as e:
         return make_response_json(400, "此物品不存在")
-    pic_path = os.path.join(item_blue.static_folder,
+    pic_path = ''
+    if select_pics:
+        pic_path = os.path.join(item_blue.static_folder,
+                            f'resource/item_pic/{item_id}/pic')
+    else:
+        pic_path = os.path.join(item_blue.static_folder,
                             f'resource/item_pic/{item_id}/head')
     default_pic = os.path.join(item_blue.static_folder,
                                'resource/default_pic/test.jpg')
@@ -45,15 +50,18 @@ def get_pic(data, select_pics):
     if len(os.listdir(pic_path)) == 0:
         shutil.copy(default_pic, pic_path)
     pic_list = os.listdir(pic_path)
+
     if select_pics:
         pics = list()
         for pic_name in pic_list:
             pics.append(
             url_for('item.static', filename=f'resource/item_pic/{item_id}/pic/{pic_name}'))
+        print(1)
+        return make_response_json(200, "图片查找成功", data={"url": pics})
     else: 
-        pics = url_for('item.static', filename=f'resource/item_pic/{item_id}/head/{pic_list[0]}')
-
-    return make_response_json(200, "图片查找成功", data={"url": pics})
+        pic = url_for('item.static', filename=f'resource/item_pic/{item_id}/head/{pic_list[0]}')
+        print(2)
+        return make_response_json(200, "图片查找成功", data={"url": pic})
 
 
 
