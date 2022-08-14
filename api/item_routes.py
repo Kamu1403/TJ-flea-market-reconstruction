@@ -25,9 +25,43 @@ def createPath(path: str) -> None:
         os.makedirs(path)
 
 
+
+# 接口/get_item_pics与/get_item_head_pic的公共函数
+def get_pic(data, select_pics):
+    try:
+        item_id = int(data["item_id"])
+    except Exception as e:
+        return make_response_json(400, f"请求格式错误 {repr(e)}")
+    try:
+        item = Item.get(Item.id == item_id)
+    except Exception as e:
+        return make_response_json(400, "此物品不存在")
+    pic_path = os.path.join(item_blue.static_folder,
+                            f'resource/item_pic/{item_id}/head')
+    default_pic = os.path.join(item_blue.static_folder,
+                               'resource/default_pic/test.jpg')
+    if not os.path.exists(pic_path):
+        createPath(pic_path)
+    if len(os.listdir(pic_path)) == 0:
+        shutil.copy(default_pic, pic_path)
+    pic_list = os.listdir(pic_path)
+    if select_pics:
+        pics = list()
+        for pic_name in pic_list:
+            pics.append(
+            url_for('item.static', filename=f'resource/item_pic/{item_id}/pic/{pic_name}'))
+    else: 
+        pics = url_for('item.static', filename=f'resource/item_pic/{item_id}/head/{pic_list[0]}')
+
+    return make_response_json(200, "图片查找成功", data={"url": pics})
+
+
+
 @api_blue.route("/get_item_pics", methods=['GET'])
 def get_item_pics():
     data = dict(request.args)
+    return get_pic(data, True)
+    '''
     try:
         item_id = int(data["item_id"])
     except Exception as e:
@@ -51,11 +85,14 @@ def get_item_pics():
             url_for('item.static',
                     filename=f'resource/item_pic/{item_id}/pic/{pic_name}'))
     return make_response_json(200, "图片查找成功", data={"url": pics})
+    '''
 
 
 @api_blue.route("/get_item_head_pic", methods=['GET'])
 def get_item_head_pic():
     data = dict(request.args)
+    return get_pic(data, False)
+    '''
     try:
         item_id = int(data["item_id"])
     except Exception as e:
@@ -76,6 +113,7 @@ def get_item_head_pic():
     pic = url_for('item.static',
                   filename=f'resource/item_pic/{item_id}/head/{pic_list[0]}')
     return make_response_json(200, "图片查找成功", data={"url": pic})
+    '''
 
 
 @api_blue.route('/get_item_info', methods=['GET'])

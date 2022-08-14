@@ -186,7 +186,7 @@ def get_review_by_order():
         _order_state_item = Order_State_Item.get(
             Order_State_Item.order_id == order_id)
     except:
-        return make_response_json(404, "为找到对应订单状态明细")
+        return make_response_json(404, "未找到对应订单状态明细")
     else:
         try:
             if _order_state_item.user_review_id == None:
