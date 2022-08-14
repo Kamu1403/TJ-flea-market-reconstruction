@@ -261,3 +261,54 @@ def savePic(data,curpath):
     #    return make_response_json(400, f"上传图片失败：请勿重复上传图片")
     img.save(path_name_new, 'WEBP')
     return md5_str
+
+
+#获取favor和history列表的一些函数
+def getRange(req):
+    if "range_min" in req or "range_max" in req:
+        if "range_min" in req and "range_max" in req:
+            try:
+                range_min = int(req["range_min"])
+                range_max = int(req["rang_max"])
+            except Exception as e:
+                return (-1,400, "请求格式错误")
+        else:
+            return (-1,400,"请求格式错误")
+    else:
+        range_min = 0
+        range_max = 50
+    return (0,range_min,range_max)
+
+def getFSList(myclass,listname):
+    if listname=="favor_list":
+        tep = myclass.select().where(myclass.user_id == current_user.id).order_by(
+            myclass.collect_time.desc())
+    else:
+        tep = myclass.select().where(myclass.user_id == current_user.id).order_by(
+            myclass.visit_time.desc())
+    fav_data = []
+    for i in tep:
+        res = dict()
+        res['id'] = i.id
+        res['item_id'] = i.item_id.id
+        if listname=="favor_list":
+            res['collect_time'] = str(i.collect_time)
+        else:
+            res['visit_time'] = str(i.visit_time)
+        fav_data.append(res)
+    return fav_data
+
+def getFS(myclass,req,listname):
+    #取范围
+    result=getRange(req)
+    if result[0]==-1:
+        return (-1,result[1], result[2])
+    range_min=result[1]
+    range_max=result[2]
+    #添加data
+    fav_data=getFSList(myclass,listname)
+    data = {
+        "total_count": len(fav_data),
+        listname: fav_data[range_min:range_max]
+    }
+    return (0,data)
