@@ -136,6 +136,9 @@ dmypy.json
 .vscode/
 api/verify_code.json
 
+# pycharm
+.idea/
+
 # temp
 api/pic/*
 item/static/resource/temp/*
