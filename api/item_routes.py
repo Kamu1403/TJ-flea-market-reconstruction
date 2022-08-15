@@ -16,9 +16,60 @@ from difflib import SequenceMatcher
 from PIL import Image
 from numpy import float32 as Float
 
+
+def createPath(path: str) -> None:
+    if not os.path.exists(path):
+        os.makedirs(path)
+    elif not os.path.isdir(path):
+        os.remove(path)
+        os.makedirs(path)
+
+
+# 接口/get_item_pics与/get_item_head_pic的公共函数
+def get_pic(data, select_pics):
+    try:
+        item_id = int(data["item_id"])
+    except Exception as e:
+        return make_response_json(400, f"请求格式错误 {repr(e)}")
+    try:
+        item = Item.get(Item.id == item_id)
+    except Exception as e:
+        return make_response_json(400, "此物品不存在")
+    pic_path = ''
+    if select_pics:
+        pic_path = os.path.join(item_blue.static_folder,
+                                f'resource/item_pic/{item_id}/pic')
+    else:
+        pic_path = os.path.join(item_blue.static_folder,
+                                f'resource/item_pic/{item_id}/head')
+    default_pic = os.path.join(item_blue.static_folder,
+                               'resource/default_pic/test.jpg')
+    if not os.path.exists(pic_path):
+        createPath(pic_path)
+    if len(os.listdir(pic_path)) == 0:
+        shutil.copy(default_pic, pic_path)
+    pic_list = os.listdir(pic_path)
+
+    if select_pics:
+        pics = list()
+        for pic_name in pic_list:
+            pics.append(
+                url_for(
+                    'item.static',
+                    filename=f'resource/item_pic/{item_id}/pic/{pic_name}'))
+        return make_response_json(200, "图片查找成功", data={"url": pics})
+    else:
+        pic = url_for(
+            'item.static',
+            filename=f'resource/item_pic/{item_id}/head/{pic_list[0]}')
+        return make_response_json(200, "图片查找成功", data={"url": pic})
+
+
 @api_blue.route("/get_item_pics", methods=['GET'])
 def get_item_pics():
     data = dict(request.args)
+    return get_pic(data, True)
+    '''
     try:
         item_id = int(data["item_id"])
     except Exception as e:
@@ -42,11 +93,14 @@ def get_item_pics():
             url_for('item.static',
                     filename=f'resource/item_pic/{item_id}/pic/{pic_name}'))
     return make_response_json(200, "图片查找成功", data={"url": pics})
+    '''
 
 
 @api_blue.route("/get_item_head_pic", methods=['GET'])
 def get_item_head_pic():
     data = dict(request.args)
+    return get_pic(data, False)
+    '''
     try:
         item_id = int(data["item_id"])
     except Exception as e:
@@ -67,6 +121,7 @@ def get_item_head_pic():
     pic = url_for('item.static',
                   filename=f'resource/item_pic/{item_id}/head/{pic_list[0]}')
     return make_response_json(200, "图片查找成功", data={"url": pic})
+    '''
 
 
 @api_blue.route('/get_item_info', methods=['GET'])
@@ -131,6 +186,93 @@ def get_user_item():
     return make_response_json(200, "查询成功", data=datas)
 
 
+#接口search的拆分函数
+def data_check(data): #请求数据检查
+    if "range_min" in data or "range_max" in data:
+        if "range_min" in data and "range_max" in data:
+            range_min = int(data["range_min"])
+            range_max = int(data["range_max"])
+        else:
+            raise Exception('请求格式错误')
+    else:
+        range_min = 0
+        range_max = 50
+    
+    search_type = int(data["search_type"])
+
+    if "key_word" in data:
+        key_word = data["key_word"]
+    else:
+        raise Exception('请输入关键词')
+
+    if "order_type" in data:
+        order_type = data["order_type"]
+    else:
+        order_type = "name"
+
+    return range_min, range_max, search_type, key_word, order_type
+
+def select_need_append(key_word, search_type, data): #搜索依据添加
+    select_need = [Item.name.contains(key_word)]
+    if search_type in Item_type._value2member_map_:
+        select_need.append(Item.type == search_type)
+    if "tag" in data:
+        if data["tag"] not in Item_tag_type._value2member_map_:
+            raise Exception('请求格式错误')
+        else:
+            select_need.append(Item.tag == data["tag"])
+
+    if "start_time" in data:
+        start_time = data["start_time"]
+        if start_time != "" and start_time is not None:
+            start_time = datetime.strptime(start_time, "%Y-%m-%d")
+            select_need.append(Item.publish_time >= start_time)
+    if "end_time" in data:
+        end_time = data["end_time"]
+        if end_time != "" and end_time is not None:
+            end_time = datetime.strptime(end_time, "%Y-%m-%d")
+            select_need.append(Item.publish_time <= end_time)
+    
+    return select_need
+
+def search(need, select_need, order_type, key_word, range_min, range_max): #实现搜索结果
+    get_data = Item.select(*need).where(*select_need).execute()
+    datas = [i.__data__ for i in get_data]
+    new_data = list()
+    if order_type == "time":
+        datas.sort(key=lambda x: x["publish_time"], reverse=True)
+    elif order_type == "price":
+        datas.sort(key=lambda x: x["price"], reverse=False)
+    else:
+        #orderWay = (Item.publish_time.desc(), )  # 改：默认其实为相似度
+        datas.sort(
+            key=lambda x: SequenceMatcher(a=key_word, b=x["name"]).ratio(),
+            reverse=True)
+    for i in datas:
+        i['price'] = float(i['price'])
+        i['publish_time'] = str(i['publish_time'])
+        new_data.append(i)
+    range_max = min(len(new_data), range_max)
+    final_data = {
+        "total_count": len(new_data),
+        "item_list": new_data[range_min:range_max]
+    }
+    return make_response_json(200, "搜索结果如下", data=final_data)
+
+@api_blue.route('/search', methods=['POST'])
+def get_search():
+    data = request.get_json()
+    try:
+        range_min, range_max, search_type, key_word, order_type = data_check(data)
+        need = (Item.id, Item.name, Item.user_id, Item.publish_time, Item.price,
+            Item.tag)
+        select_need = select_need_append(key_word, search_type, data)
+    except:
+        return make_response_json(400, "请求格式错误")
+    else:
+        return search(need, select_need, order_type, key_word, range_min, range_max)
+
+'''
 @api_blue.route('/search', methods=['POST'])
 def get_search():
     data = request.get_json()
@@ -207,6 +349,7 @@ def get_search():
             "item_list": new_data[range_min:range_max]
         }
         return make_response_json(200, "搜索结果如下", data=final_data)
+'''
 
 
 @api_blue.route("/change_item_state", methods=["PUT"])
@@ -261,7 +404,7 @@ def change_item_num():
     #继续
     if data["num"] < 0:
         return make_response_json(400, "不允许负数物品存在")
-    if data["num"].bit_length() > Item.shelved_num.__sizeof__()-1:
+    if data["num"].bit_length() > Item.shelved_num.__sizeof__() - 1:
         return make_response_json(400, "数量越界")
 
     if current_user.state == User_state.Admin.value:
@@ -538,8 +681,9 @@ def report():
         reason = data["reason"]
     else:
         reason = ""
-    if len(reason) > Feedback.feedback_content.max_length//2:
-        return make_response_json(400,f"反馈过长,应限制在{Feedback.feedback_content.max_length//2}字以内")
+    if len(reason) > Feedback.feedback_content.max_length // 2:
+        return make_response_json(
+            400, f"反馈过长,应限制在{Feedback.feedback_content.max_length//2}字以内")
     if kind == Feedback_kind.Item.value:
         try:
             item_id = int(data['item_id'])

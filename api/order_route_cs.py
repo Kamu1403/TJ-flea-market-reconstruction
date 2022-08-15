@@ -12,8 +12,14 @@ from datetime import datetime, timedelta
 
 @api_blue.route("/get_order", methods=["GET"])
 def get_order():
+    #用户未登录处理
+    res = check_user(current_user)
+    if res[0] == -1:
+        return res[1]
+    '''
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
+    '''
     data = dict(request.args)
     my_order = [
         (Order.user_id == current_user) | (Item.user_id == current_user.id)
@@ -51,8 +57,14 @@ def get_order():
 
 @api_blue.route("/get_order_info", methods=['GET'])
 def get_order_info():
+    #用户未登录处理
+    res = check_user(current_user)
+    if res[0] == -1:
+        return res[1]
+    '''
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
+    '''
     data = dict(request.args)
     try:
         order_id = int(data["order_id"])
@@ -85,10 +97,15 @@ def get_order_info():
 
 @api_blue.route("/get_address", methods=['GET'])
 def get_address():
+    res = check_user(current_user, False, True)
+    if res[0] == -1:
+        return res[1]
+    '''
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
     elif current_user.state == User_state.Under_ban.value:
         return make_response_json(401, "当前用户已被封禁")
+    '''
     need = [
         Contact.id, Contact.name, Contact.telephone, Contact.full_address,
         Contact.default, Contact.campus_branch
@@ -110,8 +127,13 @@ def get_address():
 @api_blue.route("/generate_order", methods=["POST"])
 def generate_order():
     data = request.get_json()
+    res = check_user(current_user)
+    if res[0] == -1:
+        return res[1]
+    '''
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
+    '''
     if "item_id" not in data:
         return make_response_json(400, "请求格式不对")
     try:
@@ -125,12 +147,24 @@ def generate_order():
     return make_response_json(200, "跳转到订单生成页面", data=url)
 
 
+#接口order_post函数公共部分
+def item_list_save(data, item_list, len):
+    for t in range(len):
+        item_list[t].shelved_num += data["item_info"][t]["num"]
+        item_list[t].locked_num -= data["item_info"][t]["num"]
+        item_list[t].save()
+
 @api_blue.route("/order_post", methods=["POST"])
 def order_post():
+    res = check_user(current_user, False, True)
+    if res[0] == -1:
+        return res[1]
+    '''
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
     if current_user.state == User_state.Under_ban.value:
         return make_response_json(401, "当前用户被封禁中")
+    '''
     data = request.get_json()
     if "item_info" not in data:
         return make_response_json(400, "请求格式不对")
@@ -195,18 +229,24 @@ def order_post():
             break
         item_list.append(item)
     if call_back[0] != 200:
+        item_list_save(data, item_list, start_num)
+        '''
         for t in range(start_num):
             item_list[t].shelved_num += data["item_info"][t]["num"]
             item_list[t].locked_num -= data["item_info"][t]["num"]
             item_list[t].save()
+        '''
         return make_response_json(call_back[0], call_back[1])
     try:
         contact = Contact.get(Contact.id == contact_id)
     except Exception as e:
+        item_list_save(data, item_list, len(data["item_info"]))
+        '''
         for t in range(len(data["item_info"])):
             item_list[t].shelved_num += data["item_info"][t]["num"]
             item_list[t].locked_num -= data["item_info"][t]["num"]
             item_list[t].save()
+        '''
         return make_response_json(404, "不存在的地址信息")
     order_data = dict()
     order_data["user_id"] = current_user.id
@@ -225,18 +265,24 @@ def order_post():
     try:
         od = Order.create(**order_data)
     except Exception as e:
+        item_list_save(data, item_list, len(data["item_info"]))
+        '''
         for t in range(len(data["item_info"])):
             item_list[t].shelved_num += data["item_info"][t]["num"]
             item_list[t].locked_num -= data["item_info"][t]["num"]
             item_list[t].save()
+        '''
         return make_response_json(500, f"Order存储错误 {repr(e)}")
     try:
         od_st_it = Order_State_Item.create(order_id=od.id)
     except Exception as e:
+        item_list_save(data, item_list, len(data["item_info"]))
+        '''
         for t in range(len(data["item_info"])):
             item_list[t].shelved_num += data["item_info"][t]["num"]
             item_list[t].locked_num -= data["item_info"][t]["num"]
             item_list[t].save()
+        '''
         od.delete_instance()
         return make_response_json(500, f"Order_State_Item 存储错误 {repr(e)}")
     od_it_list = list()
@@ -247,10 +293,13 @@ def order_post():
                                       price=item_list[i].price,
                                       item_id=item_list[i].id)
         except Exception as e:
+            item_list_save(data, item_list, len(data["item_info"]))
+            '''
             for t in range(len(data["item_info"])):
                 item_list[t].shelved_num += data["item_info"][t]["num"]
                 item_list[t].locked_num -= data["item_info"][t]["num"]
                 item_list[t].save()
+            '''
             for j in od_it_list:
                 j.delete_instance()
             od_st_it.delete_instance()
@@ -266,7 +315,178 @@ def order_post():
     return make_response_json(201, "订单生成成功，请等待商家确认", data={"order_id": od.id})
 
 
+# /adress拆为三个函数
+@api_blue.route("/address", methods=["POST"])
+def address_post():
+    res = check_user(current_user)
+    if res[0] == -1:
+        return res[1]
+    '''
+    if not current_user.is_authenticated:
+        return make_response_json(401, "当前用户未登录")
+    '''
+    data = request.get_json()
+    temp = [None for i in range(len(data))]
 
+    has_default, num = False, 0
+    old_default = None
+    for i, j in enumerate(data):
+        for k in j:
+            if isinstance(j[k],str) and len(j[k]) == 0:
+                return make_response_json(400,"不允许提交空参数")
+        if "campus_branch" in j:
+            if j["campus_branch"] not in User_Campus_state._value2member_map_:
+                return make_response_json(400, "校区填写错误")
+        j["user_id"] = current_user.id
+        if "default" in j and j["default"]:
+            if not has_default:
+                has_default, num = True, i
+            else:
+                data[num]["default"] = False
+                num = i
+    try:
+        old_default = Contact.get(Contact.default == True,
+                                    Contact.user_id == current_user.id)
+    except Exception as e:
+        if not has_default:
+            data[-1]["default"] = True
+    else:
+        if has_default:
+            old_default.default = False
+            old_default.save()
+    for i, j in enumerate(data):
+        try:
+            temp[i] = Contact.create(**j)
+        except Exception as e:
+            for t in range(i):
+                temp[t].delete_instance()
+            if old_default is not None:
+                old_default.default = True
+                old_default.save()
+            return make_response_json(500, f"存储时出现错误 {repr(e)}")
+
+    return make_response_json(200, "完成")
+
+@api_blue.route("/address", methods=["PUT"])
+def address_put():
+    res = check_user(current_user)
+    if res[0] == -1:
+        return res[1]
+    '''
+    if not current_user.is_authenticated:
+        return make_response_json(401, "当前用户未登录")
+    '''
+    data = request.get_json()
+    temp = [None for i in range(len(data))]
+    for i, j in enumerate(data):
+        # j["id"] = j["contact_id"]
+        # j.pop("contact_id")
+        for k in j:
+            if isinstance(j[k],str) and len(j[k]) == 0:
+                return make_response_json(400,"不允许提交空参数")
+        if "campus_branch" in j:
+            if j["campus_branch"] not in User_Campus_state._value2member_map_:
+                return make_response_json(400, "校区填写错误")
+        try:
+            # j["id"] = j["contact_id"]
+            # j.pop("contact_id")
+            temp[i] = Contact.get(Contact.id == int(j["id"]))
+        except Exception as e:
+            return make_response_json(401, "不存在的联络地址")
+        else:
+            if temp[i].user_id.id != current_user.id:
+                return make_response_json(401, "不可修改其他用户的联络地址")
+    #update_data = list(range(len(data)))
+    update_data = copy.deepcopy(temp)
+    has_default, num = False, 0
+    for i, j in enumerate(data):
+        if "default" in j and j["default"]:
+            if not has_default:
+                    has_default, num = True, i
+            else:
+                data[num]["default"] = False
+                num = i
+    old_default = None
+    try:
+        old_default = Contact.get(Contact.default == True,
+                                    Contact.user_id == current_user.id)
+    except Exception as e:
+        if not has_default:
+            temp[-1].default = True
+    else:
+        if has_default:
+            if old_default not in temp:
+                old_default.default = False
+                old_default.save()
+        else:
+            if old_default in temp:
+                return make_response_json(400, "至少要保留一个默认地址")
+    for i in range(len(temp)):
+        try:
+            for j in data[i]:
+                if j in update_data[i].__data__:
+                    exec(f"""if update_data[{i}].{j} != data[{i}]["{j}"]:
+    update_data[{i}].{j} = data[{i}]["{j}"]
+                        """)
+                    #new_data[j] = data[i][j]
+            #update_data[i] = Contact(**new_data)
+            update_data[i].save()
+        except Exception as e:
+            for t in range(i):
+                temp[i].save()
+            if old_default is not None:
+                old_default.default = True
+                old_default.save()
+            return make_response_json(500, f"存储错误 {repr(e)}")
+    
+    return make_response_json(200, "完成")
+
+@api_blue.route("/address", methods=["DELETE"])
+def address_delete():
+    res = check_user(current_user)
+    if res[0] == -1:
+        return res[1]
+    '''
+    if not current_user.is_authenticated:
+        return make_response_json(401, "当前用户未登录")
+    '''
+    data = request.get_json()
+    temp = [None for i in range(len(data))]
+    data = list(set(map(lambda x: x["contact_id"], data)))
+    for i, j in enumerate(data):
+        try:
+            temp[i] = Contact.get(Contact.id == int(j))
+        except Exception as e:
+            return make_response_json(401, "不存在的联络地址")
+        else:
+            if temp[i].user_id.id != current_user.id:
+                return make_response_json(401, "不可删除其他用户的联络地址")
+    delete_default = False
+    for i, j in enumerate(temp):
+        try:
+            j.delete_instance()
+        except Exception as e:
+            for t in range(i):
+                temp[t].save()
+            return make_response_json(500, f"发生错误 {repr(e)}")
+        else:
+            if j.default:
+                delete_default = True
+    if delete_default:
+        try:
+            datas = Contact.select().where(
+                Contact.user_id == current_user.id).order_by(
+                    Contact.id.desc()).execute()
+        except Exception as e:
+            print(repr(e))
+        else:
+            if len(datas) > 0:
+                datas[0].default = True
+                datas[0].save()
+
+    return make_response_json(200, "完成")
+
+'''
 @api_blue.route("/address", methods=["POST", "PUT", "DELETE"])
 def address():
     if not current_user.is_authenticated:
@@ -405,12 +625,17 @@ def address():
                 return make_response_json(500, f"存储时出现错误 {repr(e)}")
 
     return make_response_json(200, "完成")
-
+'''
 
 @api_blue.route("/order_evaluate", methods=["POST"])
 def order_evaluate():
+    res = check_user(current_user)
+    if res[0] == -1:
+        return res[1]
+    '''
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
+    '''
     data = request.get_json()
     if "feedback_content" not in data:
         return make_response_json(400, "请求格式不对")
@@ -442,9 +667,6 @@ def order_evaluate():
                 return make_response_json(500, f"存储过程出现问题 {repr(e)}")
             order_state_item.user_review_id = review
         else:  #存在就返回error
-            #order_state_item.user_review_id.publish_time = datetime.now()
-            #order_state_item.user_review_id.feedback_content = data[
-            #    "feedback_content"]
             return make_response_json(401, f"您已评价过该订单")
     else:
         try:
@@ -463,11 +685,7 @@ def order_evaluate():
                     return make_response_json(500, f"存储过程出现问题 {repr(e)}")
                 order_state_item.op_user_review_id = review
             else:
-                #order_state_item.op_user_review_id.publish_time = datetime.now()
-                #order_state_item.op_user_review_id.feedback_content = data[
-                #    "feedback_content"]
                 return make_response_json(401, f"您已评价过该订单")
-
         else:
             return make_response_json(401, "无权评论此订单")
     order_state_item.save()

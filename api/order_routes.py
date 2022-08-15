@@ -111,12 +111,15 @@ def change_order_state():
     req_state = int(req['state'])
     if req_state not in Order_state._value2member_map_:
         return make_response_json(400, "请求格式不对")
-
+    res = check_user(current_user, False, True)
+    if res[0] == -1:
+        return res[1]
+    '''
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
     elif current_user.state == User_state.Under_ban.value:
         return make_response_json(401, "当前用户已被封禁")
-
+    '''
     try:
         order = Order.get(Order.id == req['order_id'])
     except Exception as e:
@@ -153,8 +156,13 @@ def change_order_state():
 
 @api_blue.route("/get_item_id_by_order", methods=["GET"])
 def get_item_id_by_order():
+    res = check_user(current_user)
+    if res[0] == -1:
+        return res[1]
+    '''
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
+    '''
     data = dict(request.args)
     try:
         order_id = int(data['order_id'])
@@ -183,8 +191,13 @@ def get_item_id_by_order():
 
 @api_blue.route("/get_review_by_order", methods=["GET"])
 def get_review_by_order():
+    res = check_user(current_user)
+    if res[0] == -1:
+        return res[1]
+    '''
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
+    '''
     data = dict(request.args)
     try:
         order_id = int(data['order_id'])
@@ -195,7 +208,7 @@ def get_review_by_order():
         _order_state_item = Order_State_Item.get(
             Order_State_Item.order_id == order_id)
     except:
-        return make_response_json(404, "为找到对应订单状态明细")
+        return make_response_json(404, "未找到对应订单状态明细")
     else:
         try:
             if _order_state_item.user_review_id == None:
@@ -227,8 +240,13 @@ def get_review_by_order():
 
 @api_blue.route("/get_user_is_review", methods=["GET"])
 def get_user_is_review():
+    res = check_user(current_user)
+    if res[0] == -1:
+        return res[1]
+    '''
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
+    '''
     data = dict(request.args)
     try:
         order_id = int(data['order_id'])
@@ -266,8 +284,13 @@ def get_user_is_review():
 
 @api_blue.route("/get_review", methods=["GET"])
 def get_review():
+    res = check_user(current_user)
+    if res[0] == -1:
+        return res[1]
+    '''
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
+    '''
     data = dict(request.args)
     try:
         review_id = int(data['review_id'])
