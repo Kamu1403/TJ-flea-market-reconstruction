@@ -67,8 +67,13 @@ def save_pic(path,data):
 def post_chat_pic():
 
     #用户未登录处理
+    res = check_user(current_user)
+    if res[0] == -1:
+        return res[1]
+    '''
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
+    '''
     #读取信息
     sender=request.values['sender']
     receiver=request.values['receiver']
@@ -88,99 +93,115 @@ def get_message_cnt():
     '''
     获取未读取信息条数
     '''
-    if (current_user.is_authenticated):
-        user=str(current_user.id)
-        unread=0
-        #循环计数
-        for chat in Recent_Chat_List.select().where(Recent_Chat_List.receiver_id==user):
-            unread+=chat.unread
-        res={'unread':unread}
+    #用户未登录处理
+    result = check_user(current_user)
+    if result[0] == -1:
+        return result[1]
+    # if (current_user.is_authenticated):
+    user=str(current_user.id)
+    unread=0
+    #循环计数
+    for chat in Recent_Chat_List.select().where(Recent_Chat_List.receiver_id==user):
+        unread+=chat.unread
+    res={'unread':unread}
         
-        #send_message("80000000",user,"获取成功",'text')
-        return make_response_json(200, "获取未读条数成功",res)
-    else:
-        return make_response_json(401, "当前用户未登录")
+    #send_message("80000000",user,"获取成功",'text')
+    return make_response_json(200, "获取未读条数成功",res)
+    # else:
+        # return make_response_json(401, "当前用户未登录")
     
 @api_blue.route('/get_meet_list',methods=['GET'])
 def get_meet_list():
     '''
     获取会话列表
     '''
-    if (current_user.is_authenticated):
-        user=str(current_user.id)
-        meet=Meet_List.get_or_none(Meet_List.user_id==user)
-        if meet==None:
-            meet_list=""
-        else:
-            meet_list=meet.meet_list[user]
-        res={'meet_list':meet_list}
-        return make_response_json(200, "获取会话列表成功",res)
+    #用户未登录处理
+    res = check_user(current_user)
+    if res[0] == -1:
+        return res[1]
+    #if (current_user.is_authenticated):
+    user=str(current_user.id)
+    meet=Meet_List.get_or_none(Meet_List.user_id==user)
+    if meet==None:
+        meet_list=""
     else:
-        return make_response_json(401, "当前用户未登录")
+        meet_list=meet.meet_list[user]
+    res={'meet_list':meet_list}
+    return make_response_json(200, "获取会话列表成功",res)
+    #else:
+        #return make_response_json(401, "当前用户未登录")
     
 @api_blue.route('/get_last_msg',methods=['GET'])
 def get_last_msg():
     '''
     读取每个用户最后发送的消息
     '''
-    if (current_user.is_authenticated):
-        user=str(current_user.id)
-        meet=Meet_List.get_or_none(Meet_List.user_id==user)
-        if meet==None:
-            meet_list=""
-        else:
-            meet_list=meet.meet_list[user]
-        res={}
-        #对会话列表做循环读取处理
-        for m in meet_list:
-            room=user+'-'+m
-            reroom=m+'-'+user
-            roomid = Room.get_or_none(Room.room_id==room)
-            reroomid=Room.get_or_none(Room.room_id==reroom)
-            if roomid==None:
-                roomid=reroomid
-            msg=roomid.last_message
-            sender=roomid.last_sender_id.id
-            type=roomid.msg_type
-            res[m]={'sender':sender,'last_msg':msg,'type':type}
-        return make_response_json(200, "获取最后消息成功",res)
+    #用户未登录处理
+    res = check_user(current_user)
+    if res[0] == -1:
+        return res[1]
+    # if (current_user.is_authenticated):
+    user=str(current_user.id)
+    meet=Meet_List.get_or_none(Meet_List.user_id==user)
+    if meet==None:
+        meet_list=""
     else:
-        return make_response_json(401, "当前用户未登录")
+        meet_list=meet.meet_list[user]
+    res={}
+    #对会话列表做循环读取处理
+    for m in meet_list:
+        room=user+'-'+m
+        reroom=m+'-'+user
+        roomid = Room.get_or_none(Room.room_id==room)
+        reroomid=Room.get_or_none(Room.room_id==reroom)
+        if roomid==None:
+            roomid=reroomid
+        msg=roomid.last_message
+        sender=roomid.last_sender_id.id
+        type=roomid.msg_type
+        res[m]={'sender':sender,'last_msg':msg,'type':type}
+    return make_response_json(200, "获取最后消息成功",res)
+    # else:
+        # return make_response_json(401, "当前用户未登录")
     
 @api_blue.route('/del_meet',methods=['DELETE'])
 def del_meet():
     '''
     删除会话
     '''
-    if (current_user.is_authenticated):
-        suser=str(current_user.id)
-        del_user=str(request.get_json()['user_id'])
-        user,created=Meet_List.get_or_create(user_id=suser)
-        meet_list={}
-        if created:
-            meet_list[user]=[]
-        else:
-            meet_list=user.meet_list
-
-            #移除会话
-            meet_list[suser].remove(del_user)
-        Meet_List.update(meet_list=meet_list).where(Meet_List.user_id==suser).execute()
-        Recent_Chat_List.update(unread=0).where(
-                Recent_Chat_List.receiver_id==suser
-                and Recent_Chat_List.sender_id==del_user).execute()
-        
-        
-        room = suser + '-' + del_user
-        reroom = del_user + '-' + suser
-        #查询是否存在该聊天,发送接收双方此时共享一个聊天室(聊天记录)
-        roomid = Room.get_or_none(Room.room_id==room)
-        reroomid=Room.get_or_none(Room.room_id==reroom)
-        if (roomid==None and reroomid==None):
-            Room.create(room_id=room,last_sender_id=suser)
-        elif reroomid!=None:
-            room=reroom
-            
-        Message.update(msg_read=1).where(Message.room_id==roomid).execute()
-        return make_response_json(200, "获取会话列表成功")
+    #用户未登录处理
+    res = check_user(current_user)
+    if res[0] == -1:
+        return res[1]
+    # if (current_user.is_authenticated):
+    suser=str(current_user.id)
+    del_user=str(request.get_json()['user_id'])
+    user,created=Meet_List.get_or_create(user_id=suser)
+    meet_list={}
+    if created:
+        meet_list[user]=[]
     else:
-        return make_response_json(401, "当前用户未登录")
+        meet_list=user.meet_list
+
+        #移除会话
+        meet_list[suser].remove(del_user)
+    Meet_List.update(meet_list=meet_list).where(Meet_List.user_id==suser).execute()
+    Recent_Chat_List.update(unread=0).where(
+            Recent_Chat_List.receiver_id==suser
+            and Recent_Chat_List.sender_id==del_user).execute()
+        
+        
+    room = suser + '-' + del_user
+    reroom = del_user + '-' + suser
+    #查询是否存在该聊天,发送接收双方此时共享一个聊天室(聊天记录)
+    roomid = Room.get_or_none(Room.room_id==room)
+    reroomid=Room.get_or_none(Room.room_id==reroom)
+    if (roomid==None and reroomid==None):
+        Room.create(room_id=room,last_sender_id=suser)
+    elif reroomid!=None:
+        room=reroom
+            
+    Message.update(msg_read=1).where(Message.room_id==roomid).execute()
+    return make_response_json(200, "获取会话列表成功")
+    # else:
+        # return make_response_json(401, "当前用户未登录")

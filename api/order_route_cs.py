@@ -12,8 +12,14 @@ from datetime import datetime, timedelta
 
 @api_blue.route("/get_order", methods=["GET"])
 def get_order():
+    #用户未登录处理
+    res = check_user(current_user)
+    if res[0] == -1:
+        return res[1]
+    '''
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
+    '''
     data = dict(request.args)
     my_order = [
         (Order.user_id == current_user) | (Item.user_id == current_user.id)
@@ -51,8 +57,14 @@ def get_order():
 
 @api_blue.route("/get_order_info", methods=['GET'])
 def get_order_info():
+    #用户未登录处理
+    res = check_user(current_user)
+    if res[0] == -1:
+        return res[1]
+    '''
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
+    '''
     data = dict(request.args)
     try:
         order_id = int(data["order_id"])
@@ -85,10 +97,15 @@ def get_order_info():
 
 @api_blue.route("/get_address", methods=['GET'])
 def get_address():
+    res = check_user(current_user, False, True)
+    if res[0] == -1:
+        return res[1]
+    '''
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
     elif current_user.state == User_state.Under_ban.value:
         return make_response_json(401, "当前用户已被封禁")
+    '''
     need = [
         Contact.id, Contact.name, Contact.telephone, Contact.full_address,
         Contact.default, Contact.campus_branch
@@ -110,8 +127,13 @@ def get_address():
 @api_blue.route("/generate_order", methods=["POST"])
 def generate_order():
     data = request.get_json()
+    res = check_user(current_user)
+    if res[0] == -1:
+        return res[1]
+    '''
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
+    '''
     if "item_id" not in data:
         return make_response_json(400, "请求格式不对")
     try:
@@ -134,10 +156,15 @@ def item_list_save(data, item_list, len):
 
 @api_blue.route("/order_post", methods=["POST"])
 def order_post():
+    res = check_user(current_user, False, True)
+    if res[0] == -1:
+        return res[1]
+    '''
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
     if current_user.state == User_state.Under_ban.value:
         return make_response_json(401, "当前用户被封禁中")
+    '''
     data = request.get_json()
     if "item_info" not in data:
         return make_response_json(400, "请求格式不对")
@@ -291,8 +318,13 @@ def order_post():
 # /adress拆为三个函数
 @api_blue.route("/address", methods=["POST"])
 def address_post():
+    res = check_user(current_user)
+    if res[0] == -1:
+        return res[1]
+    '''
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
+    '''
     data = request.get_json()
     temp = [None for i in range(len(data))]
 
@@ -337,8 +369,13 @@ def address_post():
 
 @api_blue.route("/address", methods=["PUT"])
 def address_put():
+    res = check_user(current_user)
+    if res[0] == -1:
+        return res[1]
+    '''
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
+    '''
     data = request.get_json()
     temp = [None for i in range(len(data))]
     for i, j in enumerate(data):
@@ -406,8 +443,13 @@ def address_put():
 
 @api_blue.route("/address", methods=["DELETE"])
 def address_delete():
+    res = check_user(current_user)
+    if res[0] == -1:
+        return res[1]
+    '''
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
+    '''
     data = request.get_json()
     temp = [None for i in range(len(data))]
     data = list(set(map(lambda x: x["contact_id"], data)))
@@ -587,8 +629,13 @@ def address():
 
 @api_blue.route("/order_evaluate", methods=["POST"])
 def order_evaluate():
+    res = check_user(current_user)
+    if res[0] == -1:
+        return res[1]
+    '''
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
+    '''
     data = request.get_json()
     if "feedback_content" not in data:
         return make_response_json(400, "请求格式不对")
@@ -620,9 +667,6 @@ def order_evaluate():
                 return make_response_json(500, f"存储过程出现问题 {repr(e)}")
             order_state_item.user_review_id = review
         else:  #存在就返回error
-            #order_state_item.user_review_id.publish_time = datetime.now()
-            #order_state_item.user_review_id.feedback_content = data[
-            #    "feedback_content"]
             return make_response_json(401, f"您已评价过该订单")
     else:
         try:
@@ -641,11 +685,7 @@ def order_evaluate():
                     return make_response_json(500, f"存储过程出现问题 {repr(e)}")
                 order_state_item.op_user_review_id = review
             else:
-                #order_state_item.op_user_review_id.publish_time = datetime.now()
-                #order_state_item.op_user_review_id.feedback_content = data[
-                #    "feedback_content"]
                 return make_response_json(401, f"您已评价过该订单")
-
         else:
             return make_response_json(401, "无权评论此订单")
     order_state_item.save()

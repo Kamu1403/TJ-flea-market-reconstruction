@@ -49,12 +49,16 @@ def GetUserDict(i, is_self=False) -> dict:
 #管理员获取所有用户信息
 @api_blue.route('/get_all_user', methods=['GET'])
 def get_all_user():
+    res = check_user(current_user, True)
+    if res[0] == -1:
+        return res[1]
+    '''
     if not current_user.is_authenticated:
         return make_response_json(401, "该用户未通过验证")
 
     if current_user.state < User_state.Admin.value:
         return make_response_json(401, "权限不足")
-
+    '''
     users = User.select().where(User.state != User_state.Admin.value)
     data_list = []
     for i in users:
@@ -69,12 +73,16 @@ def get_all_user():
 #管理员封号
 @api_blue.route('/change_user_state', methods=['PUT'])
 def change_user_state():
+    res = check_user(current_user, True)
+    if res[0] == -1:
+        return res[1]
+    '''
     if not current_user.is_authenticated:
         return make_response_json(401, "该用户未通过验证")
 
     if current_user.state < User_state.Admin.value:
         return make_response_json(401, "权限不足")
-
+    '''
     #在APIFOX测试运行时current_user未经认证，需要先在apifox上登录后才current_user才有效
     req = request.get_json()
     try:
@@ -137,8 +145,13 @@ def change_user_state():
 #访问其它用户
 @api_blue.route('/get_user_info', methods=['GET'])
 def get_user_info():
+    res = check_user(current_user)
+    if res[0] == -1:
+        return res[1]
+    '''
     if not current_user.is_authenticated:
         return make_response_json(401, "该用户未通过验证")
+    '''
     data = dict(request.args)
     if "user_id" in data:
         try:
@@ -176,15 +189,25 @@ def get_user_username():
 
 @api_blue.route('/get_user_id', methods=["GET"])
 def get_user_id():
+    res = check_user(current_user)
+    if res[0] == -1:
+        return res[1]
+    '''
     if not current_user.is_authenticated:
         return make_response_json(401, "该用户未通过验证")
+    '''
     return make_response_json(200, "操作成功", {"user_id": current_user.id})
 
 
 @api_blue.route('/change_user_info', methods=["PUT"])
 def change_user_info():
+    res = check_user(current_user)
+    if res[0] == -1:
+        return res[1]
+    '''
     if not current_user.is_authenticated:
         return make_response_json(401, "该用户未通过验证")
+    '''
     req = request.get_json()
     #print(req)
     try:
@@ -249,8 +272,13 @@ def change_user_info():
 
 @api_blue.route("/get_reports", methods=["GET"])
 def get_reports():
+    res = check_user(current_user, True)
+    if res[0] == -1:
+        return res[1]
+    '''
     if not current_user.is_authenticated or current_user.state != User_state.Admin.value:
         return make_response_json(401, "用户无权访问")
+    '''
     try:
         datas = Feedback.select(Feedback.id, Feedback.state).order_by(
             Feedback.publish_time).execute()
@@ -276,8 +304,13 @@ def get_reports():
 
 @api_blue.route("/admin_get_report", methods=["GET"])
 def admin_get_report():
+    res = check_user(current_user, True)
+    if res[0] == -1:
+        return res[1]
+    '''
     if not current_user.is_authenticated or current_user.state != User_state.Admin.value:
         return make_response_json(401, "用户无权访问")
+    '''
     data = dict(request.args)
     try:
         feedback_id = int(data["feedback_id"])
@@ -296,8 +329,13 @@ def admin_get_report():
 
 @api_blue.route("/reply_feedback", methods=["PUT"])
 def reply_feedback():
+    res = check_user(current_user, True)
+    if res[0] == -1:
+        return res[1]
+    '''
     if not current_user.is_authenticated or current_user.state != User_state.Admin.value:
         return make_response_json(401, "用户无权访问")
+    '''
     data = request.get_json()
     if "reply_content" not in data:
         return make_response_json(400, "请求格式错误")
@@ -321,10 +359,15 @@ def reply_feedback():
 
 @api_blue.route("/get_all_order", methods=["GET"])
 def get_all_order():
+    res = check_user(current_user, True)
+    if res[0] == -1:
+        return res[1]
+    '''
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
     if current_user.state != User_state.Admin.value:
         return make_response_json(401, "当前用户不是管理员")
+    '''
 
     try:
         my_od_item = Order_Item.select(Order_Item.order_id,Order_Item.item_id)\
@@ -349,8 +392,13 @@ def get_all_order():
 
 @api_blue.route("/get_ban_data",methods=["GET"])
 def get_ban_data():
+    res = check_user(current_user, True)
+    if res[0] == -1:
+        return res[1]
+    '''
     if not current_user.is_authenticated or current_user.state != User_state.Admin.value:
         return make_response_json(401,"权限不足")
+    '''
     req = dict(request.args)
     try:
         user_id = int(req["user_id"])

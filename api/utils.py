@@ -159,3 +159,16 @@ def send_message(sender: str | int, receiver: str | int, message: str, type: int
         return (200, "操作成功")
     except Exception as e:
         return (500, repr(e))
+
+
+# 对用户的检查
+def check_user(user, admin_power_check = False, ban_check = False):
+    if not user.is_authenticated:
+        return -1, make_response_json(401, "该用户未通过验证或未登录")
+    if admin_power_check and user.state != User_state.Admin.value:
+        return -1, make_response_json(401, "权限不足")
+    if ban_check and user.state == User_state.Under_ban.value:
+        return -1, make_response_json(401, "当前用户已被封禁")
+
+    return 0, 0
+
