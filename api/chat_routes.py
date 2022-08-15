@@ -5,13 +5,6 @@ from chat.models import Room,Recent_Chat_List,Meet_List,Message
 from PIL import Image
 from hashlib import md5
 
-def createPath(path: str) -> None:
-    if not os.path.exists(path):
-        os.makedirs(path)
-    elif not os.path.isdir(path):
-        os.remove(path)
-        os.makedirs(path)
-
 def save_pic(path,data):
     '''
     传入request.files.get('something') (data类型为werkzeug.filestorage)
@@ -24,31 +17,9 @@ def save_pic(path,data):
         #url_for('item.static', filename=f'resource/item_pic/{item_id}/[head|pic]')
         curpath = path
         createPath(curpath)
-
-        path_name = os.path.join(curpath, data.filename)
-        createPath(curpath)
-        data.save(path_name)
-        img = Image.open(path_name)
-        w, h = img.size
-        ratio = max(w, h) / 1920
-        if ratio > 1:
-            img = img.resize((int(w / ratio), int(h / ratio)))
-        ratio = 250 / min(w, h)
-        if ratio > 1:
-            img = img.resize((int(w * ratio), int(h * ratio)))
-        md5_str = md5(img.tobytes()).hexdigest()
-        os.remove(path_name)
-
-        path_name_new = os.path.join(curpath, f'{md5_str}')
-        img.save(path_name_new, 'WEBP')
-        img = Image.open(path_name_new)
-        md5_str = md5(img.tobytes()).hexdigest()
-        os.remove(path_name_new)
-
-        path_name_new = os.path.join(curpath, f'{md5_str}')
-        #if os.path.exists(path_name_new):
-        #    return make_response_json(400, f"上传图片失败：请勿重复上传图片")
-        img.save(path_name_new, 'WEBP')
+        #保存图片
+        md5_str=savePic(data,curpath) 
+    #失败处理
     except Exception as e:
         print(e)
         return make_response_json(400, f"上传图片失败：文件格式错误或损坏")
@@ -57,8 +28,11 @@ def save_pic(path,data):
 
 @api_blue.route("/post_chat_pic", methods=["POST"])
 def post_chat_pic():
+
+    #用户未登录处理
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
+    #读取信息
     sender=request.values['sender']
     receiver=request.values['receiver']
     room = request.values['room']
@@ -74,9 +48,13 @@ def post_chat_pic():
 
 @api_blue.route('/get_message_cnt',methods=['GET'])
 def get_message_cnt():
+    '''
+    获取未读取信息条数
+    '''
     if (current_user.is_authenticated):
         user=str(current_user.id)
         unread=0
+        #循环计数
         for chat in Recent_Chat_List.select().where(Recent_Chat_List.receiver_id==user):
             unread+=chat.unread
         res={'unread':unread}
@@ -88,6 +66,9 @@ def get_message_cnt():
     
 @api_blue.route('/get_meet_list',methods=['GET'])
 def get_meet_list():
+    '''
+    获取会话列表
+    '''
     if (current_user.is_authenticated):
         user=str(current_user.id)
         meet=Meet_List.get_or_none(Meet_List.user_id==user)
@@ -102,6 +83,9 @@ def get_meet_list():
     
 @api_blue.route('/get_last_msg',methods=['GET'])
 def get_last_msg():
+    '''
+    读取每个用户最后发送的消息
+    '''
     if (current_user.is_authenticated):
         user=str(current_user.id)
         meet=Meet_List.get_or_none(Meet_List.user_id==user)
@@ -110,6 +94,7 @@ def get_last_msg():
         else:
             meet_list=meet.meet_list[user]
         res={}
+        #对会话列表做循环读取处理
         for m in meet_list:
             room=user+'-'+m
             reroom=m+'-'+user
@@ -127,6 +112,9 @@ def get_last_msg():
     
 @api_blue.route('/del_meet',methods=['DELETE'])
 def del_meet():
+    '''
+    删除会话
+    '''
     if (current_user.is_authenticated):
         suser=str(current_user.id)
         del_user=str(request.get_json()['user_id'])
@@ -136,6 +124,8 @@ def del_meet():
             meet_list[user]=[]
         else:
             meet_list=user.meet_list
+
+            #移除会话
             meet_list[suser].remove(del_user)
         Meet_List.update(meet_list=meet_list).where(Meet_List.user_id==suser).execute()
         Recent_Chat_List.update(unread=0).where(

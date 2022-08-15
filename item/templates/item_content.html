@@ -280,9 +280,9 @@
                 if ("{{current_user}}".indexOf("Anonymous") == -1) {
                     // 用户已登录
 
-                    if (ret.isPub) $("[id=seller_visible]").removeAttr("hidden");
+                    if (ret.is_pub) $("[id=seller_visible]").removeAttr("hidden");
                     else if (ret.data.state == 0) $("[id=non_seller_visible]").removeAttr("hidden");
-                    if (ret.isAdmin) {
+                    if (ret.is_admin) {
                         if ($("#seller_visible").is(":hidden")) {
                             $("[id=seller_visible]").removeAttr("hidden");
                         }
@@ -312,14 +312,14 @@
                 switch (data.state) {
                     case 0:
                         state_str = "正常发布";
-                        if (ret.isPub) {
+                        if (ret.is_pub) {
                             $("#item_down_shelf_").append('<a href="#" class="btn" onclick="change_item_state(1)">下架商品</a>');
                         }
                         $("#manager_visible").append('<a href="#" class="btn" onclick="change_item_state(-1)">强制下架商品</a>');
                         break;
                     case -1:
                         state_str = "被管理员强制下架";
-                        if (ret.isPub && !ret.isAdmin) {
+                        if (ret.is_pub && !ret.is_admin) {
                             $("#item_down_shelf_").append('<a href="{{url_for("user.feedback")}}" class="btn">申请恢复商品上架</a>');
                         }
                         $("#manager_visible").append('<a href="#" class="btn" onclick="change_item_state(0)">恢复商品上架（管理员）</a>');

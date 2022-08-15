@@ -14,7 +14,11 @@ import requests
 from io import BytesIO
 from PIL import Image
 
-
+from .const import User_state,User_Campus_state,GENDER_CHECK,STATE_CHECK,CAMPUS_BRANCH_CHECK
+'''
+软件重构改动：将以下常量类移到config.py文件中
+'''
+'''
 #添加 unique 装饰器
 @unique
 class User_state(Enum):
@@ -22,13 +26,13 @@ class User_state(Enum):
     Normal = 0
     Admin = 1
     Under_ban = -1
-    '''
-    -1 封号
-    0 游客
-    1 普通用户
-    20 管理员
-    999 系统管理员
-    '''
+    
+    # -1 封号
+    # 0 游客
+    # 1 普通用户
+    # 20 管理员
+    # 999 系统管理员
+    
 
 
 @unique
@@ -37,7 +41,7 @@ class User_Campus_state(Enum):
     JiaDing = "嘉定校区"
     HuXi = "沪西校区"
     HuBei = "沪北校区"
-
+'''
 
 class User(UserMixin, BaseModel):
     """
@@ -52,11 +56,11 @@ class User(UserMixin, BaseModel):
     email = pw.CharField(verbose_name="唯一的邮箱", max_length=128, index=True, null=False, unique=True)
 
     #用户状态：0为普通用户，-1为封号，1为管理员
-    state = pw.IntegerField(verbose_name="状态", null=False, default=User_state.Normal.value, constraints=[pw.Check("state >=-1")])
+    state = pw.IntegerField(verbose_name="状态", null=False, default=User_state.Normal.value, constraints=[pw.Check(STATE_CHECK)])
     score = pw.IntegerField(verbose_name="信誉分", default=100)  #信誉分小于零可封号
 
     #以下为个人信息栏
-    gender = pw.CharField(verbose_name="性别", max_length=4, default='保密', constraints=[pw.Check("gender in ('男', '女','保密')")])  #三个图标
+    gender = pw.CharField(verbose_name="性别", max_length=4, default='保密', constraints=[pw.Check(GENDER_CHECK)])  #三个图标
 
     user_no_is_published = pw.BooleanField(verbose_name="是否公开学工号", default=False)
     user_no = pw.CharField(verbose_name="学工号,字符串存储便于拓展", index=True, max_length=64)
@@ -70,7 +74,7 @@ class User(UserMixin, BaseModel):
     qq_number = pw.CharField(verbose_name="QQ号,字符串存储便于拓展", max_length=64)
 
     campus_is_published = pw.BooleanField(verbose_name="是否公开所在校区", default=False)
-    campus_branch = pw.CharField(verbose_name="所在校区", max_length=32, null=False, default=User_Campus_state.SiPing.value, constraints=[pw.Check("campus_branch in ('四平路校区','嘉定校区','沪西校区','沪北校区')")])
+    campus_branch = pw.CharField(verbose_name="所在校区", max_length=32, null=False, default=User_Campus_state.SiPing.value, constraints=[pw.Check(CAMPUS_BRANCH_CHECK)])
     dormitory_is_published = pw.BooleanField(verbose_name="是否公开宿舍楼", default=False)
     dormitory = pw.CharField(verbose_name="所在宿舍楼", max_length=32)
 

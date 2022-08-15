@@ -16,15 +16,6 @@ from difflib import SequenceMatcher
 from PIL import Image
 from numpy import float32 as Float
 
-
-def createPath(path: str) -> None:
-    if not os.path.exists(path):
-        os.makedirs(path)
-    elif not os.path.isdir(path):
-        os.remove(path)
-        os.makedirs(path)
-
-
 @api_blue.route("/get_item_pics", methods=['GET'])
 def get_item_pics():
     data = dict(request.args)
@@ -101,13 +92,13 @@ def get_item_info():
         dic['publish_time'] = str(dic['publish_time'])
         dic['price'] = float(dic['price'])
         if not current_user.is_authenticated:
-            isAdmin = False
-            isPub = False
+            is_admin = False
+            is_pub = False
         else:
-            isAdmin = (current_user.state == User_state.Admin.value)
-            isPub = (it.user_id.id == current_user.id)
-        res["isAdmin"] = isAdmin
-        res["isPub"] = isPub
+            is_admin = (current_user.state == User_state.Admin.value)
+            is_pub = (it.user_id.id == current_user.id)
+        res["is_admin"] = is_admin
+        res["is_pub"] = is_pub
     return make_response(jsonify(res))
 
 
@@ -223,45 +214,38 @@ def change_item_state():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
     data = request.get_json()
-    try:
-        data["item_id"] = int(data["item_id"])
-        data["state"] = int(data["state"])
-    except Exception as e:
-        return make_response_json(400, "请求格式不对")
-    try:
-        item = Item.get(Item.id == data["item_id"])
-    except Exception as e:
-        return make_response_json(404, "此商品不存在")
+    #读取item_id和state，并获得item
+    result=getItem(data,"state")
+    print(result)
+    if result[0]==-1:
+        return make_response_json(result[1], result[2])            
+    item=result[3]
+    #继续
+    if item.state == data["state"]:
+        return make_response_json(400, "商品当前状态和希望更改的状态相同")
     else:
-        if item.state == data["state"]:
-            return make_response_json(400, "商品当前状态和希望更改的状态相同")
+        if current_user.state == User_state.Admin.value:
+            item.state = data["state"]
+            # if data["state"] == User_state.Freeze.value:
+            #     向物品所有者发布一条消息
+            #       pass
+            if data["state"] == Item_state.Freeze.value:
+                if item.type == Item_type.Goods.value:
+                    send_message(SYS_ADMIN_NO, item.user_id.id,
+                                 f"您的商品<{item.name}>被系统管理员下架")
+                elif item.type == Item_type.Want.value:
+                    send_message(SYS_ADMIN_NO, item.user_id.id,
+                                 f"您的悬赏<{item.name}>被系统管理员下架")
+            item.save()
+            return make_response_json(200, "操作成功")
         else:
-            if current_user.state == User_state.Admin.value:
+            ret=checkWrongItemOperation(current_user,data,item)
+            if ret[0]==-1:
+                return make_response_json(ret[1],ret[2])
+            else:
                 item.state = data["state"]
-                # if data["state"] == User_state.Freeze.value:
-                #     向物品所有者发布一条消息
-                #       pass
-                if data["state"] == Item_state.Freeze.value:
-                    if item.type == Item_type.Goods.value:
-                        send_message(SYS_ADMIN_NO, item.user_id.id,
-                                     f"您的商品<{item.name}>被系统管理员下架")
-                    elif item.type == Item_type.Want.value:
-                        send_message(SYS_ADMIN_NO, item.user_id.id,
-                                     f"您的悬赏<{item.name}>被系统管理员下架")
                 item.save()
                 return make_response_json(200, "操作成功")
-            elif current_user.state == User_state.Under_ban.value:
-                return make_response_json(401, "您当前已被封号,请联系管理员解封")
-            else:
-                if current_user.id != item.user_id.id:
-                    return make_response_json(401, "不可改变其他人的商品状态")
-                else:
-                    if data["state"] == Item_state.Freeze.value:
-                        return make_response_json(401, "权限不足")
-                    else:
-                        item.state = data["state"]
-                        item.save()
-                        return make_response_json(200, "操作成功")
 
 
 @api_blue.route("/change_item_num", methods=["PUT"])
@@ -269,36 +253,32 @@ def change_item_num():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
     data = request.get_json()
-    try:
-        data["item_id"] = int(data["item_id"])
-        data["num"] = int(data["num"])
-    except Exception as e:
-        return make_response_json(400, "请求格式不对")
+    #读取item_id和state，并获得item
+    result=getItem(data,"num")
+    if result[0]==-1:
+        return make_response_json(result[1], result[2])            
+    item=result[3]
+    #继续
     if data["num"] < 0:
         return make_response_json(400, "不允许负数物品存在")
     if data["num"].bit_length() > Item.shelved_num.__sizeof__()-1:
         return make_response_json(400, "数量越界")
-    try:
-        item = Item.get(Item.id == data["item_id"])
-    except Exception as e:
-        return make_response_json(404, "此商品不存在")
+
+    if current_user.state == User_state.Admin.value:
+        item.shelved_num = data["num"]
+        item.save()
+        return make_response_json(200, "操作成功")
     else:
-        if current_user.state == User_state.Admin.value:
+        ret=checkWrongItemOperation(current_user,data,item)
+        print(ret)
+        if ret[0]==-1:
+            return make_response_json(ret[1],ret[2])
+        else:
             item.shelved_num = data["num"]
             item.save()
             return make_response_json(200, "操作成功")
-        elif current_user.state == User_state.Under_ban.value:
-            return make_response_json(401, "您当前已被封号,请联系管理员解封")
-        else:
-            if current_user.id != item.user_id_id:
-                return make_response_json(401, "不可改变其他人的商品状态")
-            else:
-                if data["state"] == Item_state.Freeze.value:
-                    return make_response_json(401, "权限不足")
-                else:
-                    item.shelved_num = data["num"]
-                    item.save()
-                    return make_response_json(200, "操作成功")
+
+                
 
 
 @api_blue.route("/change_item_data", methods=["PUT"])
@@ -306,30 +286,11 @@ def change_item_data():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
     data = request.get_json()
-    if "tag" not in data:
-        return make_response_json(400, "请选择物品类型")
-    if data["tag"] not in Item_tag_type._value2member_map_:
-        return make_response_json(400, "请求格式错误")
-    if len(data["name"])>40:
-        return make_response_json(400,"名称过长")
-    if len(data["description"]) > Item.description.max_length:
-        return make_response_json(400,"描述过长")
-    try:
-        data["id"] = int(data["id"])
-        if "shelved_num" in data:
-            data["shelved_num"] = int(data["shelved_num"])
-        if "price" in data:
-            data["price"] = Float(data["price"])
-    except Exception as e:
-        return make_response_json(400, "请求格式不对")
-    if data["shelved_num"] < 0:
-        return make_response_json(400, "不允许负数商品个数")
-    if data["price"] == Float("inf") or data["price"] == Float("nan"):
-        return make_response_json(400, "价格越界")
-    if data["price"] <= 0:
-        return make_response_json(400, "不允许非正数价格")
-    if data["shelved_num"].bit_length() > Item.shelved_num.__sizeof__()-1:
-        return make_response_json(400, "数量越界")
+    #检查商品格式
+    result=checkItemData(data)
+    if result[0]==-1:
+        return make_response_json(result[1],result[2])
+    #继续
     try:
         item = Item.get(Item.id == data["id"])
     except Exception as e:
@@ -366,45 +327,7 @@ def trans_square(image):
     background.paste(image, box)
     return background
 
-
-@api_blue.route("/post_item_info", methods=["POST"])
-def post_item_info():
-    if not current_user.is_authenticated:
-        return make_response_json(401, "当前用户未登录")
-    if current_user.state == User_state.Under_ban.value:
-        return make_response_json(401, "当前用户已被封号")
-    data = request.get_json()
-    if len(data["name"])>40:
-        return make_response_json(400,"名称过长")
-    if len(data["description"]) > Item.description.max_length:
-        return make_response_json(400,f"描述过长,应限制在{Item.description.max_length}字以内")
-    if "tag" not in data:
-        return make_response_json(400, "请选择物品类型")
-    if data["tag"] not in Item_tag_type._value2member_map_:
-        return make_response_json(400, "请求格式错误")
-    try:
-
-        price = Float(data["price"])
-        item_type = int(data["type"])
-        shelved_num = int(data["shelved_num"])
-    except Exception as e:
-        return make_response_json(400, "数据类型错误")
-    if price == Float("inf") or price == Float("nan"):
-        return make_response_json(400, "价格越界")
-    if price <= 1e-8:
-        return make_response_json(400, "价格越界")
-    if item_type != Item_type.Goods.value and item_type != Item_type.Want.value:
-        return make_response_json(400, "仅能上传物品")
-    if shelved_num <= 0:
-        return make_response_json(400, "数量越界")
-    if shelved_num.bit_length() > Item.shelved_num.__sizeof__()-1:
-        return make_response_json(400, "数量越界")
-    data["user_id"] = current_user.id
-    data["publish_time"] = datetime.now()
-    try:
-        new = Item.create(**data)
-    except Exception as e:
-        return make_response_json(500, f"上传失败：{repr(e)}")
+def createPicPath(new):
     createPath(
         os.path.join(item_blue.static_folder,
                      f'resource/item_pic/{new.id}/head'))
@@ -416,11 +339,13 @@ def post_item_info():
     curpath = os.path.join(item_blue.static_folder,
                            f'resource/item_pic/{new.id}/')
     tempath = os.path.join(item_blue.static_folder, f'resource/temp/')
+    return default_pic,curpath,tempath
+
+def Uploadpic(data,default_pic,curpath,tempath):
     if len(data["urls"]) == 0:
         #给一个默认图
         shutil.copy(default_pic, os.path.join(curpath, 'head/'))
         shutil.copy(default_pic, os.path.join(curpath, 'pic/'))
-
     else:
         head_pics = [i["MD5"] for i in data["urls"] if i["is_cover_pic"]]
         if len(head_pics) == 0:
@@ -441,7 +366,32 @@ def post_item_info():
 
         for j in data["urls"]:
             shutil.move(os.path.join(tempath, j["MD5"]),
-                        os.path.join(curpath, 'pic/'))
+                        os.path.join(curpath, 'pic/'))    
+
+@api_blue.route("/post_item_info", methods=["POST"])
+def post_item_info():
+    if not current_user.is_authenticated:
+        return make_response_json(401, "当前用户未登录")
+    if current_user.state == User_state.Under_ban.value:
+        return make_response_json(401, "当前用户已被封号")
+
+    data = request.get_json()
+    #检查商品格式
+    result=checkItemData(data)
+    if result[0]==-1:
+        return make_response_json(result[1], result[2])
+    #继续添加信息
+    data["user_id"] = current_user.id
+    data["publish_time"] = datetime.now()
+    #创建item
+    try:
+        new = Item.create(**data)
+    except Exception as e:
+        return make_response_json(500, f"上传失败：{repr(e)}")
+    #创建图片目录
+    default_pic,curpath,tempath=createPicPath(new)
+    #上传图片
+    Uploadpic(data,default_pic,curpath,tempath)
         #将所有的图片转到用户对应文件夹
     return make_response_json(200, "上传成功",
                               {"url": url_for('item.content', item_id=new.id)})
@@ -459,32 +409,8 @@ def get_pillow_img_form_data_stream(data):
         #url_for('item.static', filename=f'resource/item_pic/{item_id}/[head|pic]')
         curpath = os.path.join(item_blue.static_folder, f'resource/temp')
         createPath(curpath)
-
-        path_name = os.path.join(curpath, data.filename)
-        createPath(curpath)
-        data.save(path_name)
-
-        img = Image.open(path_name)
-        w, h = img.size
-        ratio = max(w, h) / 1920
-        if ratio > 1:
-            img = img.resize((int(w / ratio), int(h / ratio)))
-        ratio = 250 / min(w, h)
-        if ratio > 1:
-            img = img.resize((int(w * ratio), int(h * ratio)))
-        md5_str = md5(img.tobytes()).hexdigest()
-        os.remove(path_name)
-
-        path_name_new = os.path.join(curpath, f'{md5_str}')
-        img.save(path_name_new, 'WEBP')
-        img = Image.open(path_name_new)
-        md5_str = md5(img.tobytes()).hexdigest()
-        os.remove(path_name_new)
-
-        path_name_new = os.path.join(curpath, f'{md5_str}')
-        #if os.path.exists(path_name_new):
-        #    return make_response_json(400, f"上传图片失败：请勿重复上传图片")
-        img.save(path_name_new, 'WEBP')
+        #保存图片
+        md5_str=savePic(data,curpath)
     except Exception as e:
         print(e)
         return make_response_json(400, f"上传图片失败：文件格式错误或损坏")
@@ -531,25 +457,9 @@ def delete_favor():
     print(request.get_json())
     req = request.get_json()["item_id_list"]
 
-    #tep = Item.select().where(Item.id << req)  #在一个列表中查询
-    #if tep.count() != len(req):  #长度对不上
-    #    return make_response_json(404, "不存在对应物品")
-    try:
-        NotFound = False
-        for i in req:
-            tep = Favor.select().where((Favor.user_id == current_user.id)
-                                       & (Favor.item_id == i))
-
-            if tep.count() <= 0:
-                NotFound = True
-            else:
-                Favor.delete().where((Favor.user_id == current_user.id)
-                                     & (Favor.item_id == i)).execute()
-        if NotFound == True:
-            return make_response_json(404, "不存在对应的收藏")
-        return make_response_json(200, "删除成功")
-    except Exception as e:
-        return make_response_json(500, f"发生错误 {repr(e)}")
+    #删除
+    retid,retinfo=delFS(History,req)
+    return make_response_json(retid,retinfo) 
 
 
 @api_blue.route("/get_favor", methods=["GET"])
@@ -557,33 +467,11 @@ def get_favor():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
     req = dict(request.args)
-    if "range_min" in req or "range_max" in req:
-        if "range_min" in req and "range_max" in req:
-            try:
-                range_min = int(req["range_min"])
-                range_max = int(req["rang_max"])
-            except Exception as e:
-                return make_response_json(400, "请求格式错误")
-        else:
-            return make_response_json("请求格式错误")
+    result=getFS(Favor,req,"favor_list")
+    if result[0]==-1:
+        return make_response_json(result[1], result[2])
     else:
-        range_min = 0
-        range_max = 50
-    tep = Favor.select().where(Favor.user_id == current_user.id).order_by(
-        Favor.collect_time.desc())
-    fav_data = []
-    for i in tep:
-        res = dict()
-        res['id'] = i.id
-        res['item_id'] = i.item_id.id
-        res['collect_time'] = str(i.collect_time)
-        fav_data.append(res)
-    range_max = min(len(fav_data), range_max)
-    data = {
-        "total_count": len(fav_data),
-        "favor_list": fav_data[range_min:range_max]
-    }
-    return make_response_json(200, "操作成功", data)
+        return make_response_json(200, "操作成功", result[1])
 
 
 @api_blue.route("/get_item_favor", methods=["GET"])
@@ -608,33 +496,11 @@ def get_history():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
     req = dict(request.args)
-    if "range_min" in req or "range_max" in req:
-        if "range_min" in req and "range_max" in req:
-            try:
-                range_min = int(req["range_min"])
-                range_max = int(req["rang_max"])
-            except Exception as e:
-                return make_response_json(400, "请求格式错误")
-        else:
-            return make_response_json("请求格式错误")
+    result=getFS(History,req,"history_list")
+    if result[0]==-1:
+        return make_response_json(result[1], result[2])
     else:
-        range_min = 0
-        range_max = 50
-    tep = History.select().where(History.user_id == current_user.id).order_by(
-        History.visit_time.desc())
-    his_data = []
-    for i in tep:
-        res = dict()
-        res['id'] = i.id
-        res['item_id'] = i.item_id.id
-        res['visit_time'] = str(i.visit_time)
-        his_data.append(res)
-    range_max = min(len(his_data), range_max)
-    data = {
-        "total_count": len(his_data),
-        "history_list": his_data[range_min:range_max]
-    }
-    return make_response_json(200, "操作成功", data)
+        return make_response_json(200, "操作成功", result[1])
 
 
 @api_blue.route("/delete_history", methods=["DELETE"])
@@ -643,26 +509,11 @@ def item_delete_history():
         return make_response_json(401, "当前用户未登录")
     print(request.get_json())
     req = request.get_json()["item_id_list"]
+    #删除
+    retid,retinfo=delFS(History,req)
+    return make_response_json(retid,retinfo) 
 
-    #tep = Item.select().where(Item.id << req)  #在一个列表中查询
-    #if tep.count() != len(req):  #长度对不上
-    #    return make_response_json(404, "不存在对应物品")
-    try:
-        NotFound = False
-        for i in req:
-            tep = History.select().where((History.user_id == current_user.id)
-                                         & (History.item_id == i))
 
-            if tep.count() <= 0:
-                NotFound = True
-            else:
-                History.delete().where((History.user_id == current_user.id)
-                                       & (History.item_id == i)).execute()
-        if NotFound == True:
-            return make_response_json(404, "不存在对应的历史")
-        return make_response_json(200, "删除成功")
-    except Exception as e:
-        return make_response_json(500, f"发生错误 {repr(e)}")
 
 
 @api_blue.route("/report", methods=["POST"])
