@@ -288,7 +288,163 @@ def order_post():
     return make_response_json(201, "订单生成成功，请等待商家确认", data={"order_id": od.id})
 
 
+# /adress拆为三个函数
+@api_blue.route("/address", methods=["POST"])
+def address_post():
+    if not current_user.is_authenticated:
+        return make_response_json(401, "当前用户未登录")
+    data = request.get_json()
+    temp = [None for i in range(len(data))]
 
+    has_default, num = False, 0
+    old_default = None
+    for i, j in enumerate(data):
+        for k in j:
+            if isinstance(j[k],str) and len(j[k]) == 0:
+                return make_response_json(400,"不允许提交空参数")
+        if "campus_branch" in j:
+            if j["campus_branch"] not in User_Campus_state._value2member_map_:
+                return make_response_json(400, "校区填写错误")
+        j["user_id"] = current_user.id
+        if "default" in j and j["default"]:
+            if not has_default:
+                has_default, num = True, i
+            else:
+                data[num]["default"] = False
+                num = i
+    try:
+        old_default = Contact.get(Contact.default == True,
+                                    Contact.user_id == current_user.id)
+    except Exception as e:
+        if not has_default:
+            data[-1]["default"] = True
+    else:
+        if has_default:
+            old_default.default = False
+            old_default.save()
+    for i, j in enumerate(data):
+        try:
+            temp[i] = Contact.create(**j)
+        except Exception as e:
+            for t in range(i):
+                temp[t].delete_instance()
+            if old_default is not None:
+                old_default.default = True
+                old_default.save()
+            return make_response_json(500, f"存储时出现错误 {repr(e)}")
+
+    return make_response_json(200, "完成")
+
+@api_blue.route("/address", methods=["PUT"])
+def address_put():
+    if not current_user.is_authenticated:
+        return make_response_json(401, "当前用户未登录")
+    data = request.get_json()
+    temp = [None for i in range(len(data))]
+    for i, j in enumerate(data):
+        # j["id"] = j["contact_id"]
+        # j.pop("contact_id")
+        for k in j:
+            if isinstance(j[k],str) and len(j[k]) == 0:
+                return make_response_json(400,"不允许提交空参数")
+        if "campus_branch" in j:
+            if j["campus_branch"] not in User_Campus_state._value2member_map_:
+                return make_response_json(400, "校区填写错误")
+        try:
+            # j["id"] = j["contact_id"]
+            # j.pop("contact_id")
+            temp[i] = Contact.get(Contact.id == int(j["id"]))
+        except Exception as e:
+            return make_response_json(401, "不存在的联络地址")
+        else:
+            if temp[i].user_id.id != current_user.id:
+                return make_response_json(401, "不可修改其他用户的联络地址")
+    #update_data = list(range(len(data)))
+    update_data = copy.deepcopy(temp)
+    has_default, num = False, 0
+    for i, j in enumerate(data):
+        if "default" in j and j["default"]:
+            if not has_default:
+                    has_default, num = True, i
+            else:
+                data[num]["default"] = False
+                num = i
+    old_default = None
+    try:
+        old_default = Contact.get(Contact.default == True,
+                                    Contact.user_id == current_user.id)
+    except Exception as e:
+        if not has_default:
+            temp[-1].default = True
+    else:
+        if has_default:
+            if old_default not in temp:
+                old_default.default = False
+                old_default.save()
+        else:
+            if old_default in temp:
+                return make_response_json(400, "至少要保留一个默认地址")
+    for i in range(len(temp)):
+        try:
+            for j in data[i]:
+                if j in update_data[i].__data__:
+                    exec(f"""if update_data[{i}].{j} != data[{i}]["{j}"]:
+    update_data[{i}].{j} = data[{i}]["{j}"]
+                        """)
+                    #new_data[j] = data[i][j]
+            #update_data[i] = Contact(**new_data)
+            update_data[i].save()
+        except Exception as e:
+            for t in range(i):
+                temp[i].save()
+            if old_default is not None:
+                old_default.default = True
+                old_default.save()
+            return make_response_json(500, f"存储错误 {repr(e)}")
+    
+    return make_response_json(200, "完成")
+
+@api_blue.route("/address", methods=["DELETE"])
+def address_delete():
+    if not current_user.is_authenticated:
+        return make_response_json(401, "当前用户未登录")
+    data = request.get_json()
+    temp = [None for i in range(len(data))]
+    data = list(set(map(lambda x: x["contact_id"], data)))
+    for i, j in enumerate(data):
+        try:
+            temp[i] = Contact.get(Contact.id == int(j))
+        except Exception as e:
+            return make_response_json(401, "不存在的联络地址")
+        else:
+            if temp[i].user_id.id != current_user.id:
+                return make_response_json(401, "不可删除其他用户的联络地址")
+    delete_default = False
+    for i, j in enumerate(temp):
+        try:
+            j.delete_instance()
+        except Exception as e:
+            for t in range(i):
+                temp[t].save()
+            return make_response_json(500, f"发生错误 {repr(e)}")
+        else:
+            if j.default:
+                delete_default = True
+    if delete_default:
+        try:
+            datas = Contact.select().where(
+                Contact.user_id == current_user.id).order_by(
+                    Contact.id.desc()).execute()
+        except Exception as e:
+            print(repr(e))
+        else:
+            if len(datas) > 0:
+                datas[0].default = True
+                datas[0].save()
+
+    return make_response_json(200, "完成")
+
+'''
 @api_blue.route("/address", methods=["POST", "PUT", "DELETE"])
 def address():
     if not current_user.is_authenticated:
@@ -427,7 +583,7 @@ def address():
                 return make_response_json(500, f"存储时出现错误 {repr(e)}")
 
     return make_response_json(200, "完成")
-
+'''
 
 @api_blue.route("/order_evaluate", methods=["POST"])
 def order_evaluate():
