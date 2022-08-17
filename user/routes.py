@@ -47,12 +47,12 @@ class UserController:
         return auth_func
 
     @staticmethod
-    @user_blue.route("/", methods=['GET', 'POST'])
+    @user_blue.route("/", methods=['GET'])
     def root_index():
         return redirect(url_for('user.index'))  # 重定向到/user/index
 
     @staticmethod
-    @user_blue.route('/index', methods=['GET', 'POST'])
+    @user_blue.route('/index', methods=['GET'])
     @requires_auth()
     def index():
         # if current_user.is_authenticated:
@@ -61,7 +61,7 @@ class UserController:
         #     return redirect(url_for('login'))
 
     @staticmethod
-    @user_blue.route('/publish', methods=['GET', 'POST'])
+    @user_blue.route('/publish', methods=['GET'])
     @requires_auth()
     def publish():
         # if current_user.is_authenticated:
@@ -71,7 +71,7 @@ class UserController:
 
     # 个人中心
     @staticmethod
-    @user_blue.route('/space', methods=['GET', 'POST'])
+    @user_blue.route('/space', methods=['GET'])
     def space():
         return redirect(url_for('user.order'))
         if current_user.is_authenticated:
@@ -81,7 +81,7 @@ class UserController:
 
     # 个人信息管理
     @staticmethod
-    @user_blue.route('/<opt_userid>/user_info', methods=['GET', 'POST'])
+    @user_blue.route('/<opt_userid>/user_info', methods=['GET'])
     @requires_auth(show_err=401)
     def user_info(opt_userid: int):  # opt_userid为目标用户ID
         # if current_user.is_authenticated:
@@ -96,7 +96,7 @@ class UserController:
         #     return render_template('404.html', error_code=401, message="请先登录")
 
     @staticmethod
-    @user_blue.route('/order', methods=['GET', 'POST'])
+    @user_blue.route('/order', methods=['GET'])
     def order():
         return render_template("user_order.html", current_user=current_user)
 
@@ -104,7 +104,7 @@ class UserController:
 
     # 历史
     @staticmethod
-    @user_blue.route('/history', methods=['GET', 'POST'])
+    @user_blue.route('/history', methods=['GET'])
     @requires_auth()
     def history():
         # if current_user.is_authenticated:
@@ -115,7 +115,7 @@ class UserController:
 
     # 收藏
     @staticmethod
-    @user_blue.route('/favor', methods=['GET', 'POST'])
+    @user_blue.route('/favor', methods=['GET'])
     @requires_auth()
     def favor():
         # if current_user.is_authenticated:
@@ -125,7 +125,7 @@ class UserController:
     #     return redirect(url_for('login'))
 
     @staticmethod
-    @user_blue.route('/address', methods=['GET', 'POST'])
+    @user_blue.route('/address', methods=['GET'])
     @requires_auth()
     def address():
         # if current_user.is_authenticated:
@@ -135,7 +135,7 @@ class UserController:
     #     return redirect(url_for('login'))
 
     @staticmethod
-    @user_blue.route("/feedback", methods=["GET", "POST"])
+    @user_blue.route("/feedback", methods=["GET"])
     @requires_auth()
     def feedback():
         # if current_user.is_authenticated:

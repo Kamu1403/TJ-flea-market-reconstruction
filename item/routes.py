@@ -44,7 +44,7 @@ class ItemController:
         return decorated
 
     @staticmethod
-    @item_blue.route('/content/<item_id>/', methods=['GET', 'POST'])
+    @item_blue.route('/content/<item_id>/', methods=['GET'])
     def content(item_id: int):  # goods_id/want_id
         try:
             item = Item.get(Item.id == item_id)
@@ -78,7 +78,7 @@ class ItemController:
                                item_id=int(item_id))
 
     @staticmethod
-    @item_blue.route('/publish/', methods=['GET', 'POST'])
+    @item_blue.route('/publish/', methods=['GET'])
     @auth_func
     def publish():
         # if not current_user.is_authenticated:

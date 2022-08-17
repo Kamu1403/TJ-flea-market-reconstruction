@@ -42,12 +42,12 @@ class OrderController:
         return decorated
 
     @staticmethod
-    @order_blue.route("/<int:order_id>/", methods=["GET", "POST"])
+    @order_blue.route('/<int:order_id>/', methods=['GET'])
     def order_view(order_id: int):
         return render_template("order_view.html", order_id=order_id)
 
     @staticmethod
-    @order_blue.route('/review/<order_id>/', methods=['GET', 'POST'])
+    @order_blue.route('/review/<order_id>/', methods=['GET'])
     @auth_func
     def review(order_id: int):  # order_id为订单ID
         # if not current_user.is_authenticated:
@@ -72,7 +72,7 @@ class OrderController:
         return render_template('order_review.html', order_id=order_id)
 
     @staticmethod
-    @order_blue.route('/generate/<int:item_id>/', methods=['GET', 'POST'])
+    @order_blue.route('/generate/<int:item_id>/', methods=['GET'])
     @auth_func
     def generate(item_id: int):
         # if not current_user.is_authenticated:

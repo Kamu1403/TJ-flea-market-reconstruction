@@ -52,13 +52,13 @@ class ChatController:
 
     # 聊天室初始
     @staticmethod
-    @chat_blue.route("", methods=['GET', 'POST'])
-    @chat_blue.route("/", methods=['GET', 'POST'])
+    @chat_blue.route("", methods=['GET'])
+    @chat_blue.route("/", methods=['GET'])
     def root_index():
         return redirect(url_for('chat.index'))  # 重定向到/user/index
 
     @staticmethod
-    @chat_blue.route('/index', methods=['GET', 'POST'])
+    @chat_blue.route('/index', methods=['GET'])
     @auth_func
     def index():
         # 显示左侧聊天列表，右侧聊天框空白

@@ -49,7 +49,7 @@ class AdminController:
         return auth_func
 
     @staticmethod
-    @admin_blue.route('/user_check', methods=['GET', 'POST'])
+    @admin_blue.route('/user_check', methods=['GET'])
     @requires_auth(show_err=401)
     def user_check():
         # if current_user.is_authenticated and current_user.state == User_state.Admin.value:
@@ -58,7 +58,7 @@ class AdminController:
         #     return render_template('404.html', error_code=401, message="您无权访问此页面")
 
     @staticmethod
-    @admin_blue.route('/order_check', methods=['GET', 'POST'])
+    @admin_blue.route('/order_check', methods=['GET'])
     @requires_auth(show_err=401)
     def order_check():
         # if current_user.is_authenticated and current_user.state == User_state.Admin.value:
@@ -67,7 +67,7 @@ class AdminController:
         #     return render_template('404.html', error_code=401, message="您无权访问此页面")
 
     @staticmethod
-    @admin_blue.route('/feedback_show', methods=['GET', 'POST'])
+    @admin_blue.route('/feedback_show', methods=['GET'])
     @requires_auth(show_err=401)
     def feedback_show():
         # if current_user.is_authenticated and current_user.state == User_state.Admin.value:
@@ -76,7 +76,7 @@ class AdminController:
         #     return render_template('404.html', error_code=401, message="您无权访问此页面")
 
     @staticmethod
-    @admin_blue.route("/feedback/<int:feedback_id>/", methods=["GET", "POST"])
+    @admin_blue.route("/feedback/<int:feedback_id>/", methods=["GET"])
     @requires_auth(show_err=401)
     def feedback(feedback_id: int):
         # if current_user.is_authenticated and current_user.state == User_state.Admin.value:
