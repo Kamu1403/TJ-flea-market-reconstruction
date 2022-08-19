@@ -601,7 +601,7 @@ def delete_favor():
     req = request.get_json()["item_id_list"]
 
     #删除
-    retid,retinfo=delFS(History,req)
+    retid,retinfo=delFS(Favor,req)
     return make_response_json(retid,retinfo) 
 
 
