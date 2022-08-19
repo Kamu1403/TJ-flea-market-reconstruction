@@ -253,7 +253,7 @@ def change_item_num():
     if not current_user.is_authenticated:
         return make_response_json(401, "当前用户未登录")
     data = request.get_json()
-    #读取item_id和state，并获得item
+    #读取item_id和num，并获得item
     result=getItem(data,"num")
     if result[0]==-1:
         return make_response_json(result[1], result[2])            
@@ -458,7 +458,7 @@ def delete_favor():
     req = request.get_json()["item_id_list"]
 
     #删除
-    retid,retinfo=delFS(History,req)
+    retid,retinfo=delFS(Favor,req)
     return make_response_json(retid,retinfo) 
 
 
