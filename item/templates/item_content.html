@@ -165,7 +165,10 @@
             contentType: "application/json;charset=utf-8",
             processData: false,
             success: function (ret) {
-                suspend("alert-danger", "修改物品信息失败: " + ret.message);
+                if(ret.statusCode == 200)
+                    suspend("alert-success", "修改物品信息成功: " + ret.message);
+                else
+                    suspend("alert-danger", "修改物品信息失败: " + ret.message);
                 sleep(500).then(() => {
                     window.location.reload();
                 });
