@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 from .send_verification_mail import send_email
 
 
-class UserController:
+class AccountController:
     def __init__(self):
         self.curpath = os.path.dirname(__file__)
         self.config = os.path.join(self.curpath,
